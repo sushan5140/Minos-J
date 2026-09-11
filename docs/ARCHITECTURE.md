@@ -88,6 +88,13 @@ The project has used:
 
 This is intended to reduce the risk of unintentionally changing previous evidence while restructuring the system.
 
+The original implementation and canonical architecture artifact are available at:
+
+- [`historical/2026-08-04/source`](../historical/2026-08-04/source)
+- [`meno_j_falsification_engine_architecture.md`](../historical/2026-08-04/outputs/meno_j_falsification_engine_architecture.md)
+
+The package under `src/minos_j/` is a smaller later reference implementation, not a replacement for the historical tree.
+
 ---
 
 ## Current research questions

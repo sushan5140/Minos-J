@@ -1,0 +1,84 @@
+{
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Inter‑subject variability in autonomic reactivity causes the nonconformity scores to be systematically miscalibrated for high‑reactivity individuals.",
+      "proposed_mechanism": "Subjects with exaggerated sympathetic responses produce extreme physiological feature values that lie outside the training distribution, inflating the nonconformity measure and shrinking prediction sets.",
+      "core_assumption": "The Mondrian taxonomy groups subjects only by coarse stress labels, not by individual autonomic gain.",
+      "knowledge_gap_addressed": "Lack of subject‑level calibration of conformal nonconformity scores in multimodal physiological stress detection.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Sensor‑specific drift in the wrist‑worn EDA channel during prolonged recordings leads to biased nonconformity estimates for later trials.",
+      "proposed_mechanism": "Gradual electrode impedance increase reduces EDA amplitude, shifting the feature distribution relative to the calibration set and causing undercoverage for sessions recorded late in the protocol.",
+      "core_assumption": "Mondrian bins are defined by experimental condition, not by sensor health state.",
+      "knowledge_gap_addressed": "Impact of within‑session sensor degradation on conformal prediction coverage guarantees.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Non‑stationary heart‑rate variability (HRV) dynamics across the stress‑recovery cycle violate the exchangeability assumption within Mondrian strata.",
+      "proposed_mechanism": "Rapid autonomic transitions create temporal dependence in residuals; the conformal algorithm treats each window as independent, underestimating prediction interval width for transitional periods.",
+      "core_assumption": "Stratification by static condition labels captures all relevant distributional shifts.",
+      "knowledge_gap_addressed": "Temporal dependence effects on conformal coverage in physiological time‑series.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Mislabeling of self‑reported stress levels for a subset of participants introduces systematic label noise into the Mondrian categories.",
+      "proposed_mechanism": "Subjects who under‑report stress are placed in a low‑stress stratum while their physiological signals resemble high stress, causing the nonconformity distribution to be too narrow for that stratum.",
+      "core_assumption": "Self‑report labels are accurate ground truth for stratification.",
+      "knowledge_gap_addressed": "Effect of label noise on conformal prediction calibration in affective computing datasets.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Insufficient representation of certain demographic sub‑groups (e.g., age > 50) in the calibration set leads to stratum‑specific undercoverage.",
+      "proposed_mechanism": "Mondrian taxonomy does not include age as a stratification variable; older subjects exhibit different baseline HRV and EDA ranges, making the shared nonconformity quantile too optimistic for them.",
+      "core_assumption": "Stratification by experimental condition alone yields homogeneous nonconformity distributions.",
+      "knowledge_gap_addressed": "Demographic heterogeneity and its interaction with conformal stratification.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "The choice of nonconformity score (e.g., softmax margin) is poorly aligned with the multimodal feature geometry for stress classification.",
+      "proposed_mechanism": "Margin‑based scores ignore correlation structure between ECG, EDA, and respiration features, producing overly confident scores for out‑of‑distribution multimodal patterns.",
+      "core_assumption": "Standard classification margins are valid nonconformity measures for heterogeneous physiological data.",
+      "knowledge_gap_addressed": "Design of problem‑specific nonconformity functions for multimodal stress detection.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Batch effects from different recording days cause distribution shift that is not captured by the Mondrian condition labels.",
+      "proposed_mechanism": "Day‑specific ambient temperature and humidity alter skin conductance baseline, shifting the EDA feature distribution; the conformal predictor treats all days as exchangeable within a condition.",
+      "core_assumption": "Environmental conditions are constant or irrelevant across recording sessions.",
+      "knowledge_gap_addressed": "Influence of day‑level batch effects on conformal coverage in wearable studies.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Finite‑sample estimation error of the conditional quantile in small strata leads to systematic undercoverage for rare stress levels.",
+      "proposed_mechanism": "Mondrian splits the calibration data into many condition‑subject strata; strata with few samples yield noisy quantile estimates that are biased low.",
+      "core_assumption": "Asymptotic coverage guarantees hold for the available calibration sample sizes per stratum.",
+      "knowledge_gap_addressed": "Small‑stratum quantile estimation bias in Mondrian conformal prediction.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Physiological habituation across repeated stress trials reduces signal discriminability, but the Mondrian taxonomy treats each trial as identically distributed.",
+      "proposed_mechanism": "Repeated exposure attenuates EDA peaks and HRV reactivity, moving later‑trial feature vectors toward the non‑stress distribution while the nonconformity calibration remains based on early‑trial statistics.",
+      "core_assumption": "Trial order does not affect the conditional distribution of features given the stress label.",
+      "knowledge_gap_addressed": "Habituation effects on exchangeability assumptions in repeated‑measure conformal prediction.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Correlated missingness in the respiration belt (e.g., motion artifacts) creates informative missingness that the conformal predictor ignores.",
+      "proposed_mechanism": "When respiration data are missing during high‑movement stress periods, the imputed or omitted features shift the joint distribution; the nonconformity score computed on available modalities underestimates uncertainty.",
+      "core_assumption": "Missingness is completely at random and does not affect the nonconformity distribution.",
+      "knowledge_gap_addressed": "Impact of informative sensor dropout on conformal prediction coverage in multimodal wearable data.",
+      "status": "SPECULATIVE"
+    }
+  ]
+}

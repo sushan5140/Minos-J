@@ -1,0 +1,50 @@
+{
+  "experiment_name": "Meno-J Experiment 6: P4-F1 Score and Conditioning Comparison Across Sample Sizes",
+  "model_call_used": false,
+  "openrouter_key_required": false,
+  "deterministic_replay_supported": true,
+  "random_number_generator": "numpy.random.Generator(PCG64) with explicit integer seeds",
+  "numpy_version": "2.3.5",
+  "roadmap_source_sha256": "cb807cfdfc75aa3325212720cfc74ad59e019add83a4328629ed9b1ad65cde23",
+  "experiment_5_source_sha256": "f06b9b755b736027eff5bbdd30b961d694805a7e22f0407ed4bb50651eca04fd",
+  "implementation_sha256": "3deb8c72b8644bea76319be95fff1bc2043c23ce9ba35cdf0161dcd9ae7d54fc",
+  "pipeline_sha256": "7c6b83c55ee2eb389ab490a1ab7d4a05a8cc464c4b370da0ac2399ae2a775c21",
+  "schema_sha256": "8954dc7fbcfdab6388789d3470c1b6b89d4fd377323304362d0e106474864633",
+  "result_json_sha256": "39f7048a55732dce8e2559ee075d7f0411cefd292669c58abfb8726aaedd01b7",
+  "result_markdown_sha256": "f194eed77e2e1eae2e9eba9216c224a99d1cebec9e6b1502bbd51bd7c3a31f61",
+  "conditions": [
+    "well_separated_gaussian_clusters",
+    "overlapping_gaussian_clusters",
+    "imbalanced_class_geometry",
+    "sparse_subgroup_geometry",
+    "covariate_shifted_test_geometry"
+  ],
+  "scores": [
+    "margin_score",
+    "inverse_probability_score",
+    "distance_to_class_centroid_score"
+  ],
+  "conditioning_strategies": [
+    "marginal",
+    "mondrian_class",
+    "mondrian_region"
+  ],
+  "calibration_sizes": [
+    50,
+    100,
+    300,
+    600
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "seed_level_result_count": 900,
+  "aggregate_result_count": 180,
+  "credential_scan_passed": true,
+  "run_command": "python -u run_p4_f1_score_conditioning.py",
+  "validation_command": "python -u work/validate_p4_f1_score_conditioning.py"
+}

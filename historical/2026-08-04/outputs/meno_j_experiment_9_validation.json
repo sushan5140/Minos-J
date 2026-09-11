@@ -1,0 +1,20 @@
+{
+  "experiment_name": "Meno-J Experiment 9: WESAD Real-Data Falsification Study",
+  "status": "PASS",
+  "checks": {
+    "required_outputs_exist": true,
+    "saved_json_schema_and_invariants_pass": true,
+    "markdown_matches_json": true,
+    "independent_exact_replay_matches": true,
+    "subject_count_is_15": true,
+    "window_count_is_535": true,
+    "fold_result_count_is_405": true,
+    "aggregate_method_count_is_9": true,
+    "source_hashes_match": true,
+    "feature_checkpoint_hashes_match": true,
+    "credential_scan_passes": true
+  },
+  "primary_transfer_decision": "SYNTHETIC_SAFEST_PAIR_DOES_NOT_TRANSFER",
+  "scientific_report_sha256": "cbc71fd41bb4b17807f443f12c81901a5905dbdea7cbb0cfd33aa03345e35406",
+  "reproducibility_summary_sha256": "c3b55b1ba340e5fea9446d3325d5a04af6a34a8c6d50c05a0cc7958a6917ce73"
+}

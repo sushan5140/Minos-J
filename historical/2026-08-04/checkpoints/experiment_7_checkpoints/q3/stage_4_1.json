@@ -1,0 +1,280 @@
+{
+  "mechanism_builds": [
+    {
+      "hypothesis_id": "H1",
+      "mechanism_variables": [
+        "Resting RMSSD (ms)",
+        "Stressor-evoked ΔRMSSD (ms)",
+        "Baseline LF/HF ratio",
+        "Baroreflex sensitivity (ms/mmHg)",
+        "HRV feature signal-to-noise ratio (stress Δ / within-condition SD)",
+        "Stress-classifier AUC per subject per session"
+      ],
+      "causal_path": "High resting parasympathetic tone (↑RMSSD) → compressed HRV dynamic range during stress (↓ΔRMSSD) → reduced classifier separability (↓AUC) → increased detection uncertainty; Sympathetic dominance (↓RMSSD, ↑LF/HF) → exaggerated but high-variance HRV response (↑ΔRMSSD variance) → increased feature variance → reduced classifier reliability",
+      "expected_direction": "Negative correlation between baseline RMSSD and stress-classifier AUC; positive correlation between baseline LF/HF and AUC variance across sessions",
+      "domain_specific_boundary_conditions": [
+        "Controlled laboratory stressors (TSST, cold pressor)",
+        "Wrist-worn PPG sampling ≥64 Hz",
+        "Time-of-day standardized (±2h)",
+        "Medication-free, no cardiovascular disease",
+        "Minimum 3 stress sessions per subject"
+      ],
+      "measurable_outcomes": [
+        "Within-subject correlation (r) between baseline RMSSD and session-level AUC",
+        "Between-subject variance in AUC explained by baseline ANS phenotype (R²)",
+        "HRV feature SNR difference between high/low parasympathetic groups (Cohen's d)"
+      ],
+      "mechanism_builder_notes": "Test by recruiting subjects stratified by baseline RMSSD tertiles, exposing to identical stressors, and quantifying how baseline phenotype predicts both HRV feature SNR and classifier AUC. The mechanism predicts a U-shaped relationship: both very high and very low baseline tone degrade detection, but via distinct pathways (compressed range vs. noisy exaggeration)."
+    },
+    {
+      "hypothesis_id": "H2",
+      "mechanism_variables": [
+        "Skin thickness at wrist (mm, ultrasound)",
+        "Skin hydration (corneometer AU)",
+        "Hair density (follicles/cm², trichoscopy)",
+        "Subcutaneous fat thickness (mm, caliper)",
+        "Electrode-skin impedance (kΩ, 10Hz)",
+        "PPG signal quality index (SQI, 0-1)",
+        "EDA signal-to-noise ratio (μS/μS)",
+        "Vasoconstriction index (pulse amplitude variability %)",
+        "Stressor-induced impedance change (ΔkΩ)"
+      ],
+      "causal_path": "Skin anatomy (thickness, hydration, hair, fat) → optical path length / electrode impedance → baseline noise floor → stress-induced vasoconstriction alters optical path/impedance further → heteroscedastic noise correlated with stress → biased PPG/EDA features → increased detection uncertainty",
+      "expected_direction": "Higher skin thickness/fat → lower PPG SQI (negative correlation); lower hydration → higher EDA impedance → noisier EDA (positive correlation impedance vs. EDA noise); stress-induced vasoconstriction amplifies noise most in poor-coupling subjects (interaction)",
+      "domain_specific_boundary_conditions": [
+        "Wrist-worn PPG (green LED) and dry-electrode EDA",
+        "Controlled ambient temperature (22±1°C)",
+        "Standardized sensor placement (ulnar side, 2cm proximal to wrist crease)",
+        "Wear session ≤24h without removal",
+        "Exclude dermatological conditions"
+      ],
+      "measurable_outcomes": [
+        "Within-subject correlation between Δimpedance and EDA feature error during stress",
+        "Between-subject variance in PPG SQI explained by skin anatomy (multiple R²)",
+        "Breusch-Pagan test statistic for heteroscedasticity of stress-prediction residuals vs. impedance"
+      ],
+      "mechanism_builder_notes": "The key test is whether stress-induced physiological changes (vasoconstriction) modulate the very noise floor that obscures them, creating a subject-specific heteroscedasticity. Measure impedance and PPG/EDA quality continuously during a standardized stressor; regress feature error on impedance change and its interaction with baseline anatomy."
+    },
+    {
+      "hypothesis_id": "H3",
+      "mechanism_variables": [
+        "Chronotype (MEQ score, 16-86)",
+        "Circadian phase (DLMO, hours from midnight)",
+        "Core body temperature minimum (CBTmin, clock time)",
+        "Cortisol awakening response magnitude (AUCg, nmol/L)",
+        "Time of stressor relative to DLMO (hours)",
+        "HRV stress reactivity (ΔRMSSD, ms)",
+        "EDA stress reactivity (ΔSCR frequency, events/min)",
+        "Stress-classifier AUC at each circadian phase"
+      ],
+      "causal_path": "Chronotype → circadian phase at stressor onset → baseline autonomic tone and stress-system gain → stressor-evoked physiological deviation magnitude/latency → wearable feature distribution shift → detection accuracy (AUC) varies by circadian phase × chronotype interaction",
+      "expected_direction": "Morning types: higher AUC in morning (phase-aligned); evening types: higher AUC in evening; misaligned phases show reduced reactivity magnitude and lower AUC (significant chronotype × time-of-day interaction)",
+      "domain_specific_boundary_conditions": [
+        "Controlled laboratory stressors at 4+ circadian phases",
+        "Constant routine or forced desynchrony protocol",
+        "Wearable sampling ≥25 Hz (PPG, EDA, temperature)",
+        "Exclude shift workers, age 18-45",
+        "Standardized light/dark, sleep/wake history"
+      ],
+      "measurable_outcomes": [
+        "Interaction effect size (η²) of chronotype × time-of-day on stress-classifier AUC",
+        "Within-subject AUC amplitude across circadian phases (max-min)",
+        "Phase-dependent HRV/EDA reactivity slopes (Δfeature per hour from DLMO)"
+      ],
+      "mechanism_builder_notes": "Requires a protocol that disentangles circadian phase from time-on-task. Forced desynchrony (e.g., 28h day) is gold standard but expensive; constant routine with multiple stress tests across 24h is feasible. The mechanism predicts that population-level time-of-day corrections fail because gain modulation is chronotype-specific."
+    },
+    {
+      "hypothesis_id": "H4",
+      "mechanism_variables": [
+        "Alexithymia (TAS-20 total score)",
+        "Interoceptive accuracy (heartbeat counting score, 0-1)",
+        "Compliance fatigue (EMA response rate slope over days, %/day)",
+        "EMA stress rating (0-100 VAS)",
+        "Physiological stress composite (z-scored HRV+EDA)",
+        "Label-physiology concordance (AUC of physiology predicting EMA > median)",
+        "Label noise variance (within-subject EMA variance during matched physiology)",
+        "Classifier calibration error (ECE) per subject"
+      ],
+      "causal_path": "Alexithymia / low interoceptive awareness → EMA rating error (bias + variance) → label noise correlated with physiology → supervised learning trains on mislabeled data → subject-specific classifier bias → inflated uncertainty estimates for those subjects",
+      "expected_direction": "Higher TAS-20 → lower label-physiology concordance (negative correlation); higher compliance fatigue → increased label variance over time (positive correlation); both → higher subject-level ECE (positive correlation)",
+      "domain_specific_boundary_conditions": [
+        "EMA prompts ≥5/day for ≥14 days",
+        "Concurrent wearable recording (PPG, EDA)",
+        "Standardized laboratory stressor sessions for ground-truth calibration",
+        "Exclude psychiatric disorders affecting insight (e.g., schizophrenia)",
+        "EMA compliance ≥70% overall"
+      ],
+      "measurable_outcomes": [
+        "Between-subject variance in label-physiology concordance explained by TAS-20 and interoceptive accuracy (R²)",
+        "Change in classifier ECE when using subject-specific vs. population labels",
+        "Time-varying label noise variance (rolling 3-day window) correlated with compliance fatigue slope"
+      ],
+      "mechanism_builder_notes": "Critical to obtain ground-truth stress labels via controlled stressors to quantify EMA bias. The mechanism predicts that label noise is not random but structured: alexithymia causes attenuation bias (under-reporting), compliance fatigue causes inflation bias (over-reporting), and both correlate with physiology, creating a confounding pathway that standard i.i.d. noise models miss."
+    },
+    {
+      "hypothesis_id": "H5",
+      "mechanism_variables": [
+        "Occupational movement profile (accelerometer spectral entropy, dominant frequency Hz)",
+        "Gait biomechanics (stride frequency Hz, symmetry index)",
+        "Tremor phenotype (accelerometer power 4-12 Hz, μg²/Hz)",
+        "PPG motion artifact spectrum (accelerometer-PPG coherence 0.1-0.4 Hz)",
+        "HRV feature error (|clean HRV - motion-corrupted HRV|, ms)",
+        "Stress-classifier feature importance weights (SHAP values)",
+        "Activity context labels (video-verified)"
+      ],
+      "causal_path": "Occupational/gait/tremor profile → subject-specific motion artifact spectral signature → overlap with HRV/EDA stress bands (0.1-0.4 Hz, 0.05-0.25 Hz) → artifact removal residual error correlated with activity context → stress-classifier features contaminated → subject-dependent detection uncertainty",
+      "expected_direction": "Higher spectral overlap between motion artifact and HRV band → larger HRV feature error during that activity (positive correlation); subject-specific artifact profiles explain variance in AUC across activity contexts (R² > 0.3)",
+      "domain_specific_boundary_conditions": [
+        "Free-living monitoring ≥7 days",
+        "Simultaneous PPG + accelerometer ≥50 Hz",
+        "Labeled activity types via video or detailed self-report",
+        "Standardized laboratory stressor sessions for ground truth",
+        "Exclude non-wear periods >60 min"
+      ],
+      "measurable_outcomes": [
+        "Within-subject coherence between accelerometer and PPG in HRV band during specific activities",
+        "Between-subject variance in stress-classifier AUC during high-motion periods explained by occupational movement profile",
+        "Residual artifact power after standard filtering (e.g., wavelet, adaptive) per subject per activity"
+      ],
+      "mechanism_builder_notes": "The mechanism hinges on within-subject consistency of artifact morphology. Collect free-living data with synchronized video annotation for a subset. Compute subject-specific artifact templates per activity; test whether template-matched filtering reduces HRV error more than generic filtering, and whether residual error predicts stress-classifier failure in that activity."
+    },
+    {
+      "hypothesis_id": "H6",
+      "mechanism_variables": [
+        "Response stereotypy index (condition number of within-subject feature covariance matrix across stressors)",
+        "Number of physiological systems recruited (cardiac, sudomotor, respiratory, thermal; count 1-4)",
+        "Feature space dimensionality (participation ratio of PCA eigenvalues)",
+        "Stress-classifier AUC as function of training sample size (learning curve)",
+        "Cross-session classifier generalization (AUC on held-out stressor type)"
+      ],
+      "causal_path": "High response stereotypy (consistent multi-system pattern) → low-dimensional feature manifold (few PCs explain variance) → steep learning curve (high AUC with few samples) → low detection uncertainty with limited personalization data. Low stereotypy → high-dimensional manifold → shallow learning curve → high uncertainty unless large personalized dataset",
+      "expected_direction": "Negative correlation between stereotypy index (condition number) and sample complexity (samples needed to reach AUC=0.8); positive correlation between stereotypy and cross-session generalization AUC",
+      "domain_specific_boundary_conditions": [
+        "Multiple standardized stressor types (≥3: e.g., TSST, cold pressor, mental arithmetic)",
+        "≥5 sessions per stressor type per subject",
+        "Wearable suite: PPG, EDA, respiration belt, skin temperature",
+        "Controlled laboratory environment",
+        "Minimum 20 subjects for between-subject analysis"
+      ],
+      "measurable_outcomes": [
+        "Within-subject stress response stereotypy metric (average pairwise correlation of feature vectors across stressors)",
+        "Learning curve slope (ΔAUC / Δlog training samples) per subject",
+        "Correlation between stereotypy index and samples needed for target AUC=0.8"
+      ],
+      "mechanism_builder_notes": "Stereotypy is operationalized as the consistency of the *multivariate* response pattern across different stressors. A subject who always shows (HRV↓, EDA↑, Temp↓, Resp↑) has high stereotypy; one who shows variable patterns has low stereotypy. The mechanism predicts that stereotypy determines the *sample complexity* of personalization, not just average accuracy."
+    },
+    {
+      "hypothesis_id": "H7",
+      "mechanism_variables": [
+        "Sweat pH (patch, 4-7)",
+        "UV exposure (dosimeter, J/m²)",
+        "Mechanical stress (accelerometer RMS, g)",
+        "Electrode polarization impedance (kΩ, weekly)",
+        "LED intensity (photodiode reference, μW, weekly)",
+        "Accelerometer bias (static orientation, mg, weekly)",
+        "Drift rate (slope of baseline PPG amplitude/EDA offset per week)",
+        "Stress context exposure (minutes/day in heat >30°C or exertion >3 METs)",
+        "Missingness pattern (gap duration during stress vs. non-stress)"
+      ],
+      "causal_path": "Subject-specific exposure (sweat pH, UV, mechanical stress) → sensor degradation rate (electrode corrosion, LED decay, MEMS bias) → time-varying calibration offset → signal segments during high-stress contexts (heat/exertion) have largest drift → non-random missingness in reliable data → uncertainty envelope widens selectively during stress",
+      "expected_direction": "Lower sweat pH → faster EDA electrode drift (negative correlation); higher UV → faster PPG LED decay (negative correlation); higher mechanical stress → faster accelerometer bias (positive correlation); drift rate correlates with stress-context exposure; missing data during stress predicts higher uncertainty (Little's MCAR test rejected)",
+      "domain_specific_boundary_conditions": [
+        "Longitudinal deployment ≥8 weeks",
+        "Daily sensor self-check (reference measurements at wake/sleep)",
+        "Environmental logging (temperature, humidity, UV)",
+        "Controlled laboratory calibrations at start/end",
+        "Exclude water immersion >10 min/day"
+      ],
+      "measurable_outcomes": [
+        "Within-subject drift rate (slope of baseline impedance/amplitude vs. time, per sensor)",
+        "Correlation between drift rate and cumulative exposure metrics (sweat pH, UV, mechanical RMS)",
+        "Little's MCAR test p-value for missingness during stress vs. non-stress segments",
+        "Uncertainty envelope width (95% prediction interval) as function of time since calibration"
+      ],
+      "mechanism_builder_notes": "The non-ignorable missingness is key: drift accelerates *during* the very contexts (heat, exertion) that elicit stress, so the most stress-relevant data are the most corrupted. Test by comparing drift rates in stress vs. non-stress segments matched for duration and activity level."
+    },
+    {
+      "hypothesis_id": "H8",
+      "mechanism_variables": [
+        "Arterial stiffness (cfPWV, m/s)",
+        "Capillary density (nailfold capillaries/mm, laser Doppler flux AU)",
+        "Venous compliance (venous occlusion plethysmography, mL/mmHg/100mL)",
+        "Central sympathetic outflow (MSNA burst frequency, bursts/min)",
+        "Peripheral signals: PPG pulse amplitude variability (%), pulse arrival time (ms), skin temperature rise time (s), EDA rise time (s)",
+        "Stress detection AUC (oracle features)"
+      ],
+      "causal_path": "Vascular anatomy (cfPWV, capillary density, venous compliance) → transfer function gain/latency from central sympathetic outflow to peripheral signals → stress-induced peripheral signal change magnitude/dynamics → wearable feature separability → subject-specific detection ceiling (max achievable AUC)",
+      "expected_direction": "Higher cfPWV → larger pulse arrival time change but smaller PPG amplitude variability during stress; higher capillary density → faster skin temperature rise but slower EDA rise; anatomical measures explain between-subject variance in max AUC (R² > 0.4)",
+      "domain_specific_boundary_conditions": [
+        "Healthy adults 18-60, no vascular disease",
+        "Controlled laboratory stressor (TSST)",
+        "Simultaneous central (MSNA) and peripheral (wearable) recording",
+        "Standardized sensor placement (wrist, finger)",
+        "Temperature-controlled room (23±1°C)"
+      ],
+      "measurable_outcomes": [
+        "Transfer function parameters (gain, phase) from MSNA to each peripheral signal per subject",
+        "Correlation between anatomical measures and transfer function parameters",
+        "Subject-specific max AUC (using oracle features) predicted by anatomy (cross-validated R²)"
+      ],
+      "mechanism_builder_notes": "This requires invasive MSNA for ground-truth central outflow, limiting sample size. Alternative: use a validated pharmacological stressor (e.g., yohimbine) with known central effect. The mechanism predicts a *trade-off*: anatomy that enhances one signal (e.g., stiff arteries → better PTT) degrades another (PPG amplitude), setting a subject-specific ceiling on multimodal detection."
+    },
+    {
+      "hypothesis_id": "H9",
+      "mechanism_variables": [
+        "Appraisal style (challenge/threat ratio: self-report + CV reactivity pattern)",
+        "Rumination (RRS score)",
+        "Reappraisal habit (ERQ reappraisal subscale)",
+        "Stressor type (TSST, math, cold pressor)",
+        "Cardiac output (impedance cardiography, L/min)",
+        "Total peripheral resistance (TPR, dyn·s·cm⁻⁵)",
+        "HRV (RMSSD, ms), PTT (ms), EDA (μS)",
+        "Wearable classifier prediction probability (0-1)",
+        "Label-feature alignment (correlation between appraisal-predicted and observed physiology)"
+      ],
+      "causal_path": "Appraisal style (challenge/threat) → cardiovascular response pattern (CO↑/TPR↓ vs CO↓/TPR↑) → wearable feature vector (HRV, PTT, EDA) → population-trained classifier expects average pattern → misclassification for both challenge and threat responders → subject-specific systematic prediction bias",
+      "expected_direction": "Challenge responders: high CO, low TPR → HRV may increase or show complex pattern; threat responders: low CO, high TPR → HRV↓, PTT↓. Population classifier AUC lower for extreme appraisal styles (quadratic relationship); adding appraisal as feature improves AUC (ΔAUC > 0.05)",
+      "domain_specific_boundary_conditions": [
+        "Standardized stressors with challenge/threat manipulation (resource evaluation instructions)",
+        "Concurrent impedance cardiography for CO/TPR",
+        "Wearable PPG/EDA on same wrist",
+        "Exclude beta-blockers, cardiovascular medication",
+        "Minimum 3 stressor types per subject"
+      ],
+      "measurable_outcomes": [
+        "Within-subject consistency of appraisal-physiology mapping across stressors (ICC)",
+        "Population classifier AUC stratified by appraisal style (challenge vs threat vs mixed)",
+        "Reduction in subject-level prediction bias (mean error) when appraisal style included as feature",
+        "Variance in classifier error explained by appraisal style (R²)"
+      ],
+      "mechanism_builder_notes": "The mechanism posits that the *same* stressor produces *different* physiological signatures depending on appraisal, and current wearables lack appraisal context. Test by manipulating appraisal (challenge vs threat instructions) for the same stressor (TSST) and measuring whether the resulting physiological trajectories fall into distinct, subject-consistent clusters that confuse a population classifier."
+    },
+    {
+      "hypothesis_id": "H10",
+      "mechanism_variables": [
+        "Within-subject HRV-stress slope (per subject time-series, ms/unit stress)",
+        "Between-subject distribution of slopes (mean, SD)",
+        "Hierarchical model shrinkage factor (posterior SD / prior SD per subject)",
+        "Prediction calibration error (ECE) per subject",
+        "Dynamical systems parameters (AR coefficients, Lyapunov exponent)",
+        "Non-ergodicity index (KL divergence between within-subject and between-subject covariance structures)"
+      ],
+      "causal_path": "True subject-specific dynamical parameters → generate within-subject time series → hierarchical model assumes exchangeability → estimates population mean and variance → shrinks individual estimates toward population mean → for non-ergodic subjects (outliers in parameter space), shrinkage produces overconfident but biased predictions → inflated uncertainty miscalibration",
+      "expected_direction": "Subjects with slopes far from population mean show higher ECE under hierarchical model vs. subject-specific model (positive correlation); non-ergodicity index predicts hierarchical model failure (AUC for predicting ECE > 0.75); group-level HRV-stress slope near zero despite strong within-subject slopes",
+      "domain_specific_boundary_conditions": [
+        "Intensive longitudinal data (≥60 days, ≥10 stress events per subject)",
+        "Wearable HRV/EDA + EMA stress labels",
+        "Hierarchical Bayesian model with Gaussian prior on slopes",
+        "Comparison to subject-specific (no-pooling) models",
+        "Minimum 50 subjects for population inference"
+      ],
+      "measurable_outcomes": [
+        "Within-subject vs. between-subject slope distribution overlap (KL divergence)",
+        "Calibration error (ECE) of hierarchical vs. subject-specific models per subject",
+        "Correlation between non-ergodicity index and hierarchical model ECE",
+        "Proportion of subjects where hierarchical 95% credible interval excludes true within-subject parameter"
+      ],
+      "mechanism_builder_notes": "Non-ergodicity here means the group-level distribution of parameters does not represent the within-subject dynamics of any individual (e.g., bimodal within-subject slopes averaged to zero). The test requires dense longitudinal data to estimate within-subject dynamics reliably. The mechanism predicts that hierarchical models will be *miscalibrated* specifically for subjects in the tails of the dynamical parameter distribution, not just less accurate."
+    }
+  ]
+}

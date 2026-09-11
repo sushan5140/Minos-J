@@ -1,0 +1,38 @@
+{
+  "study_name": "Meno-J Theory Study 1: What Makes an Explanation Genuinely Good?",
+  "status": "PASS_INDEPENDENT_EXACT_REPLAY",
+  "execution_date": "2026-08-17",
+  "inputs": {
+    "protocol": "C:\\Users\\DELL\\Documents\\Codex\\2026-08-04\\we-are-starting-a-fresh-implementation\\outputs\\meno_j_theory_study_1_protocol.json",
+    "protocol_sha256": "49957d27b1a89f2e7635868680c9ad9a20c936e7e33efc65c2eb5723d8a6058a",
+    "source_ledger_embedded_in_report": true
+  },
+  "outputs": {
+    "report_json": "C:\\Users\\DELL\\Documents\\Codex\\2026-08-04\\we-are-starting-a-fresh-implementation\\outputs\\meno_j_theory_study_1_explanation_quality.json",
+    "report_json_sha256": "c8e1a018e2d57ba194f73d8cf22c90fe09b14432354d2a1099e510f6eeb7f326",
+    "report_markdown": "C:\\Users\\DELL\\Documents\\Codex\\2026-08-04\\we-are-starting-a-fresh-implementation\\outputs\\meno_j_theory_study_1_explanation_quality.md",
+    "report_markdown_sha256": "9ed1f5d275158373155b278e4a9f3165212b7539275e8354ec038d2cf01f5a8c"
+  },
+  "runner": "C:\\Users\\DELL\\Documents\\Codex\\2026-08-04\\we-are-starting-a-fresh-implementation\\run_theory_study_1_explanation_quality.py",
+  "runner_sha256": "843feb69eb84e615532bea0d06bee15cbd5f8c1964f2bd4d695fe27288892aa8",
+  "external_calls": {
+    "openrouter": false,
+    "llm": false,
+    "dataset": false
+  },
+  "encoding": "UTF-8",
+  "deterministic_rebuild_expected": true,
+  "limitations": [
+    "The type routes are an engineering contract, not a settled metaphysics of every possible explanation.",
+    "Type classification can itself be contested, especially for mixed causal-constitutive or mathematical-empirical explanations.",
+    "Intentional and normative explanation need deeper treatment before the contract is used outside scientific/technical domains.",
+    "The source set is purposive rather than a systematic review, and several books/articles were available only through official summaries or selected argument access.",
+    "A human or AI benchmark is still needed to test whether the contract improves explanatory judgment and J-jump discovery in practice."
+  ],
+  "validation": {
+    "validator": "C:\\Users\\DELL\\Documents\\Codex\\2026-08-04\\we-are-starting-a-fresh-implementation\\work\\validate_theory_study_1_explanation_quality.py",
+    "validator_sha256": "850c65daee47220f96ffad2e840d685d85b003ec730e5dd98babe56c0078ef5e",
+    "report_json_sha256": "c8e1a018e2d57ba194f73d8cf22c90fe09b14432354d2a1099e510f6eeb7f326",
+    "report_markdown_sha256": "9ed1f5d275158373155b278e4a9f3165212b7539275e8354ec038d2cf01f5a8c"
+  }
+}

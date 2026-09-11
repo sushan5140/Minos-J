@@ -1,0 +1,76 @@
+{
+  "falsification_tests": [
+    {
+      "hypothesis_id": "H1",
+      "strongest_falsification_test": "Fit a Mondrian conformal predictor with reactivity-stratified taxonomy (e.g., low/medium/high resting HRV reactivity quantiles) and compare per-stratum coverage to the original unstratified model using a held-out subject-wise test set. If coverage for high-reactivity subjects reaches the nominal level (e.g., 90%) without degrading other strata, the hypothesis that unmodeled reactivity causes miscalibration is falsified.",
+      "failure_condition": "Coverage for high-reactivity subjects remains significantly below nominal (e.g., <85% at 90% target) after adding reactivity strata and controlling for baseline HRV, medication, and circadian phase.",
+      "minimum_data_needed": "Per-subject resting HRV/EDA baselines, medication logs, recording start times, nonconformity scores per window, and subject-wise train/calibration/test splits preserving independence.",
+      "most_likely_false_positive_risk": "Residual confounding by unmeasured fitness or medication effects could make reactivity strata appear effective when the true cause is another correlated factor.",
+      "most_likely_false_negative_risk": "Insufficient calibration samples within high-reactivity strata may yield noisy coverage estimates, masking a real improvement."
+    },
+    {
+      "hypothesis_id": "H2",
+      "strongest_falsification_test": "Detrend or quality-weight the EDA channel per trial using electrode impedance or SNR proxies, then recompute nonconformity scores and coverage for early vs. late trials. If late-trial undercoverage disappears after correction, sensor drift is falsified as the primary cause.",
+      "failure_condition": "Late-trial coverage remains significantly below nominal (e.g., <85% at 90% target) after applying drift correction and controlling for ambient temperature, humidity, and movement artifacts.",
+      "minimum_data_needed": "Trial-wise EDA signal quality metrics (impedance or SNR), environmental logs (temperature/humidity), nonconformity scores per trial with order preserved, and subject-wise splits.",
+      "most_likely_false_positive_risk": "Correction may inadvertently remove genuine habituation effects (H9), attributing coverage gain to drift removal when habituation is the true driver.",
+      "most_likely_false_negative_risk": "Impedance/SNR proxies may be too noisy to capture gradual drift, leaving residual drift uncorrected and falsely suggesting drift is not the cause."
+    },
+    {
+      "hypothesis_id": "H3",
+      "strongest_falsification_test": "Implement a block-conformal or time-aware Mondrian taxonomy that groups windows by transition phase (e.g., stress onset, peak, recovery) and evaluates coverage within each block. If transitional-block coverage reaches nominal levels while stationary blocks remain calibrated, the exchangeability violation hypothesis is falsified.",
+      "failure_condition": "Coverage in transitional blocks stays significantly below nominal (e.g., <85% at 90% target) after adding transition-phase strata and controlling for respiration, posture, and substance use.",
+      "minimum_data_needed": "Window-level HRV features with temporal order, respiration rate/depth, posture labels, pre-study substance use, nonconformity residuals per window, and subject-wise splits.",
+      "most_likely_false_positive_risk": "Improved coverage could stem from increased stratum sample sizes rather than restored exchangeability, conflating small-stratum effects (H8) with non-stationarity.",
+      "most_likely_false_negative_risk": "Block definition may be too coarse, leaving residual temporal dependence within blocks and failing to detect the violation."
+    },
+    {
+      "hypothesis_id": "H4",
+      "strongest_falsification_test": "Identify potentially mislabeled trials using objective stress markers (e.g., cortisol) or self-report consistency metrics, then reassign stratum labels for those trials and recompute coverage. If coverage normalizes for previously undercovered strata after correction, mislabeling is falsified as the main driver.",
+      "failure_condition": "Stratum-specific coverage remains significantly below nominal (e.g., <85% at 90% target) after relabeling trials flagged by objective markers and controlling for personality, fatigue, and scale interpretation.",
+      "minimum_data_needed": "Per-subject self-report reliability scores, personality questionnaire data, trial-wise cortisol or other objective stress markers, nonconformity distributions per stratum, and subject-wise splits.",
+      "most_likely_false_positive_risk": "Objective markers may be sparse or noisy, leading to incorrect relabeling that artificially improves coverage without addressing the true mechanism.",
+      "most_likely_false_negative_risk": "Mislabeling may be systematic but subtle, escaping detection by available consistency checks, so coverage stays low despite correction attempts."
+    },
+    {
+      "hypothesis_id": "H5",
+      "strongest_falsification_test": "Augment the Mondrian taxonomy with age decile strata (or age-aware covariate-adjusted nonconformity) and evaluate per-age-group coverage on a held-out set. If older-age coverage reaches nominal levels without harming younger groups, the demographic underrepresentation hypothesis is falsified.",
+      "failure_condition": "Coverage for age >50 (or highest decile) remains significantly below nominal (e.g., <85% at 90% target) after adding age strata and controlling for comorbidities, medication load, and fitness.",
+      "minimum_data_needed": "Demographic and clinical metadata (age, comorbidities, medications), baseline HRV/EDA per subject, fitness proxy, nonconformity scores per stratum, and subject-wise splits preserving age distribution.",
+      "most_likely_false_positive_risk": "Age strata may capture fitness or medication effects rather than age per se, attributing coverage gain to age stratification when the true confounder is fitness.",
+      "most_likely_false_negative_risk": "Older subjects may be too few to form stable strata, yielding high-variance coverage estimates that obscure a real effect."
+    },
+    {
+      "hypothesis_id": "H6",
+      "strongest_falsification_test": "Compute nonconformity scores using multiple candidate functions (softmax margin, Mahalanobis distance, conformalized quantile regression) on standardized multimodal features with missing-modality indicators, then compare per-stratum coverage. If an alternative score yields nominal coverage across all strata while the original margin score does not, the score-misalignment hypothesis is falsified.",
+      "failure_condition": "All candidate nonconformity scores show significantly below-nominal coverage (e.g., <85% at 90% target) for the same strata after controlling for feature scaling, missing modalities, and classifier architecture.",
+      "minimum_data_needed": "Standardized multimodal features per window, modality-presence indicators, nonconformity scores for each candidate function, per-stratum coverage results, and subject-wise splits.",
+      "most_likely_false_positive_risk": "An alternative score may appear better due to overfitting to the calibration set, not because it aligns with true feature geometry.",
+      "most_likely_false_negative_risk": "The set of candidate scores may not include the truly appropriate geometry-aware function, leading to a false conclusion that score choice is not the issue."
+    },
+    {
+      "hypothesis_id": "H7",
+      "strongest_falsification_test": "Create day-specific Mondrian strata (or apply batch-effect correction such as ComBat on features) and evaluate coverage per day on a day-wise holdout. If day-level coverage reaches nominal levels and day-to-day variance in nonconformity quantiles disappears, the batch-effect hypothesis is falsified.",
+      "failure_condition": "Coverage for at least one recording day remains significantly below nominal (e.g., <85% at 90% target) after day-aware stratification or batch correction, controlling for experimenter, equipment changes, and sleep quality.",
+      "minimum_data_needed": "Day identifier, ambient temperature/humidity logs, experimenter IDs, pre-session sleep diaries or actigraphy, nonconformity scores grouped by day, and splits respecting day boundaries.",
+      "most_likely_false_positive_risk": "Day stratification may inadvertently capture habituation across days (H9), attributing coverage improvement to batch correction when habituation is the true cause.",
+      "most_likely_false_negative_risk": "Batch effects may be non-linear or interact with subject-specific factors, so simple day strata or linear correction fail to remove the shift, leaving undercoverage."
+    },
+    {
+      "hypothesis_id": "H9",
+      "strongest_falsification_test": "Add trial-index as a stratification variable (early vs. middle vs. late trials) in the Mondrian taxonomy and compare coverage per trial block. If late-trial coverage reaches nominal levels while early-trial coverage stays calibrated, habituation is falsified as the sole cause of undercoverage.",
+      "failure_condition": "Late-trial coverage remains significantly below nominal (e.g., <85% at 90% target) after trial-aware stratification and controlling for fatigue ratings, inter-trial interval, and time-of-day.",
+      "minimum_data_needed": "Trial index, inter-trial intervals, subjective fatigue ratings per trial, time-of-day per trial, trial-wise physiological feature trajectories, nonconformity scores per trial, and subject-wise splits.",
+      "most_likely_false_positive_risk": "Trial stratification may also capture sensor drift (H2) or day effects (H7), conflating habituation with those mechanisms.",
+      "most_likely_false_negative_risk": "Habituation may be non-monotonic or subject-specific, so coarse trial blocks fail to model the trajectory, leaving residual undercoverage."
+    },
+    {
+      "hypothesis_id": "H10",
+      "strongest_falsification_test": "Incorporate missingness indicators for each modality (especially respiration) as explicit features in the nonconformity score, and compare coverage for windows with vs. without missing respiration. If coverage for missing-respiration windows reaches nominal levels while complete-case coverage is unchanged, informative missingness is falsified as the primary driver.",
+      "failure_condition": "Coverage for windows with missing respiration remains significantly below nominal (e.g., <85% at 90% target) after adding missingness indicators and controlling for movement intensity, imputation method, and multi-modality dropout.",
+      "minimum_data_needed": "Per-window missingness logs per modality, accelerometer-derived movement intensity, imputation method used, nonconformity scores for complete-case, imputed, and missingness-aware models, and subject-wise splits.",
+      "most_likely_false_positive_risk": "Missingness indicators may correlate with stress level itself, so improved coverage could reflect better stress discrimination rather than correction of informative missingness.",
+      "most_likely_false_negative_risk": "If missingness is perfectly collinear with high movement (which also degrades other modalities), the indicator adds no new information and the test cannot isolate the missingness effect."
+    }
+  ]
+}

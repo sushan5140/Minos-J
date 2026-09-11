@@ -1,0 +1,1032 @@
+{
+  "experiment_name": "Meno-J Experiment 7: v4 Architecture Upgrade and Ablation",
+  "version": "v4_mechanism_confounder_testability",
+  "research_question": "Why does Mondrian conformal prediction show undercoverage for some physiological stress subjects in WESAD?",
+  "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "stage_4_hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Inter‑subject variability in autonomic reactivity causes the nonconformity scores to be systematically miscalibrated for high‑reactivity individuals.",
+      "proposed_mechanism": "Subjects with exaggerated sympathetic responses produce extreme physiological feature values that lie outside the training distribution, inflating the nonconformity measure and shrinking prediction sets.",
+      "core_assumption": "The Mondrian taxonomy groups subjects only by coarse stress labels, not by individual autonomic gain.",
+      "knowledge_gap_addressed": "Lack of subject‑level calibration of conformal nonconformity scores in multimodal physiological stress detection.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Sensor‑specific drift in the wrist‑worn EDA channel during prolonged recordings leads to biased nonconformity estimates for later trials.",
+      "proposed_mechanism": "Gradual electrode impedance increase reduces EDA amplitude, shifting the feature distribution relative to the calibration set and causing undercoverage for sessions recorded late in the protocol.",
+      "core_assumption": "Mondrian bins are defined by experimental condition, not by sensor health state.",
+      "knowledge_gap_addressed": "Impact of within‑session sensor degradation on conformal prediction coverage guarantees.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Non‑stationary heart‑rate variability (HRV) dynamics across the stress‑recovery cycle violate the exchangeability assumption within Mondrian strata.",
+      "proposed_mechanism": "Rapid autonomic transitions create temporal dependence in residuals; the conformal algorithm treats each window as independent, underestimating prediction interval width for transitional periods.",
+      "core_assumption": "Stratification by static condition labels captures all relevant distributional shifts.",
+      "knowledge_gap_addressed": "Temporal dependence effects on conformal coverage in physiological time‑series.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Mislabeling of self‑reported stress levels for a subset of participants introduces systematic label noise into the Mondrian categories.",
+      "proposed_mechanism": "Subjects who under‑report stress are placed in a low‑stress stratum while their physiological signals resemble high stress, causing the nonconformity distribution to be too narrow for that stratum.",
+      "core_assumption": "Self‑report labels are accurate ground truth for stratification.",
+      "knowledge_gap_addressed": "Effect of label noise on conformal prediction calibration in affective computing datasets.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Insufficient representation of certain demographic sub‑groups (e.g., age > 50) in the calibration set leads to stratum‑specific undercoverage.",
+      "proposed_mechanism": "Mondrian taxonomy does not include age as a stratification variable; older subjects exhibit different baseline HRV and EDA ranges, making the shared nonconformity quantile too optimistic for them.",
+      "core_assumption": "Stratification by experimental condition alone yields homogeneous nonconformity distributions.",
+      "knowledge_gap_addressed": "Demographic heterogeneity and its interaction with conformal stratification.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "The choice of nonconformity score (e.g., softmax margin) is poorly aligned with the multimodal feature geometry for stress classification.",
+      "proposed_mechanism": "Margin‑based scores ignore correlation structure between ECG, EDA, and respiration features, producing overly confident scores for out‑of‑distribution multimodal patterns.",
+      "core_assumption": "Standard classification margins are valid nonconformity measures for heterogeneous physiological data.",
+      "knowledge_gap_addressed": "Design of problem‑specific nonconformity functions for multimodal stress detection.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Batch effects from different recording days cause distribution shift that is not captured by the Mondrian condition labels.",
+      "proposed_mechanism": "Day‑specific ambient temperature and humidity alter skin conductance baseline, shifting the EDA feature distribution; the conformal predictor treats all days as exchangeable within a condition.",
+      "core_assumption": "Environmental conditions are constant or irrelevant across recording sessions.",
+      "knowledge_gap_addressed": "Influence of day‑level batch effects on conformal coverage in wearable studies.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Finite‑sample estimation error of the conditional quantile in small strata leads to systematic undercoverage for rare stress levels.",
+      "proposed_mechanism": "Mondrian splits the calibration data into many condition‑subject strata; strata with few samples yield noisy quantile estimates that are biased low.",
+      "core_assumption": "Asymptotic coverage guarantees hold for the available calibration sample sizes per stratum.",
+      "knowledge_gap_addressed": "Small‑stratum quantile estimation bias in Mondrian conformal prediction.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Physiological habituation across repeated stress trials reduces signal discriminability, but the Mondrian taxonomy treats each trial as identically distributed.",
+      "proposed_mechanism": "Repeated exposure attenuates EDA peaks and HRV reactivity, moving later‑trial feature vectors toward the non‑stress distribution while the nonconformity calibration remains based on early‑trial statistics.",
+      "core_assumption": "Trial order does not affect the conditional distribution of features given the stress label.",
+      "knowledge_gap_addressed": "Habituation effects on exchangeability assumptions in repeated‑measure conformal prediction.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Correlated missingness in the respiration belt (e.g., motion artifacts) creates informative missingness that the conformal predictor ignores.",
+      "proposed_mechanism": "When respiration data are missing during high‑movement stress periods, the imputed or omitted features shift the joint distribution; the nonconformity score computed on available modalities underestimates uncertainty.",
+      "core_assumption": "Missingness is completely at random and does not affect the nonconformity distribution.",
+      "knowledge_gap_addressed": "Impact of informative sensor dropout on conformal prediction coverage in multimodal wearable data.",
+      "status": "SPECULATIVE"
+    }
+  ],
+  "stage_4_1_mechanism_builder": [
+    {
+      "hypothesis_id": "H1",
+      "mechanism_variables": [
+        "sympathetic_reactivity_index (EDA peak amplitude per stressor, µS)",
+        "nonconformity_score (softmax margin or distance)",
+        "prediction_set_size (number of labels in set)",
+        "coverage_indicator (binary: true label in prediction set)"
+      ],
+      "causal_path": "High autonomic reactivity -> extreme physiological feature values (ECG, EDA, respiration) outside training distribution -> inflated nonconformity scores -> shrunken prediction sets -> undercoverage for high-reactivity subjects",
+      "expected_direction": "Positive correlation between sympathetic_reactivity_index and undercoverage (higher reactivity leads to lower coverage rate)",
+      "domain_specific_boundary_conditions": [
+        "Subjects in top quartile of EDA peak amplitude during stress trials",
+        "Mondrian taxonomy stratified only by stress condition labels (baseline, stress, recovery)",
+        "Calibration set does not include subject-level autonomic gain as a stratification variable"
+      ],
+      "measurable_outcomes": [
+        "Per-subject coverage rate (proportion of windows with true label in prediction set)",
+        "Correlation coefficient between sympathetic_reactivity_index and coverage rate",
+        "Distribution of prediction_set_size across reactivity quantiles"
+      ],
+      "mechanism_builder_notes": "Mechanism hinges on the mismatch between coarse Mondrian strata and continuous autonomic reactivity. Test by adding reactivity as a covariate in stratification and measuring coverage improvement."
+    },
+    {
+      "hypothesis_id": "H2",
+      "mechanism_variables": [
+        "electrode_impedance (ohms, measured at start and end of session)",
+        "EDA_amplitude (µS, mean phasic peak amplitude per trial)",
+        "session_time_elapsed (minutes from start)",
+        "nonconformity_score",
+        "coverage_indicator"
+      ],
+      "causal_path": "Prolonged recording -> gradual electrode impedance increase -> reduced EDA amplitude -> feature distribution shift relative to calibration set -> biased nonconformity estimates (too low) -> undercoverage for later trials",
+      "expected_direction": "Negative correlation between session_time_elapsed and coverage rate; positive correlation between impedance change and undercoverage magnitude",
+      "domain_specific_boundary_conditions": [
+        "Wrist-worn EDA sensor (Empatica E4 or equivalent) used for >60 minutes",
+        "Mondrian bins defined by experimental condition only, not sensor health state",
+        "Ambient temperature relatively stable (to isolate sensor drift)"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per trial order (early vs. late trials)",
+        "Linear trend of EDA_amplitude across session_time_elapsed",
+        "Impedance change (end - start) vs. coverage drop in last trial block"
+      ],
+      "mechanism_builder_notes": "Requires impedance logs or proxy (e.g., signal quality index). Test by recalibrating nonconformity scores using only early-session data and evaluating late-session coverage."
+    },
+    {
+      "hypothesis_id": "H3",
+      "mechanism_variables": [
+        "HRV_features (RMSSD, LF/HF ratio per 30s window)",
+        "autonomic_transition_rate (absolute change in RMSSD per minute)",
+        "residual_autocorrelation (lag-1 autocorrelation of nonconformity residuals)",
+        "nonconformity_score",
+        "coverage_indicator"
+      ],
+      "causal_path": "Rapid autonomic transitions (stress onset/recovery) -> temporal dependence in residuals (violating exchangeability) -> conformal algorithm treats windows as independent -> underestimated prediction interval width -> undercoverage during transitional periods",
+      "expected_direction": "Higher autonomic_transition_rate predicts lower coverage; positive residual_autocorrelation associated with undercoverage",
+      "domain_specific_boundary_conditions": [
+        "Stress-recovery transitions in WESAD protocol (e.g., TSST to recovery)",
+        "Mondrian strata defined by static condition labels (stress vs. recovery)",
+        "Window length 30s with 50% overlap"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate in transitional windows (first 2 min after condition change) vs. stable windows",
+        "Lag-1 autocorrelation of nonconformity scores within subjects",
+        "Calibration of prediction interval width vs. empirical error quantiles per transition phase"
+      ],
+      "mechanism_builder_notes": "Test by adding temporal block bootstrap or using time-aware conformal methods (e.g., conformal prediction with dependent data) and comparing coverage."
+    },
+    {
+      "hypothesis_id": "H4",
+      "mechanism_variables": [
+        "self_reported_stress_label (0=low, 1=high from questionnaire)",
+        "physiological_stress_index (classifier probability of high stress from multimodal features)",
+        "label_noise_indicator (binary: self_report != physiological_index thresholded)",
+        "nonconformity_score",
+        "coverage_indicator"
+      ],
+      "causal_path": "Subjects under-report stress -> placed in low-stress stratum despite high physiological arousal -> nonconformity distribution in low-stress stratum becomes too narrow (misses high-arousal patterns) -> undercoverage for mislabeled subjects in low-stress stratum",
+      "expected_direction": "Higher label_noise_indicator rate in low-stress stratum predicts lower coverage for that stratum; coverage gap between noisy and clean labels",
+      "domain_specific_boundary_conditions": [
+        "Self-report collected via post-hoc questionnaire (not continuous)",
+        "Mondrian taxonomy uses self-report as ground truth for stratification",
+        "Physiological stress index derived from independent classifier (e.g., SVM on ECG+EDA)"
+      ],
+      "measurable_outcomes": [
+        "Stratum-specific coverage (low-stress vs. high-stress)",
+        "Proportion of label_noise_indicator=1 in low-stress stratum",
+        "Nonconformity score distribution width (e.g., IQR) per stratum"
+      ],
+      "mechanism_builder_notes": "Can be tested by relabeling using physiological index and re-running Mondrian; coverage should improve if mislabeling is the cause."
+    },
+    {
+      "hypothesis_id": "H5",
+      "mechanism_variables": [
+        "age (years)",
+        "baseline_HRV (RMSSD during baseline, ms)",
+        "baseline_EDA (tonic level, µS)",
+        "stratum (condition label)",
+        "nonconformity_score",
+        "coverage_indicator"
+      ],
+      "causal_path": "Older age (>50) -> different baseline HRV/EDA ranges -> shared nonconformity quantile across ages is too optimistic for older subjects -> prediction sets too small -> undercoverage for older demographic",
+      "expected_direction": "Negative correlation between age and coverage rate; coverage for age>50 significantly below nominal level",
+      "domain_specific_boundary_conditions": [
+        "WESAD cohort includes subjects aged 20-60 but calibration set skewed <40",
+        "Mondrian taxonomy does not include age as stratification variable",
+        "Baseline HRV/EDA differ significantly by age group (p<0.05)"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per age bin (e.g., 20-30, 30-40, 40-50, 50+)",
+        "Baseline HRV and EDA means per age bin",
+        "Conditional quantile estimate vs. empirical quantile per age bin"
+      ],
+      "mechanism_builder_notes": "Test by adding age as a Mondrian stratification variable or using weighted conformal prediction to adjust for demographic imbalance."
+    },
+    {
+      "hypothesis_id": "H6",
+      "mechanism_variables": [
+        "softmax_margin (difference between top two class probabilities)",
+        "multimodal_correlation (canonical correlation between ECG, EDA, respiration feature sets)",
+        "out_of_distribution_score (Mahalanobis distance in joint feature space)",
+        "nonconformity_score",
+        "coverage_indicator"
+      ],
+      "causal_path": "Margin-based nonconformity ignores cross-modal correlations -> overly confident scores for out-of-distribution multimodal patterns (e.g., high EDA but low HRV reactivity) -> nonconformity scores too low for such patterns -> prediction sets exclude true label -> undercoverage",
+      "expected_direction": "Higher out_of_distribution_score predicts lower coverage; negative interaction between softmax_margin and multimodal_correlation on coverage",
+      "domain_specific_boundary_conditions": [
+        "Multimodal features: ECG (HRV), EDA (phasic/tonic), respiration (rate, variability)",
+        "Nonconformity score = 1 - softmax_margin (standard classification margin)",
+        "Mondrian strata do not account for feature geometry"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate as function of out_of_distribution_score quantiles",
+        "Calibration curve: nonconformity score vs. empirical error rate",
+        "Coverage improvement when using Mahalanobis-based nonconformity vs. margin-based"
+      ],
+      "mechanism_builder_notes": "Design problem-specific nonconformity (e.g., distance to class centroid in multimodal space) and compare coverage on held-out subjects."
+    },
+    {
+      "hypothesis_id": "H7",
+      "mechanism_variables": [
+        "ambient_temperature (°C)",
+        "humidity (% relative)",
+        "skin_conductance_baseline (tonic EDA, µS)",
+        "day_identifier (categorical)",
+        "nonconformity_score",
+        "coverage_indicator"
+      ],
+      "causal_path": "Day-specific ambient temperature/humidity -> altered skin conductance baseline -> EDA feature distribution shift -> conformal predictor treats all days as exchangeable within condition -> nonconformity quantiles miscalibrated for days with extreme conditions -> undercoverage on those days",
+      "expected_direction": "Days with larger deviation of ambient_temperature/humidity from calibration day mean show lower coverage; negative correlation between baseline shift magnitude and coverage",
+      "domain_specific_boundary_conditions": [
+        "WESAD recordings span multiple days with varying lab conditions",
+        "Mondrian condition labels do not include day or environment",
+        "EDA baseline measured during neutral baseline period each day"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per recording day",
+        "Correlation between daily ambient_temperature/humidity and coverage",
+        "EDA baseline shift (day baseline - grand mean baseline) vs. coverage drop"
+      ],
+      "mechanism_builder_notes": "Test by adding day as a stratification variable or by normalizing EDA per day using baseline; measure coverage recovery."
+    },
+    {
+      "hypothesis_id": "H8",
+      "mechanism_variables": [
+        "stratum_sample_size (number of calibration points per condition-subject stratum)",
+        "conditional_quantile_estimate (empirical quantile of nonconformity scores in stratum)",
+        "oracle_quantile (true conditional quantile estimated via large holdout or cross-validation)",
+        "nonconformity_score",
+        "coverage_indicator"
+      ],
+      "causal_path": "Mondrian splits calibration data into many condition-subject strata -> strata with few samples (e.g., rare stress levels) yield noisy quantile estimates biased low -> prediction sets too small -> systematic undercoverage for rare stress levels",
+      "expected_direction": "Negative correlation between stratum_sample_size and coverage rate; quantile estimation bias (estimate - oracle) negative for small strata",
+      "domain_specific_boundary_conditions": [
+        "WESAD has 15 subjects, 3 conditions -> up to 45 strata; some strata have <20 calibration windows",
+        "Nominal coverage 90% (alpha=0.1)",
+        "Asymptotic guarantees assumed but finite-sample bias present"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate vs. stratum_sample_size (binned)",
+        "Mean quantile estimation bias per stratum size bin",
+        "Coverage after applying finite-sample correction (e.g., +1 adjustment) vs. standard Mondrian"
+      ],
+      "mechanism_builder_notes": "Use bootstrap to estimate quantile bias; test corrected quantile (e.g., using order statistic with adjusted index) on held-out data."
+    },
+    {
+      "hypothesis_id": "H9",
+      "mechanism_variables": [
+        "trial_number (1,2,3 for repeated stress tasks)",
+        "EDA_peak_amplitude (max phasic peak per trial, µS)",
+        "HRV_reactivity (RMSSD_baseline - RMSSD_stress, ms)",
+        "nonconformity_score",
+        "coverage_indicator"
+      ],
+      "causal_path": "Repeated stress exposure -> habituation attenuates EDA peaks and HRV reactivity -> later-trial feature vectors shift toward non-stress distribution -> nonconformity calibration based on early-trial statistics (larger reactivity) -> nonconformity scores too low for later trials -> undercoverage",
+      "expected_direction": "Negative correlation between trial_number and coverage rate; EDA_peak_amplitude and HRV_reactivity decrease with trial_number",
+      "domain_specific_boundary_conditions": [
+        "WESAD includes three stress trials (TSST, mental arithmetic, cold pressor) per subject",
+        "Mondrian taxonomy treats each trial as identically distributed given stress label",
+        "Habituation defined as significant linear trend (p<0.05) in reactivity across trials"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per trial_number",
+        "Linear trend of EDA_peak_amplitude and HRV_reactivity across trials",
+        "Nonconformity score distribution shift (e.g., KS test) between trial 1 and trial 3"
+      ],
+      "mechanism_builder_notes": "Test by stratifying Mondrian by trial number or using adaptive conformal prediction that updates calibration set with recent trials."
+    },
+    {
+      "hypothesis_id": "H10",
+      "mechanism_variables": [
+        "respiration_missingness_indicator (1 if respiration belt data missing in window)",
+        "movement_intensity (accelerometer vector magnitude, g)",
+        "stress_level (condition label: baseline/stress/recovery)",
+        "imputed_respiration_features (mean imputation or last value carried forward)",
+        "nonconformity_score",
+        "coverage_indicator"
+      ],
+      "causal_path": "High movement during stress -> respiration belt artifacts -> missing respiration data -> imputed/omitted features shift joint distribution away from calibration distribution -> nonconformity score computed on available modalities underestimates uncertainty -> undercoverage during high-movement stress periods",
+      "expected_direction": "Higher movement_intensity predicts higher respiration_missingness; windows with missing respiration have lower coverage, especially during stress condition",
+      "domain_specific_boundary_conditions": [
+        "Respiration belt (Respiban) prone to motion artifacts during physical stress",
+        "Missingness not at random: correlated with movement_intensity and stress_level",
+        "Conformal predictor uses mean imputation and ignores missingness mechanism"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate stratified by respiration_missingness_indicator and stress_level",
+        "Missingness rate per stress_level and movement_intensity quartile",
+        "Nonconformity score distribution for missing vs. non-missing windows"
+      ],
+      "mechanism_builder_notes": "Test by incorporating missingness as a feature (e.g., missingness indicator) or using multiple imputation with conformal prediction; compare coverage."
+    }
+  ],
+  "stage_4_2_confounder_rival_builder": [
+    {
+      "hypothesis_id": "H1",
+      "possible_confounders": [
+        "Baseline autonomic tone (resting HRV, tonic EDA) correlated with both reactivity and nonconformity distribution",
+        "Subject-specific medication use (e.g., beta-blockers) affecting physiological responses",
+        "Time-of-day effects on cortisol and autonomic state"
+      ],
+      "control_variables": [
+        "Resting HRV and tonic EDA measured during baseline",
+        "Medication status (binary or categorical)",
+        "Recording start time (hour of day)"
+      ],
+      "boring_rival_explanations": [
+        "High-reactivity subjects simply have noisier signals, increasing variance of nonconformity scores without systematic shift",
+        "The classifier itself is poorly calibrated for high-arousal patterns, independent of conformal calibration"
+      ],
+      "rival_prediction": "If the rival (classifier miscalibration) holds, adding subject-level reactivity as a Mondrian stratum will not improve coverage; instead, recalibrating the base classifier (e.g., temperature scaling) on a per-subject basis will restore coverage.",
+      "distinguishing_condition": "Compare coverage after (a) adding sympathetic_reactivity_index as a stratification variable vs. (b) applying per-subject temperature scaling to classifier logits before conformal prediction. If (a) fixes coverage but (b) does not, the proposed mechanism wins; if (b) fixes coverage but (a) does not, the rival wins.",
+      "confounder_rival_notes": "Must ensure reactivity index is computed from independent data (e.g., first stress trial) to avoid circularity. Control for baseline autonomic tone in both analyses."
+    },
+    {
+      "hypothesis_id": "H2",
+      "possible_confounders": [
+        "Ambient temperature drift across session affecting both electrode impedance and skin conductance",
+        "Subject movement increasing over time causing both impedance changes and motion artifacts",
+        "Skin hydration changes over prolonged wear"
+      ],
+      "control_variables": [
+        "Ambient temperature logged per minute",
+        "Accelerometer-derived movement intensity per window",
+        "Room humidity"
+      ],
+      "boring_rival_explanations": [
+        "Late-session undercoverage is due to subject fatigue reducing physiological discriminability, not sensor drift",
+        "Calibration set underrepresents late-session feature distributions because of temporal ordering in data split"
+      ],
+      "rival_prediction": "If fatigue is the cause, EDA amplitude will not correlate with impedance change; instead, HRV reactivity will decline with session time while impedance remains stable.",
+      "distinguishing_condition": "Regress coverage rate on both electrode_impedance_change and HRV_reactivity_decline (slope across session). If impedance_change remains significant after controlling for HRV_reactivity_decline, sensor drift mechanism wins; if HRV_reactivity_decline dominates, fatigue rival wins.",
+      "confounder_rival_notes": "Need impedance logs at multiple time points. If unavailable, use signal quality index (SQI) as proxy. Ensure movement is controlled to isolate sensor-specific drift."
+    },
+    {
+      "hypothesis_id": "H3",
+      "possible_confounders": [
+        "Non-stationary noise (e.g., motion artifacts increasing during transitions)",
+        "Breathing pattern changes during stress-recovery transitions affecting HRV independently of autonomic state",
+        "Delayed physiological recovery causing carryover effects"
+      ],
+      "control_variables": [
+        "Motion artifact index per window",
+        "Respiration rate and variability per window",
+        "Time since last condition change (minutes)"
+      ],
+      "boring_rival_explanations": [
+        "The classifier performs worse during transitions because feature distributions overlap more, not because of temporal dependence in residuals",
+        "Mondrian strata are too coarse: stress-onset and stress-offset are physiologically distinct but share a label"
+      ],
+      "rival_prediction": "If the rival (transition-specific distribution shift) holds, coverage will be low only in the first 2 minutes after a condition change, but residual autocorrelation will be negligible once condition is accounted for.",
+      "distinguishing_condition": "Fit a time-aware conformal method (e.g., block bootstrap) and a condition-split Mondrian (separate strata for stress-onset, stress-steady, recovery-onset, recovery-steady). If condition-split restores coverage without needing temporal dependence correction, the rival wins; if block bootstrap is required, the proposed mechanism wins.",
+      "confounder_rival_notes": "Define transition windows objectively (e.g., first 120s after label change). Control for motion artifacts which may co-occur with transitions."
+    },
+    {
+      "hypothesis_id": "H4",
+      "possible_confounders": [
+        "Individual differences in interoceptive awareness affecting self-report accuracy",
+        "Social desirability bias varying by subject",
+        "Questionnaire timing (immediate vs. delayed) affecting recall"
+      ],
+      "control_variables": [
+        "Interoceptive awareness score (e.g., heartbeat counting task)",
+        "Social desirability scale score",
+        "Time between stressor and questionnaire administration"
+      ],
+      "boring_rival_explanations": [
+        "The physiological stress index used to detect mislabeling is itself biased for certain subjects (e.g., high baseline HRV)",
+        "Mondrian strata are imbalanced: low-stress stratum has fewer calibration points, causing finite-sample undercoverage unrelated to label noise"
+      ],
+      "rival_prediction": "If the rival (physiological index bias) holds, relabeling using the index will not improve coverage because the index misclassifies the same subjects systematically.",
+      "distinguishing_condition": "Compute coverage after relabeling with (a) the physiological stress index and (b) a consensus label from two independent annotators reviewing video/physiology. If (a) improves coverage but (b) does not, the index is capturing true state (proposed mechanism). If neither improves coverage, the rival (index bias) or finite-sample issue wins.",
+      "confounder_rival_notes": "Must have ground-truth consensus labels for a subset. Control for interoceptive awareness when estimating label noise rate."
+    },
+    {
+      "hypothesis_id": "H5",
+      "possible_confounders": [
+        "Comorbid health conditions (e.g., hypertension) more prevalent in older age affecting HRV/EDA",
+        "Fitness level (VO2 max) correlated with age and autonomic function",
+        "Medication use increasing with age"
+      ],
+      "control_variables": [
+        "Health status questionnaire (binary conditions)",
+        "Estimated fitness level (self-reported activity or submaximal test)",
+        "Medication list (especially cardiovascular)"
+      ],
+      "boring_rival_explanations": [
+        "Older subjects have fewer calibration windows because of shorter recordings or more artifacts, causing finite-sample undercoverage (H8)",
+        "The classifier was trained on younger subjects and generalizes poorly to older physiology"
+      ],
+      "rival_prediction": "If the rival (classifier generalization) holds, adding age as a Mondrian stratum will not fix coverage; instead, retraining the classifier with age-balanced data will.",
+      "distinguishing_condition": "Compare coverage after (a) adding age bins to Mondrian taxonomy vs. (b) retraining the base classifier with stratified sampling by age. If (a) restores coverage to nominal, the proposed mechanism (stratum heterogeneity) wins; if only (b) works, the rival wins.",
+      "confounder_rival_notes": "Ensure age bins have sufficient sample size. Control for medication and fitness in both analyses."
+    },
+    {
+      "hypothesis_id": "H6",
+      "possible_confounders": [
+        "Feature scaling differences across modalities (ECG vs EDA vs respiration) distorting margin geometry",
+        "Class imbalance in calibration set affecting softmax calibration",
+        "Correlated noise across modalities (e.g., motion affecting both EDA and respiration)"
+      ],
+      "control_variables": [
+        "Per-modality feature standardization (z-score within subject)",
+        "Class prior proportions in calibration set",
+        "Motion artifact index per window"
+      ],
+      "boring_rival_explanations": [
+        "The margin-based nonconformity is fine; undercoverage stems from finite-sample quantile estimation in small strata (H8)",
+        "Multimodal correlation structure is stationary; the issue is that the classifier's softmax is miscalibrated for out-of-distribution patterns"
+      ],
+      "rival_prediction": "If the rival (classifier miscalibration) holds, using a Mahalanobis nonconformity on the same classifier logits will not improve coverage; instead, calibrating the classifier (e.g., Dirichlet calibration) before conformal prediction will.",
+      "distinguishing_condition": "Evaluate three nonconformity scores on held-out data: (1) softmax margin, (2) Mahalanobis distance in joint feature space, (3) softmax margin after Dirichlet calibration. If (2) outperforms (1) and (3) matches (2), the proposed mechanism (geometry mismatch) wins. If (3) outperforms (1) and matches (2), the rival (miscalibration) wins.",
+      "confounder_rival_notes": "Use the same calibration set for all three. Ensure Mahalanobis covariance is estimated robustly (shrinkage)."
+    },
+    {
+      "hypothesis_id": "H7",
+      "possible_confounders": [
+        "Day-specific subject compliance (e.g., caffeine, sleep) affecting physiology",
+        "Experimenter effects (different operators on different days)",
+        "Device firmware updates or battery level changes across days"
+      ],
+      "control_variables": [
+        "Subject compliance log (caffeine, sleep, alcohol)",
+        "Experimenter ID per session",
+        "Device battery voltage and firmware version"
+      ],
+      "boring_rival_explanations": [
+        "Day-level coverage differences are due to varying stratum sample sizes per day (some days have fewer calibration windows)",
+        "The EDA baseline shift is an artifact of different baseline durations across days"
+      ],
+      "rival_prediction": "If the rival (sample size) holds, coverage will correlate with day-specific calibration set size, not with ambient temperature/humidity.",
+      "distinguishing_condition": "Regress per-day coverage on (a) ambient temperature deviation from grand mean, (b) calibration sample size that day, (c) EDA baseline shift. If (a) and (c) remain significant after controlling for (b), the proposed mechanism wins; if only (b) matters, the rival wins.",
+      "confounder_rival_notes": "Collect ambient logs per day. Ensure baseline duration is fixed across days."
+    },
+    {
+      "hypothesis_id": "H8",
+      "possible_confounders": [
+        "Stratum heterogeneity: small strata may also be the most physiologically variable, conflating sample size with distribution width",
+        "Nonconformity score distribution skew in small strata affecting quantile bias direction",
+        "Calibration set selection bias (e.g., temporal split puts early trials in calibration, late in test)"
+      ],
+      "control_variables": [
+        "Stratum nonconformity score IQR (measure of heterogeneity)",
+        "Stratum skewness of nonconformity scores",
+        "Temporal split indicator (early vs late trials in calibration)"
+      ],
+      "boring_rival_explanations": [
+        "Undercoverage in rare stress levels is due to genuine distribution shift (H3, H9) not finite-sample bias",
+        "The nominal coverage level (90%) is too high for the available data; the method is working as designed but the guarantee is asymptotic"
+      ],
+      "rival_prediction": "If the rival (distribution shift) holds, increasing calibration sample size for rare strata (by pooling across subjects) will not fix coverage because the shift is systematic.",
+      "distinguishing_condition": "Apply finite-sample correction (e.g., using the (n+1)(1-alpha)th order statistic with n = stratum size) and compare to pooling calibration data across subjects for rare strata. If correction restores coverage, finite-sample bias wins; if pooling across subjects restores coverage but correction does not, distribution shift rival wins.",
+      "confounder_rival_notes": "Use bootstrap to estimate quantile bias per stratum. Control for stratum heterogeneity (IQR) when assessing bias."
+    },
+    {
+      "hypothesis_id": "H9",
+      "possible_confounders": [
+        "Order effects: stressor type (TSST, math, cold pressor) is confounded with trial number",
+        "Time-of-day effects: later trials occur at different circadian phases",
+        "Subject expectation/anticipation changing across trials"
+      ],
+      "control_variables": [
+        "Stressor type per trial (categorical)",
+        "Clock time of trial start",
+        "Self-reported anticipation rating before each trial"
+      ],
+      "boring_rival_explanations": [
+        "Later trials have more motion artifacts because subjects move more as they get comfortable, causing missing data (H10)",
+        "The classifier overfits to early-trial patterns and generalizes poorly to later trials"
+      ],
+      "rival_prediction": "If the rival (classifier overfitting) holds, retraining the classifier on trials 2-3 and testing on trial 1 will show symmetric degradation, not just late-trial undercoverage.",
+      "distinguishing_condition": "Train three classifiers: (a) on trial 1 only, test on trial 3; (b) on trial 3 only, test on trial 1; (c) on all trials with trial-number as feature. If (a) shows undercoverage on trial 3 but (b) does not on trial 1, habituation mechanism wins. If both (a) and (b) show undercoverage, overfitting rival wins. If (c) fixes coverage, trial-number stratification wins.",
+      "confounder_rival_notes": "Counterbalance stressor order across subjects in WESAD? Check protocol. Control for stressor type."
+    },
+    {
+      "hypothesis_id": "H10",
+      "possible_confounders": [
+        "Movement intensity directly corrupts ECG and EDA as well, not just respiration",
+        "Missing respiration windows are shorter (less data) leading to noisier feature estimates",
+        "Imputation method (mean vs last-value) introduces systematic bias"
+      ],
+      "control_variables": [
+        "Movement intensity per window (accelerometer magnitude)",
+        "Window duration / number of valid samples per modality",
+        "Imputation method indicator"
+      ],
+      "boring_rival_explanations": [
+        "High-movement stress periods are inherently harder to classify (lower signal quality across all modalities), not specifically due to respiration missingness",
+        "The conformal predictor's nonconformity score is computed only on available modalities, but the calibration set includes full-modality windows, causing a mismatch"
+      ],
+      "rival_prediction": "If the rival (general signal quality) holds, coverage will be low for high-movement windows even when respiration is present, and adding a missingness indicator will not help.",
+      "distinguishing_condition": "Stratify coverage by (movement_intensity quartile) x (respiration_missingness). If coverage drops only when both high movement AND missing respiration co-occur, the proposed mechanism (informative missingness) wins. If coverage drops with high movement regardless of respiration missingness, the rival wins.",
+      "confounder_rival_notes": "Test multiple imputation strategies (mean, last-value, model-based) and missingness-indicator augmentation. Control for window-level SNR of ECG/EDA."
+    }
+  ],
+  "stage_4_3_statistical_testability_builder": [
+    {
+      "hypothesis_id": "H1",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the variance of sympathetic reactivity across subjects and its correlation with nonconformity score inflation. Need per-subject sympathetic_reactivity_index (EDA peak amplitude per stressor) and coverage rates from a pilot Mondrian run to estimate the slope of coverage vs. reactivity.",
+      "minimum_data_needed": [
+        "Per-subject sympathetic_reactivity_index (EDA peak amplitude during first stress trial, µS)",
+        "Nonconformity scores and coverage indicators for all windows from standard Mondrian (condition-stratified only)",
+        "Baseline autonomic tone measures (resting HRV, tonic EDA) per subject",
+        "Medication status and recording start time per subject"
+      ],
+      "testable_prediction": "Subjects in the top quartile of sympathetic_reactivity_index will have coverage rates at least 10 percentage points below the nominal level (e.g., <80% for 90% nominal), and coverage rate will negatively correlate with sympathetic_reactivity_index (Spearman rho < -0.3).",
+      "failure_condition": "If adding sympathetic_reactivity_index as a stratification variable in Mondrian does not significantly improve coverage for high-reactivity subjects (paired McNemar test p>0.05), or if per-subject temperature scaling of classifier logits restores coverage without reactivity stratification, the hypothesis fails.",
+      "statistical_test_plan": "1. Compute sympathetic_reactivity_index per subject from first stress trial. 2. Run standard Mondrian conformal prediction (stratified by condition only) and record per-window coverage indicators. 3. Fit a mixed-effects logistic regression of coverage_indicator on sympathetic_reactivity_index (continuous) with random intercept per subject. 4. Test one-sided Wald test for negative slope (alpha=0.05). 5. Implement reactivity-stratified Mondrian (add reactivity quartile as stratum) and compare per-window coverage via McNemar's test. 6. Compare with per-subject temperature scaling baseline (recalibrate classifier logits per subject before conformal prediction).",
+      "statistical_testability_notes": "Reactivity index must be computed from independent data (e.g., first trial) to avoid circularity. Control for baseline autonomic tone, medication, and time-of-day in the mixed model. Use cluster-robust standard errors for within-subject correlation."
+    },
+    {
+      "hypothesis_id": "H2",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the rate of electrode impedance increase and its impact on EDA amplitude. Need impedance logs (or signal quality index proxy) at multiple time points, EDA amplitude per trial, and coverage per trial order to estimate the mediation effect of impedance on coverage decline.",
+      "minimum_data_needed": [
+        "Electrode impedance (ohms) at start and end of session, or per-trial signal quality index (SQI) for EDA",
+        "EDA phasic peak amplitude per trial (µS)",
+        "Session time elapsed per trial (minutes)",
+        "Nonconformity scores and coverage indicators per window",
+        "HRV reactivity (RMSSD change) per trial to control for fatigue"
+      ],
+      "testable_prediction": "Coverage rate will decline linearly with session_time_elapsed (slope < -0.5% per minute), and electrode_impedance_change (end-start) will correlate with coverage drop in the last trial block (Pearson r > 0.4).",
+      "failure_condition": "If controlling for HRV_reactivity_decline eliminates the session_time_elapsed effect on coverage (impedance_change no longer significant in multiple regression), or if EDA_amplitude does not decline with impedance_change (p>0.05), the sensor drift mechanism fails.",
+      "statistical_test_plan": "1. Obtain electrode_impedance at start and end (or SQI per trial). 2. Compute EDA_amplitude per trial. 3. Fit linear mixed model: coverage_indicator ~ session_time_elapsed + (1|subject). 4. Test fixed effect of session_time_elapsed (one-sided, alpha=0.05). 5. Add impedance_change as predictor; test mediation via causal mediation analysis (impedance_change as mediator). 6. Compare coverage using early-session calibration only (first 50% windows) vs. full calibration on late-session windows.",
+      "statistical_testability_notes": "If impedance logs unavailable, use EDA signal quality index as proxy. Ensure ambient temperature is stable (control variable) to isolate sensor drift. Control for movement intensity per window."
+    },
+    {
+      "hypothesis_id": "H3",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the magnitude of residual autocorrelation during autonomic transitions and the proportion of transitional windows. Need HRV features per window, transition phase labels, and nonconformity residuals to estimate the autocorrelation and coverage gap.",
+      "minimum_data_needed": [
+        "HRV features (RMSSD, LF/HF) per 30s window",
+        "Autonomic transition rate (absolute RMSSD change per minute) per window",
+        "Transition phase labels (transition vs. stable) defined as first 120s after condition change",
+        "Nonconformity scores and coverage indicators per window",
+        "Motion artifact index per window to control for confounding noise"
+      ],
+      "testable_prediction": "Coverage in transitional windows (first 2 min after condition change) will be at least 15 percentage points lower than in stable windows, and lag-1 autocorrelation of nonconformity residuals will be >0.2 in transitional periods.",
+      "failure_condition": "If splitting Mondrian strata by transition phase (onset/steady) restores coverage to nominal without needing temporal dependence correction, or if residual autocorrelation is negligible (<0.05) after conditioning on transition phase, the mechanism fails.",
+      "statistical_test_plan": "1. Define transition windows (first 120s after label change). 2. Compute coverage separately for transition vs. stable windows; test difference via paired bootstrap (alpha=0.05). 3. Compute lag-1 autocorrelation of nonconformity scores per subject per phase. 4. Fit block bootstrap conformal prediction (block length 60s) and compare coverage to standard Mondrian. 5. Implement transition-phase-stratified Mondrian (separate strata for stress-onset, stress-steady, recovery-onset, recovery-steady) and test if coverage reaches nominal.",
+      "statistical_testability_notes": "Control for motion artifacts which may co-occur with transitions. Use the same windowing (30s, 50% overlap) as the original analysis. Define transition windows objectively from protocol timestamps."
+    },
+    {
+      "hypothesis_id": "H4",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the prevalence of label noise in the low-stress stratum and the divergence between self-report and physiological stress index. Need an independent physiological stress classifier, self-report labels, and consensus labels (if available) to quantify mislabeling rate and its impact on coverage.",
+      "minimum_data_needed": [
+        "Self-reported stress labels (0=low, 1=high) per subject per condition",
+        "Physiological stress index (classifier probability of high stress from multimodal features) per window",
+        "Nonconformity scores and coverage indicators per window",
+        "Consensus labels from independent annotators reviewing video/physiology (for a subset)",
+        "Interoceptive awareness scores and social desirability scores per subject"
+      ],
+      "testable_prediction": "Low-stress stratum will have coverage below nominal (e.g., <85% for 90% nominal) and the proportion of label_noise_indicator=1 (self-report != physiological index thresholded) in that stratum will correlate negatively with coverage (r < -0.5). Relabeling using physiological stress index will improve low-stress stratum coverage by at least 10 percentage points.",
+      "failure_condition": "If relabeling with physiological index does not improve coverage (McNemar p>0.05), or if consensus labels show no systematic mislabeling in the low-stress stratum, the hypothesis fails.",
+      "statistical_test_plan": "1. Train independent physiological stress classifier (e.g., SVM on ECG+EDA features) on held-out data. 2. Compute label_noise_indicator where self-report != classifier prediction (thresholded at 0.5). 3. Compute stratum-specific coverage (low-stress vs. high-stress). 4. Re-run Mondrian with relabeled data (using classifier labels as ground truth). 5. Compare per-window coverage before/after relabeling via McNemar's test. 6. If consensus labels available, repeat with consensus as ground truth.",
+      "statistical_testability_notes": "Physiological classifier must be trained independently of the conformal calibration set. Control for interoceptive awareness when estimating label noise rate. Use the same Mondrian taxonomy (condition labels) for both runs."
+    },
+    {
+      "hypothesis_id": "H5",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the age distribution in the calibration set and the magnitude of baseline HRV/EDA differences across age groups. Need age, baseline physiology, and coverage per age bin to estimate the coverage gap and the improvement from age stratification.",
+      "minimum_data_needed": [
+        "Age (years) per subject",
+        "Baseline HRV (RMSSD during baseline, ms) and baseline EDA (tonic level, µS) per subject",
+        "Nonconformity scores and coverage indicators per window",
+        "Health status, medication list, and fitness level per subject",
+        "Calibration set size per age bin"
+      ],
+      "testable_prediction": "Subjects aged >50 will have coverage rate at least 15 percentage points below nominal, and baseline HRV/EDA will differ significantly from younger groups (p<0.01). Adding age bins to Mondrian taxonomy will restore coverage to within 5 percentage points of nominal for all age groups.",
+      "failure_condition": "If retraining the classifier with age-balanced data fixes coverage but age-stratified Mondrian does not (coverage remains below nominal for age>50), the mechanism fails (rival wins).",
+      "statistical_test_plan": "1. Bin age into decades (20-30, 30-40, 40-50, 50+). 2. Compute coverage per age bin; test difference from nominal via one-sample proportion test. 3. Test baseline HRV/EDA differences across bins (ANOVA, alpha=0.05). 4. Implement age-stratified Mondrian (add age bin as stratum). 5. Compare coverage before/after via paired bootstrap (1000 resamples). 6. Also test retraining base classifier with stratified sampling by age and compare coverage.",
+      "statistical_testability_notes": "Ensure age bins have sufficient sample size (minimum 20 calibration windows per bin). Control for medication and fitness in both analyses. Use the same calibration/test split for fair comparison."
+    },
+    {
+      "hypothesis_id": "H6",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the degree of multimodal correlation structure ignored by margin-based scores and the frequency of out-of-distribution patterns. Need softmax margins, Mahalanobis distances in joint feature space, and coverage across OOD quantiles to estimate the geometry mismatch effect.",
+      "minimum_data_needed": [
+        "Softmax margin (difference between top two class probabilities) per window",
+        "Multimodal features: ECG (HRV), EDA (phasic/tonic), respiration (rate, variability) per window",
+        "Mahalanobis distance in joint feature space (using robust shrinkage covariance) per window",
+        "Nonconformity scores and coverage indicators per window",
+        "Dirichlet calibration parameters for classifier logits"
+      ],
+      "testable_prediction": "Coverage will decrease as out_of_distribution_score (Mahalanobis distance) increases (Spearman rho < -0.4). A Mahalanobis-based nonconformity score will achieve coverage within 3 percentage points of nominal, while softmax margin will undercover by >10 percentage points for high OOD samples.",
+      "failure_condition": "If Dirichlet calibration of softmax margins matches Mahalanobis nonconformity performance (coverage difference <2 percentage points, p>0.05), the geometry mismatch mechanism fails (rival wins).",
+      "statistical_test_plan": "1. Compute softmax margin, Mahalanobis distance (using joint feature covariance with shrinkage), and OOD score per window. 2. Evaluate three nonconformity scores on held-out data: (a) softmax margin, (b) Mahalanobis distance, (c) softmax margin after Dirichlet calibration. 3. Compare coverage across OOD quantiles (e.g., top decile). 4. Use DeLong test for correlated coverage differences (alpha=0.05). 5. Test interaction between nonconformity type and OOD score on coverage via logistic regression.",
+      "statistical_testability_notes": "Use the same calibration set for all three nonconformity scores. Ensure Mahalanobis covariance is estimated robustly (Ledoit-Wolf shrinkage). Dirichlet calibration should be fit on a separate validation set."
+    },
+    {
+      "hypothesis_id": "H7",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the variability of ambient conditions across recording days and the sensitivity of EDA baseline to those conditions. Need daily ambient logs, EDA baseline per day, and per-day coverage to estimate the mediation effect of baseline shift.",
+      "minimum_data_needed": [
+        "Ambient temperature (°C) and humidity (% relative) per recording day",
+        "Skin conductance baseline (tonic EDA during neutral baseline, µS) per day",
+        "Day identifier per session",
+        "Nonconformity scores and coverage indicators per window",
+        "Calibration sample size per day",
+        "Subject compliance logs (caffeine, sleep) and experimenter ID per day"
+      ],
+      "testable_prediction": "Days with ambient temperature/humidity deviating >1 SD from grand mean will have coverage at least 10 percentage points lower. EDA baseline shift will mediate the temperature-coverage relationship (mediation effect p<0.05).",
+      "failure_condition": "If per-day calibration sample size fully explains coverage variation (temperature/humidity not significant after controlling for sample size in multiple regression), the mechanism fails.",
+      "statistical_test_plan": "1. Collect ambient logs per day. 2. Compute daily coverage, EDA baseline, temperature/humidity deviation from grand mean. 3. Fit linear regression: coverage ~ temp_dev + humidity_dev + cal_sample_size. 4. Test mediation via EDA baseline shift (causal mediation analysis). 5. Implement day-stratified Mondrian (add day as stratum) and compare coverage. 6. Also test EDA normalization per day using baseline and measure coverage recovery.",
+      "statistical_testability_notes": "Ensure baseline duration is fixed across days. Control for subject compliance and experimenter effects. Use cluster-robust SEs for within-day correlation."
+    },
+    {
+      "hypothesis_id": "H8",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the distribution of stratum sample sizes and the bias of empirical quantile estimation in small strata. Need stratum sample sizes, empirical quantiles, and oracle quantiles (from large holdout or cross-validation) to estimate the bias and the correction effect.",
+      "minimum_data_needed": [
+        "Stratum sample size (number of calibration windows per condition-subject stratum)",
+        "Conditional quantile estimate (empirical quantile of nonconformity scores in stratum)",
+        "Oracle quantile (true conditional quantile estimated via large holdout or cross-validation)",
+        "Nonconformity scores and coverage indicators per window",
+        "Stratum nonconformity score IQR and skewness"
+      ],
+      "testable_prediction": "Strata with sample size <30 will have coverage at least 10 percentage points below nominal, and quantile estimation bias (empirical - oracle) will be negative and correlate with 1/sqrt(n). Finite-sample correction (e.g., using (n+1)(1-alpha)th order statistic) will restore coverage to within 2 percentage points.",
+      "failure_condition": "If pooling calibration data across subjects for rare strata restores coverage but finite-sample correction does not (coverage remains below nominal), the distribution shift rival wins.",
+      "statistical_test_plan": "1. Compute stratum sample sizes and coverage rates. 2. Estimate oracle quantile via 10-fold cross-validation on calibration set (or large holdout if available). 3. Compute bias per stratum (empirical quantile - oracle quantile). 4. Apply finite-sample correction: use order statistic index ceil((n+1)*(1-alpha)) instead of ceil(n*(1-alpha)). 5. Compare corrected vs. standard Mondrian coverage via paired bootstrap. 6. Also test pooling calibration data across subjects for rare strata (size<30) and compare.",
+      "statistical_testability_notes": "Use bootstrap to estimate quantile bias per stratum. Control for stratum heterogeneity (IQR) when assessing bias. Nominal coverage 90% (alpha=0.1)."
+    },
+    {
+      "hypothesis_id": "H9",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the rate of habituation across trials and the resulting feature distribution shift. Need trial number, EDA peak amplitude, HRV reactivity, and coverage per trial to estimate the linear trend and the improvement from trial stratification.",
+      "minimum_data_needed": [
+        "Trial number (1,2,3) per stress task per subject",
+        "EDA peak amplitude (max phasic peak per trial, µS)",
+        "HRV reactivity (RMSSD_baseline - RMSSD_stress, ms) per trial",
+        "Nonconformity scores and coverage indicators per window",
+        "Stressor type per trial (TSST, mental arithmetic, cold pressor) and clock time"
+      ],
+      "testable_prediction": "Coverage will decline linearly with trial_number (slope < -5% per trial). EDA_peak_amplitude and HRV_reactivity will show significant negative linear trends across trials (p<0.01). Trial-stratified Mondrian will eliminate the trial-number coverage gap (coverage within 3 percentage points of nominal for all trials).",
+      "failure_condition": "If classifier trained on trial 3 and tested on trial 1 shows symmetric undercoverage (overfitting rival), or if trial-number stratification does not fix coverage (gap remains >5 percentage points), the habituation mechanism fails.",
+      "statistical_test_plan": "1. Compute coverage per trial number; test linear trend via mixed-effects logistic regression (coverage_indicator ~ trial_number + (1|subject)). 2. Fit linear trends for EDA_peak_amplitude and HRV_reactivity across trials (LME). 3. Implement trial-stratified Mondrian (add trial number as stratum). 4. Train three classifiers: (a) on trial 1 only, test on trial 3; (b) on trial 3 only, test on trial 1; (c) on all trials with trial-number as feature. 5. Compare coverage across methods via paired McNemar tests.",
+      "statistical_testability_notes": "Control for stressor type (counterbalanced across subjects in WESAD). Include clock time and anticipation ratings as covariates. Use the same calibration/test split for all classifiers."
+    },
+    {
+      "hypothesis_id": "H10",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the rate of respiration missingness during high movement and the coverage gap between missing and non-missing windows. Need missingness indicators, movement intensity, and coverage stratified by missingness and movement to estimate the interaction effect.",
+      "minimum_data_needed": [
+        "Respiration missingness indicator (1 if respiration belt data missing in window)",
+        "Movement intensity (accelerometer vector magnitude, g) per window",
+        "Stress level (condition label: baseline/stress/recovery) per window",
+        "Imputed respiration features (mean imputation or last value carried forward)",
+        "Nonconformity scores and coverage indicators per window",
+        "ECG/EDA signal quality indices per window"
+      ],
+      "testable_prediction": "Windows with missing respiration during high movement (top quartile accelerometer magnitude) will have coverage at least 15 percentage points lower than windows with respiration present. Adding missingness indicator as feature will improve coverage for high-movement stress windows by >10 percentage points.",
+      "failure_condition": "If coverage drops with high movement regardless of respiration missingness (no interaction, p>0.05), the general signal quality rival wins.",
+      "statistical_test_plan": "1. Compute respiration_missingness_indicator and movement_intensity per window. 2. Stratify coverage by missingness x movement quartile x stress condition. 3. Test interaction via logistic regression: coverage_indicator ~ missingness * movement_quartile * stress_condition + (1|subject). 4. Augment features with missingness indicator and re-run conformal prediction. 5. Compare coverage for high-movement stress windows before/after augmentation via McNemar's test. 6. Test multiple imputation strategies (mean, last-value, model-based) and missingness-indicator augmentation.",
+      "statistical_testability_notes": "Control for window-level SNR of ECG/EDA. Ensure missingness is not completely at random (test Missing At Random assumption). Use the same calibration set for all imputation strategies."
+    }
+  ],
+  "stage_5_audits": [
+    {
+      "hypothesis_id": "H1",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks satisfied: variables are measurable from WESAD (EDA peaks, nonconformity scores), causal chain is valid and specific to Mondrian taxonomy, base rate plausible given inter-subject variability, confounders identified (baseline tone, medication, time-of-day), effect size rationale provided, data requirements clear, mechanism is non-generic (ties autonomic reactivity to conformal stratification), and prediction is testable via mixed-effects logistic regression and McNemar test.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H2",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks satisfied: variables measurable via EDA signal quality index proxy for impedance, causal chain valid (sensor drift -> feature shift -> miscalibration), base rate plausible for prolonged wrist-worn EDA, confounders identified (temperature, movement, hydration), effect size rationale provided, data requirements clear with proxy, mechanism non-generic (sensor health state not in Mondrian bins), prediction testable via linear mixed model and mediation analysis.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H3",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks satisfied: variables measurable (HRV features, transition rate, autocorrelation), causal chain valid (temporal dependence violates exchangeability), base rate plausible given stress-recovery transitions in WESAD, confounders identified (motion, breathing, carryover), effect size rationale provided, data requirements clear, mechanism non-generic (temporal dependence in conformal prediction for physiological time-series), prediction testable via block bootstrap and transition-phase stratification.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H4",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks satisfied: variables measurable (self-report, physiological index, label noise indicator), causal chain valid (mislabeling narrows nonconformity distribution), base rate plausible for self-report noise, confounders identified (interoceptive awareness, social desirability, timing), effect size rationale provided, data requirements clear including consensus labels, mechanism non-generic (label noise in conformal stratification), prediction testable via relabeling and McNemar test.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H5",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks satisfied: variables measurable (age, baseline HRV/EDA), causal chain valid (demographic shift -> quantile miscalibration), base rate plausible given WESAD age skew, confounders identified (comorbidities, fitness, medication), effect size rationale provided, data requirements clear, mechanism non-generic (demographic heterogeneity in conformal stratification), prediction testable via age-stratified Mondrian and classifier retraining.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H6",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks satisfied: variables measurable (softmax margin, Mahalanobis distance, multimodal correlation), causal chain valid (margin ignores cross-modal correlations), base rate plausible for multimodal physiological data, confounders identified (feature scaling, class imbalance, correlated noise), effect size rationale provided, data requirements clear, mechanism non-generic (nonconformity score geometry for multimodal stress detection), prediction testable via comparison of three nonconformity scores with DeLong test.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H7",
+      "audit_decision": "SALVAGEABLE",
+      "variables_measurable": false,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": false,
+      "failure_points": [
+        "variables_measurable",
+        "prediction_is_testable"
+      ],
+      "decision_reason": "Two critical checks fail: variables_measurable (ambient temperature/humidity not logged in WESAD; no proxy provided) and prediction_is_testable (cannot test mechanism without measurable environmental variables). The mechanism is otherwise valid and non-generic. Repairable by using skin temperature from Empatica E4 as proxy for ambient influence on EDA baseline, or by using day identifier as stratification variable to test day-level coverage differences directly.",
+      "salvage_note": "Repair: Use skin temperature from Empatica E4 (available in WESAD) as proxy for ambient thermal influence on EDA baseline; alternatively, add day identifier as a Mondrian stratum and test per-day coverage differences without ambient logs. If skin temperature mediates day-coverage relationship, mechanism is supported."
+    },
+    {
+      "hypothesis_id": "H8",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks satisfied: variables measurable (stratum sample size, quantile estimates), causal chain valid (finite-sample quantile bias), base rate plausible given many small strata in WESAD, confounders identified (stratum heterogeneity, skew, temporal split), effect size rationale provided, data requirements clear, mechanism non-generic (small-stratum quantile bias in Mondrian), prediction testable via finite-sample correction and pooling.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H9",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks satisfied: variables measurable (trial number, EDA peak, HRV reactivity), causal chain valid (habituation shifts feature distribution), base rate plausible given three stress trials in WESAD, confounders identified (stressor order, time-of-day, anticipation), effect size rationale provided, data requirements clear, mechanism non-generic (habituation in repeated-measure conformal prediction), prediction testable via trial-stratified Mondrian and classifier comparisons.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H10",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks satisfied: variables measurable (respiration missingness, movement intensity, stress level), causal chain valid (informative missingness shifts joint distribution), base rate plausible for respiration belt artifacts, confounders identified (movement corrupts other modalities, window duration, imputation method), effect size rationale provided, data requirements clear, mechanism non-generic (informative sensor dropout in multimodal conformal prediction), prediction testable via missingness-stratified coverage and missingness-indicator augmentation.",
+      "salvage_note": ""
+    }
+  ],
+  "diagnostics": {
+    "generated_count": 10,
+    "passed_count": 9,
+    "rejected_count": 0,
+    "salvageable_count": 1,
+    "pass_survival_rate": 0.9,
+    "salvageable_rate": 0.1,
+    "rejection_reason_diversity": 2,
+    "top_failed_checklist_fields": {
+      "prediction_is_testable": 1,
+      "variables_measurable": 1
+    },
+    "failure_points_consistency": true,
+    "rubber_stamp_red_flags": [],
+    "mechanism_builder_count": 10,
+    "confounder_rival_builder_count": 10,
+    "statistical_testability_builder_count": 10,
+    "avg_mechanism_variables_per_hypothesis": 5.2,
+    "avg_confounders_per_hypothesis": 3.0,
+    "avg_rivals_per_hypothesis": 2.0,
+    "hypotheses_with_effect_size_expectation": 10,
+    "hypotheses_with_failure_condition": 10,
+    "hypotheses_with_testable_prediction": 10
+  },
+  "stage_6_rival_prediction_matrix": [
+    {
+      "hypothesis_id": "H1",
+      "meno_j_hypothesis": "Inter‑subject variability in autonomic reactivity causes the nonconformity scores to be systematically miscalibrated for high‑reactivity individuals.",
+      "meno_j_prediction": "Subjects in the top quartile of sympathetic_reactivity_index will have coverage rates at least 10 percentage points below the nominal level (e.g., <80% for 90% nominal), and coverage rate will negatively correlate with sympathetic_reactivity_index (Spearman rho < -0.3).",
+      "rival_explanation": "High-reactivity subjects simply have noisier signals, increasing variance of nonconformity scores without systematic shift",
+      "rival_prediction": "If the rival (classifier miscalibration) holds, adding subject-level reactivity as a Mondrian stratum will not improve coverage; instead, recalibrating the base classifier (e.g., temperature scaling) on a per-subject basis will restore coverage.",
+      "distinguishing_test": "Compare coverage after (a) adding sympathetic_reactivity_index as a stratification variable vs. (b) applying per-subject temperature scaling to classifier logits before conformal prediction. If (a) fixes coverage but (b) does not, the proposed mechanism wins; if (b) fixes coverage but (a) does not, the rival wins.",
+      "what_result_supports_meno_j": "Adding sympathetic_reactivity_index as a stratification variable improves coverage for high-reactivity subjects, while per-subject temperature scaling does not.",
+      "what_result_supports_rival": "Per-subject temperature scaling restores coverage, but adding sympathetic_reactivity_index as a stratification variable does not."
+    },
+    {
+      "hypothesis_id": "H2",
+      "meno_j_hypothesis": "Sensor‑specific drift in the wrist‑worn EDA channel during prolonged recordings leads to biased nonconformity estimates for later trials.",
+      "meno_j_prediction": "Coverage rate will decline linearly with session_time_elapsed (slope < -0.5% per minute), and electrode_impedance_change (end-start) will correlate with coverage drop in the last trial block (Pearson r > 0.4).",
+      "rival_explanation": "Late-session undercoverage is due to subject fatigue reducing physiological discriminability, not sensor drift",
+      "rival_prediction": "If fatigue is the cause, EDA amplitude will not correlate with impedance change; instead, HRV reactivity will decline with session time while impedance remains stable.",
+      "distinguishing_test": "Regress coverage rate on both electrode_impedance_change and HRV_reactivity_decline (slope across session). If impedance_change remains significant after controlling for HRV_reactivity_decline, sensor drift mechanism wins; if HRV_reactivity_decline dominates, fatigue rival wins.",
+      "what_result_supports_meno_j": "Electrode impedance change remains a significant predictor of coverage decline after controlling for HRV reactivity decline.",
+      "what_result_supports_rival": "HRV reactivity decline dominates and impedance change is no longer significant when both are included."
+    },
+    {
+      "hypothesis_id": "H3",
+      "meno_j_hypothesis": "Non‑stationary heart‑rate variability (HRV) dynamics across the stress‑recovery cycle violate the exchangeability assumption within Mondrian strata.",
+      "meno_j_prediction": "Coverage in transitional windows (first 2 min after condition change) will be at least 15 percentage points lower than in stable windows, and lag-1 autocorrelation of nonconformity residuals will be >0.2 in transitional periods.",
+      "rival_explanation": "The classifier performs worse during transitions because feature distributions overlap more, not because of temporal dependence in residuals",
+      "rival_prediction": "If the rival (transition-specific distribution shift) holds, coverage will be low only in the first 2 minutes after a condition change, but residual autocorrelation will be negligible once condition is accounted for.",
+      "distinguishing_test": "Fit a time-aware conformal method (e.g., block bootstrap) and a condition-split Mondrian (separate strata for stress-onset, stress-steady, recovery-onset, recovery-steady). If condition-split restores coverage without needing temporal dependence correction, the rival wins; if block bootstrap is required, the proposed mechanism wins.",
+      "what_result_supports_meno_j": "Block bootstrap conformal prediction restores coverage, but condition-split Mondrian does not.",
+      "what_result_supports_rival": "Condition-split Mondrian restores coverage to nominal without needing temporal dependence correction."
+    },
+    {
+      "hypothesis_id": "H4",
+      "meno_j_hypothesis": "Mislabeling of self‑reported stress levels for a subset of participants introduces systematic label noise into the Mondrian categories.",
+      "meno_j_prediction": "Low-stress stratum will have coverage below nominal (e.g., <85% for 90% nominal) and the proportion of label_noise_indicator=1 (self-report != physiological index thresholded) in that stratum will correlate negatively with coverage (r < -0.5). Relabeling using physiological stress index will improve low-stress stratum coverage by at least 10 percentage points.",
+      "rival_explanation": "The physiological stress index used to detect mislabeling is itself biased for certain subjects (e.g., high baseline HRV)",
+      "rival_prediction": "If the rival (physiological index bias) holds, relabeling using the index will not improve coverage because the index misclassifies the same subjects systematically.",
+      "distinguishing_test": "Compute coverage after relabeling with (a) the physiological stress index and (b) a consensus label from two independent annotators reviewing video/physiology. If (a) improves coverage but (b) does not, the index is capturing true state (proposed mechanism). If neither improves coverage, the rival (index bias) or finite-sample issue wins.",
+      "what_result_supports_meno_j": "Relabeling with physiological stress index improves coverage, and consensus labels confirm systematic mislabeling in low-stress stratum.",
+      "what_result_supports_rival": "Neither relabeling with physiological index nor consensus labels improves coverage, indicating index bias or finite-sample issue."
+    },
+    {
+      "hypothesis_id": "H5",
+      "meno_j_hypothesis": "Insufficient representation of certain demographic sub‑groups (e.g., age > 50) in the calibration set leads to stratum‑specific undercoverage.",
+      "meno_j_prediction": "Subjects aged >50 will have coverage rate at least 15 percentage points below nominal, and baseline HRV/EDA will differ significantly from younger groups (p<0.01). Adding age bins to Mondrian taxonomy will restore coverage to within 5 percentage points of nominal for all age groups.",
+      "rival_explanation": "Older subjects have fewer calibration windows because of shorter recordings or more artifacts, causing finite-sample undercoverage (H8)",
+      "rival_prediction": "If the rival (classifier generalization) holds, adding age as a Mondrian stratum will not fix coverage; instead, retraining the classifier with age-balanced data will.",
+      "distinguishing_test": "Compare coverage after (a) adding age bins to Mondrian taxonomy vs. (b) retraining the base classifier with stratified sampling by age. If (a) restores coverage to nominal, the proposed mechanism (stratum heterogeneity) wins; if only (b) works, the rival wins.",
+      "what_result_supports_meno_j": "Adding age bins to Mondrian taxonomy restores coverage to nominal for all age groups.",
+      "what_result_supports_rival": "Retraining classifier with age-balanced data fixes coverage but age-stratified Mondrian does not."
+    },
+    {
+      "hypothesis_id": "H6",
+      "meno_j_hypothesis": "The choice of nonconformity score (e.g., softmax margin) is poorly aligned with the multimodal feature geometry for stress classification.",
+      "meno_j_prediction": "Coverage will decrease as out_of_distribution_score (Mahalanobis distance) increases (Spearman rho < -0.4). A Mahalanobis-based nonconformity score will achieve coverage within 3 percentage points of nominal, while softmax margin will undercover by >10 percentage points for high OOD samples.",
+      "rival_explanation": "The margin-based nonconformity is fine; undercoverage stems from finite-sample quantile estimation in small strata (H8)",
+      "rival_prediction": "If the rival (classifier miscalibration) holds, using a Mahalanobis nonconformity on the same classifier logits will not improve coverage; instead, calibrating the classifier (e.g., Dirichlet calibration) before conformal prediction will.",
+      "distinguishing_test": "Evaluate three nonconformity scores on held-out data: (1) softmax margin, (2) Mahalanobis distance in joint feature space, (3) softmax margin after Dirichlet calibration. If (2) outperforms (1) and (3) matches (2), the proposed mechanism (geometry mismatch) wins. If (3) outperforms (1) and matches (2), the rival (miscalibration) wins.",
+      "what_result_supports_meno_j": "Mahalanobis-based nonconformity outperforms softmax margin and matches Dirichlet-calibrated margin performance.",
+      "what_result_supports_rival": "Dirichlet-calibrated softmax margin matches Mahalanobis performance and both outperform uncalibrated margin."
+    },
+    {
+      "hypothesis_id": "H8",
+      "meno_j_hypothesis": "Finite‑sample estimation error of the conditional quantile in small strata leads to systematic undercoverage for rare stress levels.",
+      "meno_j_prediction": "Strata with sample size <30 will have coverage at least 10 percentage points below nominal, and quantile estimation bias (empirical - oracle) will be negative and correlate with 1/sqrt(n). Finite-sample correction (e.g., using (n+1)(1-alpha)th order statistic) will restore coverage to within 2 percentage points.",
+      "rival_explanation": "Undercoverage in rare stress levels is due to genuine distribution shift (H3, H9) not finite-sample bias",
+      "rival_prediction": "If the rival (distribution shift) holds, increasing calibration sample size for rare strata (by pooling across subjects) will not fix coverage because the shift is systematic.",
+      "distinguishing_test": "Apply finite-sample correction (e.g., using the (n+1)(1-alpha)th order statistic with n = stratum size) and compare to pooling calibration data across subjects for rare strata. If correction restores coverage, finite-sample bias wins; if pooling across subjects restores coverage but correction does not, distribution shift rival wins.",
+      "what_result_supports_meno_j": "Finite-sample correction restores coverage to nominal for small strata.",
+      "what_result_supports_rival": "Pooling calibration data across subjects restores coverage but finite-sample correction does not."
+    },
+    {
+      "hypothesis_id": "H9",
+      "meno_j_hypothesis": "Physiological habituation across repeated stress trials reduces signal discriminability, but the Mondrian taxonomy treats each trial as identically distributed.",
+      "meno_j_prediction": "Coverage will decline linearly with trial_number (slope < -5% per trial). EDA_peak_amplitude and HRV_reactivity will show significant negative linear trends across trials (p<0.01). Trial-stratified Mondrian will eliminate the trial-number coverage gap (coverage within 3 percentage points of nominal for all trials).",
+      "rival_explanation": "Later trials have more motion artifacts because subjects move more as they get comfortable, causing missing data (H10)",
+      "rival_prediction": "If the rival (classifier overfitting) holds, retraining the classifier on trials 2-3 and testing on trial 1 will show symmetric degradation, not just late-trial undercoverage.",
+      "distinguishing_test": "Train three classifiers: (a) on trial 1 only, test on trial 3; (b) on trial 3 only, test on trial 1; (c) on all trials with trial-number as feature. If (a) shows undercoverage on trial 3 but (b) does not on trial 1, habituation mechanism wins. If both (a) and (b) show undercoverage, overfitting rival wins. If (c) fixes coverage, trial-number stratification wins.",
+      "what_result_supports_meno_j": "Classifier trained on trial 1 undercovers on trial 3, but classifier trained on trial 3 does not undercover on trial 1; trial-stratified Mondrian fixes coverage.",
+      "what_result_supports_rival": "Both cross-trial classifiers show symmetric undercoverage, indicating overfitting rather than habituation."
+    },
+    {
+      "hypothesis_id": "H10",
+      "meno_j_hypothesis": "Correlated missingness in the respiration belt (e.g., motion artifacts) creates informative missingness that the conformal predictor ignores.",
+      "meno_j_prediction": "Windows with missing respiration during high movement (top quartile accelerometer magnitude) will have coverage at least 15 percentage points lower than windows with respiration present. Adding missingness indicator as feature will improve coverage for high-movement stress windows by >10 percentage points.",
+      "rival_explanation": "High-movement stress periods are inherently harder to classify (lower signal quality across all modalities), not specifically due to respiration missingness",
+      "rival_prediction": "If the rival (general signal quality) holds, coverage will be low for high-movement windows even when respiration is present, and adding a missingness indicator will not help.",
+      "distinguishing_test": "Stratify coverage by (movement_intensity quartile) x (respiration_missingness). If coverage drops only when both high movement AND missing respiration co-occur, the proposed mechanism (informative missingness) wins. If coverage drops with high movement regardless of respiration missingness, the rival wins.",
+      "what_result_supports_meno_j": "Coverage drops significantly only in high-movement windows with missing respiration; adding missingness indicator restores coverage for these windows.",
+      "what_result_supports_rival": "Coverage drops with high movement regardless of respiration missingness; missingness indicator does not help."
+    }
+  ],
+  "stage_7_falsification_tests": [
+    {
+      "hypothesis_id": "H1",
+      "strongest_falsification_test": "Run two modified Mondrian conformal predictors on the same held-out data: (a) add sympathetic_reactivity_index (EDA peak amplitude from first stress trial) as an additional stratification variable (quartile bins) to the existing condition-based taxonomy; (b) apply per-subject temperature scaling to the base classifier logits before standard Mondrian conformal prediction. Compare per-window coverage for high-reactivity subjects (top quartile) between (a), (b), and the original Mondrian using paired McNemar tests.",
+      "failure_condition": "If (a) does not significantly improve coverage for high-reactivity subjects over the original Mondrian (McNemar p>0.05) OR if (b) restores coverage to nominal without reactivity stratification (coverage within 2 percentage points of nominal, McNemar p>0.05 vs. nominal), the hypothesis is falsified.",
+      "minimum_data_needed": "Per-subject sympathetic_reactivity_index (EDA peak amplitude during first stress trial), nonconformity scores and coverage indicators from standard Mondrian, baseline autonomic tone measures, medication status, recording start time, and a held-out test set with the same windowing.",
+      "most_likely_false_positive_risk": "Reactivity index computed from the same trial used for calibration/test introduces circularity; spurious correlation if reactivity correlates with an unmeasured confounder (e.g., baseline HRV) that also affects coverage.",
+      "most_likely_false_negative_risk": "Insufficient power due to small number of high-reactivity subjects; temperature scaling may not fully capture per-subject miscalibration if the classifier's feature representation is fundamentally mismatched for high-reactivity individuals."
+    },
+    {
+      "hypothesis_id": "H2",
+      "strongest_falsification_test": "Fit a linear mixed model: coverage_indicator ~ session_time_elapsed + electrode_impedance_change + HRV_reactivity_decline + (1|subject). Test whether electrode_impedance_change remains a significant predictor of coverage after controlling for HRV_reactivity_decline (one-sided Wald test, alpha=0.05). Additionally, compare coverage on late-session windows using two calibration sets: (i) early-session windows only (first 50% of time) and (ii) full-session calibration. If early-only calibration yields worse late-session coverage than full calibration, sensor drift is implicated; if not, drift is not the primary cause.",
+      "failure_condition": "If electrode_impedance_change is not significant (p>0.05) in the mixed model after controlling for HRV_reactivity_decline, OR if early-session calibration does not degrade late-session coverage relative to full calibration (paired McNemar p>0.05), the sensor drift mechanism is falsified.",
+      "minimum_data_needed": "Electrode impedance at start and end of session (or per-trial signal quality index), EDA phasic peak amplitude per trial, session time elapsed per trial, nonconformity scores and coverage indicators per window, HRV reactivity (RMSSD change) per trial, ambient temperature logs, and accelerometer-derived movement intensity per window.",
+      "most_likely_false_positive_risk": "Ambient temperature drift correlates with both impedance and EDA amplitude, creating a spurious mediation effect if not perfectly controlled.",
+      "most_likely_false_negative_risk": "Impedance logs unavailable; signal quality index may be an insensitive proxy. Fatigue and sensor drift may co-occur, and the mixed model may lack power to disentangle them with limited trials."
+    },
+    {
+      "hypothesis_id": "H3",
+      "strongest_falsification_test": "Define transition windows as the first 120 seconds after each condition change. Implement two alternative Mondrian taxonomies: (a) condition-split taxonomy with separate strata for stress-onset, stress-steady, recovery-onset, recovery-steady; (b) standard condition taxonomy but with block bootstrap conformal prediction (block length 60s) to account for temporal dependence. Compare per-window coverage in transition windows between (a), (b), and original Mondrian using paired bootstrap tests (1000 resamples).",
+      "failure_condition": "If condition-split taxonomy (a) restores coverage in transition windows to within 3 percentage points of nominal (p>0.05 vs. nominal) while block bootstrap (b) does not provide additional improvement, the temporal dependence mechanism is falsified in favor of the transition-specific distribution shift rival.",
+      "minimum_data_needed": "HRV features (RMSSD, LF/HF) per 30s window, transition phase labels (transition vs. stable) derived from protocol timestamps, nonconformity scores and coverage indicators per window, motion artifact index per window, and the same windowing (30s, 50% overlap) as the original analysis.",
+      "most_likely_false_positive_risk": "Motion artifacts co-occur with transitions and may cause both residual autocorrelation and coverage drop; if not fully controlled, the block bootstrap may appear effective for the wrong reason.",
+      "most_likely_false_negative_risk": "Transition windows may be too few for stable quantile estimation in condition-split taxonomy, leading to finite-sample undercoverage that masks the true mechanism."
+    },
+    {
+      "hypothesis_id": "H4",
+      "strongest_falsification_test": "Train an independent physiological stress classifier (e.g., SVM on ECG+EDA features) on held-out data. Compute label_noise_indicator where self-report != classifier prediction (thresholded at 0.5). Re-run Mondrian conformal prediction using the classifier labels as ground truth for stratification (relabeled Mondrian). Compare per-window coverage in the low-stress stratum before and after relabeling using McNemar's test. If consensus labels from independent annotators are available for a subset, repeat with consensus as ground truth.",
+      "failure_condition": "If relabeling with the physiological classifier does not significantly improve low-stress stratum coverage (McNemar p>0.05) OR if consensus labels show no systematic mislabeling in the low-stress stratum (mislabeling rate <5%), the mislabeling hypothesis is falsified.",
+      "minimum_data_needed": "Self-reported stress labels per subject per condition, physiological stress index (classifier probability of high stress) per window, nonconformity scores and coverage indicators per window, consensus labels from independent annotators reviewing video/physiology (for a subset), interoceptive awareness scores and social desirability scores per subject.",
+      "most_likely_false_positive_risk": "The physiological classifier may be biased for certain subjects (e.g., high baseline HRV), creating apparent label noise that is actually classifier error.",
+      "most_likely_false_negative_risk": "Consensus labels unavailable for most subjects; the physiological classifier may not capture true stress state perfectly, leading to underestimation of mislabeling rate."
+    },
+    {
+      "hypothesis_id": "H5",
+      "strongest_falsification_test": "Implement two interventions: (a) add age bins (20-30, 30-40, 40-50, 50+) as additional strata in Mondrian taxonomy; (b) retrain the base classifier with stratified sampling by age bin to ensure balanced representation. Evaluate per-age-bin coverage on a held-out test set. Compare coverage for age>50 group across original Mondrian, age-stratified Mondrian, and age-balanced classifier + standard Mondrian using paired bootstrap (1000 resamples).",
+      "failure_condition": "If age-stratified Mondrian (a) does not restore coverage for age>50 to within 5 percentage points of nominal (p>0.05 vs. nominal) BUT age-balanced classifier retraining (b) does, the demographic stratum heterogeneity mechanism is falsified in favor of the classifier generalization rival.",
+      "minimum_data_needed": "Age per subject, baseline HRV (RMSSD) and baseline EDA (tonic level) per subject, nonconformity scores and coverage indicators per window, health status, medication list, fitness level per subject, and calibration set size per age bin.",
+      "most_likely_false_positive_risk": "Age bins may have insufficient calibration windows (<20) causing finite-sample undercoverage that mimics stratum heterogeneity.",
+      "most_likely_false_negative_risk": "Comorbidities and medication use correlated with age may be the true cause; controlling for them may reduce power to detect age-specific effects."
+    },
+    {
+      "hypothesis_id": "H6",
+      "strongest_falsification_test": "Evaluate three nonconformity scores on the same held-out data: (1) softmax margin (1 - margin), (2) Mahalanobis distance in joint multimodal feature space (ECG, EDA, respiration) using robust shrinkage covariance, (3) softmax margin after Dirichlet calibration of classifier logits (fit on separate validation set). Compare coverage across out-of-distribution (OOD) quantiles (e.g., top decile of Mahalanobis distance) using DeLong test for correlated coverage differences (alpha=0.05).",
+      "failure_condition": "If Dirichlet-calibrated softmax margin (3) achieves coverage within 2 percentage points of Mahalanobis nonconformity (2) (p>0.05) and both outperform uncalibrated margin (1), the geometry mismatch mechanism is falsified in favor of the classifier miscalibration rival.",
+      "minimum_data_needed": "Softmax margin per window, multimodal features (ECG HRV, EDA phasic/tonic, respiration rate/variability) per window, Mahalanobis distance in joint feature space per window, nonconformity scores and coverage indicators per window, Dirichlet calibration parameters for classifier logits.",
+      "most_likely_false_positive_risk": "Mahalanobis covariance estimation may be unstable with limited calibration data, making Mahalanobis nonconformity appear worse than it is.",
+      "most_likely_false_negative_risk": "Dirichlet calibration may not fully correct miscalibration for OOD patterns if the classifier's feature representation is fundamentally inadequate, leading to false support for geometry mismatch."
+    },
+    {
+      "hypothesis_id": "H8",
+      "strongest_falsification_test": "Compute stratum sample sizes and empirical conditional quantiles (alpha=0.1). Estimate oracle quantiles via 10-fold cross-validation on the calibration set. Apply finite-sample correction: use order statistic index ceil((n+1)*(1-alpha)) instead of ceil(n*(1-alpha)) for each stratum. Separately, pool calibration data across subjects for rare strata (size<30) and recompute quantiles. Compare coverage on held-out data for three methods: standard Mondrian, corrected Mondrian, and pooled-calibration Mondrian using paired bootstrap (1000 resamples).",
+      "failure_condition": "If pooled-calibration Mondrian restores coverage to within 2 percentage points of nominal for rare strata (p>0.05 vs. nominal) but finite-sample correction does not (coverage remains >5 percentage points below nominal, p<0.05), the finite-sample bias mechanism is falsified in favor of the distribution shift rival.",
+      "minimum_data_needed": "Stratum sample size (calibration windows per condition-subject stratum), conditional quantile estimates, oracle quantiles (from cross-validation or large holdout), nonconformity scores and coverage indicators per window, stratum nonconformity score IQR and skewness.",
+      "most_likely_false_positive_risk": "Stratum heterogeneity (IQR) may correlate with sample size; pooling across subjects may introduce distribution shift that masks the true finite-sample bias.",
+      "most_likely_false_negative_risk": "Oracle quantile estimation via cross-validation may be noisy, leading to inaccurate bias estimates and reduced power to detect correction efficacy."
+    },
+    {
+      "hypothesis_id": "H9",
+      "strongest_falsification_test": "Train three classifiers: (a) on trial 1 only, test on trial 3; (b) on trial 3 only, test on trial 1; (c) on all trials with trial number as a feature. Run Mondrian conformal prediction for each. Additionally, implement trial-stratified Mondrian (add trial number as stratum). Compare coverage for trial 3 across (a), (c), and trial-stratified Mondrian using paired McNemar tests. Control for stressor type (TSST, mental arithmetic, cold pressor) and clock time.",
+      "failure_condition": "If classifier (b) shows symmetric undercoverage on trial 1 (i.e., coverage gap similar to (a) on trial 3), the habituation mechanism is falsified in favor of the overfitting rival. If trial-stratified Mondrian does not eliminate the trial-number coverage gap (gap >5 percentage points, p<0.05), the habituation mechanism is also falsified.",
+      "minimum_data_needed": "Trial number (1,2,3) per stress task per subject, EDA peak amplitude per trial, HRV reactivity per trial, nonconformity scores and coverage indicators per window, stressor type per trial, clock time of trial start, self-reported anticipation ratings.",
+      "most_likely_false_positive_risk": "Stressor type is confounded with trial order; if not perfectly counterbalanced, apparent habituation may be stressor-specific effects.",
+      "most_likely_false_negative_risk": "Habituation may be non-linear (e.g., only between trial 1 and 2), and trial-stratified Mondrian may have insufficient calibration data per trial stratum."
+    },
+    {
+      "hypothesis_id": "H10",
+      "strongest_falsification_test": "Stratify windows by movement intensity quartile (accelerometer magnitude) and respiration missingness indicator. Fit a mixed-effects logistic regression: coverage_indicator ~ missingness * movement_quartile * stress_condition + (1|subject). Test the three-way interaction (alpha=0.05). Additionally, augment features with missingness indicator and re-run conformal prediction; compare coverage for high-movement stress windows (top movement quartile, stress condition) before and after augmentation using McNemar's test.",
+      "failure_condition": "If the three-way interaction is not significant (p>0.05) AND coverage drops with high movement regardless of respiration missingness (main effect of movement_quartile significant, missingness not), the informative missingness mechanism is falsified in favor of the general signal quality rival.",
+      "minimum_data_needed": "Respiration missingness indicator per window, movement intensity (accelerometer vector magnitude) per window, stress condition per window, imputed respiration features, nonconformity scores and coverage indicators per window, ECG/EDA signal quality indices per window.",
+      "most_likely_false_positive_risk": "Missingness indicator may correlate with unmeasured window-level SNR of ECG/EDA; if not controlled, the interaction may appear significant due to overall signal degradation.",
+      "most_likely_false_negative_risk": "Missingness rate may be too low in high-movement stress windows to detect an interaction; multiple imputation strategies may not be tested exhaustively."
+    }
+  ]
+}

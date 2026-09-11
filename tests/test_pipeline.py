@@ -1,5 +1,11 @@
 from minos_j.pipeline import apply_test_result, register_test, validate_testability
-from minos_j.schema import FalsificationTest, Hypothesis, HypothesisStatus, ResearchState, TestResult
+from minos_j.schema import (
+    FalsificationTest,
+    Hypothesis,
+    HypothesisStatus,
+    ResearchState,
+    TestResult as FalsificationResult,
+)
 
 
 def valid_test() -> FalsificationTest:
@@ -36,12 +42,12 @@ def test_failed_predictions_can_falsify_hypothesis():
 
     apply_test_result(
         state,
-        TestResult("T1", "H1", False, "gap=0.25", "Failure persisted.", weight=1.0),
+        FalsificationResult("T1", "H1", False, "gap=0.25", "Failure persisted.", weight=1.0),
     )
     assert state.hypotheses["H1"].status is HypothesisStatus.WEAKENED
 
     apply_test_result(
         state,
-        TestResult("T1", "H1", False, "gap=0.20", "Failure replicated.", weight=1.0),
+        FalsificationResult("T1", "H1", False, "gap=0.20", "Failure replicated.", weight=1.0),
     )
     assert state.hypotheses["H1"].status is HypothesisStatus.FALSIFIED

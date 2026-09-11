@@ -1,0 +1,105 @@
+{
+  "experiment_name": "Meno-J Experiment 12: Temporal Readiness-Surface Replication",
+  "update_status": "VALIDATED",
+  "primary_decision": "NORMALIZATION_REPLICATED_WITHOUT_SURFACE_INTERACTION",
+  "working_theory_updates": [
+    {
+      "claim": "Subject baseline normalization improves wearable-state representation under temporal-block holdout.",
+      "status": "SUPPORTED_UNDER_SAME_SESSION_TEMPORAL_REPLICATION",
+      "evidence": {
+        "accuracy_change": 0.17508417508417518,
+        "full_set_frequency_reduction": 0.12371902788569455,
+        "coverage_change": 0.010871535871535998,
+        "normalized_mean_coverage": 0.924368686868687,
+        "worst_subject_coverage_change": -0.03595247345247332,
+        "phase_accuracy_changes": {
+          "early": 0.20000000000000018,
+          "middle": 0.19545454545454544,
+          "late": 0.1297979797979797
+        }
+      },
+      "interpretation": "The Experiment 11 cohort effect survived a stricter temporal holdout. Normalization improved accuracy in every temporal tertile, reduced full-label sets, and did not purchase the gain through lower mean coverage."
+    },
+    {
+      "claim": "S4's normalization repair persists across temporal portions of the recording.",
+      "status": "SUPPORTED_AS_INTERNAL_CONFIRMATORY_REPLICATION",
+      "evidence": {
+        "accuracy_change": 0.5244755244755248,
+        "full_set_frequency_reduction": 0.5540015540015539,
+        "normalized_coverage": 0.9112276612276611,
+        "phase_accuracy_changes": {
+          "early": 0.8461538461538464,
+          "middle": 0.36363636363636354,
+          "late": 0.36363636363636354
+        }
+      },
+      "interpretation": "The large S4 gain was present in early, middle, and late holdouts, making a random-window split artifact less plausible. It remains same-session evidence rather than independent-subject or independent-session replication."
+    },
+    {
+      "claim": "S2 is repaired by the same normalization intervention that repairs S4.",
+      "status": "NOT_SUPPORTED",
+      "evidence": {
+        "accuracy_change": 0.03962703962703962,
+        "full_set_frequency_change": -0.000582750582750563,
+        "normalized_coverage": 0.810994560994561
+      },
+      "interpretation": "S2 remained a distinct residual failure. The small accuracy gain and sub-target coverage argue against treating all difficult subjects as one baseline-shift problem."
+    },
+    {
+      "claim": "The k=18 to k=19 order-statistic transition is a subject-phase-safe readiness boundary.",
+      "status": "FALSIFIED_FOR_ALL_FOUR_TESTED_REPRESENTATIONS",
+      "evidence": {
+        "raw_all": {
+          "coverage_change": -0.049624449624449674,
+          "full_set_frequency_reduction": 0.07656479323145993,
+          "worst_subject_phase_coverage_change": -0.09090909090909083
+        },
+        "normalized_all": {
+          "coverage_change": -0.048834498834498974,
+          "full_set_frequency_reduction": 0.06544073210739877,
+          "worst_subject_phase_coverage_change": -0.1608391608391609
+        },
+        "safe_arms": 0,
+        "tested_arms": 4
+      },
+      "interpretation": "Every arm produced smaller sets at k=19, but none met the worst-subject-phase safety rule. The mathematical order-statistic jump is an informativeness transition, not a universal safety transition."
+    },
+    {
+      "claim": "Temperature-feature interference is a stable mechanism independent of subject normalization.",
+      "status": "NOT_REPLICATED",
+      "evidence": {
+        "raw_S2_S4_accuracy_change_after_removal": 0.09440559440559443,
+        "raw_S2_S4_robustness_loss_reduction": -0.023737373737373724,
+        "normalized_S2_S4_accuracy_change_after_removal": -0.030303030303030276,
+        "normalized_S2_S4_robustness_loss_reduction": 0.03607226107226108,
+        "decision": "TEMP_INTERFERENCE_NOT_REPLICATED"
+      },
+      "interpretation": "The Experiment 11 temperature ablation was not stable under temporal holdout and should be removed from the core working theory. It remains a split-sensitive exploratory observation."
+    },
+    {
+      "claim": "Calibration-count behavior and normalization show the preregistered readiness-surface interaction.",
+      "status": "NOT_SUPPORTED",
+      "evidence": {
+        "boundary_decisions_differ": false,
+        "coverage_change_interaction_magnitude": 0.0007899507899506997,
+        "full_set_reduction_interaction_magnitude": 0.011124061124061155
+      },
+      "interpretation": "Normalization and the k=18-to-k=19 boundary had nearly parallel effects. The evidence supports two important readiness constraints, but not their proposed interaction under this protocol."
+    }
+  ],
+  "revised_j_jump_candidate": {
+    "name": "Two-gate subject readiness model",
+    "statement": "Useful personalized uncertainty requires two separately testable gates: a representation gate that removes stable subject baseline distortion, and a calibration gate that controls threshold informativeness without sacrificing subject-phase coverage. Passing the representation gate does not imply passing the calibration gate, and neither gate occurs at one universal sample count.",
+    "status": "REFINED_TESTABLE_WORKING_CONCEPT_NOT_A_NOVELTY_CLAIM",
+    "difference_from_experiment_11": "Experiment 11 proposed an interacting readiness surface. Experiment 12 replicated both constraints but did not detect the preregistered interaction, so the narrower theory treats them as distinct gates unless future evidence shows coupling.",
+    "next_falsification": "Test the normalization gate on an independent multi-session wearable dataset, then diagnose S2-like residual failures using predeclared class-conditional geometry and signal-quality rivals."
+  },
+  "guardrails": [
+    "This is internal temporal replication inside one WESAD session per subject.",
+    "Temporal tertiles are relative positions within labeled state runs, not separate visits.",
+    "S4 replication weakens the random-split explanation but does not establish cross-session generality.",
+    "The temperature mechanism is removed from the core theory because it did not replicate.",
+    "No literature novelty claim has been made."
+  ],
+  "validation": "PASS_INDEPENDENT_EXACT_REPLAY"
+}

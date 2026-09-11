@@ -1,0 +1,131 @@
+{
+  "experiment_name": "Meno-J Experiment 8: Rare-Subgroup Feasibility Frontier",
+  "execution_mode": "deterministic local NumPy simulation plus exact binomial calculation",
+  "model_call_used": false,
+  "api_key_required": false,
+  "source_checkpoint": {
+    "path": "C:\\Users\\DELL\\Documents\\Codex\\2026-08-04\\we-are-starting-a-fresh-implementation\\outputs\\meno_j_experiment_6_p4_f1_score_conditioning.json",
+    "sha256": "39f7048a55732dce8e2559ee075d7f0411cefd292669c58abfb8726aaedd01b7",
+    "validated_status": "STRUCTURAL_FAILURE_CONFIRMED",
+    "reused_without_rerun": true
+  },
+  "configuration": {
+    "target_coverage": 0.9,
+    "alpha": 0.1,
+    "rare_prevalences": [
+      0.005,
+      0.01,
+      0.02,
+      0.05,
+      0.08,
+      0.15,
+      0.3
+    ],
+    "calibration_sizes": [
+      50,
+      100,
+      300,
+      600,
+      1200,
+      3000
+    ],
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "scores": [
+      "distance_to_class_centroid_score",
+      "inverse_probability_score"
+    ],
+    "conditioning_strategies": [
+      "marginal",
+      "oracle_region",
+      "mildly_noisy_region",
+      "moderately_noisy_region"
+    ],
+    "metadata_quality": {
+      "oracle_region": {
+        "sensitivity": 1.0,
+        "false_positive_rate": 0.0
+      },
+      "mildly_noisy_region": {
+        "sensitivity": 0.9,
+        "false_positive_rate": 0.02
+      },
+      "moderately_noisy_region": {
+        "sensitivity": 0.7,
+        "false_positive_rate": 0.05
+      }
+    },
+    "classifier": "NumPy regularized linear discriminant analysis",
+    "class_count": 3,
+    "feature_dimension": 6,
+    "training_samples_per_prevalence_seed": 4000,
+    "test_samples_per_prevalence_seed": 5000,
+    "nested_calibration_samples": true,
+    "finite_split_conformal_quantile": "ceil((n_group+1)*(1-alpha)) <= n_group"
+  },
+  "row_counts": {
+    "seed_level_results": 6720,
+    "aggregate_results": 336,
+    "analytic_frontier_rows": 42
+  },
+  "determinism": {
+    "fixed_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "nested_calibration_samples": true,
+    "no_wall_clock_fields_in_scientific_report": true,
+    "independent_validator_rebuilds_report": true
+  },
+  "validation_status": "PASSED_INDEPENDENT_DETERMINISTIC_REPLAY",
+  "validation_results": {
+    "all_required_outputs_exist": true,
+    "utf8_decode_passed": true,
+    "source_checkpoint_hash_matches": true,
+    "complete_design_grid": true,
+    "analytic_frontier_recomputed": true,
+    "saved_report_equals_replay": true,
+    "saved_markdown_equals_replay": true,
+    "credential_scan_passed": true,
+    "scientific_json_sha256": "61d77ef9d2f873ad8fa7e7144cbff346988beebb3fb66f25b09c38a3ba119be5",
+    "scientific_markdown_sha256": "edb278cab9b5103df1cb46bd39e7cfe64d5f5f5dc3a3f9ef73632e64a96c2b74"
+  }
+}

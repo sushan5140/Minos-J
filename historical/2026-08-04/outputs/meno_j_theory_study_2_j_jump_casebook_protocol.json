@@ -1,0 +1,41 @@
+{
+  "study_name": "Meno-J Theory Study 2: Historical J-Jump Calibration Casebook",
+  "case": "Ptolemy to Kepler to Newton",
+  "protocol_date": "2026-08-17",
+  "status": "FROZEN_AFTER_SOURCE_SCOPING_BEFORE_TRANSITION_VERDICTS",
+  "scope": "Theory and historical-source analysis only; no numerical dataset, LLM, or OpenRouter call.",
+  "question": "Can the Theory Study 1 J-jump contract distinguish model refinement, representational change, false mechanism, and explanatory unification in the Ptolemy-Kepler-Newton sequence?",
+  "units_of_analysis": [
+    "Ptolemaic baseline",
+    "Ptolemy-to-Kepler transition",
+    "Kepler orbital representation component",
+    "Kepler physical-mechanism component",
+    "Kepler-to-Newton transition",
+    "Newtonian dynamics component"
+  ],
+  "predeclared_traps": [
+    "Treating Ptolemy as mere arbitrary curve fitting",
+    "Treating heliocentrism alone as an immediate accuracy victory",
+    "Treating Kepler's successful ellipse and failed magnetic mechanism as one indivisible verdict",
+    "Treating Newton as exactly deriving an exactly Keplerian solar system",
+    "Demanding literal preservation of superseded theoretical objects",
+    "Equating theoretical compression with computational simplicity",
+    "Treating unresolved mechanism as automatic failure of a dynamical-law explanation"
+  ],
+  "success_criteria": {
+    "minimum_primary_or_official_source_records": 4,
+    "minimum_total_source_records": 10,
+    "all_claims_map_to_source_ids": true,
+    "both_transitions_receive_component_scoped_verdicts": true,
+    "at_least_four_false_jump_or_boundary_controls": true,
+    "contract_failure_must_trigger_explicit_amendment": true,
+    "no_empirical_or_priority_claim": true
+  },
+  "failure_conditions": [
+    "The result depends on the myth that Ptolemy only added arbitrary epicycles.",
+    "Kepler is labeled wholly correct or wholly wrong without component separation.",
+    "Newtonian orbits are described as exactly Keplerian without idealization and perturbation boundaries.",
+    "The original contract is declared successful despite a historical counterexample to its retention clause.",
+    "A representation change is called a surviving J-jump without rival discrimination or new failure exposure."
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "experiment_name": "Meno-J Experiment 10: Calibration Onboarding and Compatibility Bridge",
+  "update_status": "VALIDATED",
+  "primary_decision": "PERSONAL_CALIBRATION_REPAIR_SUPPORTED",
+  "working_theory_updates": [
+    {
+      "claim": "Limited labeled personal calibration can improve cohort-level cold-start coverage without retraining the classifier.",
+      "status": "SUPPORTED_UNDER_THIS_PROTOCOL",
+      "evidence": {
+        "mean_coverage_change_k12_vs_external_all4": 0.08740740740740749,
+        "worst_subject_coverage_change": 0.2666666666666667,
+        "mean_full_set_frequency_change": 0.07407407407407407,
+        "paired_subject_bootstrap_95_percent_interval": [0.023703703703703678, 0.16151851851851806]
+      }
+    },
+    {
+      "claim": "Twelve personal calibration windows provide an informative repair for S2 and S4.",
+      "status": "NOT_SUPPORTED",
+      "evidence": {
+        "S2": {
+          "coverage_change": 0.3555555555555556,
+          "personal_k12_coverage": 1.0,
+          "full_set_frequency_change": 0.3555555555555556,
+          "base_classifier_accuracy": 0.5555555555555555
+        },
+        "S4": {
+          "coverage_change": 0.28888888888888886,
+          "personal_k12_coverage": 0.9333333333333332,
+          "full_set_frequency_change": 0.42222222222222217,
+          "base_classifier_accuracy": 0.37777777777777777
+        }
+      },
+      "interpretation": "Personal thresholds cover these subjects mainly by expressing much more ambiguity; calibration does not repair the weak underlying classifier representation."
+    },
+    {
+      "claim": "Unlabeled standardized centroid distance is sufficient to select compatible external calibration subjects.",
+      "status": "NOT_SUPPORTED",
+      "evidence": {
+        "nearest2_mean_robustness_loss": 0.1788888888888889,
+        "farthest2_mean_robustness_loss": 0.19222222222222224,
+        "preregistered_loss_improvement": 0.013333333333333336,
+        "required_improvement": 0.03,
+        "nearest2_mean_coverage": 0.8222222222222222,
+        "farthest2_mean_coverage": 0.8859259259259258,
+        "single_subject_distance_loss_correlation": 0.355979685179193
+      },
+      "interpretation": "Centroid distance contains a weak association with calibration loss, but nearest-pair selection traded coverage for smaller sets and did not meet the decision rule."
+    },
+    {
+      "claim": "A finite conformal threshold is equivalent to useful calibration readiness.",
+      "status": "FALSIFIED",
+      "evidence": {
+        "k3": {"finite_threshold_fraction": 0.0, "full_set_frequency": 1.0},
+        "k6": {"finite_threshold_fraction": 0.0, "full_set_frequency": 1.0},
+        "k9": {"finite_threshold_fraction": 1.0, "mean_coverage": 0.9466666666666667, "full_set_frequency": 0.22814814814814813},
+        "k12": {"finite_threshold_fraction": 1.0, "mean_coverage": 0.965925925925926, "full_set_frequency": 0.28296296296296297}
+      },
+      "interpretation": "Nine observations make the alpha=0.1 threshold finite, but the threshold remains an extreme order statistic and can still produce conservative, low-information sets."
+    }
+  ],
+  "revised_j_jump_candidate": {
+    "name": "Calibration readiness frontier",
+    "statement": "A new subject becomes supportable through distinct stages—no finite personal threshold, finite but extreme threshold, informative personal threshold, and stable personalized threshold—rather than through a single binary onboarding boundary.",
+    "status": "NEW_TESTABLE_WORKING_CONCEPT_NOT_A_NOVELTY_CLAIM",
+    "next_falsification": "Extend the personal calibration curve through the order-statistic transition beyond 18 examples and test whether informativeness improves without classifier retraining; separately test representation or sensor-quality interventions for subjects that remain ambiguous."
+  },
+  "guardrails": [
+    "S2 and S4 are post-Experiment-9 exploratory cases.",
+    "The experiment used one dataset and one fixed LDA representation.",
+    "Coverage and full-set frequency must remain jointly reported.",
+    "No literature novelty claim has been made."
+  ],
+  "validation": "PASS_INDEPENDENT_EXACT_REPLAY"
+}

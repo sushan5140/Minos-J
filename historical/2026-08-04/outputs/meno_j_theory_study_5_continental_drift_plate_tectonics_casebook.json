@@ -1,0 +1,1030 @@
+{
+  "study_name": "Meno-J Theory Study 5: Historical J-Jump Casebook 4",
+  "case": "Continental drift, ocean-floor spreading, and plate tectonics",
+  "method": {
+    "protocol_sha256": "28a4e2cbe6fc86d71cf59ea9a14ea57291cf2a84b384542c5b481dc3e1514edb",
+    "study_4_report_sha256": "b75d785d1fc90b54c29e7db20fcb27b195308afb5bbc34189082d3f20d531177",
+    "study_4_extension_sha256": "ba915e758b3eae3a1aa04469286f0313fc3291f25d02b7f4740372569223f5f3",
+    "mode": "primary-source-led hindsight-controlled historical falsification study",
+    "llm_or_api_calls": false,
+    "dataset_or_simulation_calls": false,
+    "source_count": 20
+  },
+  "sources": [
+    {
+      "source_id": "D01",
+      "authors": "Alfred Wegener; English translation by Roland von Huene",
+      "year": "1912; translation 2002",
+      "title": "The Origin of Continents",
+      "url": "https://planet-terre.ens-lyon.fr/article/Wegener-genese-continents-oceans.xml",
+      "source_type": "primary_source_translation",
+      "access_depth": "translated_1912_paper_and_context_reviewed",
+      "supports": [
+        "Wegener explicitly proposed horizontal continental displacement as a unifying alternative to fixed-continent accounts."
+      ]
+    },
+    {
+      "source_id": "D02",
+      "authors": "Alfred Wegener; translated by J. G. A. Skerl",
+      "year": "1922 third edition; English 1924",
+      "title": "The Origin of Continents and Oceans",
+      "url": "https://en.wikisource.org/wiki/The_Origin_of_Continents_and_Oceans",
+      "source_type": "primary_source_book_translation",
+      "access_depth": "complete_public_domain_english_translation_reviewed",
+      "supports": [
+        "Wegener combined geometrical, geological, paleontological, paleoclimatic, and geodetic considerations, while proposing physically problematic motion through oceanic substrate."
+      ]
+    },
+    {
+      "source_id": "D03",
+      "authors": "Harold Jeffreys",
+      "year": 1924,
+      "title": "The Earth: Its Origin, History and Physical Constitution",
+      "url": "https://books.google.com/books/about/The_Earth.html?id=j71NAAAAMAAJ",
+      "source_type": "primary_source_book",
+      "access_depth": "bibliographic_record_and_relevant_geophysical_arguments_reviewed",
+      "supports": [
+        "Contemporary geophysical criticism challenged the adequacy of proposed tidal and rotational driving forces and the mechanical behavior required by drift."
+      ]
+    },
+    {
+      "source_id": "D04",
+      "authors": "American Association of Petroleum Geologists; W. A. J. M. van Waterschoot van der Gracht, editor",
+      "year": 1928,
+      "title": "Theory of Continental Drift: A Symposium",
+      "url": "https://doi.org/10.1306/SV2329",
+      "source_type": "primary_source_symposium",
+      "access_depth": "official_volume_metadata_and_selected_arguments_reviewed",
+      "supports": [
+        "The early controversy contained qualified support, factual disputes, and methodological disagreement—not one uniformly mocking rejection."
+      ]
+    },
+    {
+      "source_id": "D05",
+      "authors": "Arthur Holmes",
+      "year": "1929; published 1931",
+      "title": "Radioactivity and Earth Movements",
+      "url": "https://planet-terre.ens-lyon.fr/article/Arthur-Holmes-convection.xml",
+      "source_type": "primary_source_excerpts",
+      "access_depth": "substantial_primary_excerpts_and_publication_context_reviewed",
+      "supports": [
+        "Holmes proposed heat-driven mantle circulation as a possible mechanism connecting internal energy, spreading, and continental movement."
+      ]
+    },
+    {
+      "source_id": "D06",
+      "authors": "S. K. Runcorn",
+      "year": 1956,
+      "title": "Applications of the Remanent Magnetization of Rocks",
+      "url": "https://www.earthdoc.org/content/journals/gpr/4/3",
+      "source_type": "primary_source_journal",
+      "access_depth": "official_abstract_and_bibliographic_record_reviewed",
+      "supports": [
+        "Paleomagnetism offered an independent physical method for comparing past continental positions and apparent polar-wander paths."
+      ]
+    },
+    {
+      "source_id": "D07",
+      "authors": "S. K. Runcorn",
+      "year": 1961,
+      "title": "Climatic Change through Geological Time in the Light of Palaeomagnetic Evidence",
+      "url": "https://rmets.onlinelibrary.wiley.com/doi/10.1002/qj.49708737303",
+      "source_type": "primary_source_journal",
+      "access_depth": "official_abstract_and_detailed_argument_reviewed",
+      "supports": [
+        "Systematically different continental paleomagnetic paths and paleoclimate indicators supported relative continental motion rather than one shared polar path."
+      ]
+    },
+    {
+      "source_id": "D08",
+      "authors": "Harry H. Hess",
+      "year": 1962,
+      "title": "History of Ocean Basins",
+      "url": "https://eos-courses.readthedocs.io/en/latest/_downloads/53c5de2f78442b9d6494bcbee70d202e/Hess1962.pdf",
+      "source_type": "primary_source_book_chapter",
+      "access_depth": "complete_paper_reviewed",
+      "supports": [
+        "Hess proposed ocean-floor renewal at ridges and return into the mantle, replacing continents-plowing-through-fixed-seafloor with moving oceanic substrate."
+      ]
+    },
+    {
+      "source_id": "D09",
+      "authors": "Frederick J. Vine and Drummond H. Matthews",
+      "year": 1963,
+      "title": "Magnetic Anomalies over Oceanic Ridges",
+      "url": "https://www.nature.com/articles/199947a0.pdf",
+      "source_type": "primary_source_journal",
+      "access_depth": "complete_primary_paper_reviewed",
+      "supports": [
+        "The magnetic-stripe hypothesis joined geomagnetic reversals to symmetric seafloor accretion and generated quantitative spreading-rate expectations."
+      ]
+    },
+    {
+      "source_id": "D10",
+      "authors": "Edward Bullard, J. E. Everett, and A. Gilbert Smith",
+      "year": 1965,
+      "title": "The Fit of the Continents around the Atlantic",
+      "url": "https://royalsocietypublishing.org/doi/pdf/10.1098/rsta.1965.0020",
+      "source_type": "primary_source_journal",
+      "access_depth": "complete_primary_paper_and_official_abstract_reviewed",
+      "supports": [
+        "Least-squares fitting at continental margins quantified Atlantic reconstruction and stated its residual errors rather than relying on coastline resemblance."
+      ]
+    },
+    {
+      "source_id": "D11",
+      "authors": "J. Tuzo Wilson",
+      "year": 1965,
+      "title": "A New Class of Faults and Their Bearing on Continental Drift",
+      "url": "https://www.nature.com/articles/207343a0",
+      "source_type": "primary_source_journal",
+      "access_depth": "official_article_and_argument_reviewed",
+      "supports": [
+        "Transform faults supplied a new boundary type whose geometry and earthquake behavior followed from relative plate motion."
+      ]
+    },
+    {
+      "source_id": "D12",
+      "authors": "Jack Oliver and Bryan Isacks",
+      "year": 1967,
+      "title": "Deep Earthquake Zones, Anomalous Structures in the Upper Mantle, and the Lithosphere",
+      "url": "https://agupubs.onlinelibrary.wiley.com/doi/10.1029/JZ072i016p04259",
+      "source_type": "primary_source_journal",
+      "access_depth": "official_full_article_record_and_detailed_abstract_reviewed",
+      "supports": [
+        "Deep seismic zones beneath island arcs supported a strong descending lithospheric slab and crustal recycling."
+      ]
+    },
+    {
+      "source_id": "D13",
+      "authors": "Dan P. McKenzie and Robert L. Parker",
+      "year": 1967,
+      "title": "The North Pacific: An Example of Tectonics on a Sphere",
+      "url": "https://www.nature.com/articles/2161276a0",
+      "source_type": "primary_source_journal",
+      "access_depth": "official_article_and_abstract_reviewed",
+      "supports": [
+        "Rigid aseismic regions moving as plates on a sphere predicted boundary slip directions using finite rotations."
+      ]
+    },
+    {
+      "source_id": "D14",
+      "authors": "W. Jason Morgan",
+      "year": 1968,
+      "title": "Rises, Trenches, Great Faults, and Crustal Blocks",
+      "url": "https://www.mantleplumes.org/WebDocuments/Morgan1968.pdf",
+      "source_type": "primary_source_journal",
+      "access_depth": "complete_primary_paper_reviewed",
+      "supports": [
+        "Morgan generalized rigid crustal blocks including oceanic regions and connected rises, trenches, faults, and spherical motions."
+      ]
+    },
+    {
+      "source_id": "D15",
+      "authors": "Naomi Oreskes",
+      "year": 1999,
+      "title": "The Rejection of Continental Drift: Theory and Method in American Earth Science",
+      "url": "https://academic.oup.com/book/40879",
+      "source_type": "scholarly_history_of_science",
+      "access_depth": "official_book_summary_and_selected_argument_reviewed",
+      "supports": [
+        "American rejection cannot be reduced to absence of mechanism; disciplinary standards about direct and indirect evidence also shaped appraisal."
+      ]
+    },
+    {
+      "source_id": "D16",
+      "authors": "Dunja Šešelja and Erik Weber",
+      "year": 2012,
+      "title": "Rationality and Irrationality in the History of Continental Drift",
+      "url": "https://www.sciencedirect.com/science/article/pii/S0039368111001099",
+      "source_type": "peer_reviewed_philosophy_of_science",
+      "access_depth": "official_abstract_and_full_argument_preview_reviewed",
+      "supports": [
+        "A theory can be insufficiently warranted for acceptance yet epistemically worthy of continued pursuit; early drift should not have been abandoned as unworthy."
+      ]
+    },
+    {
+      "source_id": "D17",
+      "authors": "Henry R. Frankel",
+      "year": 2012,
+      "title": "The Continental Drift Controversy",
+      "url": "https://www.cambridge.org/core/books/continental-drift-controversy/63BC36D3F78D604E3E204234342ED804",
+      "source_type": "scholarly_history_of_science",
+      "access_depth": "official_four_volume_scope_and_relevant_summaries_reviewed",
+      "supports": [
+        "The transition developed through distinct paleomagnetic, ocean-floor-spreading, and plate-kinematic research programs rather than a single vindication event."
+      ]
+    },
+    {
+      "source_id": "D18",
+      "authors": "U.S. Geological Survey",
+      "year": "1996; updated online",
+      "title": "Developing the Theory of Plate Tectonics",
+      "url": "https://pubs.usgs.gov/gip/dynamic/developing.html",
+      "source_type": "official_scientific_synthesis",
+      "access_depth": "complete_official_exposition_reviewed",
+      "supports": [
+        "Ocean-floor topography, magnetic reversals and stripes, seafloor spreading, rock ages, and earthquake-volcano localization formed a converging evidential system."
+      ]
+    },
+    {
+      "source_id": "D19",
+      "authors": "Ronald E. Doel",
+      "year": 2024,
+      "title": "Cold War and Earth Sciences",
+      "url": "https://link.springer.com/rwe/10.1007/978-3-030-92679-3_25-1",
+      "source_type": "scholarly_history_of_science",
+      "access_depth": "complete_open_access_chapter_reviewed",
+      "supports": [
+        "Military patronage, new instruments, global surveys, and classification helped create both new ocean-floor knowledge and consequential domains of ignorance."
+      ]
+    },
+    {
+      "source_id": "D20",
+      "authors": "Dan McKenzie",
+      "year": 2015,
+      "title": "A Harbinger of Plate Tectonics: Commentary on Bullard, Everett and Smith (1965)",
+      "url": "https://doi.org/10.1098/rsta.2014.0227",
+      "source_type": "peer_reviewed_historical_commentary",
+      "access_depth": "full_open_access_commentary_reviewed",
+      "supports": [
+        "The quantitative Atlantic fit was a kinematic bridge between continental drift and plate tectonics, explicitly distinct from a complete driving mechanism."
+      ]
+    }
+  ],
+  "lineage_nodes": [
+    {
+      "node_id": "N1",
+      "name": "Fixed-continent predecessor mosaic",
+      "component": "land bridges, contraction, vertical movements, and regional geology",
+      "surviving_value": "It addressed real stratigraphic, fossil, mountain-building, and isostatic observations through established field practices.",
+      "failed_or_limited_claim": "Separate auxiliary explanations struggled to unify cross-ocean matches, paleoclimates, and later global geophysical patterns.",
+      "verdict": "EMPIRICAL_PRACTICE_RETAINED_FRAGMENTED_GLOBAL_ARCHITECTURE_REPLACED",
+      "sources": [
+        "D02",
+        "D15"
+      ]
+    },
+    {
+      "node_id": "N2",
+      "name": "Wegener's continental-displacement synthesis",
+      "component": "mobile continents and reconstructed past geography",
+      "surviving_value": "It unified continental-margin fit, matching geology and fossils, and paleoclimatic distributions under relative continental motion.",
+      "failed_or_limited_claim": "Continents were modeled as moving through oceanic substrate under inadequate forces, with rates and reconstructions of uneven quality.",
+      "verdict": "PURSUIT_WORTHY_PATTERN_AND_HISTORY_PRECURSOR_NOT_ACCEPTANCE_READY",
+      "sources": [
+        "D01",
+        "D02",
+        "D03",
+        "D16"
+      ]
+    },
+    {
+      "node_id": "N3",
+      "name": "Interwar appraisal and criticism",
+      "component": "mechanical, evidential, and disciplinary stress testing",
+      "surviving_value": "Critics exposed force-scale, material, fit, and evidential problems that a mature mobility theory had to answer.",
+      "failed_or_limited_claim": "Treating the whole research program as unworthy of pursuit overreached the available counterevidence and ignored its unifying promise.",
+      "verdict": "ACCEPTANCE_SKEPTICISM_PARTLY_WARRANTED_PURSUIT_REJECTION_NOT_WARRANTED",
+      "sources": [
+        "D03",
+        "D04",
+        "D15",
+        "D16"
+      ]
+    },
+    {
+      "node_id": "N4",
+      "name": "Holmes's mantle-circulation mechanism program",
+      "component": "internal heat, convection, upwelling, and horizontal transport",
+      "surviving_value": "It made internal circulation a physically motivated research path and anticipated links among spreading, sinking, and crustal movement.",
+      "failed_or_limited_claim": "It lacked the postwar ocean-floor observations, quantitative plate boundaries, and decisive independent tests required for a complete theory.",
+      "verdict": "PROMISING_MECHANISM_PROGRAM_NOT_COMPLETE_J_JUMP",
+      "sources": [
+        "D05",
+        "D17"
+      ]
+    },
+    {
+      "node_id": "N5",
+      "name": "Postwar observability infrastructure",
+      "component": "sonar bathymetry, marine magnetometry, global seismology, dating, and surveys",
+      "surviving_value": "Previously hidden ocean-floor structure became measurable, comparable, and globally mappable.",
+      "failed_or_limited_claim": "Data and instruments did not logically generate one theory; patronage and classification also shaped what was collected and shared.",
+      "verdict": "EPISTEMIC_INFRASTRUCTURE_EXPANDED_TEST_SURFACE_NOT_THEORY_BY_ITSELF",
+      "sources": [
+        "D18",
+        "D19"
+      ]
+    },
+    {
+      "node_id": "N6",
+      "name": "Hess's seafloor-spreading architecture",
+      "component": "creation, lateral transport, and recycling of oceanic lithosphere",
+      "surviving_value": "It redefined the moving substrate and connected ridges, ocean-basin youth, trenches, and mantle circulation.",
+      "failed_or_limited_claim": "Initially speculative elements and mechanism details required independent empirical discrimination.",
+      "verdict": "REPRESENTATIONAL_AND_MECHANISTIC_J_JUMP_CANDIDATE_PENDING_TESTS",
+      "sources": [
+        "D08",
+        "D18"
+      ]
+    },
+    {
+      "node_id": "N7",
+      "name": "Independent marine and seismic discriminators",
+      "component": "magnetic symmetry, age patterns, transform geometry, and descending seismic zones",
+      "surviving_value": "Several new observation types tested different consequences of spreading, boundary motion, and recycling.",
+      "failed_or_limited_claim": "No single discriminator supplied the entire global kinematic architecture or resolved all driving-force questions.",
+      "verdict": "CONVERGENT_DISCRIMINATION_NETWORK",
+      "sources": [
+        "D09",
+        "D10",
+        "D11",
+        "D12",
+        "D18",
+        "D20"
+      ]
+    },
+    {
+      "node_id": "N8",
+      "name": "Rigid-plate tectonic synthesis",
+      "component": "lithospheric plates, spherical rotations, and boundary interactions",
+      "surviving_value": "It unified continental and oceanic motion, spreading ridges, subduction zones, transforms, earthquake vectors, and reconstruction rates.",
+      "failed_or_limited_claim": "Plate interiors are approximations and the balance among slab pull, ridge forces, mantle flow, initiation, and deep-time regimes remains research-active.",
+      "verdict": "SURVIVING_ACCEPTANCE_READY_J_JUMP_WITH_DECLARED_APPROXIMATIONS",
+      "sources": [
+        "D11",
+        "D12",
+        "D13",
+        "D14",
+        "D18"
+      ]
+    }
+  ],
+  "transition_edges": [
+    {
+      "transition_id": "T1_WEGENER_SYNTHESIS",
+      "from_nodes": [
+        "N1"
+      ],
+      "to_node": "N2",
+      "claimed_component": "mobile-continent reconstruction",
+      "criteria": {
+        "J1_representation_change": {
+          "status": "PASS",
+          "reason": "Continents became historically mobile bodies rather than permanent geographic fixtures.",
+          "sources": [
+            "D01",
+            "D02"
+          ]
+        },
+        "J2_retention_accounting": {
+          "status": "PASS_PARTIAL",
+          "reason": "Regional geology, fossils, and climate indicators were retained and reassembled, but some reconstructions and force claims failed.",
+          "sources": [
+            "D02"
+          ]
+        },
+        "J3_new_reach": {
+          "status": "PASS",
+          "reason": "One reconstruction linked observations across geology, paleontology, climatology, and geography.",
+          "sources": [
+            "D02"
+          ]
+        },
+        "J4_complexity_dimensions": {
+          "status": "PASS_WITH_TRADEOFF",
+          "reason": "Global unification reduced auxiliary land bridges while creating difficult mechanical commitments.",
+          "sources": [
+            "D02",
+            "D03"
+          ]
+        },
+        "J5_rival_discrimination": {
+          "status": "PARTIAL",
+          "reason": "Consilience favored mobility, but fits, land bridges, polar motion, and deformation histories remained disputed with limited ocean data.",
+          "sources": [
+            "D03",
+            "D04"
+          ]
+        },
+        "J6_falsifiability_growth": {
+          "status": "PASS_BUT_WEAKLY_INSTRUMENTED",
+          "reason": "Reconstructions risked mismatch in geology, fossils, climates, and geodesy, though decisive ocean-floor tests were unavailable.",
+          "sources": [
+            "D02"
+          ]
+        }
+      },
+      "verdict": "GENUINE_PATTERN_REPRESENTATION_JUMP_PURSUIT_WORTHY_NOT_FULLY_ACCEPTANCE_READY",
+      "unresolved": "Moving object, force, ocean-floor response, and directly measurable rates were inadequate or unclear."
+    },
+    {
+      "transition_id": "T2_CRITICAL_STRESS_TEST",
+      "from_nodes": [
+        "N2"
+      ],
+      "to_node": "N3",
+      "claimed_component": "contemporaneous acceptance and pursuit appraisal",
+      "criteria": {
+        "J1_representation_change": {
+          "status": "NOT_APPLICABLE",
+          "reason": "Criticism tested the proposal rather than supplying a successor representation.",
+          "sources": [
+            "D03",
+            "D04"
+          ]
+        },
+        "J2_retention_accounting": {
+          "status": "PASS_AS_AUDIT",
+          "reason": "It preserved anomalous observations while challenging whether drift explained them physically.",
+          "sources": [
+            "D04"
+          ]
+        },
+        "J3_new_reach": {
+          "status": "PARTIAL",
+          "reason": "Mechanical estimates and field standards exposed new requirements but did not unify the phenomena.",
+          "sources": [
+            "D03",
+            "D15"
+          ]
+        },
+        "J4_complexity_dimensions": {
+          "status": "NOT_APPLICABLE",
+          "reason": "The episode concerns evaluation thresholds rather than compression.",
+          "sources": [
+            "D15",
+            "D16"
+          ]
+        },
+        "J5_rival_discrimination": {
+          "status": "PASS_FOR_ACCEPTANCE_PARTIAL_FOR_PURSUIT",
+          "reason": "Objections weakened full acceptance, but did not show the mobile research program lacked future promise.",
+          "sources": [
+            "D15",
+            "D16"
+          ]
+        },
+        "J6_falsifiability_growth": {
+          "status": "PASS",
+          "reason": "Critics sharpened force, fit, material, and evidential tests that successors had to meet.",
+          "sources": [
+            "D03",
+            "D04"
+          ]
+        }
+      },
+      "verdict": "VALUABLE_AUDIT_NOT_J_JUMP_ACCEPTANCE_AND_PURSUIT_MUST_SPLIT",
+      "unresolved": "Different scientific communities weighted direct versus synthetic evidence differently."
+    },
+    {
+      "transition_id": "T3_HOLMES_MECHANISM",
+      "from_nodes": [
+        "N2",
+        "N3"
+      ],
+      "to_node": "N4",
+      "claimed_component": "mantle-circulation research program",
+      "criteria": {
+        "J1_representation_change": {
+          "status": "PASS_CANDIDATE",
+          "reason": "Internal heat-driven circulation replaced surface tidal and rotational forcing as a possible transport system.",
+          "sources": [
+            "D05"
+          ]
+        },
+        "J2_retention_accounting": {
+          "status": "PASS_PARTIAL",
+          "reason": "Continental mobility was retained while its proposed driving forces were replaced.",
+          "sources": [
+            "D05"
+          ]
+        },
+        "J3_new_reach": {
+          "status": "PASS_CONCEPTUAL",
+          "reason": "Upwelling, lateral flow, and sinking offered a common architecture for extension and compression.",
+          "sources": [
+            "D05"
+          ]
+        },
+        "J4_complexity_dimensions": {
+          "status": "PARTIAL",
+          "reason": "The picture unified processes but lacked constrained rheology and global boundary calculation.",
+          "sources": [
+            "D05"
+          ]
+        },
+        "J5_rival_discrimination": {
+          "status": "FAIL_AT_TIME",
+          "reason": "Available observations did not uniquely select the circulation geometry over rivals.",
+          "sources": [
+            "D17"
+          ]
+        },
+        "J6_falsifiability_growth": {
+          "status": "PARTIAL",
+          "reason": "It suggested spatial associations but lacked a mature quantitative prediction program.",
+          "sources": [
+            "D05"
+          ]
+        }
+      },
+      "verdict": "MECHANISM_PROGRAM_WORTHY_OF_PURSUIT_NOT_ACCEPTANCE_READY",
+      "unresolved": "Direct ocean-floor and deep-Earth tests were not yet available."
+    },
+    {
+      "transition_id": "T4_SEAFLOOR_REDEFINITION",
+      "from_nodes": [
+        "N2",
+        "N4",
+        "N5"
+      ],
+      "to_node": "N6",
+      "claimed_component": "mobile and renewable oceanic substrate",
+      "criteria": {
+        "J1_representation_change": {
+          "status": "PASS_MAJOR",
+          "reason": "The moving unit changed from continents crossing fixed seafloor to a coupled surface where new ocean floor forms and old floor returns.",
+          "sources": [
+            "D08"
+          ]
+        },
+        "J2_retention_accounting": {
+          "status": "PASS",
+          "reason": "Relative continental separation survived, while the plowing mechanism and permanent ocean floor were rejected.",
+          "sources": [
+            "D02",
+            "D08"
+          ]
+        },
+        "J3_new_reach": {
+          "status": "PASS",
+          "reason": "Ridges, trenches, ocean-floor youth, sediment patterns, and continental separation entered one cyclic architecture.",
+          "sources": [
+            "D08",
+            "D18"
+          ]
+        },
+        "J4_complexity_dimensions": {
+          "status": "PASS_WITH_TRADEOFF",
+          "reason": "A conveyor-like system unified ocean basins but introduced mantle and recycling commitments.",
+          "sources": [
+            "D08"
+          ]
+        },
+        "J5_rival_discrimination": {
+          "status": "PARTIAL_PENDING_TESTS",
+          "reason": "It generated distinctive consequences but was initially presented as geopoetry requiring independent checks.",
+          "sources": [
+            "D08",
+            "D17"
+          ]
+        },
+        "J6_falsifiability_growth": {
+          "status": "PASS",
+          "reason": "It risked failure on symmetry, ages, sediments, ridge flux, trenches, and global closure.",
+          "sources": [
+            "D08",
+            "D18"
+          ]
+        }
+      },
+      "verdict": "OBJECT_REDEFINITION_AND_MECHANISM_J_JUMP_CANDIDATE",
+      "unresolved": "The predicted records needed independent observational confirmation."
+    },
+    {
+      "transition_id": "T5_CONVERGENT_DISCRIMINATION",
+      "from_nodes": [
+        "N5",
+        "N6"
+      ],
+      "to_node": "N7",
+      "claimed_component": "independent prediction and evidence network",
+      "criteria": {
+        "J1_representation_change": {
+          "status": "PASS_EMPIRICAL_ENCODING",
+          "reason": "Oceanic crust became a time-ordered magnetic record and boundaries became kinematically typed structures.",
+          "sources": [
+            "D09",
+            "D11"
+          ]
+        },
+        "J2_retention_accounting": {
+          "status": "PASS",
+          "reason": "Margin fit and paleomagnetic mobility were retained while being tied to spreading, transforms, and sinking slabs.",
+          "sources": [
+            "D06",
+            "D09",
+            "D10",
+            "D12"
+          ]
+        },
+        "J3_new_reach": {
+          "status": "PASS",
+          "reason": "The framework predicted stripe symmetry and rates, correct transform sense, deep slab geometry, and quantitative reconstructions.",
+          "sources": [
+            "D09",
+            "D10",
+            "D11",
+            "D12"
+          ]
+        },
+        "J4_complexity_dimensions": {
+          "status": "PASS",
+          "reason": "Several independent datasets became mutually constraining parts of one boundary system.",
+          "sources": [
+            "D18"
+          ]
+        },
+        "J5_rival_discrimination": {
+          "status": "PASS_STRONG",
+          "reason": "Symmetric reversals, transform geometry, and dipping seismic zones were much harder for fixed or expanding alternatives to reproduce jointly.",
+          "sources": [
+            "D09",
+            "D11",
+            "D12"
+          ]
+        },
+        "J6_falsifiability_growth": {
+          "status": "PASS_STRONG",
+          "reason": "Each independent data family supplied its own failure surface and cross-checks on rates and directions.",
+          "sources": [
+            "D09",
+            "D10",
+            "D11",
+            "D12"
+          ]
+        }
+      },
+      "verdict": "SURVIVING_CONVERGENT_EVIDENTIAL_J_JUMP",
+      "unresolved": "A global rigid-plate kinematics still had to close motions consistently on a sphere."
+    },
+    {
+      "transition_id": "T6_RIGID_PLATE_SYNTHESIS",
+      "from_nodes": [
+        "N6",
+        "N7"
+      ],
+      "to_node": "N8",
+      "claimed_component": "global spherical plate kinematics",
+      "criteria": {
+        "J1_representation_change": {
+          "status": "PASS",
+          "reason": "Continents and oceanic lithosphere became parts of rigid plates separated by spreading, transform, and subduction boundaries.",
+          "sources": [
+            "D13",
+            "D14"
+          ]
+        },
+        "J2_retention_accounting": {
+          "status": "PASS_EXPLICIT",
+          "reason": "Wegener's relative continental histories, Holmes-Hess mobility, and boundary evidence were recovered within a new moving object.",
+          "sources": [
+            "D02",
+            "D08",
+            "D13",
+            "D14"
+          ]
+        },
+        "J3_new_reach": {
+          "status": "PASS",
+          "reason": "Euler rotations connected slip vectors, spreading rates, transforms, trenches, and reconstructions quantitatively.",
+          "sources": [
+            "D13",
+            "D14"
+          ]
+        },
+        "J4_complexity_dimensions": {
+          "status": "PASS_WITH_APPROXIMATION",
+          "reason": "A small set of plate rotations compressed global surface motion while idealizing intraplate deformation.",
+          "sources": [
+            "D13",
+            "D14"
+          ]
+        },
+        "J5_rival_discrimination": {
+          "status": "PASS",
+          "reason": "Closed spherical motions and boundary-consistent vectors distinguished the synthesis from loose continental mobility.",
+          "sources": [
+            "D13",
+            "D14"
+          ]
+        },
+        "J6_falsifiability_growth": {
+          "status": "PASS",
+          "reason": "Predicted velocities, fault senses, boundary locations, earthquake vectors, and reconstruction closure could independently fail.",
+          "sources": [
+            "D13",
+            "D14"
+          ]
+        }
+      },
+      "verdict": "SURVIVING_ACCEPTANCE_READY_GLOBAL_J_JUMP",
+      "unresolved": "Driving-force partition, diffuse boundaries, plate initiation, and early-Earth applicability remain domain-specific research questions."
+    }
+  ],
+  "false_jump_controls": [
+    {
+      "control_id": "G1",
+      "false_claim": "Wegener merely noticed that coastlines fit.",
+      "verdict": "REJECT_EVIDENCE_ERASURE",
+      "reason": "His case integrated geological, fossil, climatic, geographical, and attempted geodetic evidence."
+    },
+    {
+      "control_id": "G2",
+      "false_claim": "Plate tectonics proved Wegener's complete theory correct.",
+      "verdict": "REJECT_RETROSPECTIVE_SCOPE_INFLATION",
+      "reason": "Plate theory changed the moving object, rejected plowing and weak forces, and added ocean-floor creation, recycling, and boundaries."
+    },
+    {
+      "control_id": "G3",
+      "false_claim": "Early critics were simply irrational conservatives.",
+      "verdict": "REJECT_HEROIC_MARTYR_MYTH",
+      "reason": "Mechanical and evidential objections were serious even though abandoning pursuit was not warranted."
+    },
+    {
+      "control_id": "G4",
+      "false_claim": "Lack of mechanism alone explains American rejection.",
+      "verdict": "REJECT_MONOCAUSAL_HISTORIOGRAPHY",
+      "reason": "Disciplinary evidential standards and methodological preferences also shaped rejection."
+    },
+    {
+      "control_id": "G5",
+      "false_claim": "A theory worthy of pursuit should already be accepted as true.",
+      "verdict": "REJECT_STANCE_COLLAPSE",
+      "reason": "Promising unification can justify research before evidence justifies belief or operational adoption."
+    },
+    {
+      "control_id": "G6",
+      "false_claim": "Holmes had already completed plate tectonics in 1929.",
+      "verdict": "REJECT_FORERUNNER_COMPLETION",
+      "reason": "He proposed a fruitful mechanism family without the later oceanic object, boundaries, kinematics, or discriminators."
+    },
+    {
+      "control_id": "G7",
+      "false_claim": "Hess directly proved seafloor spreading.",
+      "verdict": "REJECT_SPECULATION_AS_PROOF",
+      "reason": "His architecture created risky predictions whose warrant came from later independent evidence."
+    },
+    {
+      "control_id": "G8",
+      "false_claim": "Vine and Matthews alone discovered plate tectonics.",
+      "verdict": "REJECT_SINGLE_PAPER_REVOLUTION",
+      "reason": "Magnetic stripes were one powerful link within paleomagnetic, bathymetric, seismic, fault, and kinematic programs."
+    },
+    {
+      "control_id": "G9",
+      "false_claim": "Continents are tectonic plates.",
+      "verdict": "REJECT_OBJECT_EQUIVOCATION",
+      "reason": "Plates can contain both oceanic and continental lithosphere, and some continents span or interact with multiple plates."
+    },
+    {
+      "control_id": "G10",
+      "false_claim": "New instruments automatically produced the correct theory.",
+      "verdict": "REJECT_DATA_DETERMINISM",
+      "reason": "Theory guided interpretation, while patronage, sampling, secrecy, and disciplinary choices shaped the observable record."
+    },
+    {
+      "control_id": "G11",
+      "false_claim": "Acceptance in the 1960s settled every mechanism and domain question.",
+      "verdict": "REJECT_FINAL_THEORY_MYTH",
+      "reason": "Plate kinematics is strongly established while driving forces, diffuse deformation, initiation, and deep-time regimes remain active research areas."
+    }
+  ],
+  "prior_contract_rule_tests": [
+    {
+      "rule_id": "A1_RETENTION_ACCOUNTING",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Wegener's mobility and reconstructions survive selectively; his forces and moving-object model do not."
+    },
+    {
+      "rule_id": "A2_COMPONENT_SCOPING",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Pattern, reconstruction, mechanism, ocean-floor renewal, boundary types, and kinematics require separate verdicts."
+    },
+    {
+      "rule_id": "A3_COMPRESSION_DIMENSIONS",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Global plate rotations compress surface motion while adding observational and computational machinery."
+    },
+    {
+      "rule_id": "A4_APPROXIMATION_BOUNDARY",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Rigid plates and sharp boundaries are strong approximations, not universal literal descriptions."
+    },
+    {
+      "rule_id": "A5_UNDERDETERMINATION",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Early cross-ocean matches supported mobility without uniquely determining plate tectonics."
+    },
+    {
+      "rule_id": "A6_DISTRIBUTED_LINEAGE_GRAPH",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "The successor arose across drift, paleomagnetism, oceanography, seismology, and spherical kinematics."
+    },
+    {
+      "rule_id": "A7_INTERVENTION_MECHANISM_DECOUPLING",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Generalized: accurate reconstruction can precede a valid transport mechanism."
+    },
+    {
+      "rule_id": "A8_EVIDENCE_TRIANGULATION_LADDER",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Independent magnetic, age, seismic, geometric, and fault evidence supplied convergent warrant."
+    },
+    {
+      "rule_id": "A9_RELATIONAL_CAUSAL_SCOPE",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Relative motion, driving force, material transport, and boundary response are different claims."
+    },
+    {
+      "rule_id": "A10_DISCOVERY_UPTAKE_OUTCOME_SEPARATION",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Early proposal, research pursuit, disciplinary rejection, and later acceptance followed distinct timelines."
+    },
+    {
+      "rule_id": "A11_FORMAL_ONTOLOGY_DECOUPLING",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Continental reconstructions can survive while the ontology of continents plowing through sima fails."
+    },
+    {
+      "rule_id": "A12_CONSTRAINT_MECHANISM_LAYERING",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Kinematics, boundary constraints, and mantle-driving mechanisms occupy different explanatory layers."
+    },
+    {
+      "rule_id": "A13_BRIDGE_LAW_REQUIREMENT",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Plate rotations and boundary vectors bridge global objects to measurable local motions."
+    },
+    {
+      "rule_id": "A14_TRANSITION_ROLE_TAXONOMY",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Wegener was a synthesis precursor; Holmes a mechanism program; Hess an architecture; later work supplied discriminators and kinematics."
+    },
+    {
+      "rule_id": "A15_LAYERED_SUCCESSOR_TEST",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Plate kinematics, geodynamics, seismology, and geological reconstruction coexist as constrained layers."
+    }
+  ],
+  "contract_extension": {
+    "extension_name": "Historical Calibration Extension 4",
+    "trigger": "The case requires scoring a precursor using only contemporaneous evidence, separating pursuit from acceptance, recognizing redefinition of the theoretical object, and treating observability infrastructure as part of the test architecture.",
+    "prior_rule_status": [
+      {
+        "rule_id": "A1_RETENTION_ACCOUNTING",
+        "status": "PASS_AND_ESSENTIAL",
+        "finding": "Wegener's mobility and reconstructions survive selectively; his forces and moving-object model do not."
+      },
+      {
+        "rule_id": "A2_COMPONENT_SCOPING",
+        "status": "PASS_AND_ESSENTIAL",
+        "finding": "Pattern, reconstruction, mechanism, ocean-floor renewal, boundary types, and kinematics require separate verdicts."
+      },
+      {
+        "rule_id": "A3_COMPRESSION_DIMENSIONS",
+        "status": "PASS_AND_ESSENTIAL",
+        "finding": "Global plate rotations compress surface motion while adding observational and computational machinery."
+      },
+      {
+        "rule_id": "A4_APPROXIMATION_BOUNDARY",
+        "status": "PASS_AND_ESSENTIAL",
+        "finding": "Rigid plates and sharp boundaries are strong approximations, not universal literal descriptions."
+      },
+      {
+        "rule_id": "A5_UNDERDETERMINATION",
+        "status": "PASS_AND_ESSENTIAL",
+        "finding": "Early cross-ocean matches supported mobility without uniquely determining plate tectonics."
+      },
+      {
+        "rule_id": "A6_DISTRIBUTED_LINEAGE_GRAPH",
+        "status": "PASS_AND_ESSENTIAL",
+        "finding": "The successor arose across drift, paleomagnetism, oceanography, seismology, and spherical kinematics."
+      },
+      {
+        "rule_id": "A7_INTERVENTION_MECHANISM_DECOUPLING",
+        "status": "PASS_AND_ESSENTIAL",
+        "finding": "Generalized: accurate reconstruction can precede a valid transport mechanism."
+      },
+      {
+        "rule_id": "A8_EVIDENCE_TRIANGULATION_LADDER",
+        "status": "PASS_AND_ESSENTIAL",
+        "finding": "Independent magnetic, age, seismic, geometric, and fault evidence supplied convergent warrant."
+      },
+      {
+        "rule_id": "A9_RELATIONAL_CAUSAL_SCOPE",
+        "status": "PASS_AND_ESSENTIAL",
+        "finding": "Relative motion, driving force, material transport, and boundary response are different claims."
+      },
+      {
+        "rule_id": "A10_DISCOVERY_UPTAKE_OUTCOME_SEPARATION",
+        "status": "PASS_AND_ESSENTIAL",
+        "finding": "Early proposal, research pursuit, disciplinary rejection, and later acceptance followed distinct timelines."
+      },
+      {
+        "rule_id": "A11_FORMAL_ONTOLOGY_DECOUPLING",
+        "status": "PASS_AND_ESSENTIAL",
+        "finding": "Continental reconstructions can survive while the ontology of continents plowing through sima fails."
+      },
+      {
+        "rule_id": "A12_CONSTRAINT_MECHANISM_LAYERING",
+        "status": "PASS_AND_ESSENTIAL",
+        "finding": "Kinematics, boundary constraints, and mantle-driving mechanisms occupy different explanatory layers."
+      },
+      {
+        "rule_id": "A13_BRIDGE_LAW_REQUIREMENT",
+        "status": "PASS_AND_ESSENTIAL",
+        "finding": "Plate rotations and boundary vectors bridge global objects to measurable local motions."
+      },
+      {
+        "rule_id": "A14_TRANSITION_ROLE_TAXONOMY",
+        "status": "PASS_AND_ESSENTIAL",
+        "finding": "Wegener was a synthesis precursor; Holmes a mechanism program; Hess an architecture; later work supplied discriminators and kinematics."
+      },
+      {
+        "rule_id": "A15_LAYERED_SUCCESSOR_TEST",
+        "status": "PASS_AND_ESSENTIAL",
+        "finding": "Plate kinematics, geodynamics, seismology, and geological reconstruction coexist as constrained layers."
+      }
+    ],
+    "extensions": [
+      {
+        "extension_id": "A16_HINDSIGHT_FIREWALL",
+        "new_rule": "Partition evidence by availability date and issue a contemporaneous verdict before adding retrospective evidence. Never credit a precursor with later instruments, observations, concepts, or successful descendants.",
+        "guardrail": "Later vindication can update lineage credit but cannot rewrite the warrant originally available.",
+        "sources": [
+          "D02",
+          "D15",
+          "D16",
+          "D17"
+        ]
+      },
+      {
+        "extension_id": "A17_EPISTEMIC_STANCE_LADDER",
+        "new_rule": "Score rejection, non-acceptance, pursuit, provisional use, and acceptance separately. A hypothesis may rationally merit pursuit while rationally failing the acceptance threshold.",
+        "guardrail": "Promising is not true; premature non-acceptance is not the same as suppressing further investigation.",
+        "sources": [
+          "D04",
+          "D16"
+        ]
+      },
+      {
+        "extension_id": "A18_OBJECT_REDEFINITION_TEST",
+        "new_rule": "Record whether the successor preserves the predecessor's objects or replaces them. If the moving, causal, or measured object changes, treat the relation as transformation rather than simple confirmation.",
+        "guardrail": "Shared surface vocabulary such as drift does not establish identity between continents and lithospheric plates.",
+        "sources": [
+          "D02",
+          "D08",
+          "D13",
+          "D14"
+        ]
+      },
+      {
+        "extension_id": "A19_INDEPENDENT_PREDICTION_LEDGER",
+        "new_rule": "For each evidential success, record whether it was used to construct, tune, or independently test the proposal, and whether it discriminates against named rivals jointly or only in isolation.",
+        "guardrail": "Do not count multiple transformations of one dataset as independent convergence or call post-hoc fit a novel prediction.",
+        "sources": [
+          "D09",
+          "D10",
+          "D11",
+          "D12",
+          "D18"
+        ]
+      },
+      {
+        "extension_id": "A20_OBSERVABILITY_FRONTIER",
+        "new_rule": "Record which claims were untestable under the available measurement infrastructure and which new instruments, surveys, access, funding, or data-sharing changes expanded the falsification surface.",
+        "guardrail": "Do not treat infrastructure as automatic truth production; document sampling, classification, and institutional selection effects.",
+        "sources": [
+          "D18",
+          "D19"
+        ]
+      }
+    ],
+    "revised_j_jump_object": "A hindsight-controlled lineage subgraph with separate pursuit and acceptance verdicts, explicit object identity or redefinition, independently classified predictions, dated observability limits, and a successor architecture that survives cross-domain closure tests."
+  },
+  "results": {
+    "wegener_contemporaneous_pursuit_verdict": "WORTHY_OF_PURSUIT",
+    "wegener_contemporaneous_acceptance_verdict": "NOT_YET_ACCEPTANCE_READY",
+    "plate_tectonics_relation_to_wegener": "SELECTIVE_RETENTION_PLUS_OBJECT_REDEFINITION_NOT_SIMPLE_VINDICATION",
+    "prior_contract_generalized": true,
+    "prior_contract_sufficient_unchanged": false,
+    "full_transition_verdict": "SURVIVING_HINDSIGHT_CONTROLLED_DISTRIBUTED_J_JUMP",
+    "significant_findings": [
+      "Wegener's program deserved continued pursuit even though full acceptance was premature; Meno-J must separate those epistemic decisions.",
+      "Plate tectonics did not merely add a mechanism to continental drift: it redefined the moving object from continents to lithospheric plates containing continental and oceanic material.",
+      "The strongest warrant came from independent cross-domain closure—magnetic symmetry, ages, transform geometry, deep seismic zones, and spherical motion—not from retrospective resemblance alone.",
+      "Rejection was historically multi-causal: mechanical objections mattered, but disciplinary standards concerning direct and synthetic evidence also shaped appraisal.",
+      "New instruments and surveys expanded what could be falsified; observability infrastructure is therefore part of scientific reasoning, not invisible background.",
+      "For AI J-jumps, the target is a pursuit-worthy new representation that states what future observation would make it acceptance-ready, not a confident claim of present truth."
+    ]
+  },
+  "decision": "CASEBOOK_4_SUCCESS_PURSUIT_ACCEPTANCE_SPLIT_AND_OBJECT_REDEFINITION_ADDED",
+  "next_case": {
+    "name": "Ulcers: stress and acid to Helicobacter pylori and interaction models",
+    "reason": "This tests whether Meno-J can distinguish pathogen discovery, intervention success, causal contribution, host variability, and later multifactorial correction without repeating the germ-theory case mechanically.",
+    "stop_condition": "If the present twenty-rule contract only restates case-specific history without changing decisions, stop adding cases and formalize a minimal executable scoring protocol."
+  }
+}

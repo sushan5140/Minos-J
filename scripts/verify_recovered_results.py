@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
-"""Validate the recovered Minos-J historical result record.
-
-This does not rerun the original experiments. It checks internal consistency
-of the recovered metadata and headline results.
-"""
+"""Validate both the public record and the recovered historical originals."""
 
 from __future__ import annotations
 
 import json
 from pathlib import Path
+
+from verify_historical_recovery import main as verify_historical_recovery
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -62,7 +60,7 @@ def main() -> None:
     assert refactor["manifest_hash_match"] is True
 
     print("Recovered Minos-J result record: OK")
-    print("Historical experiments were NOT rerun by this verifier.")
+    verify_historical_recovery()
 
 
 if __name__ == "__main__":

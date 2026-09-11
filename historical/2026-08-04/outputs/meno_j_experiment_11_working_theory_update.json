@@ -1,0 +1,84 @@
+{
+  "experiment_name": "Meno-J Experiment 11: Representation-versus-Calibration Falsification",
+  "update_status": "VALIDATED",
+  "primary_decision": "SUPPORTED_RIVALS_R2_AND_R3",
+  "working_theory_updates": [
+    {
+      "claim": "Crossing the alpha=0.10 order-statistic boundary from 18 to 19 personal examples is by itself a safe calibration-readiness jump.",
+      "status": "NOT_SUPPORTED",
+      "evidence": {
+        "k18_mean_coverage": 0.9777777777777777,
+        "k19_mean_coverage": 0.9185185185185183,
+        "k18_full_set_frequency": 0.30814814814814817,
+        "k19_full_set_frequency": 0.19111111111111106,
+        "full_set_frequency_reduction": 0.1170370370370371,
+        "worst_subject_coverage_change": -0.1333333333333333
+      },
+      "interpretation": "The second-largest-score threshold produced substantially fewer full-label sets, but the worst-subject coverage cost exceeded the preregistered safety bound. More personal calibration can cross a discrete informativeness boundary without guaranteeing subgroup-safe coverage."
+    },
+    {
+      "claim": "Subject baseline mismatch is a material source of poor wearable-state representation.",
+      "status": "SUPPORTED_AT_COHORT_LEVEL",
+      "evidence": {
+        "overall_accuracy_change": 0.15851851851851806,
+        "overall_robustness_loss_reduction": 0.03148148148148147,
+        "raw_full_set_frequency": 0.19111111111111106,
+        "normalized_full_set_frequency": 0.0888888888888889,
+        "raw_mean_coverage": 0.9185185185185183,
+        "normalized_mean_coverage": 0.911111111111111
+      },
+      "interpretation": "Per-subject robust normalization improved classifier accuracy by 15.85 percentage points, roughly halved full-label sets, and retained mean coverage near the 0.90 target. This supports separating stable subject baselines from within-subject state changes before calibration."
+    },
+    {
+      "claim": "Subject normalization uniformly repairs the two post-selected difficult subjects S2 and S4.",
+      "status": "NOT_SUPPORTED",
+      "evidence": {
+        "S2_accuracy_change": 0.06666666666666665,
+        "S2_full_set_frequency_change": 0.3777777777777777,
+        "S4_accuracy_change": 0.5333333333333333,
+        "S4_full_set_frequency_change": -0.5111111111111111,
+        "S2_S4_mean_coverage_after_normalization": 0.9444444444444444
+      },
+      "interpretation": "Normalization almost solved S4 under this split design but made S2 substantially more ambiguous. A population-level representation repair can hide subject-specific failure modes, so readiness must remain subject-conditional."
+    },
+    {
+      "claim": "A single sensor family can interfere with subject-level state discrimination.",
+      "status": "SUPPORTED_EXPLORATORILY_FOR_TEMPERATURE_FEATURES",
+      "evidence": {
+        "arm": "lda_without_Temp",
+        "overall_accuracy_change": 0.01777777777777778,
+        "S2_S4_accuracy_change": 0.10000000000000003,
+        "S2_S4_robustness_loss_reduction": 0.04166666666666666,
+        "S2_S4_mean_coverage": 0.9444444444444444,
+        "S2_S4_mean_full_set_frequency": 0.2888888888888889
+      },
+      "interpretation": "Removing temperature features was the only preregistered single-family ablation to pass. This diagnoses predictive interference in this representation; it does not establish temperature sensor malfunction or a general recommendation to discard temperature."
+    },
+    {
+      "claim": "Replacing shared-covariance LDA with either fixed diagonal QDA or distance-weighted k-nearest neighbors repairs the difficult subjects.",
+      "status": "NOT_SUPPORTED_FOR_TESTED_MODELS",
+      "evidence": {
+        "diagonal_qda_overall_accuracy_change": -0.09037037037037043,
+        "diagonal_qda_S2_S4_full_set_frequency_change": 0.2222222222222222,
+        "knn15_overall_accuracy_change": -0.04888888888888887,
+        "knn15_S2_S4_full_set_frequency_change": 0.37777777777777766
+      },
+      "interpretation": "The two fixed nonlinear alternatives either sacrificed cohort accuracy or increased ambiguity. Complexity alone is not a representation repair."
+    }
+  ],
+  "revised_j_jump_candidate": {
+    "name": "Subject-conditional calibration readiness surface",
+    "statement": "The useful transition is not a single jump in calibration count. Readiness lies on at least two coupled axes: threshold stability from enough representative calibration examples, and representation adequacy after removing subject baselines or interfering signals. Crossing one axis can expose failure on the other.",
+    "status": "NEW_TESTABLE_WORKING_CONCEPT_NOT_A_NOVELTY_CLAIM",
+    "next_falsification": "Pre-register a nested held-out-subject study that crosses raw versus subject-normalized representations with calibration counts above and below the order-statistic boundary, then tests whether the apparent S4 repair and S2 failure replicate across temporal blocks and sessions without post-selecting subjects."
+  },
+  "guardrails": [
+    "S2 and S4 were post-selected after Experiment 9 and remain exploratory.",
+    "The k=18 to k=19 comparison tests one discrete order-statistic boundary, not all calibration-size effects.",
+    "Temperature ablation identifies predictive interference, not hardware failure or physiological irrelevance.",
+    "The nonlinear model comparison is limited to two fixed untuned NumPy implementations.",
+    "One WESAD session per subject prevents a direct test of cross-session stability.",
+    "No literature novelty claim has been made."
+  ],
+  "validation": "PASS_INDEPENDENT_EXACT_REPLAY"
+}

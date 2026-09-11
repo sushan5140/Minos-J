@@ -1,0 +1,775 @@
+{
+  "experiment_name": "Meno-J Experiment 2: Confounder Enrichment Ablation",
+  "version": "v3_enriched",
+  "research_question": "What mechanisms could explain subject-level variation in wearable stress-detection uncertainty?",
+  "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "stage_4_hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Subject-specific autonomic baseline variability leads to different signal-to-noise ratios in wearable stress signals.",
+      "proposed_mechanism": "Individual differences in resting heart rate variability and skin conductance level alter the dynamic range of stress-induced changes, making the same absolute change represent different signal-to-noise ratios across subjects.",
+      "core_assumption": "Baseline autonomic tone is stable within a subject over the study period but varies substantially between subjects.",
+      "knowledge_gap_addressed": "How inter-individual baseline physiology modulates wearable stress-detection uncertainty.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Variability in sensor placement tightness and skin contact introduces subject-specific motion artifact profiles.",
+      "proposed_mechanism": "Looser wristbands allow greater relative motion between sensor and skin, amplifying motion artifacts that mimic or mask stress-related physiological changes.",
+      "core_assumption": "Participants do not standardize wear tightness, and the degree of looseness correlates with daily activity patterns.",
+      "knowledge_gap_addressed": "The causal link between wear mechanics and subject-level detection uncertainty.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Individual differences in sweat gland density and distribution affect skin conductance signal quality and stress detectability.",
+      "proposed_mechanism": "Higher eccrine gland density yields larger, faster conductance responses to sympathetic activation, improving classifier confidence; lower density yields noisier, attenuated signals.",
+      "core_assumption": "Sweat gland density is a stable trait that varies across individuals but not within an individual over the study.",
+      "knowledge_gap_addressed": "Physiological trait-based explanation for heterogeneous wearable stress-detection performance.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Circadian phase shifts cause time-of-day dependent model performance that differs across subjects.",
+      "proposed_mechanism": "Autonomic regulation follows circadian rhythms; subjects with shifted chronotypes experience stress at different circadian phases, altering baseline physiology and classifier calibration.",
+      "core_assumption": "Chronotype variation is not accounted for in the stress-detection model.",
+      "knowledge_gap_addressed": "Temporal misalignment between model training distribution and subject-specific circadian states.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Self-reported stress labels contain subject-specific recall bias, creating heterogeneous label noise.",
+      "proposed_mechanism": "Individuals differ in meta-cognitive awareness and reporting style; some under-report, others over-report stress, leading to systematic label errors that degrade model certainty differently per subject.",
+      "core_assumption": "Label noise is not random but correlated with stable personality or cognitive traits.",
+      "knowledge_gap_addressed": "Impact of subject-dependent labeling reliability on uncertainty estimates.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Unobserved subpopulations (e.g., anxiety disorders, medication use) create heterogeneous stress response patterns.",
+      "proposed_mechanism": "Clinical conditions or pharmacologic agents alter autonomic reactivity, producing distinct physiological signatures that the generic model cannot capture, inflating uncertainty for affected subjects.",
+      "core_assumption": "Subpopulation membership is not recorded but influences wearable signals.",
+      "knowledge_gap_addressed": "Hidden stratification as a source of subject-level uncertainty variation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Statistical model misspecification: assuming homoscedastic errors when residual variance is subject-dependent.",
+      "proposed_mechanism": "A single global variance parameter underestimates uncertainty for high-variance subjects and overestimates for low-variance subjects, leading to miscalibrated prediction intervals.",
+      "core_assumption": "Residual variance differs systematically across subjects due to unmodeled factors.",
+      "knowledge_gap_addressed": "Statistical assumption violations causing subject-specific uncertainty miscalibration.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Sensor firmware version differences introduce systematic bias across devices used by different subjects.",
+      "proposed_mechanism": "Firmware updates change filtering, sampling rate, or calibration constants; subjects receiving devices with different firmware experience shifted feature distributions, degrading model performance for those cohorts.",
+      "core_assumption": "Firmware version is not tracked or controlled in the study pipeline.",
+      "knowledge_gap_addressed": "Hardware/software heterogeneity as a source of subject-level detection uncertainty.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Physical activity intensity interacts with stress detection, and habitual activity patterns differ per subject.",
+      "proposed_mechanism": "High-intensity movement generates artifacts that overlap with stress signatures; subjects with more vigorous daily routines produce noisier stress windows, increasing uncertainty.",
+      "core_assumption": "Activity intensity is not fully captured or adjusted for in the stress model.",
+      "knowledge_gap_addressed": "Interaction between individualized activity profiles and stress-detection reliability.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Data missingness not at random (e.g., device removal during high stress) varies by subject, biasing uncertainty estimates.",
+      "proposed_mechanism": "Subjects who find the device uncomfortable during stressful episodes remove it, causing systematic loss of high-stress windows; the model then sees a truncated stress distribution, inflating uncertainty for those subjects.",
+      "core_assumption": "Missingness mechanism correlates with both stress level and subject-specific tolerance.",
+      "knowledge_gap_addressed": "Subject-dependent informative missingness as a driver of uncertainty heterogeneity.",
+      "status": "SPECULATIVE"
+    }
+  ],
+  "stage_4_5_confounder_enrichment": [
+    {
+      "hypothesis_id": "H1",
+      "original_hypothesis": "Subject-specific autonomic baseline variability leads to different signal-to-noise ratios in wearable stress signals.",
+      "original_mechanism": "Individual differences in resting heart rate variability and skin conductance level alter the dynamic range of stress-induced changes, making the same absolute change represent different signal-to-noise ratios across subjects.",
+      "possible_confounders": [
+        "Age",
+        "Cardiorespiratory fitness (VO2max)",
+        "Caffeine intake within 4 hours",
+        "Beta-blocker or anticholinergic medication use",
+        "Hydration level",
+        "Time of day of measurement"
+      ],
+      "control_variables": [
+        "Baseline resting HRV (5-min supine)",
+        "Baseline skin conductance level (SCL)",
+        "Age, sex, BMI",
+        "Medication log",
+        "Caffeine/alcohol consumption log",
+        "Fitness estimate (e.g., submaximal test)"
+      ],
+      "rival_explanations": [
+        "Differences in stressor intensity across subjects rather than baseline physiology",
+        "Sensor hardware variability between devices",
+        "Preprocessing pipeline differences (e.g., filtering settings)"
+      ],
+      "minimum_data_needed": [
+        "Per-subject baseline autonomic measures (HRV, SCL) collected under standardized conditions",
+        "Repeated labeled stress episodes per subject",
+        "Within-subject repeated measures to separate within- vs between-subject variance",
+        "Concurrent medication and substance use logs"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Baseline autonomic tone (indexed by resting HRV and SCL) modulates the dynamic range of stress-induced physiological changes. After controlling for age, fitness, medication, caffeine, and time of day, the residual between-subject variance in baseline autonomic tone predicts the signal-to-noise ratio of wearable stress features. The stress detection model should include individual baseline HRV and SCL as normalization covariates, and prediction intervals should be scaled by subject-specific baseline variability.",
+      "enrichment_notes": "Baseline measures must be taken under controlled conditions (supine, quiet, fasting). Medication and substance use are critical confounders because they directly alter autonomic tone. Fitness level affects resting HRV independently of stress reactivity."
+    },
+    {
+      "hypothesis_id": "H2",
+      "original_hypothesis": "Variability in sensor placement tightness and skin contact introduces subject-specific motion artifact profiles.",
+      "original_mechanism": "Looser wristbands allow greater relative motion between sensor and skin, amplifying motion artifacts that mimic or mask stress-related physiological changes.",
+      "possible_confounders": [
+        "Wrist circumference and shape",
+        "Skin oiliness and hair density",
+        "Activity type (typing vs. running vs. weightlifting)",
+        "Device model and strap material (silicone, leather, metal)",
+        "Ambient temperature (affects strap elasticity)"
+      ],
+      "control_variables": [
+        "Self-reported tightness rating (1-5 scale) per wear session",
+        "Accelerometer-derived motion magnitude (RMS) during stress windows",
+        "Wrist circumference measurement",
+        "Strap type and device model identifier",
+        "Skin preparation protocol (cleaned vs. not)"
+      ],
+      "rival_explanations": [
+        "Motion artifacts driven primarily by activity intensity, not tightness",
+        "Sensor hardware differences (e.g., LED wavelength, photodiode sensitivity)",
+        "Software filtering differences across firmware versions"
+      ],
+      "minimum_data_needed": [
+        "Daily tightness self-reports or objective proxy (e.g., strap tension sensor)",
+        "Synchronized triaxial accelerometer data at same sampling rate as PPG/EDA",
+        "Wrist circumference and strap type per subject",
+        "Per-subject motion artifact labels (e.g., from video or manual annotation)"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Strap tightness modulates the coupling between skin motion and sensor motion. Looser fit increases the transfer function from wrist acceleration to PPG/EDA artifact amplitude. After controlling for activity intensity (accelerometer RMS), wrist circumference, and strap type, the residual tightness effect predicts subject-specific artifact contamination. The detection model should include tightness as a time-varying covariate and use accelerometer data to regress out motion artifacts via adaptive filtering.",
+      "enrichment_notes": "Tightness is likely time-varying within subject (e.g., loosens during day). Objective tightness measures (e.g., strap force sensor) would strengthen inference. Strap material affects elasticity and should be standardized or recorded."
+    },
+    {
+      "hypothesis_id": "H3",
+      "original_hypothesis": "Individual differences in sweat gland density and distribution affect skin conductance signal quality and stress detectability.",
+      "original_mechanism": "Higher eccrine gland density yields larger, faster conductance responses to sympathetic activation, improving classifier confidence; lower density yields noisier, attenuated signals.",
+      "possible_confounders": [
+        "Skin hydration level",
+        "Ambient temperature and relative humidity",
+        "Age (gland density decreases with age)",
+        "Body site (wrist vs. finger vs. palm)",
+        "Dermatological conditions (eczema, hyperhidrosis)",
+        "Ethnicity (known variation in gland density)"
+      ],
+      "control_variables": [
+        "Baseline skin conductance level (SCL) at rest",
+        "Skin hydration index (corneometer or self-report)",
+        "Ambient temperature and humidity logs",
+        "Age, sex, self-reported ethnicity",
+        "Measurement site (standardized to wrist)",
+        "History of skin conditions"
+      ],
+      "rival_explanations": [
+        "Differences in central sympathetic reactivity unrelated to peripheral gland density",
+        "Electrode-skin contact impedance variation due to skin oil or dead skin",
+        "Signal processing artifacts (e.g., improper downsampling)"
+      ],
+      "minimum_data_needed": [
+        "Quantitative sudomotor function test (e.g., QSART, pilocarpine iontophoresis) or validated proxy",
+        "Baseline SCL and stress-evoked SCR amplitude per subject",
+        "Environmental logs (temperature, humidity) synchronized with recordings",
+        "Repeated stress trials to estimate within-subject SCR reliability"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Eccrine gland density determines the transduction gain from sympathetic sudomotor nerve activity to measurable skin conductance. After controlling for skin hydration, ambient conditions, age, and measurement site, the residual between-subject variance in gland density (proxied by maximal SCR amplitude to standardized stimulus) predicts the signal-to-noise ratio of stress-evoked EDA features. The classifier should normalize SCR amplitude by individual maximum response capacity and include baseline SCL as a covariate.",
+      "enrichment_notes": "Direct gland density measurement is invasive; maximal SCR to a standardized stimulus (e.g., deep breath, startle) is a practical proxy. Hydration and environment strongly affect baseline SCL and must be logged. Site standardization is critical because wrist gland density is lower than palm."
+    },
+    {
+      "hypothesis_id": "H4",
+      "original_hypothesis": "Circadian phase shifts cause time-of-day dependent model performance that differs across subjects.",
+      "original_mechanism": "Autonomic regulation follows circadian rhythms; subjects with shifted chronotypes experience stress at different circadian phases, altering baseline physiology and classifier calibration.",
+      "possible_confounders": [
+        "Sleep schedule variability (shift work, social jetlag)",
+        "Light exposure history (bright light at night)",
+        "Caffeine and melatonin timing",
+        "Chronotype (morningness-eveningness)",
+        "Time since awakening",
+        "Meal timing"
+      ],
+      "control_variables": [
+        "Chronotype questionnaire (MEQ or MCTQ)",
+        "Actigraphy-derived sleep midpoint and duration for 7+ days",
+        "Time since awakening at each stress label",
+        "Light exposure logs (wearable lux sensor)",
+        "Caffeine/melatonin intake timestamps"
+      ],
+      "rival_explanations": [
+        "Time-of-day effects driven by diurnal activity patterns rather than circadian phase",
+        "Stressor occurrence frequency varies by time of day (e.g., work hours)",
+        "Model training data biased toward certain times of day"
+      ],
+      "minimum_data_needed": [
+        "Chronotype assessment per subject",
+        "Actigraphy or sleep diary for at least one week",
+        "Timestamped stress labels with concurrent physiological data",
+        "Model performance metrics stratified by time-of-day and chronotype group"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Circadian phase (estimated from sleep midpoint, light exposure, and time since awakening) modulates baseline autonomic tone and stress reactivity. Subjects with later chronotypes experience a phase delay such that a given clock time corresponds to an earlier circadian phase, altering HRV and EDA baselines. After controlling for sleep timing, light exposure, and time since awakening, the mismatch between model training distribution (often daytime) and subject-specific circadian phase predicts degraded performance. The model should include circadian phase as a feature (e.g., hours since dim-light melatonin onset proxy) or stratify by chronotype.",
+      "enrichment_notes": "Chronotype questionnaires have limitations; actigraphy-derived sleep midpoint is a better behavioral proxy. Dim-light melatonin onset (DLMO) is gold standard but impractical; use validated proxy (e.g., sleep midpoint on free days). Model retraining per circadian phase bin may be needed."
+    },
+    {
+      "hypothesis_id": "H5",
+      "original_hypothesis": "Self-reported stress labels contain subject-specific recall bias, creating heterogeneous label noise.",
+      "original_mechanism": "Individuals differ in meta-cognitive awareness and reporting style; some under-report, others over-report stress, leading to systematic label errors that degrade model certainty differently per subject.",
+      "possible_confounders": [
+        "Personality traits: neuroticism, alexithymia, extraversion",
+        "Current mood state (depressed, anxious)",
+        "Cognitive load at time of reporting",
+        "Cultural differences in stress expression",
+        "Survey timing relative to stressor (immediate vs. end-of-day recall)",
+        "EMA compliance and response latency"
+      ],
+      "control_variables": [
+        "Validated personality questionnaires (Big Five, TAS-20 for alexithymia)",
+        "Momentary mood ratings (PANAS) at each EMA prompt",
+        "Response time to EMA prompt",
+        "EMA compliance rate (prompts answered / prompts delivered)",
+        "Cultural background / language of survey"
+      ],
+      "rival_explanations": [
+        "Label noise due to ambiguous stress definition in study instructions",
+        "Technical issues: missed prompts, notification fatigue",
+        "Random forgetting rather than systematic bias"
+      ],
+      "minimum_data_needed": [
+        "Personality and alexithymia assessments per subject",
+        "Ecological momentary assessment (EMA) with varying delays (immediate, 1h, end-of-day)",
+        "Physiological ground truth for a subset (e.g., lab stressor with known timing)",
+        "EMA metadata: response time, compliance, device timestamps"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Subject-specific reporting bias arises from stable traits (alexithymia, neuroticism) and state factors (mood, cognitive load). After controlling for these, the residual bias correlates with label noise variance. High alexithymia leads to under-reporting (false negatives); high neuroticism leads to over-reporting (false positives). The model should incorporate a measurement error model where label noise parameters are predicted by personality traits, and use multiple label sources (physiological arousal + self-report) to calibrate.",
+      "enrichment_notes": "Alexithymia (TAS-20) is a strong predictor of interoceptive awareness deficits. EMA compliance must be high (>80%) to avoid selection bias. Lab calibration with known stressors (e.g., TSST) provides ground truth for bias estimation."
+    },
+    {
+      "hypothesis_id": "H6",
+      "original_hypothesis": "Unobserved subpopulations (e.g., anxiety disorders, medication use) create heterogeneous stress response patterns.",
+      "original_mechanism": "Clinical conditions or pharmacologic agents alter autonomic reactivity, producing distinct physiological signatures that the generic model cannot capture, inflating uncertainty for affected subjects.",
+      "possible_confounders": [
+        "Undiagnosed anxiety or mood disorders",
+        "Medication adherence variability",
+        "Comorbid medical conditions (e.g., hypertension, diabetes)",
+        "Substance use (nicotine, alcohol, cannabis)",
+        "Socioeconomic status affecting healthcare access and diagnosis",
+        "Hormonal status (menstrual cycle, thyroid)"
+      ],
+      "control_variables": [
+        "Clinical screening questionnaires (GAD-7, PHQ-9, PSS)",
+        "Medication inventory (drug class, dose, duration)",
+        "Self-reported medical diagnoses",
+        "Substance use logs (daily)",
+        "Demographics: age, sex, education, income"
+      ],
+      "rival_explanations": [
+        "Heterogeneity due to random physiological variation",
+        "Model underfitting (insufficient capacity to capture complex patterns)",
+        "Sensor or data quality issues correlated with subpopulation"
+      ],
+      "minimum_data_needed": [
+        "Clinical screening data for all subjects",
+        "Medication records (prescription and OTC)",
+        "Diagnosed condition history",
+        "Sufficient per-subject physiological data to fit subject-specific response profiles",
+        "Ideally: clinical diagnosis confirmation for a subset"
+      ],
+      "effect_size_expectation": "large",
+      "enriched_mechanism": "Unobserved clinical subpopulations (e.g., generalized anxiety disorder, beta-blocker users) have distinct autonomic response signatures (blunted or exaggerated HRV/EDA reactivity). After screening for and controlling known conditions and medications, residual heterogeneity can be modeled via finite mixture models or hierarchical clustering on physiological response features. The detection model should include clinical covariates as fixed effects and allow subject-specific random effects on stress reactivity parameters.",
+      "enrichment_notes": "Screening questionnaires (GAD-7, PHQ-9) are not diagnostic but identify probable cases. Medication class (beta-blockers, SSRIs, stimulants) has known autonomic effects. Substance use (nicotine) acutely affects HRV. Socioeconomic status may proxy for undiagnosed conditions."
+    },
+    {
+      "hypothesis_id": "H7",
+      "original_hypothesis": "Statistical model misspecification: assuming homoscedastic errors when residual variance is subject-dependent.",
+      "original_mechanism": "A single global variance parameter underestimates uncertainty for high-variance subjects and overestimates for low-variance subjects, leading to miscalibrated prediction intervals.",
+      "possible_confounders": [
+        "Unmodeled time-varying covariates (activity, circadian phase)",
+        "Non-stationary variance (variance changes over study duration)",
+        "Outliers from motion artifacts or device errors",
+        "Non-Gaussian error distributions (heavy tails)",
+        "Autocorrelation in residuals"
+      ],
+      "control_variables": [
+        "Subject-specific residual variance estimates (from preliminary model)",
+        "Activity level (accelerometer) during each prediction window",
+        "Time of day / circadian phase",
+        "Stress intensity level (if known)",
+        "Data quality flags (motion artifact probability)"
+      ],
+      "rival_explanations": [
+        "Misspecification due to omitted variable bias (not heteroscedasticity per se)",
+        "Non-linear relationships modeled as linear",
+        "Autocorrelation inflating apparent heteroscedasticity"
+      ],
+      "minimum_data_needed": [
+        "Sufficient per-subject observations (>=30 stress windows) to estimate individual variance",
+        "Repeated measures across varying conditions (activity, time of day, stress levels)",
+        "Model residuals from a well-specified mean model",
+        "Diagnostics: residual vs. fitted plots per subject, Breusch-Pagan test per subject"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Residual variance differs systematically across subjects due to unmodeled factors (e.g., activity, circadian phase, trait variability). A homoscedastic model forces a single variance estimate, miscalibrating uncertainty. After controlling for known variance predictors (activity, time of day), the remaining subject-specific variance should be modeled hierarchically: each subject has its own variance parameter drawn from a population distribution. This yields calibrated subject-specific prediction intervals and improves uncertainty quantification.",
+      "enrichment_notes": "Hierarchical Bayesian models or mixed-effects location-scale models are appropriate. Minimum 30 observations per subject for reliable variance estimation. Check for non-Gaussian residuals; consider Student-t errors. Variance predictors should be included in the scale model."
+    },
+    {
+      "hypothesis_id": "H8",
+      "original_hypothesis": "Sensor firmware version differences introduce systematic bias across devices used by different subjects.",
+      "original_mechanism": "Firmware updates change filtering, sampling rate, or calibration constants; subjects receiving devices with different firmware experience shifted feature distributions, degrading model performance for those cohorts.",
+      "possible_confounders": [
+        "Device hardware revision (e.g., sensor generation)",
+        "Manufacturing batch variation",
+        "Sensor aging / drift over time",
+        "Battery voltage level (affects LED current)",
+        "Temperature drift (affects analog front-end)",
+        "Operating system / Bluetooth stack version"
+      ],
+      "control_variables": [
+        "Firmware version string per device per subject per session",
+        "Hardware revision identifier",
+        "Device age (days since manufacture or first use)",
+        "Battery level at start of session",
+        "Ambient temperature during recording",
+        "Calibration records (if any)"
+      ],
+      "rival_explanations": [
+        "Subject physiological differences coincidentally aligned with firmware cohorts",
+        "Environmental differences between cohorts (e.g., different study sites)",
+        "Software preprocessing pipeline changes concurrent with firmware update"
+      ],
+      "minimum_data_needed": [
+        "Firmware version logged for every recording session",
+        "Feature distributions (HRV, EDA metrics) stratified by firmware version",
+        "Model performance metrics (AUC, calibration) per firmware version",
+        "Sufficient subjects per firmware version (>=20) for statistical comparison"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Firmware updates alter digital filtering (e.g., PPG bandpass), sampling rate, or calibration coefficients, shifting the feature distribution. After controlling for hardware revision, device age, battery, and temperature, the firmware version acts as a domain shift. The model should include firmware version as a categorical covariate, apply domain adaptation (e.g., CORAL, adversarial), or recalibrate features per firmware using a small labeled subset. Firmware should be standardized across study or treated as a blocking factor.",
+      "enrichment_notes": "Firmware logs must be automated (device reports version on each sync). Hardware revision is critical because same firmware on different hardware may behave differently. Battery voltage affects LED intensity in PPG. Temperature affects analog components. Preprocessing pipeline version must be tracked alongside firmware."
+    },
+    {
+      "hypothesis_id": "H9",
+      "original_hypothesis": "Physical activity intensity interacts with stress detection, and habitual activity patterns differ per subject.",
+      "original_mechanism": "High-intensity movement generates artifacts that overlap with stress signatures; subjects with more vigorous daily routines produce noisier stress windows, increasing uncertainty.",
+      "possible_confounders": [
+        "Activity type (cycling, weightlifting, walking) - different artifact profiles",
+        "Fitness level (fit individuals have lower HR at same workload)",
+        "Body composition (adipose tissue affects PPG signal quality)",
+        "Sensor placement tightness (looser during vigorous activity)",
+        "Hydration and core temperature",
+        "Occupational physical demands"
+      ],
+      "control_variables": [
+        "Accelerometer-derived activity intensity (METs, ENMO, or activity counts)",
+        "Activity type classification (from accelerometer + gyroscope)",
+        "Cardiorespiratory fitness (VO2max estimate or submaximal test)",
+        "Habitual activity level (IPAQ or accelerometer average)",
+        "Body mass index and wrist circumference",
+        "Hydration logs"
+      ],
+      "rival_explanations": [
+        "Motion artifacts due to loose fit rather than activity intensity per se",
+        "Stress-induced movement (fidgeting, pacing) confounded with activity",
+        "Model not trained on high-activity stress examples"
+      ],
+      "minimum_data_needed": [
+        "Synchronized high-resolution accelerometer (>=25 Hz) and physiological data",
+        "Activity type labels (from annotation or validated classifier)",
+        "Fitness assessment per subject",
+        "Per-subject habitual activity pattern (7+ days accelerometer)",
+        "Stress labels during varying activity intensities"
+      ],
+      "effect_size_expectation": "large",
+      "enriched_mechanism": "Physical activity generates motion artifacts and physiological changes (increased HR, decreased HRV, increased SCL) that overlap with stress signatures. The artifact magnitude and physiological response depend on activity intensity (METs), type (rhythmic vs. non-rhythmic), and subject fitness. After controlling for activity intensity and type via accelerometer features, fitness, and habitual activity, the residual interaction predicts subject-specific detection uncertainty. The model should include activity intensity as a time-varying covariate, use activity-specific artifact rejection, and potentially train separate classifiers for high-activity vs. low-activity contexts.",
+      "enrichment_notes": "Activity intensity must be measured concurrently (accelerometer). Fitness level modulates HR response at given workload. Habitual activity determines exposure to high-artifact conditions. Activity type matters: weightlifting causes large non-rhythmic artifacts; cycling causes rhythmic artifacts. Sensor tightness often decreases during vigorous activity."
+    },
+    {
+      "hypothesis_id": "H10",
+      "original_hypothesis": "Data missingness not at random (e.g., device removal during high stress) varies by subject, biasing uncertainty estimates.",
+      "original_mechanism": "Subjects who find the device uncomfortable during stressful episodes remove it, causing systematic loss of high-stress windows; the model then sees a truncated stress distribution, inflating uncertainty for those subjects.",
+      "possible_confounders": [
+        "Device comfort and ergonomics (strap material, weight, size)",
+        "Skin irritation or allergy",
+        "Forgetfulness / compliance personality",
+        "Battery life and charging routine",
+        "Occupational constraints (e.g., cannot wear in sterile environment)",
+        "Privacy concerns during sensitive situations"
+      ],
+      "control_variables": [
+        "Wear time per day (hours) from device logs",
+        "Comfort and irritation surveys (weekly)",
+        "Battery level and charging timestamps",
+        "Occupation type and work schedule",
+        "Self-reported reasons for non-wear (end-of-study questionnaire)",
+        "Device diagnostic logs (disconnect events)"
+      ],
+      "rival_explanations": [
+        "Missingness due to technical failure (Bluetooth disconnect, memory full)",
+        "Random non-compliance unrelated to stress",
+        "Data sync failures (phone not nearby)"
+      ],
+      "minimum_data_needed": [
+        "Per-subject per-day wear time (from device onboard logging)",
+        "Reasons for removal (ecological momentary assessment at removal or retrospective)",
+        "Stress labels for periods when device was worn vs. missing (if any proxy)",
+        "Device diagnostic logs (battery, Bluetooth, memory)",
+        "Comfort and irritation ratings over time"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Missingness is informative (MNAR) when removal probability depends on unobserved stress level. Subjects with low comfort tolerance remove device during high-stress episodes, truncating the upper tail of their stress distribution. After controlling for comfort, irritation, battery, occupation, and forgetfulness, the residual missingness-stress association predicts bias in uncertainty estimates. The analysis should use selection models (e.g., Heckman) or inverse probability weighting with a missingness model predicted by observed covariates and, if available, proxy stress during missing periods (e.g., from phone usage, location).",
+      "enrichment_notes": "Wear time must be logged on device (not just phone) to capture off-phone periods. Reasons for removal should be captured in real-time (e.g., button press + prompt) to avoid recall bias. Battery life is a major driver of systematic missingness (overnight charging). Occupation constraints create predictable missingness patterns."
+    }
+  ],
+  "stage_5_audits": [
+    {
+      "hypothesis_id": "H1",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism specifies a non-generic causal path (baseline autonomic tone modulates dynamic range of stress-induced changes), variables are measurable, confounders identified, data requirements clear, and predictions testable.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H2",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism names a specific physical process (strap tightness modulates skin-sensor coupling and transfer function from acceleration to artifact), variables are measurable, confounders identified, data requirements clear, and predictions testable.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H3",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism identifies a domain-specific causal path (eccrine gland density determines transduction gain from sympathetic activity to skin conductance), variables are measurable via proxies, confounders identified, data requirements clear, and predictions testable.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H4",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism specifies a non-generic causal path (circadian phase modulates autonomic tone and stress reactivity, and mismatch with training distribution degrades performance), variables are measurable, confounders identified, data requirements clear, and predictions testable.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H5",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism names specific traits (alexithymia, neuroticism) and their directional effects on reporting bias, variables are measurable, confounders identified, data requirements clear, and predictions testable via measurement error models.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H6",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism identifies specific clinical subpopulations (anxiety disorders, beta-blocker users) and their distinct autonomic signatures, variables are measurable via screening, confounders identified, data requirements clear, and predictions testable via hierarchical modeling.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H7",
+      "audit_decision": "SALVAGEABLE",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": false,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "mechanism_is_non_generic"
+      ],
+      "decision_reason": "The mechanism_is_non_generic check fails because the mechanism describes a generic statistical issue (heteroscedasticity due to unmodeled factors) that applies broadly across domains without a domain-specific causal path. Other checks pass. The idea is salvageable by tying subject-specific variance to specific physiological or behavioral traits.",
+      "salvage_note": "Make the mechanism non-generic by specifying domain-specific sources of heteroscedasticity, e.g., individual differences in autonomic reactivity, motion artifact susceptibility, or stressor-type-specific variance, rather than generic unmodeled factors."
+    },
+    {
+      "hypothesis_id": "H8",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism specifies a domain-specific causal path (firmware updates alter digital filtering, sampling rate, or calibration coefficients, causing feature distribution shifts), variables are measurable, confounders identified, data requirements clear, and predictions testable via domain adaptation.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H9",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism names a specific interaction (physical activity generates motion artifacts and physiological changes overlapping with stress signatures, dependent on intensity, type, and fitness), variables are measurable, confounders identified, data requirements clear, and predictions testable via activity-specific modeling.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H10",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism specifies a domain-specific MNAR missingness process (device removal during high stress due to comfort tolerance truncates stress distribution), variables are measurable, confounders identified, data requirements clear, and predictions testable via selection models.",
+      "salvage_note": ""
+    }
+  ],
+  "diagnostics": {
+    "generated_count": 10,
+    "passed_count": 9,
+    "rejected_count": 0,
+    "salvageable_count": 1,
+    "pass_survival_rate": 0.9,
+    "salvageable_rate": 0.1,
+    "rejection_reason_diversity": 1,
+    "top_failed_checklist_fields": {
+      "mechanism_is_non_generic": 1
+    },
+    "failure_points_consistency": true,
+    "rubber_stamp_red_flags": [],
+    "enriched_count": 10,
+    "avg_confounders_per_hypothesis": 5.8,
+    "avg_control_variables_per_hypothesis": 5.5,
+    "avg_rival_explanations_per_hypothesis": 3.0,
+    "hypotheses_with_effect_size_expectation": 10
+  },
+  "stage_6_rival_prediction_matrix": [
+    {
+      "hypothesis_id": "H1",
+      "meno_j_hypothesis": "Subject-specific autonomic baseline variability leads to different signal-to-noise ratios in wearable stress signals.",
+      "meno_j_prediction": "After controlling for age, fitness, medication, caffeine, and time of day, residual between-subject variance in resting HRV and SCL will predict the signal-to-noise ratio of stress features; higher resting HRV and lower SCL will associate with higher classifier confidence.",
+      "rival_explanation": "Observed variation in stress-detection uncertainty is driven by differences in the actual intensity of stressors experienced by each subject, not by their baseline autonomic physiology.",
+      "rival_prediction": "Per-subject stressor intensity (measured via standardized tasks or ecological momentary assessment) will account for the between-subject differences in signal-to-noise ratio; baseline HRV and SCL will not add predictive value once stressor intensity is included.",
+      "distinguishing_test": "Recruit subjects for repeated standardized stress tasks (e.g., TSST, cold pressor) with known intensity levels, while measuring baseline HRV/SCL and wearable stress features. Fit a mixed model predicting per-subject SNR from baseline autonomic measures and task intensity; compare variance explained.",
+      "what_result_supports_meno_j": "Baseline HRV and SCL remain significant predictors of SNR after including stressor intensity as a covariate.",
+      "what_result_supports_rival": "Stressor intensity fully mediates the relationship; baseline autonomic measures become non-significant when stressor intensity is in the model."
+    },
+    {
+      "hypothesis_id": "H2",
+      "meno_j_hypothesis": "Variability in sensor placement tightness and skin contact introduces subject-specific motion artifact profiles.",
+      "meno_j_prediction": "After controlling for activity intensity (accelerometer RMS), wrist circumference, and strap type, self-reported or objectively measured strap tightness will predict the amplitude of motion artifacts in PPG/EDA; looser fit will correlate with higher artifact contamination and lower stress-detection certainty.",
+      "rival_explanation": "Motion artifacts are primarily determined by the type and intensity of physical activity, not by how tightly the device is worn; different activities produce distinct artifact signatures regardless of strap tightness.",
+      "rival_prediction": "Activity type classification (e.g., typing vs. running vs. weightlifting) will explain the variance in artifact amplitude better than strap tightness; within the same activity type, tightness will not significantly predict artifact level.",
+      "distinguishing_test": "Collect synchronized high-resolution accelerometer, PPG, and EDA data during prescribed activities of varying types and intensities while manipulating strap tightness (tight, medium, loose). Use a factorial design to test the interaction between activity type and tightness on artifact metrics.",
+      "what_result_supports_meno_j": "A significant main effect of tightness on artifact amplitude after accounting for activity type and intensity, or a significant tightness-by-activity interaction showing tightness matters more for high-impact activities.",
+      "what_result_supports_rival": "Activity type and intensity fully account for artifact variance; tightness shows no significant effect in any activity condition."
+    },
+    {
+      "hypothesis_id": "H3",
+      "meno_j_hypothesis": "Individual differences in sweat gland density and distribution affect skin conductance signal quality and stress detectability.",
+      "meno_j_prediction": "After controlling for skin hydration, ambient temperature, age, and measurement site, a proxy for eccrine gland density (e.g., maximal SCR amplitude to a standardized stimulus) will predict the signal-to-noise ratio of stress-evoked EDA features; higher gland density will yield larger, faster SCRs and higher classifier confidence.",
+      "rival_explanation": "Variation in EDA signal quality is due to differences in central sympathetic reactivity (e.g., trait anxiety, autonomic flexibility) rather than peripheral gland density; subjects with higher sympathetic reactivity produce larger SCRs independent of gland count.",
+      "rival_prediction": "Measures of central sympathetic reactivity (e.g., heart rate reactivity to a cognitive stressor, trait anxiety scores) will predict SCR amplitude and detection performance better than gland-density proxies; gland-density proxies will not add unique variance.",
+      "distinguishing_test": "Obtain a gland-density proxy (e.g., pilocarpine iontophoresis or maximal SCR to deep breath) and central sympathetic reactivity measures (e.g., HR reactivity to Stroop, trait anxiety) in the same subjects. Predict per-subject EDA SNR during ecological stress episodes using both sets of predictors in a hierarchical regression.",
+      "what_result_supports_meno_j": "Gland-density proxy explains significant unique variance in EDA SNR after controlling for central sympathetic reactivity.",
+      "what_result_supports_rival": "Central sympathetic reactivity measures fully account for EDA SNR variance; gland-density proxy adds no significant incremental prediction."
+    },
+    {
+      "hypothesis_id": "H4",
+      "meno_j_hypothesis": "Circadian phase shifts cause time-of-day dependent model performance that differs across subjects.",
+      "meno_j_prediction": "Model performance (e.g., AUC, calibration) will vary systematically with circadian phase (estimated from sleep midpoint, light exposure, time since awakening); subjects with later chronotypes will show degraded performance at clock times that correspond to their biological morning, and performance will improve when circadian phase is included as a feature.",
+      "rival_explanation": "Time-of-day performance differences are driven by diurnal patterns in activity and stressor occurrence (e.g., work hours), not by endogenous circadian phase; performance varies because the distribution of stress labels and activity contexts changes across the day.",
+      "rival_prediction": "When controlling for activity level, stressor frequency, and context (e.g., work vs. leisure) at each hour, circadian phase will not explain additional variance in model performance; performance differences will align with activity/stressor patterns rather than chronotype.",
+      "distinguishing_test": "Collect at least one week of actigraphy, light exposure, EMA stress labels, and physiological data. Stratify model performance by clock time and by circadian phase bins (e.g., hours since sleep midpoint). Test whether chronotype moderates the clock-time effect after adjusting for activity and stressor context.",
+      "what_result_supports_meno_j": "Chronotype significantly interacts with clock time to predict performance; circadian phase bins explain performance variance beyond activity/stressor covariates.",
+      "what_result_supports_rival": "Clock-time performance variation disappears after adjusting for activity level and stressor context; chronotype adds no explanatory power."
+    },
+    {
+      "hypothesis_id": "H5",
+      "meno_j_hypothesis": "Self-reported stress labels contain subject-specific recall bias, creating heterogeneous label noise.",
+      "meno_j_prediction": "Subjects with high alexithymia (TAS-20) will show lower sensitivity (more false negatives) in self-reported stress relative to physiological arousal markers; subjects with high neuroticism will show lower specificity (more false positives). Incorporating personality traits into a measurement-error model will improve label-noise estimation and model calibration.",
+      "rival_explanation": "Label noise arises mainly from ambiguous stress definitions in study instructions and random forgetting, not from stable personality traits; all subjects have similar bias patterns, and noise is uncorrelated with personality.",
+      "rival_prediction": "Personality traits (alexithymia, neuroticism) will not predict the direction or magnitude of discrepancy between self-reported stress and physiological arousal; label noise will be uniform across subjects and better explained by EMA compliance and response latency.",
+      "distinguishing_test": "Administer personality questionnaires (TAS-20, Big Five) and conduct EMA with multiple reporting delays (immediate, 1-hour, end-of-day) alongside continuous physiological monitoring. Compute per-subject sensitivity/specificity of self-reports using physiological arousal as a proxy ground truth. Regress these metrics on personality traits and EMA compliance.",
+      "what_result_supports_meno_j": "Alexithymia predicts lower sensitivity and neuroticism predicts lower specificity, with significant effects after controlling for compliance and response latency.",
+      "what_result_supports_rival": "Personality traits show no significant association with label-noise metrics; compliance and response latency are the only significant predictors."
+    },
+    {
+      "hypothesis_id": "H6",
+      "meno_j_hypothesis": "Unobserved subpopulations (e.g., anxiety disorders, medication use) create heterogeneous stress response patterns.",
+      "meno_j_prediction": "Finite mixture modeling or hierarchical clustering on physiological response features (HRV, EDA reactivity) will reveal distinct subpopulations that align with clinical screening scores (GAD-7, PHQ-9) and medication classes (beta-blockers, SSRIs). Including these covariates as fixed effects and allowing subject-specific random effects on reactivity parameters will reduce uncertainty estimates for affected subjects.",
+      "rival_explanation": "Observed heterogeneity is due to random physiological variation and model underfitting (insufficient model capacity to capture complex, non-linear patterns), not discrete clinical subpopulations; a more flexible model (e.g., deep neural network with subject embeddings) would capture the variation without invoking latent classes.",
+      "rival_prediction": "A high-capacity model with subject-specific embeddings will achieve similar or better uncertainty calibration without explicit clinical covariates; mixture-model clusters will not correspond to clinical screening categories better than chance.",
+      "distinguishing_test": "Fit three models: (1) generic model with clinical covariates and random effects, (2) finite mixture model on response features, (3) deep learning model with subject embeddings. Compare per-subject uncertainty calibration (e.g., prediction interval coverage) and cluster alignment with clinical data.",
+      "what_result_supports_meno_j": "Clinical covariates and mixture-model clusters significantly improve calibration and align with screening scores; the deep model does not outperform the clinically informed model.",
+      "what_result_supports_rival": "The deep embedding model matches or exceeds the clinically informed model in calibration, and mixture-model clusters show no meaningful association with clinical screening data."
+    },
+    {
+      "hypothesis_id": "H8",
+      "meno_j_hypothesis": "Sensor firmware version differences introduce systematic bias across devices used by different subjects.",
+      "meno_j_prediction": "Feature distributions (e.g., HRV time-domain metrics, EDA tonic level) will differ significantly across firmware versions after controlling for hardware revision, device age, battery level, and temperature. Model performance will degrade for firmware versions underrepresented in training data, and domain adaptation (e.g., CORAL) using a small labeled subset per firmware will restore performance.",
+      "rival_explanation": "Apparent firmware effects are confounded by subject physiological differences that happen to correlate with firmware cohorts (e.g., newer firmware deployed to a different study site with different population); firmware itself does not alter feature distributions.",
+      "rival_prediction": "When subjects are randomly assigned to firmware versions in a controlled crossover design, feature distributions will not differ systematically by firmware; any observed differences in observational data will disappear after matching on subject characteristics and site.",
+      "distinguishing_test": "Conduct a randomized crossover trial where each subject wears devices with two firmware versions in counterbalanced order. Compare feature distributions and model performance within subjects across firmware versions. Alternatively, use propensity-score matching on observational data to balance subject covariates across firmware groups.",
+      "what_result_supports_meno_j": "Within-subject feature distributions shift significantly with firmware version, and domain adaptation improves cross-firmware performance.",
+      "what_result_supports_rival": "No within-subject firmware effect after controlling for order and time trends; matched observational analysis shows no firmware differences."
+    },
+    {
+      "hypothesis_id": "H9",
+      "meno_j_hypothesis": "Physical activity intensity interacts with stress detection, and habitual activity patterns differ per subject.",
+      "meno_j_prediction": "After controlling for activity intensity (METs) and type via accelerometer features, fitness level, and habitual activity, the residual interaction between activity intensity and stress detection uncertainty will be significant; subjects with higher habitual vigorous activity will show greater uncertainty during high-intensity stress windows, and activity-specific classifiers will outperform a single global classifier.",
+      "rival_explanation": "The apparent activity interaction is actually driven by sensor placement tightness, which tends to loosen during vigorous activity; it is the looseness, not the activity intensity per se, that generates artifacts and degrades detection.",
+      "rival_prediction": "When strap tightness is measured and held constant (or statistically controlled), activity intensity will no longer predict detection uncertainty; tightness will mediate the activity-uncertainty relationship.",
+      "distinguishing_test": "Collect data with objective tightness measurement (e.g., strap force sensor) during prescribed activities of varying intensity. Test a mediation model: activity intensity -> tightness -> artifact level -> detection uncertainty. Compare models with and without tightness as a mediator.",
+      "what_result_supports_meno_j": "Activity intensity retains a direct effect on uncertainty after accounting for tightness, or tightness does not fully mediate the relationship.",
+      "what_result_supports_rival": "Tightness fully mediates the effect of activity intensity on uncertainty; the direct effect of activity intensity becomes non-significant when tightness is included."
+    },
+    {
+      "hypothesis_id": "H10",
+      "meno_j_hypothesis": "Data missingness not at random (e.g., device removal during high stress) varies by subject, biasing uncertainty estimates.",
+      "meno_j_prediction": "Subjects with lower comfort/irritation ratings will have higher missingness rates during high-stress periods (identified via proxy measures like phone usage or location). Selection models or inverse probability weighting using a missingness model predicted by comfort, irritation, and observed covariates will correct the bias and widen uncertainty intervals for those subjects.",
+      "rival_explanation": "Missingness is primarily due to technical failures (Bluetooth disconnects, battery depletion, memory full) that are unrelated to stress level; any association with stress is spurious and driven by confounders like occupation or charging routine.",
+      "rival_prediction": "Device diagnostic logs (Bluetooth status, battery, memory) will explain missingness patterns better than comfort/irritation ratings; after including technical failure indicators, comfort ratings will not predict missingness during high-stress proxies.",
+      "distinguishing_test": "Analyze per-minute wear-time logs, device diagnostic codes, comfort/irritation surveys, and proxy stress indicators (phone screen-on, GPS velocity). Fit a joint model of missingness and stress proxy, comparing a selection model with comfort predictors vs. a model with only technical predictors.",
+      "what_result_supports_meno_j": "Comfort/irritation ratings significantly predict missingness during high-stress proxies after controlling for technical factors; selection model improves uncertainty calibration.",
+      "what_result_supports_rival": "Technical diagnostic variables fully account for missingness patterns; comfort ratings add no predictive value for stress-related missingness."
+    }
+  ],
+  "stage_7_falsification_tests": [
+    {
+      "hypothesis_id": "H1",
+      "strongest_falsification_test": "Fit a mixed-effects model predicting per-subject stress detection signal-to-noise ratio (SNR) with subject-specific baseline HRV and SCL as fixed effects, controlling for age, fitness, medication, caffeine, and time of day. The hypothesis is falsified if the coefficients for baseline HRV and SCL are jointly not significantly different from zero (p > 0.05) and the model explains no more between-subject variance in SNR than a null model with only the control variables.",
+      "failure_condition": "After controlling for all listed confounders, the partial correlation between baseline autonomic tone (HRV, SCL) and stress detection SNR is zero or negative in a sufficiently powered sample (e.g., 95% CI for standardized coefficients includes zero).",
+      "minimum_data_needed": "Per-subject baseline autonomic measures (HRV, SCL) under standardized conditions, repeated labeled stress episodes per subject, within-subject repeated measures to separate within- vs between-subject variance, concurrent medication and substance use logs, and covariates (age, fitness, caffeine, time of day).",
+      "most_likely_false_positive_risk": "Unmeasured genetic or epigenetic factors influencing both baseline autonomic tone and stress reactivity could create a spurious association.",
+      "most_likely_false_negative_risk": "Insufficient between-subject variability in baseline HRV/SCL or measurement error in baseline assessments obscures a true effect."
+    },
+    {
+      "hypothesis_id": "H2",
+      "strongest_falsification_test": "Using objective strap tension sensors (or high-resolution self-reports) and synchronized triaxial accelerometry, fit a mixed model predicting motion artifact amplitude in PPG/EDA with tightness, accelerometer RMS, wrist circumference, and strap type as fixed effects and subject as random effect. The hypothesis is falsified if the tightness coefficient is not significantly different from zero or is positive (tighter fit increases artifacts) after controlling for activity intensity.",
+      "failure_condition": "In a model controlling for activity intensity (accelerometer RMS), wrist circumference, and strap type, the effect of strap tightness on motion artifact amplitude is statistically non-significant (p > 0.05) and the estimated effect size is negligible (Cohen's d < 0.1).",
+      "minimum_data_needed": "Daily objective tightness measures (e.g., strap tension sensor), synchronized triaxial accelerometer data at same sampling rate as PPG/EDA, wrist circumference and strap type per subject, and per-subject motion artifact labels (from video or manual annotation).",
+      "most_likely_false_positive_risk": "Tightness correlates with unmeasured skin-sensor impedance changes (e.g., due to sweat or skin oils) that actually drive artifact differences.",
+      "most_likely_false_negative_risk": "Within-subject tightness variation is too small to detect an effect, or self-reported tightness is too noisy to capture true mechanical coupling."
+    },
+    {
+      "hypothesis_id": "H3",
+      "strongest_falsification_test": "Measure maximal SCR amplitude to a standardized stimulus (e.g., deep breath, startle) as a proxy for eccrine gland density. Control for skin hydration, ambient temperature/humidity, age, and measurement site. Regress stress-evoked SCR amplitude and EDA-based stress detection SNR on maximal SCR. The hypothesis is falsified if maximal SCR does not significantly predict stress-evoked SCR amplitude or SNR (p > 0.05) after controlling for confounders.",
+      "failure_condition": "After adjusting for hydration, ambient conditions, age, and site, the correlation between maximal SCR (gland density proxy) and stress detection SNR is zero or negative, and a model including maximal SCR does not improve prediction of SNR over a model with only confounders.",
+      "minimum_data_needed": "Quantitative sudomotor function test or validated proxy (maximal SCR to standardized stimulus), baseline SCL and stress-evoked SCR amplitude per subject, environmental logs (temperature, humidity) synchronized with recordings, and repeated stress trials to estimate within-subject SCR reliability.",
+      "most_likely_false_positive_risk": "Central sympathetic reactivity differences (unrelated to gland density) correlate with both maximal SCR and stress-evoked SCR, creating a spurious association.",
+      "most_likely_false_negative_risk": "The standardized stimulus does not reliably elicit maximal SCR, or within-subject variability in SCR amplitude is large relative to between-subject differences."
+    },
+    {
+      "hypothesis_id": "H4",
+      "strongest_falsification_test": "Estimate circadian phase for each stress episode using sleep midpoint, light exposure, and time since awakening. Stratify model performance (e.g., AUC, calibration error) by circadian phase bins. Fit a mixed model predicting performance with circadian phase as fixed effect, controlling for sleep timing, light exposure, time since awakening, and diurnal activity patterns (average activity intensity per bin). The hypothesis is falsified if circadian phase is not a significant predictor while diurnal activity pattern is.",
+      "failure_condition": "In a model controlling for sleep midpoint, light exposure, and time since awakening, the circadian phase coefficient is non-significant (p > 0.05) and the variance explained by circadian phase is less than that explained by diurnal activity intensity.",
+      "minimum_data_needed": "Chronotype assessment per subject, actigraphy or sleep diary for at least one week, timestamped stress labels with concurrent physiological data, and model performance metrics stratified by time-of-day and chronotype group.",
+      "most_likely_false_positive_risk": "Circadian phase proxies correlate with unmeasured behavioral routines (e.g., work schedules) that actually drive performance differences.",
+      "most_likely_false_negative_risk": "Proxy measures of circadian phase (sleep midpoint, light exposure) have high measurement error, attenuating the true effect."
+    },
+    {
+      "hypothesis_id": "H5",
+      "strongest_falsification_test": "Obtain physiological ground truth for a subset of stress episodes (e.g., lab TSST with known timing). Compute label bias as the difference between self-reported stress (EMA) and physiological arousal (e.g., HRV/EDA response). Regress label bias on personality traits (alexithymia, neuroticism) controlling for momentary mood, cognitive load, and EMA compliance. The hypothesis is falsified if personality traits do not significantly predict label bias (p > 0.05) after controls.",
+      "failure_condition": "In a regression of label bias (self-report minus physiological ground truth) on alexithymia and neuroticism scores, controlling for mood, cognitive load, and compliance, the coefficients for both traits are not significantly different from zero (p > 0.05) and the model R-squared increase is negligible (<1%).",
+      "minimum_data_needed": "Personality and alexithymia assessments per subject, ecological momentary assessment (EMA) with varying delays (immediate, 1h, end-of-day), physiological ground truth for a subset (e.g., lab stressor with known timing), and EMA metadata (response time, compliance, device timestamps).",
+      "most_likely_false_positive_risk": "Personality traits correlate with actual physiological stress reactivity rather than reporting bias, leading to a spurious association with label bias.",
+      "most_likely_false_negative_risk": "Lab stressor lacks ecological validity, so ground truth does not reflect real-world reporting bias; small subset size limits power."
+    },
+    {
+      "hypothesis_id": "H6",
+      "strongest_falsification_test": "After screening for clinical conditions and medications, fit a finite mixture model (or hierarchical clustering) on subject-specific physiological response features (e.g., HRV/EDA reactivity slopes). Test whether cluster membership associates with clinical screening scores (GAD-7, PHQ-9) or medication classes (beta-blockers, SSRIs). The hypothesis is falsified if clusters show no association with clinical variables (chi-square p > 0.05) and a generic model with subject-specific random effects fits the data as well as a model with clinical covariates (by AIC/BIC).",
+      "failure_condition": "Cluster membership from physiological response features is independent of clinical screening scores and medication classes (p > 0.05), and adding clinical covariates does not improve model fit (ΔAIC < 2).",
+      "minimum_data_needed": "Clinical screening data for all subjects (GAD-7, PHQ-9, PSS), medication records (drug class, dose, duration), self-reported medical diagnoses, substance use logs, and sufficient per-subject physiological data to fit subject-specific response profiles (multiple stress episodes per subject).",
+      "most_likely_false_positive_risk": "Screening questionnaires have low specificity; clusters may reflect other unmeasured factors (e.g., fitness, genetics) that correlate with clinical scores by chance.",
+      "most_likely_false_negative_risk": "Sample size too small to detect subpopulations; physiological data too noisy to reveal distinct clusters; clinical subpopulations are rare in the sample."
+    },
+    {
+      "hypothesis_id": "H8",
+      "strongest_falsification_test": "Compare feature distributions (HRV time/frequency domain, EDA metrics) and model performance (AUC, calibration error) across firmware versions using ANCOVA with hardware revision, device age, battery level, and ambient temperature as covariates. The hypothesis is falsified if firmware version has no significant effect on any key feature or performance metric (p > 0.05) and effect sizes are negligible (Cohen's d < 0.1).",
+      "failure_condition": "In an ANCOVA controlling for hardware revision, device age, battery, and temperature, the firmware version main effect on feature distributions and model performance is non-significant (p > 0.05) and partial eta-squared < 0.01.",
+      "minimum_data_needed": "Firmware version logged for every recording session, feature distributions stratified by firmware version, model performance metrics per firmware version, and sufficient subjects per firmware version (>=20) for statistical comparison.",
+      "most_likely_false_positive_risk": "Firmware version is confounded with study site or recruitment cohort differences (e.g., different populations received different firmware).",
+      "most_likely_false_negative_risk": "Firmware changes are minor and effect size too small to detect with available sample; hardware revision not properly controlled leading to residual confounding."
+    },
+    {
+      "hypothesis_id": "H9",
+      "strongest_falsification_test": "Fit a mixed model predicting stress detection uncertainty (e.g., prediction entropy) with accelerometer-derived activity intensity (METs), activity type, fitness, and habitual activity as fixed effects and subject as random effect. Compare subject-level random effect variance to a model without activity intensity. The hypothesis is falsified if activity intensity coefficient is non-significant (p > 0.05) and the subject-level variance remains unchanged.",
+      "failure_condition": "After controlling for activity type, fitness, and habitual activity, the activity intensity coefficient is not significantly different from zero (p > 0.05) and the reduction in subject-level random effect variance is less than 5%.",
+      "minimum_data_needed": "Synchronized high-resolution accelerometer (>=25 Hz) and physiological data, activity type labels (from annotation or validated classifier), fitness assessment per subject, per-subject habitual activity pattern (7+ days accelerometer), and stress labels during varying activity intensities.",
+      "most_likely_false_positive_risk": "Activity intensity correlates with stress itself (e.g., high stress causes fidgeting), creating a spurious interaction with detection uncertainty.",
+      "most_likely_false_negative_risk": "Accelerometer-derived activity intensity does not capture artifact-relevant motion (e.g., wrist-specific movements during weightlifting), leading to attenuation of the true effect."
+    },
+    {
+      "hypothesis_id": "H10",
+      "strongest_falsification_test": "Model missingness probability using a selection model (Heckman) or inverse probability weighting with observed covariates (comfort, irritation, battery, occupation) and proxy stress during missing periods (phone usage, location). The hypothesis is falsified if the correlation between the missingness error term and the stress outcome error term is not significantly different from zero (i.e., no evidence of MNAR) and the estimated bias in uncertainty estimates is negligible.",
+      "failure_condition": "In a Heckman selection model, the correlation parameter (rho) between the missingness equation and the stress outcome equation is not significantly different from zero (p > 0.05), and the bias-corrected uncertainty estimates do not differ meaningfully from naive estimates (relative difference < 5%).",
+      "minimum_data_needed": "Per-subject per-day wear time from device onboard logging, reasons for removal captured in real-time (EMA at removal), stress labels for periods when device was worn, device diagnostic logs (battery, Bluetooth, memory), and comfort/irritation ratings over time.",
+      "most_likely_false_positive_risk": "Proxy stress during missing periods (e.g., phone usage) is inaccurate, leading to false detection of MNAR.",
+      "most_likely_false_negative_risk": "Missingness due to high stress is rare, resulting in low power to detect MNAR; comfort surveys lack sensitivity to capture true removal motivations."
+    }
+  ]
+}
