@@ -93,6 +93,8 @@ At `n = 300`, the sparse-subgroup + inverse-probability + marginal configuration
 
 The failure persisted despite increased sample size, contradicting the explanation that the observed behavior was only a small-sample artifact.
 
+![Experiment 5 recovered result figure](results/figures/experiment_5_p4_f2_snapshot.svg)
+
 ### Experiment 6 — P4-F1
 
 **Result: structural failure pattern confirmed.**
@@ -110,6 +112,8 @@ Most dangerous tested pairing:
 - minimum coverage: **0.4838**
 
 This supported the interpretation that the failure depended on the structure of the estimator / conditioning setup rather than only random finite-sample variation.
+
+![Experiment 6 recovered result figure](results/figures/experiment_6_pair_comparison.svg)
 
 ### Experiment 7 v4
 
@@ -159,16 +163,51 @@ That makes matched-compute controls, adversarial cases, domain shift, and explic
 
 ---
 
+## Inspect the project
+
+The repository now separates **historical evidence** from **current reference code**.
+
+```text
+Minos-J/
+├── src/minos_j/                 # inspectable falsification contracts + pipeline
+├── scripts/                     # recovered-result verification + figure rendering
+├── tests/                       # pipeline contract tests
+├── results/                     # recovered metrics, CSV summaries and figures
+├── docs/EXPERIMENTS.md          # experiment-by-experiment record
+├── docs/ARCHITECTURE.md         # research architecture
+├── docs/HISTORICAL_FILE_MAP.md  # original filenames recovered from the Aug 4 work
+└── PROVENANCE.md                # what is historical vs reconstructed today
+```
+
+### Verify locally
+
+```bash
+python -m pip install -e .
+python scripts/verify_recovered_results.py
+python scripts/render_recovered_figures.py
+```
+
+With `pytest` installed:
+
+```bash
+pytest -q
+```
+
+A GitHub Actions workflow runs the same verification on pushes and pull requests.
+
 ## Current status
 
 **Research prototype / active investigation.**
 
-The public repository is being assembled from the existing experiment and architecture record. Research artifacts and implementation components will be added incrementally while preserving provenance between historical results and later refactors.
+The historical numerical record is now public and machine-readable. The exact original August 4 source files are **not** claimed to be present byte-for-byte; current Python code is explicitly labeled as a reference/reproducibility implementation.
 
 See:
 
 - [Experiment record](docs/EXPERIMENTS.md)
 - [Architecture notes](docs/ARCHITECTURE.md)
+- [Historical file map](docs/HISTORICAL_FILE_MAP.md)
+- [Provenance boundary](PROVENANCE.md)
+- [Recovered results](results/recovered_results.json)
 
 ---
 
