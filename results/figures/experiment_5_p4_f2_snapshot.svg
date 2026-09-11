@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="330" viewBox="0 0 920 330" role="img" aria-labelledby="title desc">
+<title id="title">Experiment 5 P4-F2 failure snapshot at n=300</title>
+<desc id="desc">Recovered historical metrics, not a rerun. Coverage gap 0.7462 and minimum group coverage 0.1538 for sparse subgroup plus inverse probability plus marginal conditioning.</desc>
+<rect width="920" height="330" fill="white"/>
+<text x="32" y="42" font-family="Arial,sans-serif" font-size="24" font-weight="700" fill="#0f172a">Experiment 5 — P4-F2 failure snapshot at n=300</text>
+<text x="32" y="68" font-family="Arial,sans-serif" font-size="13" fill="#64748b">Recovered historical metrics · sparse subgroup + inverse-probability + marginal</text>
+<text x="32" y="133" font-family="Arial,sans-serif" font-size="15" fill="#0f172a">Coverage gap</text>
+<rect x="280" y="108" width="560" height="36" rx="6" fill="#e2e8f0"/>
+<rect x="280" y="108" width="417.9" height="36" rx="6" fill="#334155"/>
+<text x="853" y="132" font-family="Arial,sans-serif" font-size="14" fill="#0f172a">0.7462</text>
+<text x="32" y="223" font-family="Arial,sans-serif" font-size="15" fill="#0f172a">Minimum group coverage</text>
+<rect x="280" y="198" width="560" height="36" rx="6" fill="#e2e8f0"/>
+<rect x="280" y="198" width="86.1" height="36" rx="6" fill="#334155"/>
+<text x="853" y="222" font-family="Arial,sans-serif" font-size="14" fill="#0f172a">0.1538</text>
+<line x1="784" y1="94" x2="784" y2="254" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 5"/>
+<text x="748" y="278" font-family="Arial,sans-serif" font-size="12" fill="#64748b">0.90 target coverage reference</text>
+<text x="32" y="307" font-family="Arial,sans-serif" font-size="12" fill="#64748b">Historical conclusion: finite-sample-only explanation falsified.</text>
+</svg>
