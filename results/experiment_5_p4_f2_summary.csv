@@ -1,0 +1,10 @@
+metric,value,context
+overall_mean_gap_n50,0.2603,All recovered Experiment 5 conditions
+overall_mean_gap_n300,0.2894,All recovered Experiment 5 conditions
+sensitivity_decline_percent,9.7,Recovered report
+persistent_failure_cells,14,Recovered report
+severe_cells_at_n300,15,Recovered report
+overlap_centroid_mondrian_gap_n50,0.1085,Overlap geometry + centroid score + Mondrian conditioning
+overlap_centroid_mondrian_gap_n300,0.0329,Overlap geometry + centroid score + Mondrian conditioning
+sparse_inverse_probability_marginal_gap_n300,0.7462,Sparse subgroup + inverse probability + marginal conditioning
+sparse_inverse_probability_marginal_min_group_coverage_n300,0.1538,Sparse subgroup + inverse probability + marginal conditioning
