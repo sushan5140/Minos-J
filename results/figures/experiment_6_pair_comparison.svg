@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="500" viewBox="0 0 920 500" role="img" aria-labelledby="title desc">
+<title id="title">Experiment 6 safest versus most dangerous tested pair</title>
+<desc id="desc">Recovered historical metrics, not a rerun. Safest pair mean gap 0.0645 and minimum coverage 0.8656. Most dangerous inverse-probability plus marginal pair mean gap 0.4209 and minimum coverage 0.4838.</desc>
+<rect width="920" height="500" fill="white"/>
+<text x="32" y="42" font-family="Arial,sans-serif" font-size="24" font-weight="700" fill="#0f172a">Experiment 6 — safest vs most dangerous tested pair</text>
+<text x="32" y="68" font-family="Arial,sans-serif" font-size="13" fill="#64748b">Recovered historical metrics · structural-failure study</text>
+
+<text x="32" y="133" font-family="Arial,sans-serif" font-size="15" fill="#0f172a">Safest pair mean gap</text>
+<rect x="300" y="108" width="520" height="34" rx="6" fill="#e2e8f0"/>
+<rect x="300" y="108" width="33.5" height="34" rx="6" fill="#334155"/>
+<text x="835" y="131" font-family="Arial,sans-serif" font-size="14">0.0645</text>
+
+<text x="32" y="213" font-family="Arial,sans-serif" font-size="15" fill="#0f172a">Safest pair min coverage</text>
+<rect x="300" y="188" width="520" height="34" rx="6" fill="#e2e8f0"/>
+<rect x="300" y="188" width="450.1" height="34" rx="6" fill="#334155"/>
+<text x="835" y="211" font-family="Arial,sans-serif" font-size="14">0.8656</text>
+
+<text x="32" y="293" font-family="Arial,sans-serif" font-size="15" fill="#0f172a">Dangerous pair mean gap</text>
+<rect x="300" y="268" width="520" height="34" rx="6" fill="#e2e8f0"/>
+<rect x="300" y="268" width="218.9" height="34" rx="6" fill="#334155"/>
+<text x="835" y="291" font-family="Arial,sans-serif" font-size="14">0.4209</text>
+
+<text x="32" y="373" font-family="Arial,sans-serif" font-size="15" fill="#0f172a">Dangerous pair min coverage</text>
+<rect x="300" y="348" width="520" height="34" rx="6" fill="#e2e8f0"/>
+<rect x="300" y="348" width="251.6" height="34" rx="6" fill="#334155"/>
+<text x="835" y="371" font-family="Arial,sans-serif" font-size="14">0.4838</text>
+
+<text x="32" y="430" font-family="Arial,sans-serif" font-size="12" fill="#64748b">Safest: distance-to-centroid + region-Mondrian · 0 persistent failures.</text>
+<text x="32" y="453" font-family="Arial,sans-serif" font-size="12" fill="#64748b">Most dangerous: inverse-probability + marginal conditioning.</text>
+<text x="32" y="476" font-family="Arial,sans-serif" font-size="12" fill="#64748b">Historical conclusion: structural failure pattern confirmed.</text>
+</svg>
