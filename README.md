@@ -93,7 +93,9 @@ At `n = 300`, the sparse-subgroup + inverse-probability + marginal configuration
 
 The failure persisted despite increased sample size, contradicting the explanation that the observed behavior was only a small-sample artifact.
 
-![Experiment 5 recovered result figure](results/figures/experiment_5_p4_f2_snapshot.svg)
+![Bar chart rendered from recovered Experiment 5 metrics, showing a 0.7462 coverage gap and 0.1538 minimum group coverage](results/figures/experiment_5_p4_f2_snapshot.svg)
+
+*Later rendering from recovered metrics; not an original historical figure and not a rerun.*
 
 ### Experiment 6 — P4-F1
 
@@ -113,7 +115,9 @@ Most dangerous tested pairing:
 
 This supported the interpretation that the failure depended on the structure of the estimator / conditioning setup rather than only random finite-sample variation.
 
-![Experiment 6 recovered result figure](results/figures/experiment_6_pair_comparison.svg)
+![Bar chart rendered from recovered Experiment 6 metrics, comparing the safest and most dangerous tested pairings](results/figures/experiment_6_pair_comparison.svg)
+
+*Later rendering from recovered metrics; not an original historical figure and not a rerun.*
 
 ### Experiment 7 v4
 
@@ -134,13 +138,15 @@ The intended next stage for Q3 produces exactly 10 statistical-testability objec
 
 ## Reproducibility work
 
-During the architecture refactor:
+The original workspace has now been recovered under [`historical/2026-08-04`](historical/2026-08-04):
 
-- **34 historical outputs were preserved byte-for-byte**
-- manifest/hash verification was used to detect accidental changes
-- compilation checks were run
-- credential scanning was performed
-- historical experiments were not silently regenerated during refactoring
+- 59 source/support files
+- 178 experiment output files
+- 48 checkpoints
+- 2 original run/hash logs
+- 287 SHA-256 manifest entries
+
+Exactly 34 Experiment 1–7 output paths named in the historical integrity claim are present and individually hashed. The old composite hash is retained as historically reported, but its original manifest and serialization method were not found, so that composite cannot be independently reproduced. The recovery did not rerun model or numerical stages.
 
 The purpose of these checks is to keep architectural changes separate from changes to experimental evidence.
 
@@ -169,6 +175,13 @@ The repository now separates **historical evidence** from **current reference co
 
 ```text
 Minos-J/
+├── historical/2026-08-04/      # byte-preserved original workspace evidence
+│   ├── source/                 # original implementation and validators
+│   ├── outputs/                # original JSON/Markdown/text outputs
+│   ├── checkpoints/            # preserved stage checkpoints
+│   ├── logs/                   # recovered first-run hash records
+│   ├── MANIFEST.sha256         # complete included-file inventory
+│   └── RECOVERY_REPORT.md      # exclusions, gaps and verification boundary
 ├── src/minos_j/                 # inspectable falsification contracts + pipeline
 ├── scripts/                     # recovered-result verification + figure rendering
 ├── tests/                       # pipeline contract tests
@@ -199,7 +212,7 @@ A GitHub Actions workflow runs the same verification on pushes and pull requests
 
 **Research prototype / active investigation.**
 
-The historical numerical record is now public and machine-readable. The exact original August 4 source files are **not** claimed to be present byte-for-byte; current Python code is explicitly labeled as a reference/reproducibility implementation.
+The recovered historical implementation and evidence are now included byte-for-byte in a clearly labeled historical tree. Current Python code under `src/` remains a separate reference implementation. Participant-derived biometric features, third-party datasets, caches, and vendored dependencies were intentionally not redistributed.
 
 See:
 
@@ -207,6 +220,8 @@ See:
 - [Architecture notes](docs/ARCHITECTURE.md)
 - [Historical file map](docs/HISTORICAL_FILE_MAP.md)
 - [Provenance boundary](PROVENANCE.md)
+- [Historical recovery report](historical/2026-08-04/RECOVERY_REPORT.md)
+- [Historical SHA-256 manifest](historical/2026-08-04/MANIFEST.sha256)
 - [Recovered results](results/recovered_results.json)
 
 ---
