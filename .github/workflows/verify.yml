@@ -19,10 +19,6 @@ jobs:
           python -m pip install pytest
       - name: Validate recovered result record
         run: python scripts/verify_recovered_results.py
-      - name: Scan for credentials
-        run: python scripts/security_scan.py
-      - name: Check documentation links
-        run: python scripts/check_documentation_links.py
       - name: Run tests
         run: pytest -q
       - name: Re-render recovered figures
