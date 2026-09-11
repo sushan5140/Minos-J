@@ -1,0 +1,14 @@
+metric,value,context
+overall_mean_gap_n50,0.2119,All recovered Experiment 6 conditions
+overall_mean_gap_n600,0.2222,All recovered Experiment 6 conditions
+distance_to_centroid_mean_gap,0.1218,Score-family average
+region_mondrian_mean_gap,0.0903,Conditioning-family average
+region_mondrian_mean_minimum_coverage,0.8370,Conditioning-family average
+inverse_probability_marginal_mean_gap,0.4209,Most dangerous recovered pairing
+inverse_probability_marginal_minimum_coverage,0.4838,Most dangerous recovered pairing
+safest_pair_mean_gap,0.0645,Distance-to-centroid + region-Mondrian
+safest_pair_minimum_coverage,0.8656,Distance-to-centroid + region-Mondrian
+safest_pair_persistent_failures,0,Distance-to-centroid + region-Mondrian
+sparse_inverse_probability_marginal_gap_n600,0.7591,Sparse subgroup at n=600
+sparse_inverse_probability_marginal_minimum_coverage_n600,0.1409,Sparse subgroup at n=600
+persistent_failure_trajectories,15,Out of 45 recovered trajectories
