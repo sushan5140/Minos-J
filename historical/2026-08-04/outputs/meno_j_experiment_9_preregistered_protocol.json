@@ -1,0 +1,56 @@
+{
+  "experiment_name": "Meno-J Experiment 9: WESAD Real-Data Falsification Study",
+  "protocol_status": "FROZEN_BEFORE_COVERAGE_ANALYSIS",
+  "source_integrity_requirement": "outputs/meno_j_experiment_9_wesad_integrity.json must have status PASS",
+  "research_questions": [
+    "Does conformal score and conditioning choice materially alter subject-level WESAD coverage?",
+    "Does motion-region conditioning improve worst-subject coverage without relying on uninformative full prediction sets?",
+    "Does the safest synthetic Experiment 6 pair transfer to real WESAD windows?"
+  ],
+  "data_scope": {
+    "subjects": ["S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10", "S11", "S13", "S14", "S15", "S16", "S17"],
+    "signals": ["chest_ACC", "chest_ECG", "chest_EMG", "chest_EDA", "chest_Temp", "chest_Resp"],
+    "sampling_rate_hz": 700,
+    "included_labels": {"1": "baseline", "2": "stress", "3": "amusement"},
+    "excluded_labels": [0, 4, 5, 6, 7]
+  },
+  "window_contract": {
+    "window_seconds": 60,
+    "overlap": 0.0,
+    "eligibility": "Window lies fully inside one contiguous included-label run.",
+    "transition_windows_excluded": true,
+    "features": "Nine deterministic distribution/dynamics statistics for five scalar chest channels plus three acceleration axes and acceleration magnitude."
+  },
+  "evaluation_contract": {
+    "target_coverage": 0.9,
+    "alpha": 0.1,
+    "classifier": "NumPy regularized linear discriminant analysis",
+    "test_unit": "one held-out subject",
+    "repetitions_per_test_subject": 3,
+    "train_subjects_per_fold": 10,
+    "calibration_subjects_per_fold": 4,
+    "test_subjects_per_fold": 1,
+    "scores": ["margin_score", "inverse_probability_score", "distance_to_class_centroid_score"],
+    "conditioning": ["marginal", "mondrian_class", "mondrian_motion_region"],
+    "motion_region": "Low/high motion assigned using the calibration-only median of ACC magnitude standard deviation.",
+    "reported_groups": ["class", "motion_region", "within-state temporal_tertile"]
+  },
+  "primary_comparison": {
+    "synthetic_safest_pair": "distance_to_class_centroid_score + mondrian_motion_region",
+    "synthetic_danger_pair": "inverse_probability_score + marginal",
+    "transfer_support": "Safest pair improves worst-subject mean coverage by at least 0.05 and does not increase mean full-set frequency by more than 0.20.",
+    "transfer_falsification": "The coverage improvement is below 0.05 or full-set frequency increases by more than 0.20."
+  },
+  "diagnostic_thresholds": {
+    "severe_subject_undercoverage": 0.75,
+    "uninformative_full_set_frequency": 0.2,
+    "minimum_group_count_for_reporting": 1
+  },
+  "safety": {
+    "restricted_pickle_loader": true,
+    "subject_disjoint_splits": true,
+    "raw_dataset_mutated": false,
+    "model_call_used": false,
+    "api_key_required": false
+  }
+}

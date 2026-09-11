@@ -1,0 +1,94 @@
+{
+  "rival_prediction_matrix": [
+    {
+      "hypothesis_id": "H1",
+      "meno_j_hypothesis": "Inter‑subject variability in autonomic reactivity causes the nonconformity scores to be systematically miscalibrated for high‑reactivity individuals.",
+      "meno_j_prediction": "High‑reactivity subjects will show systematically higher nonconformity scores and smaller prediction sets than low‑reactivity subjects, even after controlling for baseline HRV and medication.",
+      "rival_explanation": "High‑reactivity subjects have noisier physiological signals, which inflates the variance of nonconformity scores without a systematic calibration bias.",
+      "rival_prediction": "The distribution of nonconformity scores for high‑reactivity subjects will be wider but centered similarly to low‑reactivity subjects; prediction set sizes will not differ after adjusting for signal‑to‑noise ratio.",
+      "distinguishing_test": "Compare nonconformity score means and variances across reactivity quantiles before and after normalizing each subject's scores by their within‑subject signal‑to‑noise ratio.",
+      "what_result_supports_meno_j": "Mean nonconformity scores remain significantly higher for high‑reactivity subjects after SNR normalization.",
+      "what_result_supports_rival": "Mean scores become indistinguishable across reactivity groups after SNR normalization, while variances converge."
+    },
+    {
+      "hypothesis_id": "H2",
+      "meno_j_hypothesis": "Sensor‑specific drift in the wrist‑worn EDA channel during prolonged recordings leads to biased nonconformity estimates for later trials.",
+      "meno_j_prediction": "Nonconformity scores will increase monotonically with trial index, and coverage will drop for later trials even when controlling for habituation.",
+      "rival_explanation": "Late‑session undercoverage is driven by participant habituation to the stressor, not by sensor drift.",
+      "rival_prediction": "Nonconformity scores will correlate with trial index only when habituation markers (e.g., reduced EDA peak amplitude) are present; controlling for habituation removes the trial‑order effect.",
+      "distinguishing_test": "Fit a mixed‑effects model with trial index and habituation metric (EDA peak amplitude) as predictors of nonconformity score; compare model fit with and without a sensor‑drift proxy (impedance or SNR).",
+      "what_result_supports_meno_j": "Trial index remains a significant predictor after accounting for habituation, and impedance/SNR adds explanatory power.",
+      "what_result_supports_rival": "Habituation metric fully mediates the trial‑index effect; impedance/SNR does not improve model fit."
+    },
+    {
+      "hypothesis_id": "H3",
+      "meno_j_hypothesis": "Non‑stationary heart‑rate variability (HRV) dynamics across the stress‑recovery cycle violate the exchangeability assumption within Mondrian strata.",
+      "meno_j_prediction": "Autocorrelation of nonconformity residuals will be significant within transitional windows, and coverage will be lowest for those windows.",
+      "rival_explanation": "Transitional periods simply have fewer calibration samples, causing a small‑stratum effect rather than a violation of exchangeability.",
+      "rival_prediction": "Coverage deficits will disappear when stratum‑specific calibration sample size is matched across transitional and stable periods.",
+      "distinguishing_test": "Create balanced calibration subsets by down‑sampling stable periods to match transitional sample counts; recompute coverage for each period type.",
+      "what_result_supports_meno_j": "Coverage remains lower for transitional periods even with equal calibration sample sizes.",
+      "what_result_supports_rival": "Coverage equalizes across period types after sample‑size matching."
+    },
+    {
+      "hypothesis_id": "H4",
+      "meno_j_hypothesis": "Mislabeling of self‑reported stress levels for a subset of participants introduces systematic label noise into the Mondrian categories.",
+      "meno_j_prediction": "Subjects with low self‑report consistency will show systematically narrower nonconformity distributions in the low‑stress stratum, leading to undercoverage.",
+      "rival_explanation": "Physiological signals are genuinely ambiguous for some subjects, causing overlapping feature distributions that the taxonomy cannot separate.",
+      "rival_prediction": "Nonconformity distributions for inconsistent reporters will overlap with both stress strata, but the degree of overlap will not correlate with self‑report consistency metrics.",
+      "distinguishing_test": "Compute stratum‑wise nonconformity overlap (e.g., Bhattacharyya coefficient) and correlate with per‑subject self‑report reliability scores.",
+      "what_result_supports_meno_j": "Higher overlap strongly correlates with lower self‑report reliability.",
+      "what_result_supports_rival": "Overlap is high for certain subjects regardless of reliability scores, and reliability does not predict overlap."
+    },
+    {
+      "hypothesis_id": "H5",
+      "meno_j_hypothesis": "Insufficient representation of certain demographic sub‑groups (e.g., age > 50) in the calibration set leads to stratum‑specific undercoverage.",
+      "meno_j_prediction": "Coverage will be significantly lower for older age deciles, and adding age as a stratification variable will restore nominal coverage.",
+      "rival_explanation": "The apparent age effect is mediated by fitness level; older participants tend to be less fit, and fitness—not age—drives the coverage gap.",
+      "rival_prediction": "When fitness (e.g., VO2 max or activity level) is included as a covariate, the age‑coverage relationship disappears.",
+      "distinguishing_test": "Fit a logistic regression predicting per‑subject coverage with age, fitness, and their interaction; compare models with and without fitness.",
+      "what_result_supports_meno_j": "Age remains a significant predictor after adjusting for fitness.",
+      "what_result_supports_rival": "Fitness fully accounts for the coverage difference; age effect becomes non‑significant."
+    },
+    {
+      "hypothesis_id": "H6",
+      "meno_j_hypothesis": "The choice of nonconformity score (e.g., softmax margin) is poorly aligned with the multimodal feature geometry for stress classification.",
+      "meno_j_prediction": "Alternative nonconformity scores that respect feature correlations (e.g., Mahalanobis distance) will yield higher coverage without increasing prediction set size excessively.",
+      "rival_explanation": "Undercoverage stems from distribution shift between calibration and test sets, not from the nonconformity score itself.",
+      "rival_prediction": "All nonconformity scores will show similar coverage deficits when evaluated on shifted test data; improvements only appear after correcting the shift.",
+      "distinguishing_test": "Evaluate multiple nonconformity scores on both original and covariate‑shift‑corrected test sets (e.g., using importance weighting).",
+      "what_result_supports_meno_j": "Mahalanobis‑based score improves coverage on the original test set, while margin‑based score does not.",
+      "what_result_supports_rival": "All scores improve equally after shift correction, and none improves on the uncorrected set."
+    },
+    {
+      "hypothesis_id": "H7",
+      "meno_j_hypothesis": "Batch effects from different recording days cause distribution shift that is not captured by the Mondrian condition labels.",
+      "meno_j_prediction": "Nonconformity scores will differ systematically across recording days, and day‑aware stratification will restore coverage.",
+      "rival_explanation": "Day‑level differences are actually due to habituation across days (participants become less reactive), not ambient batch effects.",
+      "rival_prediction": "Including trial‑order‑within‑day as a covariate eliminates day effects; day‑specific strata add no further benefit.",
+      "distinguishing_test": "Compare coverage of three models: (1) condition‑only strata, (2) condition+day strata, (3) condition+day+trial‑order strata.",
+      "what_result_supports_meno_j": "Model (2) significantly improves coverage over (1), and (3) does not improve further.",
+      "what_result_supports_rival": "Model (3) improves coverage over (2), indicating trial‑order (habituation) explains the day effect."
+    },
+    {
+      "hypothesis_id": "H9",
+      "meno_j_hypothesis": "Physiological habituation across repeated stress trials reduces signal discriminability, but the Mondrian taxonomy treats each trial as identically distributed.",
+      "meno_j_prediction": "Nonconformity scores will decrease (indicating higher confidence) across trial order while coverage drops, and trial‑aware strata will recover coverage.",
+      "rival_explanation": "Apparent habituation is confounded by sensor drift that worsens over the session, not by true physiological adaptation.",
+      "rival_prediction": "Signal quality metrics (e.g., EDA SNR) will degrade with trial order; controlling for SNR removes the trial‑order effect on nonconformity scores.",
+      "distinguishing_test": "Regress nonconformity score on trial index and SNR; test whether trial index remains significant after SNR inclusion.",
+      "what_result_supports_meno_j": "Trial index stays significant after controlling for SNR.",
+      "what_result_supports_rival": "Trial index becomes non‑significant once SNR is in the model."
+    },
+    {
+      "hypothesis_id": "H10",
+      "meno_j_hypothesis": "Correlated missingness in the respiration belt (e.g., motion artifacts) creates informative missingness that the conformal predictor ignores.",
+      "meno_j_prediction": "Windows with missing respiration data during high‑movement stress will have higher nonconformity scores and lower coverage than complete‑case windows.",
+      "rival_explanation": "Missingness is random with respect to stress level; coverage loss is simply due to reduced feature dimensionality, not informative missingness.",
+      "rival_prediction": "Coverage will be equally reduced for any randomly removed modality, and missingness indicators will not predict nonconformity scores beyond the loss of features.",
+      "distinguishing_test": "Simulate random missingness of respiration in low‑movement windows and compare coverage to actual high‑movement missingness; also test a missingness‑aware nonconformity score.",
+      "what_result_supports_meno_j": "Actual high‑movement missingness yields lower coverage than simulated random missingness, and missingness‑aware score restores coverage.",
+      "what_result_supports_rival": "Coverage loss matches random missingness simulation, and missingness indicator adds no predictive value."
+    }
+  ]
+}

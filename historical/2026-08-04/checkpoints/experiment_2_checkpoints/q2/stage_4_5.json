@@ -1,0 +1,370 @@
+{
+  "enriched_hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "original_hypothesis": "Inter-subject variability in cardiovascular dynamics violates the exchangeability assumption required for conformal prediction coverage guarantees.",
+      "original_mechanism": "Individual differences in autonomic regulation, vascular compliance, and baroreflex sensitivity cause the conditional distribution of prediction errors to shift systematically across subjects, making calibration on one subject invalid for another.",
+      "possible_confounders": [
+        "age",
+        "sex",
+        "BMI",
+        "medication use (beta-blockers, antihypertensives)",
+        "comorbidities (diabetes, hypertension)",
+        "fitness level (VO2 max)",
+        "hydration status",
+        "time of day"
+      ],
+      "control_variables": [
+        "age-matched cohorts",
+        "medication washout periods",
+        "standardized supine rest protocol",
+        "controlled ambient temperature",
+        "fasting state"
+      ],
+      "rival_explanations": [
+        "model misspecification (e.g., linear vs nonlinear dynamics)",
+        "insufficient per-subject calibration sample size",
+        "label noise from automated beat detection",
+        "differences in sensor placement across subjects"
+      ],
+      "minimum_data_needed": [
+        "multi-subject longitudinal recordings (>=50 subjects)",
+        "repeated measures per subject across days",
+        "demographic and clinical metadata",
+        ">=200 calibration beats per subject",
+        "simultaneous reference BP or invasive hemodynamic data for validation"
+      ],
+      "effect_size_expectation": "large",
+      "enriched_mechanism": "Individual differences in autonomic regulation, vascular compliance, and baroreflex sensitivity cause the conditional distribution of prediction errors to shift systematically across subjects. After controlling for age, sex, BMI, medication, and comorbidities via matched cohorts and standardized protocols, residual inter-subject heterogeneity in hemodynamic phenotypes (e.g., baroreflex gain, arterial stiffness) still violates exchangeability because these traits are stable within-subject but vary widely between subjects, making calibration on one subject invalid for another even under controlled conditions.",
+      "enrichment_notes": "Effect size expected large because cardiovascular phenotypes are known to vary substantially across individuals; controlling for measured confounders reduces but does not eliminate the exchangeability violation due to unmeasured physiological traits."
+    },
+    {
+      "hypothesis_id": "H2",
+      "original_hypothesis": "Gradual sensor calibration drift across recording sessions introduces non-stationary measurement bias that conformal prediction cannot adapt to without recalibration.",
+      "original_mechanism": "Temperature-dependent sensor gain changes and electrode polarization cause the mapping from true physiological state to observed signal to shift slowly over time, altering the error distribution in a way that violates the i.i.d. assumption.",
+      "possible_confounders": [
+        "ambient temperature",
+        "humidity",
+        "skin temperature",
+        "electrode type (Ag/AgCl vs dry)",
+        "adhesive quality",
+        "subject movement",
+        "electrode age",
+        "gel drying"
+      ],
+      "control_variables": [
+        "temperature-controlled environment (22±1°C)",
+        "standardized skin preparation (abrasion, cleaning)",
+        "reference sensor (calibrated simultaneously)",
+        "scheduled electrode replacement (every 24h)",
+        "impedance monitoring"
+      ],
+      "rival_explanations": [
+        "physiological non-stationarity (e.g., circadian HRV changes)",
+        "algorithmic instability in the predictor",
+        "data transmission errors or packet loss",
+        "changes in electrode-skin contact pressure"
+      ],
+      "minimum_data_needed": [
+        "long-term recordings (>=72h) with simultaneous reference measurements",
+        "environmental logs (temperature, humidity)",
+        "electrode metadata (type, lot, placement time)",
+        "periodic calibration checks against known signal source",
+        "impedance time series"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Temperature-dependent sensor gain changes and electrode polarization cause the mapping from true physiological state to observed signal to shift slowly over hours. After controlling for ambient temperature, humidity, skin temperature, and electrode type via environmental control and standardized prep, residual drift from gel drying and polarization still alters the error distribution because these physicochemical processes are not fully mitigated by controls and operate on timescales comparable to the conformal calibration window, violating the i.i.d. assumption.",
+      "enrichment_notes": "Effect size medium because modern sensors have reduced drift, but gel drying and polarization remain non-negligible over 24-72h; impedance monitoring can partially correct but not eliminate."
+    },
+    {
+      "hypothesis_id": "H3",
+      "original_hypothesis": "Circadian modulation of autonomic tone creates periodic non-stationarity in heart rate variability that conformal prediction fails to capture with static calibration sets.",
+      "original_mechanism": "Sympathetic-parasympathetic balance oscillates with a ~24-hour period, altering the conditional variance of RR intervals and causing prediction error distributions to widen during sympathetic dominance (day) and narrow during parasympathetic dominance (night).",
+      "possible_confounders": [
+        "sleep-wake schedule",
+        "light exposure intensity and timing",
+        "shift work history",
+        "caffeine/alcohol consumption",
+        "acute stress",
+        "meal timing",
+        "physical activity"
+      ],
+      "control_variables": [
+        "constant routine protocol (dim light, semi-recumbent, hourly snacks)",
+        "controlled lighting (<10 lux)",
+        "standardized meal composition and timing",
+        "actigraphy-verified wakefulness",
+        "caffeine/alcohol abstinence"
+      ],
+      "rival_explanations": [
+        "sleep stage effects (REM vs NREM) independent of circadian phase",
+        "posture changes (supine vs upright)",
+        "activity level variations",
+        "thermoregulatory cycles"
+      ],
+      "minimum_data_needed": [
+        "multi-day continuous recordings (>=48h) under constant routine",
+        "timestamped annotations of sleep/wake",
+        "core body temperature or melatonin rhythms for circadian phase",
+        "high-resolution RR intervals (>=250 Hz)",
+        "simultaneous respiratory signal"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Sympathetic-parasympathetic balance oscillates with a ~24-hour period, altering the conditional variance of RR intervals. After controlling for sleep-wake schedule, light exposure, meals, and activity via constant routine protocols, the endogenous circadian component still causes prediction error distributions to widen during circadian day (sympathetic dominance) and narrow during circadian night (parasympathetic dominance) because the conformal predictor's static calibration set does not condition on circadian phase, violating exchangeability across the cycle.",
+      "enrichment_notes": "Effect size medium: circadian HRV amplitude is ~20-30% of mean; conformal coverage degradation depends on calibration window length relative to circadian period."
+    },
+    {
+      "hypothesis_id": "H4",
+      "original_hypothesis": "Progressive pathophysiological remodeling in chronic disease alters the signal-generating process faster than the conformal calibration window can track.",
+      "original_mechanism": "In conditions like heart failure, ventricular remodeling and neurohormonal activation change the morphology and variability of ECG and PPG signals on timescales of weeks, causing the conformal predictor's error distribution to shift beyond the adaptation capacity of sliding-window calibration.",
+      "possible_confounders": [
+        "medication changes (dose, adherence)",
+        "acute decompensation events",
+        "comorbidities (renal function, anemia)",
+        "lifestyle changes (diet, exercise)",
+        "seasonal variations",
+        "aging"
+      ],
+      "control_variables": [
+        "detailed medication logs with timestamps",
+        "clinical event adjudication (hospitalizations, ED visits)",
+        "serial echocardiography/biomarkers (NT-proBNP)",
+        "standardized follow-up schedule",
+        "propensity scoring for treatment changes"
+      ],
+      "rival_explanations": [
+        "sensor drift over weeks",
+        "seasonal physiological variations",
+        "aging-related changes",
+        "changes in recording conditions"
+      ],
+      "minimum_data_needed": [
+        "longitudinal data over >=6 months with weekly/bimonthly recordings",
+        "clinical annotations (med changes, events)",
+        "serial imaging/biomarkers",
+        "medication adherence measures (pharmacy fills)",
+        "concurrent symptom diaries"
+      ],
+      "effect_size_expectation": "large",
+      "enriched_mechanism": "In heart failure, ventricular remodeling and neurohormonal activation change ECG/PPG morphology and variability on timescales of weeks. After controlling for medication changes, acute events, and comorbidities via detailed logs and adjudication, the progressive disease trajectory still shifts the error distribution faster than sliding-window calibration can track because the effective sample size in the window is too small to estimate the new error quantiles before the process shifts again, violating the conformal assumption of approximate stationarity within the calibration window.",
+      "enrichment_notes": "Effect size large for advanced HF (rapid remodeling); unknown for early-stage disease where changes are slower."
+    },
+    {
+      "hypothesis_id": "H5",
+      "original_hypothesis": "Inconsistent expert annotation of physiological events across segments introduces label noise that violates the conformal prediction assumption of reliable ground truth.",
+      "original_mechanism": "Inter-rater variability in identifying arrhythmia onset, sleep stage transitions, or artifact epochs creates segment-dependent label error rates, causing the conformal predictor to calibrate against a moving target of imperfect labels.",
+      "possible_confounders": [
+        "rater experience level",
+        "rater fatigue (time on task)",
+        "signal quality (SNR, artifact burden)",
+        "annotation guideline ambiguity",
+        "time pressure",
+        "clinical context availability"
+      ],
+      "control_variables": [
+        "standardized rater training with certification",
+        "consensus adjudication (>=2 raters + arbitrator)",
+        "automated signal quality indices (SQI) per segment",
+        "blinded review (raters unaware of segment origin)",
+        "fixed annotation time limits"
+      ],
+      "rival_explanations": [
+        "true physiological ambiguity (borderline events)",
+        "algorithmic errors in the predictor",
+        "changes in label definitions over time",
+        "systematic bias in automated pre-labeling"
+      ],
+      "minimum_data_needed": [
+        "multiple independent annotations per segment (>=3 raters)",
+        "rater metadata (experience, fatigue logs)",
+        "signal quality indices per segment",
+        "ground truth from gold-standard (e.g., invasive EP study for arrhythmia)",
+        "annotation guideline version history"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Inter-rater variability in identifying arrhythmia onset, sleep stage transitions, or artifact epochs creates segment-dependent label error rates. After controlling for rater experience, fatigue, and signal quality via standardized training, consensus adjudication, and SQI stratification, residual label noise still violates the conformal assumption of reliable ground truth because ambiguous physiological events (e.g., atrial fibrillation onset in noisy segments) have irreducible inter-rater disagreement that varies systematically with segment complexity, causing the predictor to calibrate against a moving target.",
+      "enrichment_notes": "Effect size medium: inter-rater kappa for arrhythmia annotation ~0.7-0.85; impact on conformal coverage depends on noise heterogeneity across segments."
+    },
+    {
+      "hypothesis_id": "H6",
+      "original_hypothesis": "Unobserved subpopulations defined by medication response or genetic polymorphisms create hidden stratification that breaks marginal coverage guarantees.",
+      "original_mechanism": "Beta-blocker responders vs. non-responders exhibit fundamentally different heart rate dynamics; if the calibration set mixes these groups but test segments come predominantly from one, the conformal predictor's marginal coverage fails for the underrepresented group.",
+      "possible_confounders": [
+        "medication adherence",
+        "genetic ancestry",
+        "comorbidities",
+        "age",
+        "sex",
+        "lifestyle factors (smoking, exercise)",
+        "concomitant medications"
+      ],
+      "control_variables": [
+        "genotyping for relevant polymorphisms (e.g., ADRB1, CYP2D6)",
+        "plasma drug level monitoring",
+        "propensity score matching for observed covariates",
+        "stratified sampling by response phenotype",
+        "adherence monitoring (MEMS caps)"
+      ],
+      "rival_explanations": [
+        "continuous heterogeneity rather than discrete subgroups",
+        "confounding by indication (sicker patients get different doses)",
+        "time-varying treatment effects",
+        "population stratification in genetic data"
+      ],
+      "minimum_data_needed": [
+        "genetic/pharmacogenomic data for cohort",
+        "medication adherence measures",
+        "large sample size (>=500) for subgroup detection",
+        "longitudinal response phenotypes",
+        "ancestry-informative markers"
+      ],
+      "effect_size_expectation": "unknown",
+      "enriched_mechanism": "Beta-blocker responders vs. non-responders exhibit fundamentally different heart rate dynamics due to genetic polymorphisms (e.g., ADRB1 Arg389Gly) and adherence. After controlling for ancestry, adherence, and comorbidities via genotyping, drug levels, and propensity scoring, hidden stratification still breaks marginal coverage because the calibration set mixes latent subgroups with distinct error distributions, and test segments may come predominantly from one subgroup (e.g., non-responders with higher HRV), causing coverage failure for that group without explicit subgroup labels.",
+      "enrichment_notes": "Effect size unknown: depends on subgroup prevalence, effect size of genetic variants on HR dynamics, and calibration set composition."
+    },
+    {
+      "hypothesis_id": "H7",
+      "original_hypothesis": "Long-range temporal dependence in physiological signals violates the exchangeability assumption even after conditioning on recent history.",
+      "original_mechanism": "Fractal-like correlations in heart rate variability (e.g., 1/f scaling) mean that prediction errors remain dependent across arbitrarily long lags, so finite-history conditioning does not achieve approximate exchangeability required for conformal coverage.",
+      "possible_confounders": [
+        "sampling rate and interpolation",
+        "preprocessing (filtering, detrending)",
+        "non-stationarities (trends, regime shifts)",
+        "artifacts (ectopic beats, motion)",
+        "respiratory sinus arrhythmia"
+      ],
+      "control_variables": [
+        "surrogate data testing (phase-randomized)",
+        "multiple time scale analysis (DFA, wavelet)",
+        "stationarity checks (KPSS, rolling variance)",
+        "artifact rejection with manual verification",
+        "controlled breathing protocols"
+      ],
+      "rival_explanations": [
+        "short-range dependence (ARMA) mistaken for long-range",
+        "non-stationary variance (heteroscedasticity)",
+        "model misspecification (omitted covariates)",
+        "finite-sample effects in calibration window"
+      ],
+      "minimum_data_needed": [
+        "very long recordings (>=24h) at high sampling rate (>=250 Hz)",
+        "multiple subjects (>=30) for population inference",
+        "simultaneous respiration for RSA control",
+        "artifact-free segments verified manually",
+        "surrogate data generation pipeline"
+      ],
+      "effect_size_expectation": "unknown",
+      "enriched_mechanism": "Fractal-like correlations in HRV (1/f scaling, DFA alpha ~1) mean prediction errors remain dependent across arbitrarily long lags. After controlling for sampling artifacts, preprocessing effects, non-stationarities, and RSA via surrogate testing, multi-scale analysis, and controlled breathing, the long-memory process still violates exchangeability because the effective number of independent samples in a finite calibration window is far smaller than its length (Neff ~ N^(2-2H)), so conformal quantile estimates have higher variance than assumed, leading to coverage instability.",
+      "enrichment_notes": "Effect size unknown: theoretical Neff reduction is large (H~0.75 => Neff ~ N^0.5), but empirical impact on conformal coverage in physiological data is unquantified."
+    },
+    {
+      "hypothesis_id": "H8",
+      "original_hypothesis": "Segment-dependent motion artifact prevalence creates heteroscedastic noise that conformal prediction cannot calibrate for without artifact labels.",
+      "original_mechanism": "Physical activity levels vary across recording segments (sleep vs. exercise), causing non-Gaussian, signal-dependent noise in wearable PPG/accelerometer data that widens prediction intervals unpredictably when artifact contamination is high.",
+      "possible_confounders": [
+        "activity type (walking, running, typing)",
+        "sensor placement (wrist, chest, finger)",
+        "skin-sensor coupling (tightness, hair)",
+        "clothing interference",
+        "environmental vibration",
+        "electromagnetic interference"
+      ],
+      "control_variables": [
+        "synchronized triaxial accelerometry",
+        "activity labels (self-report or video)",
+        "standardized sensor placement protocol",
+        "artifact detection algorithms (e.g., SQI, motion magnitude)",
+        "controlled lab activities (treadmill, rest)"
+      ],
+      "rival_explanations": [
+        "physiological non-stationarity (exercise-induced HRV changes)",
+        "sensor malfunction (loose contact)",
+        "electromagnetic interference",
+        "thermoregulatory vasomotion"
+      ],
+      "minimum_data_needed": [
+        "multi-modal recordings (PPG + 3D accelerometer) across diverse activities",
+        "activity annotations with timestamps",
+        "ground truth HR (ECG) for validation",
+        "skin-sensor coupling metrics (impedance, contact force)",
+        ">=20 subjects with varied fitness levels"
+      ],
+      "effect_size_expectation": "large",
+      "enriched_mechanism": "Physical activity levels vary across segments (sleep vs. exercise), causing non-Gaussian, signal-dependent noise in wearable PPG. After controlling for activity type, sensor placement, and coupling via synchronized accelerometry, standardized placement, and artifact detection, residual motion artifact still creates heteroscedastic noise because artifact magnitude is not fully captured by accelerometer magnitude (e.g., rotational motion, sensor shear), and the conformal predictor lacks artifact labels to condition on, causing unpredictable prediction interval widening during high-contamination segments.",
+      "enrichment_notes": "Effect size large during vigorous activity (coverage can drop to <50%); small at rest. Accelerometer-based artifact rejection reduces but does not eliminate."
+    },
+    {
+      "hypothesis_id": "H9",
+      "original_hypothesis": "Sleep-stage-dependent cardiorespiratory coupling alters the predictability of cardiovascular signals in ways not captured by standard conformal conditioning.",
+      "original_mechanism": "During REM sleep, autonomic instability and irregular breathing increase heart rate variability unpredictability, while deep NREM sleep shows high predictability; if calibration data underrepresents REM, coverage fails specifically in REM segments.",
+      "possible_confounders": [
+        "sleep disorders (apnea, insomnia)",
+        "medications (sedatives, antidepressants)",
+        "age",
+        "sleep deprivation",
+        "circadian phase",
+        "body position",
+        "room temperature"
+      ],
+      "control_variables": [
+        "full polysomnography (PSG) for sleep staging",
+        "standardized sleep schedule (fixed bed/wake times)",
+        "medication washout (>=5 half-lives)",
+        "age-matched cohorts",
+        "controlled bedroom environment"
+      ],
+      "rival_explanations": [
+        "autonomic changes independent of sleep stage",
+        "respiratory artifacts (apneas, hypopneas)",
+        "body position changes (supine vs lateral)",
+        "micro-arousals not scored as stage shifts"
+      ],
+      "minimum_data_needed": [
+        "PSG-validated sleep staging with continuous ECG/PPG across >=3 nights",
+        "respiratory signals (flow, effort, SpO2)",
+        "body position sensor",
+        "medication logs",
+        "autonomic markers (HRV, BRS) per stage"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "During REM sleep, autonomic instability and irregular breathing increase HRV unpredictability, while deep NREM shows high predictability. After controlling for sleep disorders, medications, age, and circadian phase via PSG, standardized schedules, and washout, sleep-stage-dependent cardiorespiratory coupling still alters predictability because the conformal predictor lacks sleep stage labels at inference time, and calibration data often underrepresents REM (typically 20-25% of sleep), causing coverage failure specifically in REM segments where error distribution differs most.",
+      "enrichment_notes": "Effect size medium: REM vs NREM HRV predictability difference is substantial (SDNN ratio ~2:1), but coverage impact depends on REM proportion in calibration set."
+    },
+    {
+      "hypothesis_id": "H10",
+      "original_hypothesis": "Time-varying electrode-skin impedance modulates signal-to-noise ratio in ECG/PPG, causing segment-dependent calibration failure.",
+      "original_mechanism": "Sweat accumulation, skin desquamation, and electrode gel drying change contact impedance over hours, attenuating signal amplitude and increasing baseline wander in a segment-specific manner that shifts the prediction error distribution.",
+      "possible_confounders": [
+        "sweating rate (thermoregulation, stress)",
+        "skin preparation (abrasion, oils)",
+        "electrode gel type and volume",
+        "ambient humidity and temperature",
+        "subject movement (shear forces)",
+        "electrode material (Ag/AgCl, dry)"
+      ],
+      "control_variables": [
+        "continuous impedance monitoring (e.g., 10 Hz injection current)",
+        "standardized skin prep protocol",
+        "climate-controlled environment (22°C, 40% RH)",
+        "scheduled electrode replacement (every 12h)",
+        "electrode gel standardization"
+      ],
+      "rival_explanations": [
+        "sensor drift (electronic)",
+        "physiological amplitude changes (vasomotion)",
+        "cable motion artifacts",
+        "power line interference variation"
+      ],
+      "minimum_data_needed": [
+        "simultaneous impedance and ECG/PPG recordings over >=24h",
+        "environmental logs (temp, humidity)",
+        "sweat rate estimates (weight change, humidity sensors)",
+        "electrode metadata (type, lot, placement time)",
+        "signal quality indices per segment"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Sweat accumulation, skin desquamation, and gel drying change contact impedance over hours, attenuating signal amplitude and increasing baseline wander. After controlling for skin prep, gel type, environment, and movement via standardized protocols, climate control, and impedance monitoring, residual impedance variation still shifts the error distribution because sweat and desquamation are physiologically driven (thermoregulation, skin turnover) and not fully controllable, causing segment-specific SNR changes that the conformal predictor cannot adapt to without real-time impedance covariates.",
+      "enrichment_notes": "Effect size medium: impedance can vary 2-5x over 24h, causing SNR changes of 6-14 dB; real-time impedance monitoring could mitigate but is rarely available."
+    }
+  ]
+}

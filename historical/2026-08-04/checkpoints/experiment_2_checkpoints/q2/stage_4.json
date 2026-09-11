@@ -1,0 +1,84 @@
+{
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Inter-subject variability in cardiovascular dynamics violates the exchangeability assumption required for conformal prediction coverage guarantees.",
+      "proposed_mechanism": "Individual differences in autonomic regulation, vascular compliance, and baroreflex sensitivity cause the conditional distribution of prediction errors to shift systematically across subjects, making calibration on one subject invalid for another.",
+      "core_assumption": "Physiological signal segments from different subjects are not exchangeable due to stable, subject-specific hemodynamic phenotypes.",
+      "knowledge_gap_addressed": "Lack of quantitative characterization of how inter-subject physiological heterogeneity degrades conformal coverage in multi-subject physiological monitoring.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Gradual sensor calibration drift across recording sessions introduces non-stationary measurement bias that conformal prediction cannot adapt to without recalibration.",
+      "proposed_mechanism": "Temperature-dependent sensor gain changes and electrode polarization cause the mapping from true physiological state to observed signal to shift slowly over time, altering the error distribution in a way that violates the i.i.d. assumption.",
+      "core_assumption": "Sensor characteristics change monotonically over hours to days due to physicochemical processes at the electrode-skin interface.",
+      "knowledge_gap_addressed": "Insufficient understanding of how sensor drift magnitude and timescale interact with conformal prediction's finite calibration window to produce coverage failures.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Circadian modulation of autonomic tone creates periodic non-stationarity in heart rate variability that conformal prediction fails to capture with static calibration sets.",
+      "proposed_mechanism": "Sympathetic-parasympathetic balance oscillates with a ~24-hour period, altering the conditional variance of RR intervals and causing prediction error distributions to widen during sympathetic dominance (day) and narrow during parasympathetic dominance (night).",
+      "core_assumption": "Autonomic state transitions follow a predictable circadian rhythm but are not accounted for in the conformal predictor's conditioning variables.",
+      "knowledge_gap_addressed": "Absence of methods to incorporate known physiological rhythms into conformal prediction's exchangeability framework for continuous monitoring.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Progressive pathophysiological remodeling in chronic disease alters the signal-generating process faster than the conformal calibration window can track.",
+      "proposed_mechanism": "In conditions like heart failure, ventricular remodeling and neurohormonal activation change the morphology and variability of ECG and PPG signals on timescales of weeks, causing the conformal predictor's error distribution to shift beyond the adaptation capacity of sliding-window calibration.",
+      "core_assumption": "Disease progression induces non-stationarity that is faster than the effective sample size of the calibration set but slower than the prediction horizon.",
+      "knowledge_gap_addressed": "No established theory for conformal prediction coverage guarantees under progressive, irreversible physiological concept drift.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Inconsistent expert annotation of physiological events across segments introduces label noise that violates the conformal prediction assumption of reliable ground truth.",
+      "proposed_mechanism": "Inter-rater variability in identifying arrhythmia onset, sleep stage transitions, or artifact epochs creates segment-dependent label error rates, causing the conformal predictor to calibrate against a moving target of imperfect labels.",
+      "core_assumption": "Annotation quality varies systematically with signal complexity, clinician fatigue, or protocol deviations across recording segments.",
+      "knowledge_gap_addressed": "Limited analysis of how label noise heterogeneity propagates through conformal prediction to produce miscalibrated coverage.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Unobserved subpopulations defined by medication response or genetic polymorphisms create hidden stratification that breaks marginal coverage guarantees.",
+      "proposed_mechanism": "Beta-blocker responders vs. non-responders exhibit fundamentally different heart rate dynamics; if the calibration set mixes these groups but test segments come predominantly from one, the conformal predictor's marginal coverage fails for the underrepresented group.",
+      "core_assumption": "Latent physiological subgroups exist with distinct signal statistics, and their prevalence shifts across segments due to clinical workflow or population sampling.",
+      "knowledge_gap_addressed": "Lack of conformal prediction methods that detect and adapt to hidden physiological subpopulations without explicit subgroup labels.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Long-range temporal dependence in physiological signals violates the exchangeability assumption even after conditioning on recent history.",
+      "proposed_mechanism": "Fractal-like correlations in heart rate variability (e.g., 1/f scaling) mean that prediction errors remain dependent across arbitrarily long lags, so finite-history conditioning does not achieve approximate exchangeability required for conformal coverage.",
+      "core_assumption": "Physiological signals exhibit long-memory processes where the effective number of independent samples in a calibration window is far smaller than its length.",
+      "knowledge_gap_addressed": "No conformal prediction framework accounts for long-range dependence in the calibration-theoretic guarantees for physiological time series.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Segment-dependent motion artifact prevalence creates heteroscedastic noise that conformal prediction cannot calibrate for without artifact labels.",
+      "proposed_mechanism": "Physical activity levels vary across recording segments (sleep vs. exercise), causing non-Gaussian, signal-dependent noise in wearable PPG/accelerometer data that widens prediction intervals unpredictably when artifact contamination is high.",
+      "core_assumption": "Motion artifact magnitude and distribution are not stationary and correlate with behavioral state, which is not included in the predictor's covariates.",
+      "knowledge_gap_addressed": "Absence of conformal methods that jointly model physiological signal and artifact processes to maintain coverage under varying noise regimes.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Sleep-stage-dependent cardiorespiratory coupling alters the predictability of cardiovascular signals in ways not captured by standard conformal conditioning.",
+      "proposed_mechanism": "During REM sleep, autonomic instability and irregular breathing increase heart rate variability unpredictability, while deep NREM sleep shows high predictability; if calibration data underrepresents REM, coverage fails specifically in REM segments.",
+      "core_assumption": "Sleep architecture creates discrete physiological regimes with distinct error distributions, and segment labels (sleep stages) are unavailable to the conformal predictor at inference time.",
+      "knowledge_gap_addressed": "No conformal prediction approach leverages latent physiological state (e.g., sleep stage) to achieve conditional coverage without explicit state labels.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Time-varying electrode-skin impedance modulates signal-to-noise ratio in ECG/PPG, causing segment-dependent calibration failure.",
+      "proposed_mechanism": "Sweat accumulation, skin desquamation, and electrode gel drying change contact impedance over hours, attenuating signal amplitude and increasing baseline wander in a segment-specific manner that shifts the prediction error distribution.",
+      "core_assumption": "Electrode-skin interface impedance follows a non-stationary stochastic process driven by physiological (sweating) and physicochemical (gel drying) factors.",
+      "knowledge_gap_addressed": "No conformal prediction methodology incorporates real-time impedance monitoring or models its effect on coverage stability.",
+      "status": "SPECULATIVE"
+    }
+  ]
+}

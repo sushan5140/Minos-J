@@ -1,0 +1,2052 @@
+{
+  "study_name": "Meno-J Theory Study 6: Minimal Executable Epistemic Scoring Protocol",
+  "method": {
+    "protocol_sha256": "8bf96e28439eecd38adbc36809e660ec723a315dbb281164a132f0422bd489be",
+    "mode": "deterministic non-scalar exact replay",
+    "llm_or_api_calls": false,
+    "dataset_or_simulation_calls": false
+  },
+  "normalized_twenty_rule_contract": [
+    {
+      "rule_id": "A1",
+      "full_rule_id": "A1_RETENTION_ACCOUNTING",
+      "rule": "Account for prior success by at least one declared mode: literal component retention; limiting or approximate derivation; empirical-capability recovery; or a non-retentive explanation of why, how well, and where the old account succeeded and failed.",
+      "guardrail": "Mathematical transformability or identical fitted values do not count by themselves; represented objects and evidential roles must be mapped.",
+      "source_artifact": "meno_j_theory_study_2_contract_amendment.json"
+    },
+    {
+      "rule_id": "A2",
+      "full_rule_id": "A2_COMPONENT_SCOPING",
+      "rule": "Declare the component under evaluation—representation, empirical law, mechanism, ontology, or method—and permit different verdicts for coupled components.",
+      "guardrail": "A successful component cannot launder an unsupported mechanism, and a failed mechanism cannot erase an independently warranted representation.",
+      "source_artifact": "meno_j_theory_study_2_contract_amendment.json"
+    },
+    {
+      "rule_id": "A3",
+      "full_rule_id": "A3_COMPRESSION_DIMENSIONS",
+      "rule": "Report conceptual, ontological, parameter, and computational complexity separately. A jump may compress principles while increasing derivational or computational work.",
+      "guardrail": "Do not treat shorter prose or fewer named objects as evidence of genuine compression.",
+      "source_artifact": "meno_j_theory_study_2_contract_amendment.json"
+    },
+    {
+      "rule_id": "A4",
+      "full_rule_id": "A4_APPROXIMATION_BOUNDARY",
+      "rule": "Specify whether consequences are exact, approximate, idealized, or historically provisional, and state the interactions or conditions that generate deviations.",
+      "guardrail": "Never describe the Newtonian many-body solar system as exactly Keplerian.",
+      "source_artifact": "meno_j_theory_study_2_contract_amendment.json"
+    },
+    {
+      "rule_id": "A5",
+      "full_rule_id": "A5_UNDERDETERMINATION",
+      "rule": "Allow a temporary observational-equivalence verdict. When current evidence cannot discriminate rivals, record the equivalence class and the new observations or concepts needed to separate it.",
+      "guardrail": "Later victory cannot be used as evidence that the earlier rival was irrational or already empirically refuted.",
+      "source_artifact": "meno_j_theory_study_2_contract_amendment.json"
+    },
+    {
+      "rule_id": "A6",
+      "full_rule_id": "A6_DISTRIBUTED_LINEAGE_GRAPH",
+      "rule": "Represent a proposed J-jump as a lineage graph when route, intervention, ontology, method, and mechanism arise in different agents or periods. Credit only the component and evidence actually supplied by each node.",
+      "guardrail": "Do not collapse a distributed discovery into a single-hero narrative or transfer later evidence backward to an earlier node.",
+      "source_artifact": "meno_j_theory_study_3_contract_extension.json"
+    },
+    {
+      "rule_id": "A7",
+      "full_rule_id": "A7_INTERVENTION_MECHANISM_DECOUPLING",
+      "rule": "Record separately: intervention effectiveness, transmission route, causal agent, production mechanism, and full etiology. Success at one level raises but does not automatically satisfy another level's warrant.",
+      "guardrail": "An effective action is not by itself proof of the action's proposed mechanism or of a complete cause set.",
+      "source_artifact": "meno_j_theory_study_3_contract_extension.json"
+    },
+    {
+      "rule_id": "A8",
+      "full_rule_id": "A8_EVIDENCE_TRIANGULATION_LADDER",
+      "rule": "For causal J-jumps, map which independent evidence modes support the claim: comparative pattern, intervention, localization, visualization, isolation/characterization, reproduction, re-identification, dose/host response, and alternative elimination.",
+      "guardrail": "No fixed rung is universal, but an association-only or rhetoric-only candidate cannot be promoted.",
+      "source_artifact": "meno_j_theory_study_3_contract_extension.json"
+    },
+    {
+      "rule_id": "A9",
+      "full_rule_id": "A9_RELATIONAL_CAUSAL_SCOPE",
+      "rule": "State whether the causal claim concerns a necessary agent, sufficient agent, contributing cause, route, virulence factor, susceptible host, or environment. Do not use a generic cause label across these roles.",
+      "guardrail": "A microbe's presence and a disease outcome must not be modeled as one inevitable one-to-one relation.",
+      "source_artifact": "meno_j_theory_study_3_contract_extension.json"
+    },
+    {
+      "rule_id": "A10",
+      "full_rule_id": "A10_DISCOVERY_UPTAKE_OUTCOME_SEPARATION",
+      "rule": "Track conceptual discovery, evidential warrant, community uptake, implementation, and health outcome as separate timelines.",
+      "guardrail": "Later acceptance or beneficial policy cannot be back-projected as evidence available to the original proposal, and rejection alone does not prove a proposal was ahead of its time.",
+      "source_artifact": "meno_j_theory_study_3_contract_extension.json"
+    },
+    {
+      "rule_id": "A11",
+      "full_rule_id": "A11_FORMAL_ONTOLOGY_DECOUPLING",
+      "rule": "Audit equations, operational quantities, invariants, and ontology separately; test whether the formal success transports to a rival representation after reinterpretation.",
+      "guardrail": "Formal retention is not evidence that the discarded entities approximately existed.",
+      "source_artifact": "meno_j_theory_study_4_contract_extension.json"
+    },
+    {
+      "rule_id": "A12",
+      "full_rule_id": "A12_CONSTRAINT_MECHANISM_LAYERING",
+      "rule": "Allow a well-supported macroscopic constraint and a microscopic mechanism to coexist as different explanatory layers; score each for its own predictions and assumptions.",
+      "guardrail": "Do not reject a reliable constraint for lacking micro-ontology, or promote a micro-story merely because it can narrate the constraint.",
+      "source_artifact": "meno_j_theory_study_4_contract_extension.json"
+    },
+    {
+      "rule_id": "A13",
+      "full_rule_id": "A13_BRIDGE_LAW_REQUIREMENT",
+      "rule": "A cross-level J-jump must state mappings between macro variables and micro or ensemble quantities, together with limits, coarse-graining, and independence assumptions.",
+      "guardrail": "Similarity of vocabulary such as heat, motion, or disorder is not a derivation.",
+      "source_artifact": "meno_j_theory_study_4_contract_extension.json"
+    },
+    {
+      "rule_id": "A14",
+      "full_rule_id": "A14_TRANSITION_ROLE_TAXONOMY",
+      "rule": "Label a contribution as anomaly, measurement standard, conversion law, constraint, synthesis, or microfoundation before testing whether it is a J-jump.",
+      "guardrail": "An anomaly or instrument result cannot receive the credit of a complete replacement architecture.",
+      "source_artifact": "meno_j_theory_study_4_contract_extension.json"
+    },
+    {
+      "rule_id": "A15",
+      "full_rule_id": "A15_LAYERED_SUCCESSOR_TEST",
+      "rule": "Do not force one successor theory when mature science uses compatible layers. Require the proposed architecture to say what each layer explains, predicts, leaves open, and can falsify.",
+      "guardrail": "Explanatory pluralism is not permission for contradiction: bridge relations and shared observables must remain mutually consistent.",
+      "source_artifact": "meno_j_theory_study_4_contract_extension.json"
+    },
+    {
+      "rule_id": "A16",
+      "full_rule_id": "A16_HINDSIGHT_FIREWALL",
+      "rule": "Partition evidence by availability date and issue a contemporaneous verdict before adding retrospective evidence. Never credit a precursor with later instruments, observations, concepts, or successful descendants.",
+      "guardrail": "Later vindication can update lineage credit but cannot rewrite the warrant originally available.",
+      "source_artifact": "meno_j_theory_study_5_contract_extension.json"
+    },
+    {
+      "rule_id": "A17",
+      "full_rule_id": "A17_EPISTEMIC_STANCE_LADDER",
+      "rule": "Score rejection, non-acceptance, pursuit, provisional use, and acceptance separately. A hypothesis may rationally merit pursuit while rationally failing the acceptance threshold.",
+      "guardrail": "Promising is not true; premature non-acceptance is not the same as suppressing further investigation.",
+      "source_artifact": "meno_j_theory_study_5_contract_extension.json"
+    },
+    {
+      "rule_id": "A18",
+      "full_rule_id": "A18_OBJECT_REDEFINITION_TEST",
+      "rule": "Record whether the successor preserves the predecessor's objects or replaces them. If the moving, causal, or measured object changes, treat the relation as transformation rather than simple confirmation.",
+      "guardrail": "Shared surface vocabulary such as drift does not establish identity between continents and lithospheric plates.",
+      "source_artifact": "meno_j_theory_study_5_contract_extension.json"
+    },
+    {
+      "rule_id": "A19",
+      "full_rule_id": "A19_INDEPENDENT_PREDICTION_LEDGER",
+      "rule": "For each evidential success, record whether it was used to construct, tune, or independently test the proposal, and whether it discriminates against named rivals jointly or only in isolation.",
+      "guardrail": "Do not count multiple transformations of one dataset as independent convergence or call post-hoc fit a novel prediction.",
+      "source_artifact": "meno_j_theory_study_5_contract_extension.json"
+    },
+    {
+      "rule_id": "A20",
+      "full_rule_id": "A20_OBSERVABILITY_FRONTIER",
+      "rule": "Record which claims were untestable under the available measurement infrastructure and which new instruments, surveys, access, funding, or data-sharing changes expanded the falsification surface.",
+      "guardrail": "Do not treat infrastructure as automatic truth production; document sampling, classification, and institutional selection effects.",
+      "source_artifact": "meno_j_theory_study_5_contract_extension.json"
+    }
+  ],
+  "input_assessments": [
+    {
+      "proposal_id": "C1",
+      "title": "Decorative renaming of an existing account",
+      "evidence_cutoff": "2020-01-01",
+      "component_scope": "representation",
+      "relation_type": "mixed historical and explanatory",
+      "target": "Explain the specified target phenomenon.",
+      "foil": "The strongest named predecessor or rival.",
+      "purpose": "Determine the warranted epistemic stance at the evidence cutoff.",
+      "background": "Only evidence available at the cutoff is admissible.",
+      "scope": "The declared component and historical period only.",
+      "gates": {
+        "G0_QUESTION": {
+          "status": "PASS",
+          "reason": "The target is stated.",
+          "evidence_ids": [
+            "C1E1"
+          ]
+        },
+        "G1_ADEQUACY": {
+          "status": "PARTIAL",
+          "reason": "The old observations are repeated.",
+          "evidence_ids": [
+            "C1E1"
+          ]
+        },
+        "G2_WARRANT": {
+          "status": "FAIL",
+          "reason": "No new relation is warranted.",
+          "evidence_ids": [
+            "C1E1"
+          ]
+        },
+        "G3_RELEVANCE_AND_SELECTIVITY": {
+          "status": "PARTIAL",
+          "reason": "The language tracks the target but adds no selection.",
+          "evidence_ids": [
+            "C1E1"
+          ]
+        },
+        "G4_GENERATIVITY": {
+          "status": "FAIL",
+          "reason": "No new consequence follows.",
+          "evidence_ids": [
+            "C1E1"
+          ]
+        },
+        "G5_RIVAL_VULNERABILITY": {
+          "status": "FAIL",
+          "reason": "No rival or new failure condition is supplied.",
+          "evidence_ids": [
+            "C1E1"
+          ]
+        }
+      },
+      "jump_criteria": {
+        "J1_representation_change": {
+          "status": "FAIL",
+          "reason": "Only vocabulary changes.",
+          "evidence_ids": [
+            "C1E1"
+          ]
+        },
+        "J2_retention": {
+          "status": "PASS",
+          "reason": "The old description is copied.",
+          "evidence_ids": [
+            "C1E1"
+          ]
+        },
+        "J3_new_reach": {
+          "status": "FAIL",
+          "reason": "No anomaly or contrast is newly resolved.",
+          "evidence_ids": [
+            "C1E1"
+          ]
+        },
+        "J4_compression_control": {
+          "status": "FAIL",
+          "reason": "Renaming is not compression.",
+          "evidence_ids": [
+            "C1E1"
+          ]
+        },
+        "J5_rival_discrimination": {
+          "status": "FAIL",
+          "reason": "Predictions are unchanged.",
+          "evidence_ids": [
+            "C1E1"
+          ]
+        },
+        "J6_falsifiability_growth": {
+          "status": "FAIL",
+          "reason": "No new failure surface exists.",
+          "evidence_ids": [
+            "C1E1"
+          ]
+        }
+      },
+      "evidence_ledger": [
+        {
+          "evidence_id": "C1E1",
+          "date": "2019-01-01",
+          "role": "construction",
+          "independence_group": "same-description",
+          "discriminates": false,
+          "available_at_cutoff": true
+        }
+      ],
+      "rivals": [],
+      "retention": {
+        "mode": "NONE",
+        "boundary": "No retention claim established."
+      },
+      "complexity": {
+        "conceptual": "declared",
+        "ontological": "declared",
+        "parameter": "declared",
+        "computational": "declared",
+        "tradeoff_declared": true
+      },
+      "approximation": {
+        "status": "declared",
+        "boundary": "Fixture-specific boundary declared."
+      },
+      "underdetermination": {
+        "equivalence_class": "Declared rivals remain possible.",
+        "separating_observation": "A fixture-specific discriminating observation is stated when available."
+      },
+      "lineage": {
+        "nodes": [
+          "proposal"
+        ],
+        "distributed": false
+      },
+      "causal_decomposition": {
+        "intervention": "not claimed",
+        "route": "not claimed",
+        "agent": "not claimed",
+        "mechanism": "not claimed",
+        "etiology": "not claimed"
+      },
+      "causal_scope": "No generic causal claim is imported beyond the declared component.",
+      "timelines": {
+        "discovery": "2020-01-01",
+        "warrant": "2020-01-01",
+        "uptake": "separate",
+        "implementation": "separate",
+        "outcome": "separate"
+      },
+      "formal_ontology": {
+        "formal_component": "declared",
+        "ontology_component": "declared",
+        "mapping": "separately audited"
+      },
+      "layers": {
+        "declared_layers": [
+          "representation"
+        ],
+        "cross_layer_limits": "No cross-layer inference without a bridge."
+      },
+      "bridge_law": {
+        "mapping": "not applicable to this single-layer fixture",
+        "limits": "declared",
+        "assumptions": "declared"
+      },
+      "transition_role": "representation candidate",
+      "hindsight_partitioned": true,
+      "object_relation": {
+        "status": "PRESERVED",
+        "predecessor_object": "declared predecessor object",
+        "successor_object": "declared proposal object"
+      },
+      "observability": {
+        "status": "UNOBSERVABLE",
+        "frontier": "No current discriminator.",
+        "planned_test": ""
+      },
+      "practical_use": {
+        "enabled": false,
+        "bounded_role": "",
+        "monitoring": "",
+        "rollback": ""
+      },
+      "decisive_refutation": false
+    },
+    {
+      "proposal_id": "C2",
+      "title": "Coherent but non-generative decorative mechanism",
+      "evidence_cutoff": "2020-01-01",
+      "component_scope": "mechanism",
+      "relation_type": "mixed historical and explanatory",
+      "target": "Explain the specified target phenomenon.",
+      "foil": "The strongest named predecessor or rival.",
+      "purpose": "Determine the warranted epistemic stance at the evidence cutoff.",
+      "background": "Only evidence available at the cutoff is admissible.",
+      "scope": "The declared component and historical period only.",
+      "gates": {
+        "G0_QUESTION": {
+          "status": "PASS",
+          "reason": "The target and scope are coherent.",
+          "evidence_ids": [
+            "C2E1"
+          ]
+        },
+        "G1_ADEQUACY": {
+          "status": "PARTIAL",
+          "reason": "The motivating observation is limited.",
+          "evidence_ids": [
+            "C2E1"
+          ]
+        },
+        "G2_WARRANT": {
+          "status": "UNKNOWN",
+          "reason": "The mechanism has not been independently probed.",
+          "evidence_ids": [
+            "C2E1"
+          ]
+        },
+        "G3_RELEVANCE_AND_SELECTIVITY": {
+          "status": "PARTIAL",
+          "reason": "Important alternatives remain uncontrolled.",
+          "evidence_ids": [
+            "C2E1"
+          ]
+        },
+        "G4_GENERATIVITY": {
+          "status": "FAIL",
+          "reason": "It yields no consequence beyond the motivating case.",
+          "evidence_ids": [
+            "C2E1"
+          ]
+        },
+        "G5_RIVAL_VULNERABILITY": {
+          "status": "FAIL",
+          "reason": "No distinguishing test is available.",
+          "evidence_ids": [
+            "C2E1"
+          ]
+        }
+      },
+      "jump_criteria": {
+        "J1_representation_change": {
+          "status": "PARTIAL",
+          "reason": "A mechanism is named but the operative map is unchanged.",
+          "evidence_ids": [
+            "C2E1"
+          ]
+        },
+        "J2_retention": {
+          "status": "UNKNOWN",
+          "reason": "Prior success recovery is unspecified.",
+          "evidence_ids": [
+            "C2E1"
+          ]
+        },
+        "J3_new_reach": {
+          "status": "FAIL",
+          "reason": "No new contrast is answered.",
+          "evidence_ids": [
+            "C2E1"
+          ]
+        },
+        "J4_compression_control": {
+          "status": "FAIL",
+          "reason": "The account adds entities without controlled gain.",
+          "evidence_ids": [
+            "C2E1"
+          ]
+        },
+        "J5_rival_discrimination": {
+          "status": "FAIL",
+          "reason": "No discriminating consequence exists.",
+          "evidence_ids": [
+            "C2E1"
+          ]
+        },
+        "J6_falsifiability_growth": {
+          "status": "FAIL",
+          "reason": "No feasible failure test exists.",
+          "evidence_ids": [
+            "C2E1"
+          ]
+        }
+      },
+      "evidence_ledger": [
+        {
+          "evidence_id": "C2E1",
+          "date": "2019-06-01",
+          "role": "construction",
+          "independence_group": "anecdotal-pattern",
+          "discriminates": false,
+          "available_at_cutoff": true
+        }
+      ],
+      "rivals": [],
+      "retention": {
+        "mode": "NONE",
+        "boundary": "No retention claim established."
+      },
+      "complexity": {
+        "conceptual": "declared",
+        "ontological": "declared",
+        "parameter": "declared",
+        "computational": "declared",
+        "tradeoff_declared": true
+      },
+      "approximation": {
+        "status": "declared",
+        "boundary": "Fixture-specific boundary declared."
+      },
+      "underdetermination": {
+        "equivalence_class": "Declared rivals remain possible.",
+        "separating_observation": "A fixture-specific discriminating observation is stated when available."
+      },
+      "lineage": {
+        "nodes": [
+          "proposal"
+        ],
+        "distributed": false
+      },
+      "causal_decomposition": {
+        "intervention": "not claimed",
+        "route": "not claimed",
+        "agent": "not claimed",
+        "mechanism": "not claimed",
+        "etiology": "not claimed"
+      },
+      "causal_scope": "No generic causal claim is imported beyond the declared component.",
+      "timelines": {
+        "discovery": "2020-01-01",
+        "warrant": "2020-01-01",
+        "uptake": "separate",
+        "implementation": "separate",
+        "outcome": "separate"
+      },
+      "formal_ontology": {
+        "formal_component": "declared",
+        "ontology_component": "declared",
+        "mapping": "separately audited"
+      },
+      "layers": {
+        "declared_layers": [
+          "representation"
+        ],
+        "cross_layer_limits": "No cross-layer inference without a bridge."
+      },
+      "bridge_law": {
+        "mapping": "not applicable to this single-layer fixture",
+        "limits": "declared",
+        "assumptions": "declared"
+      },
+      "transition_role": "representation candidate",
+      "hindsight_partitioned": true,
+      "object_relation": {
+        "status": "UNRESOLVED",
+        "predecessor_object": "declared predecessor object",
+        "successor_object": "declared proposal object"
+      },
+      "observability": {
+        "status": "UNOBSERVABLE",
+        "frontier": "No current discriminator.",
+        "planned_test": ""
+      },
+      "practical_use": {
+        "enabled": false,
+        "bounded_role": "",
+        "monitoring": "",
+        "rollback": ""
+      },
+      "decisive_refutation": false
+    },
+    {
+      "proposal_id": "C3",
+      "title": "Wegener continental mobility assessed at 1924",
+      "evidence_cutoff": "1924-12-31",
+      "component_scope": "representation",
+      "relation_type": "mixed historical and explanatory",
+      "target": "Explain the specified target phenomenon.",
+      "foil": "The strongest named predecessor or rival.",
+      "purpose": "Determine the warranted epistemic stance at the evidence cutoff.",
+      "background": "Only evidence available at the cutoff is admissible.",
+      "scope": "The declared component and historical period only.",
+      "gates": {
+        "G0_QUESTION": {
+          "status": "PASS",
+          "reason": "Continental distribution and cross-domain correspondences are explicit.",
+          "evidence_ids": [
+            "C3E1",
+            "C3E2"
+          ]
+        },
+        "G1_ADEQUACY": {
+          "status": "PARTIAL",
+          "reason": "Several correspondences are substantive, but some reconstructions and measurements remain uncertain.",
+          "evidence_ids": [
+            "C3E1",
+            "C3E2"
+          ]
+        },
+        "G2_WARRANT": {
+          "status": "PARTIAL",
+          "reason": "Mobility has indirect support, while the proposed forces remain physically inadequate.",
+          "evidence_ids": [
+            "C3E2",
+            "C3E3"
+          ]
+        },
+        "G3_RELEVANCE_AND_SELECTIVITY": {
+          "status": "PASS",
+          "reason": "Multiple relevant geological and paleoclimatic patterns are selected.",
+          "evidence_ids": [
+            "C3E1",
+            "C3E2"
+          ]
+        },
+        "G4_GENERATIVITY": {
+          "status": "PASS",
+          "reason": "The representation organizes additional cross-continental tests.",
+          "evidence_ids": [
+            "C3E2"
+          ]
+        },
+        "G5_RIVAL_VULNERABILITY": {
+          "status": "PASS",
+          "reason": "A fixed-continent rival and future motion/renewal tests are explicit.",
+          "evidence_ids": [
+            "C3E3"
+          ]
+        }
+      },
+      "jump_criteria": {
+        "J1_representation_change": {
+          "status": "PASS",
+          "reason": "Continents become horizontally mobile historical objects.",
+          "evidence_ids": [
+            "C3E1",
+            "C3E2"
+          ]
+        },
+        "J2_retention": {
+          "status": "PARTIAL",
+          "reason": "Pattern successes are retained, but prior geophysical constraints are not yet recovered.",
+          "evidence_ids": [
+            "C3E2"
+          ]
+        },
+        "J3_new_reach": {
+          "status": "PASS",
+          "reason": "Separated geological and climatic patterns receive a common historical account.",
+          "evidence_ids": [
+            "C3E2"
+          ]
+        },
+        "J4_compression_control": {
+          "status": "PARTIAL",
+          "reason": "Conceptual unification comes with unresolved physical complexity.",
+          "evidence_ids": [
+            "C3E2"
+          ]
+        },
+        "J5_rival_discrimination": {
+          "status": "PARTIAL",
+          "reason": "Discriminators are proposed but not decisive at the cutoff.",
+          "evidence_ids": [
+            "C3E3"
+          ]
+        },
+        "J6_falsifiability_growth": {
+          "status": "PASS",
+          "reason": "Relative-motion and ocean-floor observations can fail the proposal.",
+          "evidence_ids": [
+            "C3E3"
+          ]
+        }
+      },
+      "evidence_ledger": [
+        {
+          "evidence_id": "C3E1",
+          "date": "1912-01-06",
+          "role": "construction",
+          "independence_group": "geometric-fit",
+          "discriminates": false,
+          "available_at_cutoff": true
+        },
+        {
+          "evidence_id": "C3E2",
+          "date": "1922-01-01",
+          "role": "construction",
+          "independence_group": "cross-domain-correspondence",
+          "discriminates": false,
+          "available_at_cutoff": true
+        },
+        {
+          "evidence_id": "C3E3",
+          "date": "1924-01-01",
+          "role": "independent_test",
+          "independence_group": "geodetic-attempt",
+          "discriminates": true,
+          "available_at_cutoff": true
+        },
+        {
+          "evidence_id": "C3E4",
+          "date": "1963-09-07",
+          "role": "independent_test",
+          "independence_group": "marine-magnetism",
+          "discriminates": true,
+          "available_at_cutoff": false
+        }
+      ],
+      "rivals": [
+        {
+          "rival_id": "C3R1",
+          "prediction": "Fixed continents plus vertical crustal change should reproduce the same correspondences without lateral displacement.",
+          "distinguishing_test": "Measure relative continental motion or ocean-floor renewal independently."
+        }
+      ],
+      "retention": {
+        "mode": "EMPIRICAL_RECOVERY",
+        "boundary": "Retains cross-ocean correspondences, not the proposed driving force or continents-plowing-through-substrate object."
+      },
+      "complexity": {
+        "conceptual": "declared",
+        "ontological": "declared",
+        "parameter": "declared",
+        "computational": "declared",
+        "tradeoff_declared": true
+      },
+      "approximation": {
+        "status": "declared",
+        "boundary": "Fixture-specific boundary declared."
+      },
+      "underdetermination": {
+        "equivalence_class": "Declared rivals remain possible.",
+        "separating_observation": "A fixture-specific discriminating observation is stated when available."
+      },
+      "lineage": {
+        "nodes": [
+          "Wegener synthesis",
+          "geophysical critics"
+        ],
+        "distributed": true
+      },
+      "causal_decomposition": {
+        "intervention": "not claimed",
+        "route": "not claimed",
+        "agent": "not claimed",
+        "mechanism": "not claimed",
+        "etiology": "not claimed"
+      },
+      "causal_scope": "No generic causal claim is imported beyond the declared component.",
+      "timelines": {
+        "discovery": "1924-12-31",
+        "warrant": "1924-12-31",
+        "uptake": "separate",
+        "implementation": "separate",
+        "outcome": "separate"
+      },
+      "formal_ontology": {
+        "formal_component": "continental reconstruction",
+        "ontology_component": "continents moving through oceanic substrate",
+        "mapping": "reconstruction can survive while substrate ontology fails"
+      },
+      "layers": {
+        "declared_layers": [
+          "geometric reconstruction",
+          "historical synthesis",
+          "proposed force"
+        ],
+        "cross_layer_limits": "Pattern agreement does not warrant the force."
+      },
+      "bridge_law": {
+        "mapping": "relative displacement to mapped geological correspondences",
+        "limits": "no ocean-floor kinematic bridge at cutoff",
+        "assumptions": "continental rigidity and correct feature matching"
+      },
+      "transition_role": "synthesis precursor",
+      "hindsight_partitioned": true,
+      "object_relation": {
+        "status": "REDEFINED",
+        "predecessor_object": "fixed continents and ocean basins",
+        "successor_object": "mobile continents; later redefined again as lithospheric plates"
+      },
+      "observability": {
+        "status": "ROADMAP_TESTABLE",
+        "frontier": "Reliable ocean-floor mapping and global geophysics are not yet available.",
+        "planned_test": "Independent relative-motion, ocean-age, magnetic, and seismic observations."
+      },
+      "practical_use": {
+        "enabled": false,
+        "bounded_role": "",
+        "monitoring": "",
+        "rollback": ""
+      },
+      "decisive_refutation": false
+    },
+    {
+      "proposal_id": "C4",
+      "title": "Bounded high-accuracy lookup predictor",
+      "evidence_cutoff": "2020-01-01",
+      "component_scope": "practical prediction method",
+      "relation_type": "mixed historical and explanatory",
+      "target": "Explain the specified target phenomenon.",
+      "foil": "The strongest named predecessor or rival.",
+      "purpose": "Determine the warranted epistemic stance at the evidence cutoff.",
+      "background": "Only evidence available at the cutoff is admissible.",
+      "scope": "The declared component and historical period only.",
+      "gates": {
+        "G0_QUESTION": {
+          "status": "PASS",
+          "reason": "The prediction task, population, and use are explicit.",
+          "evidence_ids": [
+            "C4E1"
+          ]
+        },
+        "G1_ADEQUACY": {
+          "status": "PASS",
+          "reason": "Held-out performance supports bounded predictive adequacy.",
+          "evidence_ids": [
+            "C4E2"
+          ]
+        },
+        "G2_WARRANT": {
+          "status": "PARTIAL",
+          "reason": "Predictive association is warranted; an explanatory relation is not.",
+          "evidence_ids": [
+            "C4E2"
+          ]
+        },
+        "G3_RELEVANCE_AND_SELECTIVITY": {
+          "status": "PASS",
+          "reason": "The inputs are relevant to the bounded prediction task.",
+          "evidence_ids": [
+            "C4E2"
+          ]
+        },
+        "G4_GENERATIVITY": {
+          "status": "PASS",
+          "reason": "It generates testable future predictions in scope.",
+          "evidence_ids": [
+            "C4E2"
+          ]
+        },
+        "G5_RIVAL_VULNERABILITY": {
+          "status": "PASS",
+          "reason": "Prospective baseline comparison and drift monitoring can expose failure.",
+          "evidence_ids": [
+            "C4E2"
+          ]
+        }
+      },
+      "jump_criteria": {
+        "J1_representation_change": {
+          "status": "PARTIAL",
+          "reason": "The lookup changes prediction machinery but supplies no explanatory representation.",
+          "evidence_ids": [
+            "C4E1"
+          ]
+        },
+        "J2_retention": {
+          "status": "PASS",
+          "reason": "Held-out predictive capability is recovered in scope.",
+          "evidence_ids": [
+            "C4E2"
+          ]
+        },
+        "J3_new_reach": {
+          "status": "PASS",
+          "reason": "It predicts cases not present in the lookup construction set.",
+          "evidence_ids": [
+            "C4E2"
+          ]
+        },
+        "J4_compression_control": {
+          "status": "FAIL",
+          "reason": "The table may expand rather than compress.",
+          "evidence_ids": [
+            "C4E1"
+          ]
+        },
+        "J5_rival_discrimination": {
+          "status": "PARTIAL",
+          "reason": "One held-out comparison exists, not explanatory discrimination.",
+          "evidence_ids": [
+            "C4E2"
+          ]
+        },
+        "J6_falsifiability_growth": {
+          "status": "PASS",
+          "reason": "Prospective error and drift thresholds are concrete failure conditions.",
+          "evidence_ids": [
+            "C4E2"
+          ]
+        }
+      },
+      "evidence_ledger": [
+        {
+          "evidence_id": "C4E1",
+          "date": "2019-01-01",
+          "role": "tuning",
+          "independence_group": "development-set",
+          "discriminates": false,
+          "available_at_cutoff": true
+        },
+        {
+          "evidence_id": "C4E2",
+          "date": "2019-10-01",
+          "role": "independent_test",
+          "independence_group": "held-out-site",
+          "discriminates": true,
+          "available_at_cutoff": true
+        }
+      ],
+      "rivals": [
+        {
+          "rival_id": "C4R1",
+          "prediction": "A simple baseline may perform equally well outside the lookup support.",
+          "distinguishing_test": "Prospective monitored comparison on the bounded deployment population."
+        }
+      ],
+      "retention": {
+        "mode": "EMPIRICAL_RECOVERY",
+        "boundary": "Recovers held-out predictive performance only inside the declared support."
+      },
+      "complexity": {
+        "conceptual": "declared",
+        "ontological": "declared",
+        "parameter": "declared",
+        "computational": "declared",
+        "tradeoff_declared": true
+      },
+      "approximation": {
+        "status": "declared",
+        "boundary": "Fixture-specific boundary declared."
+      },
+      "underdetermination": {
+        "equivalence_class": "Declared rivals remain possible.",
+        "separating_observation": "A fixture-specific discriminating observation is stated when available."
+      },
+      "lineage": {
+        "nodes": [
+          "proposal"
+        ],
+        "distributed": false
+      },
+      "causal_decomposition": {
+        "intervention": "not claimed",
+        "route": "not claimed",
+        "agent": "not claimed",
+        "mechanism": "not claimed",
+        "etiology": "not claimed"
+      },
+      "causal_scope": "No generic causal claim is imported beyond the declared component.",
+      "timelines": {
+        "discovery": "2020-01-01",
+        "warrant": "2020-01-01",
+        "uptake": "separate",
+        "implementation": "separate",
+        "outcome": "separate"
+      },
+      "formal_ontology": {
+        "formal_component": "declared",
+        "ontology_component": "declared",
+        "mapping": "separately audited"
+      },
+      "layers": {
+        "declared_layers": [
+          "representation"
+        ],
+        "cross_layer_limits": "No cross-layer inference without a bridge."
+      },
+      "bridge_law": {
+        "mapping": "not applicable to this single-layer fixture",
+        "limits": "declared",
+        "assumptions": "declared"
+      },
+      "transition_role": "representation candidate",
+      "hindsight_partitioned": true,
+      "object_relation": {
+        "status": "PRESERVED",
+        "predecessor_object": "prediction target",
+        "successor_object": "same prediction target"
+      },
+      "observability": {
+        "status": "CURRENTLY_TESTABLE",
+        "frontier": "Only the bounded deployment population is observed.",
+        "planned_test": "Prospective monitored error and subgroup calibration."
+      },
+      "practical_use": {
+        "enabled": true,
+        "bounded_role": "Low-stakes decision support inside the validated population.",
+        "monitoring": "Continuously monitor error, coverage, and subgroup drift.",
+        "rollback": "Revert to the established baseline when thresholds fail."
+      },
+      "decisive_refutation": false
+    },
+    {
+      "proposal_id": "C5",
+      "title": "Rigid plate tectonic synthesis assessed at 1968",
+      "evidence_cutoff": "1968-12-31",
+      "component_scope": "layered kinematic and causal architecture",
+      "relation_type": "mixed historical and explanatory",
+      "target": "Explain the specified target phenomenon.",
+      "foil": "The strongest named predecessor or rival.",
+      "purpose": "Determine the warranted epistemic stance at the evidence cutoff.",
+      "background": "Only evidence available at the cutoff is admissible.",
+      "scope": "The declared component and historical period only.",
+      "gates": {
+        "G0_QUESTION": {
+          "status": "PASS",
+          "reason": "G0_QUESTION is supported by convergent dated evidence.",
+          "evidence_ids": [
+            "C5E1",
+            "C5E2",
+            "C5E3",
+            "C5E4"
+          ]
+        },
+        "G1_ADEQUACY": {
+          "status": "PASS",
+          "reason": "G1_ADEQUACY is supported by convergent dated evidence.",
+          "evidence_ids": [
+            "C5E1",
+            "C5E2",
+            "C5E3",
+            "C5E4"
+          ]
+        },
+        "G2_WARRANT": {
+          "status": "PASS",
+          "reason": "G2_WARRANT is supported by convergent dated evidence.",
+          "evidence_ids": [
+            "C5E1",
+            "C5E2",
+            "C5E3",
+            "C5E4"
+          ]
+        },
+        "G3_RELEVANCE_AND_SELECTIVITY": {
+          "status": "PASS",
+          "reason": "G3_RELEVANCE_AND_SELECTIVITY is supported by convergent dated evidence.",
+          "evidence_ids": [
+            "C5E1",
+            "C5E2",
+            "C5E3",
+            "C5E4"
+          ]
+        },
+        "G4_GENERATIVITY": {
+          "status": "PASS",
+          "reason": "G4_GENERATIVITY is supported by convergent dated evidence.",
+          "evidence_ids": [
+            "C5E1",
+            "C5E2",
+            "C5E3",
+            "C5E4"
+          ]
+        },
+        "G5_RIVAL_VULNERABILITY": {
+          "status": "PASS",
+          "reason": "G5_RIVAL_VULNERABILITY is supported by convergent dated evidence.",
+          "evidence_ids": [
+            "C5E1",
+            "C5E2",
+            "C5E3",
+            "C5E4"
+          ]
+        }
+      },
+      "jump_criteria": {
+        "J1_representation_change": {
+          "status": "PASS",
+          "reason": "J1_representation_change is satisfied by the layered plate architecture; complexity tradeoffs remain explicit.",
+          "evidence_ids": [
+            "C5E1",
+            "C5E2",
+            "C5E3",
+            "C5E4",
+            "C5E5"
+          ]
+        },
+        "J2_retention": {
+          "status": "PASS",
+          "reason": "J2_retention is satisfied by the layered plate architecture; complexity tradeoffs remain explicit.",
+          "evidence_ids": [
+            "C5E1",
+            "C5E2",
+            "C5E3",
+            "C5E4",
+            "C5E5"
+          ]
+        },
+        "J3_new_reach": {
+          "status": "PASS",
+          "reason": "J3_new_reach is satisfied by the layered plate architecture; complexity tradeoffs remain explicit.",
+          "evidence_ids": [
+            "C5E1",
+            "C5E2",
+            "C5E3",
+            "C5E4",
+            "C5E5"
+          ]
+        },
+        "J4_compression_control": {
+          "status": "PARTIAL",
+          "reason": "J4_compression_control is satisfied by the layered plate architecture; complexity tradeoffs remain explicit.",
+          "evidence_ids": [
+            "C5E1",
+            "C5E2",
+            "C5E3",
+            "C5E4",
+            "C5E5"
+          ]
+        },
+        "J5_rival_discrimination": {
+          "status": "PASS",
+          "reason": "J5_rival_discrimination is satisfied by the layered plate architecture; complexity tradeoffs remain explicit.",
+          "evidence_ids": [
+            "C5E1",
+            "C5E2",
+            "C5E3",
+            "C5E4",
+            "C5E5"
+          ]
+        },
+        "J6_falsifiability_growth": {
+          "status": "PASS",
+          "reason": "J6_falsifiability_growth is satisfied by the layered plate architecture; complexity tradeoffs remain explicit.",
+          "evidence_ids": [
+            "C5E1",
+            "C5E2",
+            "C5E3",
+            "C5E4",
+            "C5E5"
+          ]
+        }
+      },
+      "evidence_ledger": [
+        {
+          "evidence_id": "C5E1",
+          "date": "1963-09-07",
+          "role": "independent_test",
+          "independence_group": "marine-magnetism",
+          "discriminates": true,
+          "available_at_cutoff": true
+        },
+        {
+          "evidence_id": "C5E2",
+          "date": "1965-07-24",
+          "role": "independent_test",
+          "independence_group": "transform-geometry",
+          "discriminates": true,
+          "available_at_cutoff": true
+        },
+        {
+          "evidence_id": "C5E3",
+          "date": "1967-08-15",
+          "role": "independent_test",
+          "independence_group": "deep-seismic-zones",
+          "discriminates": true,
+          "available_at_cutoff": true
+        },
+        {
+          "evidence_id": "C5E4",
+          "date": "1967-12-30",
+          "role": "independent_test",
+          "independence_group": "spherical-kinematics",
+          "discriminates": true,
+          "available_at_cutoff": true
+        },
+        {
+          "evidence_id": "C5E5",
+          "date": "1962-01-01",
+          "role": "construction",
+          "independence_group": "seafloor-spreading",
+          "discriminates": false,
+          "available_at_cutoff": true
+        }
+      ],
+      "rivals": [
+        {
+          "rival_id": "C5R1",
+          "prediction": "Fixed continents, Earth expansion, or vertical tectonics should not jointly predict symmetric stripes, transform slip, descending seismic zones, and spherical boundary velocities.",
+          "distinguishing_test": "Test the joint geometry, polarity sequence, ages, earthquake depths, and relative-motion vectors."
+        }
+      ],
+      "retention": {
+        "mode": "NON_RETENTIVE_EXPLANATION",
+        "boundary": "Retains continental mobility and reconstruction successes while replacing continents-plowing-through-oceanic-substrate with plates containing both materials."
+      },
+      "complexity": {
+        "conceptual": "declared",
+        "ontological": "declared",
+        "parameter": "declared",
+        "computational": "declared",
+        "tradeoff_declared": true
+      },
+      "approximation": {
+        "status": "declared",
+        "boundary": "Fixture-specific boundary declared."
+      },
+      "underdetermination": {
+        "equivalence_class": "Declared rivals remain possible.",
+        "separating_observation": "A fixture-specific discriminating observation is stated when available."
+      },
+      "lineage": {
+        "nodes": [
+          "continental mobility",
+          "mantle circulation",
+          "seafloor spreading",
+          "magnetic reversal tests",
+          "transform faults",
+          "subduction seismology",
+          "spherical plate kinematics"
+        ],
+        "distributed": true
+      },
+      "causal_decomposition": {
+        "intervention": "not directly available",
+        "route": "plate-boundary transport",
+        "agent": "lithospheric plates",
+        "mechanism": "spreading, subduction, and relative rigid motion",
+        "etiology": "mantle-driving details remain layered and partly open"
+      },
+      "causal_scope": "Relative plate motion and boundary response are accepted separately from a complete universal driving-force account.",
+      "timelines": {
+        "discovery": "1968-12-31",
+        "warrant": "1968-12-31",
+        "uptake": "separate",
+        "implementation": "separate",
+        "outcome": "separate"
+      },
+      "formal_ontology": {
+        "formal_component": "finite rotations and relative boundary vectors",
+        "ontology_component": "rigid lithospheric plates",
+        "mapping": "local motion measurements map to spherical plate rotations"
+      },
+      "layers": {
+        "declared_layers": [
+          "reconstruction",
+          "kinematics",
+          "boundary mechanics",
+          "mantle dynamics"
+        ],
+        "cross_layer_limits": "Kinematic success does not by itself close every mantle-driving mechanism."
+      },
+      "bridge_law": {
+        "mapping": "Euler rotations map plate-scale motion to local boundary velocities",
+        "limits": "diffuse boundaries and deformation violate ideal rigidity",
+        "assumptions": "piecewise rigid plates on a sphere"
+      },
+      "transition_role": "distributed synthesis and kinematic architecture",
+      "hindsight_partitioned": true,
+      "object_relation": {
+        "status": "REDEFINED",
+        "predecessor_object": "continents moving through fixed oceanic crust",
+        "successor_object": "lithospheric plates containing continental and oceanic material"
+      },
+      "observability": {
+        "status": "CURRENTLY_TESTABLE",
+        "frontier": "Global oceanic and seismic observations are available, though unevenly sampled.",
+        "planned_test": "Continue joint prediction of age, polarity, boundary motion, and earthquake structure."
+      },
+      "practical_use": {
+        "enabled": false,
+        "bounded_role": "",
+        "monitoring": "",
+        "rollback": ""
+      },
+      "decisive_refutation": false
+    }
+  ],
+  "decisions": [
+    {
+      "proposal_id": "C1",
+      "title": "Decorative renaming of an existing account",
+      "evidence_cutoff": "2020-01-01",
+      "primary_stance": "REJECT",
+      "decision_vector": {
+        "reject": true,
+        "pursue": false,
+        "provisional_use": false,
+        "accept": false
+      },
+      "reject_reasons": [
+        "MERE_RELABELING_WITHOUT_NEW_REACH_OR_VULNERABILITY"
+      ],
+      "pursuit_reasons": [],
+      "provisional_use_blockers": [
+        "NO_PROPOSED_PRACTICAL_ROLE",
+        "G1_ADEQUACY_PARTIAL",
+        "G3_RELEVANCE_AND_SELECTIVITY_PARTIAL",
+        "PRACTICAL_BOUNDED_ROLE_MISSING",
+        "PRACTICAL_MONITORING_MISSING",
+        "PRACTICAL_ROLLBACK_MISSING"
+      ],
+      "acceptance_blockers": [
+        "G1_ADEQUACY_PARTIAL",
+        "G2_WARRANT_FAIL",
+        "G3_RELEVANCE_AND_SELECTIVITY_PARTIAL",
+        "G4_GENERATIVITY_FAIL",
+        "G5_RIVAL_VULNERABILITY_FAIL",
+        "J1_representation_change_FAIL",
+        "J3_new_reach_FAIL",
+        "J5_rival_discrimination_FAIL",
+        "J6_falsifiability_growth_FAIL",
+        "J4_COMPRESSION_CONTROL_FAIL",
+        "FEWER_THAN_TWO_INDEPENDENT_DISCRIMINATING_EVIDENCE_GROUPS",
+        "NO_NAMED_RIVAL",
+        "NOT_CURRENTLY_TESTABLE"
+      ],
+      "independent_discriminating_evidence_groups": [],
+      "object_relation": {
+        "status": "PRESERVED",
+        "predecessor_object": "declared predecessor object",
+        "successor_object": "declared proposal object"
+      },
+      "rule_execution": {
+        "A1": {
+          "status": "EXECUTED",
+          "input": "retention",
+          "reason": "Retention mode and failure boundary are explicit."
+        },
+        "A2": {
+          "status": "EXECUTED",
+          "input": "component_scope",
+          "reason": "The evaluated component is explicit."
+        },
+        "A3": {
+          "status": "EXECUTED",
+          "input": "complexity",
+          "reason": "Four complexity dimensions and their tradeoff are recorded."
+        },
+        "A4": {
+          "status": "EXECUTED",
+          "input": "approximation",
+          "reason": "Approximation status and boundary are explicit."
+        },
+        "A5": {
+          "status": "EXECUTED",
+          "input": "underdetermination",
+          "reason": "Equivalence class and separating observation are recorded."
+        },
+        "A6": {
+          "status": "EXECUTED",
+          "input": "lineage",
+          "reason": "Contributing lineage nodes and distributed status are explicit."
+        },
+        "A7": {
+          "status": "EXECUTED",
+          "input": "causal_decomposition",
+          "reason": "Intervention, route, agent, mechanism, and etiology are separated."
+        },
+        "A8": {
+          "status": "EXECUTED",
+          "input": "evidence_ledger",
+          "reason": "Evidence modes are individually classified."
+        },
+        "A9": {
+          "status": "EXECUTED",
+          "input": "causal_scope",
+          "reason": "The causal role is explicitly scoped."
+        },
+        "A10": {
+          "status": "EXECUTED",
+          "input": "timelines",
+          "reason": "Discovery, warrant, uptake, implementation, and outcome are separated."
+        },
+        "A11": {
+          "status": "EXECUTED",
+          "input": "formal_ontology",
+          "reason": "Formal and ontological components are audited separately."
+        },
+        "A12": {
+          "status": "EXECUTED",
+          "input": "layers",
+          "reason": "Constraint and mechanism layers are declared."
+        },
+        "A13": {
+          "status": "EXECUTED",
+          "input": "bridge_law",
+          "reason": "Cross-level mapping, limits, and assumptions are recorded."
+        },
+        "A14": {
+          "status": "EXECUTED",
+          "input": "transition_role",
+          "reason": "The contribution's transition role is labeled."
+        },
+        "A15": {
+          "status": "EXECUTED",
+          "input": "layers",
+          "reason": "Layered successor structure and limits are represented."
+        },
+        "A16": {
+          "status": "EXECUTED",
+          "input": "hindsight_partitioned",
+          "reason": "Evidence availability is checked against a dated cutoff."
+        },
+        "A17": {
+          "status": "EXECUTED",
+          "input": "decision_vector",
+          "reason": "Rejection, pursuit, provisional use, and acceptance are decided separately."
+        },
+        "A18": {
+          "status": "EXECUTED",
+          "input": "object_relation",
+          "reason": "Predecessor and successor object identity is explicitly tested."
+        },
+        "A19": {
+          "status": "EXECUTED",
+          "input": "evidence_ledger",
+          "reason": "Construction, tuning, independent testing, and independence groups are recorded."
+        },
+        "A20": {
+          "status": "EXECUTED",
+          "input": "observability",
+          "reason": "Current or future observability and the planned test are recorded."
+        }
+      },
+      "no_aggregate_score": true
+    },
+    {
+      "proposal_id": "C2",
+      "title": "Coherent but non-generative decorative mechanism",
+      "evidence_cutoff": "2020-01-01",
+      "primary_stance": "NON_ACCEPT",
+      "decision_vector": {
+        "reject": false,
+        "pursue": false,
+        "provisional_use": false,
+        "accept": false
+      },
+      "reject_reasons": [],
+      "pursuit_reasons": [],
+      "provisional_use_blockers": [
+        "NO_PROPOSED_PRACTICAL_ROLE",
+        "G1_ADEQUACY_PARTIAL",
+        "G3_RELEVANCE_AND_SELECTIVITY_PARTIAL",
+        "PRACTICAL_BOUNDED_ROLE_MISSING",
+        "PRACTICAL_MONITORING_MISSING",
+        "PRACTICAL_ROLLBACK_MISSING"
+      ],
+      "acceptance_blockers": [
+        "G1_ADEQUACY_PARTIAL",
+        "G2_WARRANT_UNKNOWN",
+        "G3_RELEVANCE_AND_SELECTIVITY_PARTIAL",
+        "G4_GENERATIVITY_FAIL",
+        "G5_RIVAL_VULNERABILITY_FAIL",
+        "J1_representation_change_PARTIAL",
+        "J2_retention_UNKNOWN",
+        "J3_new_reach_FAIL",
+        "J5_rival_discrimination_FAIL",
+        "J6_falsifiability_growth_FAIL",
+        "J4_COMPRESSION_CONTROL_FAIL",
+        "FEWER_THAN_TWO_INDEPENDENT_DISCRIMINATING_EVIDENCE_GROUPS",
+        "NO_NAMED_RIVAL",
+        "THEORETICAL_OBJECT_RELATION_UNRESOLVED",
+        "NOT_CURRENTLY_TESTABLE"
+      ],
+      "independent_discriminating_evidence_groups": [],
+      "object_relation": {
+        "status": "UNRESOLVED",
+        "predecessor_object": "declared predecessor object",
+        "successor_object": "declared proposal object"
+      },
+      "rule_execution": {
+        "A1": {
+          "status": "EXECUTED",
+          "input": "retention",
+          "reason": "Retention mode and failure boundary are explicit."
+        },
+        "A2": {
+          "status": "EXECUTED",
+          "input": "component_scope",
+          "reason": "The evaluated component is explicit."
+        },
+        "A3": {
+          "status": "EXECUTED",
+          "input": "complexity",
+          "reason": "Four complexity dimensions and their tradeoff are recorded."
+        },
+        "A4": {
+          "status": "EXECUTED",
+          "input": "approximation",
+          "reason": "Approximation status and boundary are explicit."
+        },
+        "A5": {
+          "status": "EXECUTED",
+          "input": "underdetermination",
+          "reason": "Equivalence class and separating observation are recorded."
+        },
+        "A6": {
+          "status": "EXECUTED",
+          "input": "lineage",
+          "reason": "Contributing lineage nodes and distributed status are explicit."
+        },
+        "A7": {
+          "status": "EXECUTED",
+          "input": "causal_decomposition",
+          "reason": "Intervention, route, agent, mechanism, and etiology are separated."
+        },
+        "A8": {
+          "status": "EXECUTED",
+          "input": "evidence_ledger",
+          "reason": "Evidence modes are individually classified."
+        },
+        "A9": {
+          "status": "EXECUTED",
+          "input": "causal_scope",
+          "reason": "The causal role is explicitly scoped."
+        },
+        "A10": {
+          "status": "EXECUTED",
+          "input": "timelines",
+          "reason": "Discovery, warrant, uptake, implementation, and outcome are separated."
+        },
+        "A11": {
+          "status": "EXECUTED",
+          "input": "formal_ontology",
+          "reason": "Formal and ontological components are audited separately."
+        },
+        "A12": {
+          "status": "EXECUTED",
+          "input": "layers",
+          "reason": "Constraint and mechanism layers are declared."
+        },
+        "A13": {
+          "status": "EXECUTED",
+          "input": "bridge_law",
+          "reason": "Cross-level mapping, limits, and assumptions are recorded."
+        },
+        "A14": {
+          "status": "EXECUTED",
+          "input": "transition_role",
+          "reason": "The contribution's transition role is labeled."
+        },
+        "A15": {
+          "status": "EXECUTED",
+          "input": "layers",
+          "reason": "Layered successor structure and limits are represented."
+        },
+        "A16": {
+          "status": "EXECUTED",
+          "input": "hindsight_partitioned",
+          "reason": "Evidence availability is checked against a dated cutoff."
+        },
+        "A17": {
+          "status": "EXECUTED",
+          "input": "decision_vector",
+          "reason": "Rejection, pursuit, provisional use, and acceptance are decided separately."
+        },
+        "A18": {
+          "status": "EXECUTED",
+          "input": "object_relation",
+          "reason": "Predecessor and successor object identity is explicitly tested."
+        },
+        "A19": {
+          "status": "EXECUTED",
+          "input": "evidence_ledger",
+          "reason": "Construction, tuning, independent testing, and independence groups are recorded."
+        },
+        "A20": {
+          "status": "EXECUTED",
+          "input": "observability",
+          "reason": "Current or future observability and the planned test are recorded."
+        }
+      },
+      "no_aggregate_score": true
+    },
+    {
+      "proposal_id": "C3",
+      "title": "Wegener continental mobility assessed at 1924",
+      "evidence_cutoff": "1924-12-31",
+      "primary_stance": "PURSUE",
+      "decision_vector": {
+        "reject": false,
+        "pursue": true,
+        "provisional_use": false,
+        "accept": false
+      },
+      "reject_reasons": [],
+      "pursuit_reasons": [
+        "REPRESENTATION_CHANGE",
+        "NEW_REACH",
+        "EXPLICIT_FAILURE_PATH",
+        "OBSERVABLE_TEST_PATH"
+      ],
+      "provisional_use_blockers": [
+        "NO_PROPOSED_PRACTICAL_ROLE",
+        "G1_ADEQUACY_PARTIAL",
+        "PRACTICAL_BOUNDED_ROLE_MISSING",
+        "PRACTICAL_MONITORING_MISSING",
+        "PRACTICAL_ROLLBACK_MISSING"
+      ],
+      "acceptance_blockers": [
+        "G1_ADEQUACY_PARTIAL",
+        "G2_WARRANT_PARTIAL",
+        "J2_retention_PARTIAL",
+        "J5_rival_discrimination_PARTIAL",
+        "FEWER_THAN_TWO_INDEPENDENT_DISCRIMINATING_EVIDENCE_GROUPS",
+        "NOT_CURRENTLY_TESTABLE"
+      ],
+      "independent_discriminating_evidence_groups": [
+        "geodetic-attempt"
+      ],
+      "object_relation": {
+        "status": "REDEFINED",
+        "predecessor_object": "fixed continents and ocean basins",
+        "successor_object": "mobile continents; later redefined again as lithospheric plates"
+      },
+      "rule_execution": {
+        "A1": {
+          "status": "EXECUTED",
+          "input": "retention",
+          "reason": "Retention mode and failure boundary are explicit."
+        },
+        "A2": {
+          "status": "EXECUTED",
+          "input": "component_scope",
+          "reason": "The evaluated component is explicit."
+        },
+        "A3": {
+          "status": "EXECUTED",
+          "input": "complexity",
+          "reason": "Four complexity dimensions and their tradeoff are recorded."
+        },
+        "A4": {
+          "status": "EXECUTED",
+          "input": "approximation",
+          "reason": "Approximation status and boundary are explicit."
+        },
+        "A5": {
+          "status": "EXECUTED",
+          "input": "underdetermination",
+          "reason": "Equivalence class and separating observation are recorded."
+        },
+        "A6": {
+          "status": "EXECUTED",
+          "input": "lineage",
+          "reason": "Contributing lineage nodes and distributed status are explicit."
+        },
+        "A7": {
+          "status": "EXECUTED",
+          "input": "causal_decomposition",
+          "reason": "Intervention, route, agent, mechanism, and etiology are separated."
+        },
+        "A8": {
+          "status": "EXECUTED",
+          "input": "evidence_ledger",
+          "reason": "Evidence modes are individually classified."
+        },
+        "A9": {
+          "status": "EXECUTED",
+          "input": "causal_scope",
+          "reason": "The causal role is explicitly scoped."
+        },
+        "A10": {
+          "status": "EXECUTED",
+          "input": "timelines",
+          "reason": "Discovery, warrant, uptake, implementation, and outcome are separated."
+        },
+        "A11": {
+          "status": "EXECUTED",
+          "input": "formal_ontology",
+          "reason": "Formal and ontological components are audited separately."
+        },
+        "A12": {
+          "status": "EXECUTED",
+          "input": "layers",
+          "reason": "Constraint and mechanism layers are declared."
+        },
+        "A13": {
+          "status": "EXECUTED",
+          "input": "bridge_law",
+          "reason": "Cross-level mapping, limits, and assumptions are recorded."
+        },
+        "A14": {
+          "status": "EXECUTED",
+          "input": "transition_role",
+          "reason": "The contribution's transition role is labeled."
+        },
+        "A15": {
+          "status": "EXECUTED",
+          "input": "layers",
+          "reason": "Layered successor structure and limits are represented."
+        },
+        "A16": {
+          "status": "EXECUTED",
+          "input": "hindsight_partitioned",
+          "reason": "Evidence availability is checked against a dated cutoff."
+        },
+        "A17": {
+          "status": "EXECUTED",
+          "input": "decision_vector",
+          "reason": "Rejection, pursuit, provisional use, and acceptance are decided separately."
+        },
+        "A18": {
+          "status": "EXECUTED",
+          "input": "object_relation",
+          "reason": "Predecessor and successor object identity is explicitly tested."
+        },
+        "A19": {
+          "status": "EXECUTED",
+          "input": "evidence_ledger",
+          "reason": "Construction, tuning, independent testing, and independence groups are recorded."
+        },
+        "A20": {
+          "status": "EXECUTED",
+          "input": "observability",
+          "reason": "Current or future observability and the planned test are recorded."
+        }
+      },
+      "no_aggregate_score": true
+    },
+    {
+      "proposal_id": "C4",
+      "title": "Bounded high-accuracy lookup predictor",
+      "evidence_cutoff": "2020-01-01",
+      "primary_stance": "PROVISIONAL_USE",
+      "decision_vector": {
+        "reject": false,
+        "pursue": false,
+        "provisional_use": true,
+        "accept": false
+      },
+      "reject_reasons": [],
+      "pursuit_reasons": [],
+      "provisional_use_blockers": [],
+      "acceptance_blockers": [
+        "G2_WARRANT_PARTIAL",
+        "J1_representation_change_PARTIAL",
+        "J5_rival_discrimination_PARTIAL",
+        "J4_COMPRESSION_CONTROL_FAIL",
+        "FEWER_THAN_TWO_INDEPENDENT_DISCRIMINATING_EVIDENCE_GROUPS"
+      ],
+      "independent_discriminating_evidence_groups": [
+        "held-out-site"
+      ],
+      "object_relation": {
+        "status": "PRESERVED",
+        "predecessor_object": "prediction target",
+        "successor_object": "same prediction target"
+      },
+      "rule_execution": {
+        "A1": {
+          "status": "EXECUTED",
+          "input": "retention",
+          "reason": "Retention mode and failure boundary are explicit."
+        },
+        "A2": {
+          "status": "EXECUTED",
+          "input": "component_scope",
+          "reason": "The evaluated component is explicit."
+        },
+        "A3": {
+          "status": "EXECUTED",
+          "input": "complexity",
+          "reason": "Four complexity dimensions and their tradeoff are recorded."
+        },
+        "A4": {
+          "status": "EXECUTED",
+          "input": "approximation",
+          "reason": "Approximation status and boundary are explicit."
+        },
+        "A5": {
+          "status": "EXECUTED",
+          "input": "underdetermination",
+          "reason": "Equivalence class and separating observation are recorded."
+        },
+        "A6": {
+          "status": "EXECUTED",
+          "input": "lineage",
+          "reason": "Contributing lineage nodes and distributed status are explicit."
+        },
+        "A7": {
+          "status": "EXECUTED",
+          "input": "causal_decomposition",
+          "reason": "Intervention, route, agent, mechanism, and etiology are separated."
+        },
+        "A8": {
+          "status": "EXECUTED",
+          "input": "evidence_ledger",
+          "reason": "Evidence modes are individually classified."
+        },
+        "A9": {
+          "status": "EXECUTED",
+          "input": "causal_scope",
+          "reason": "The causal role is explicitly scoped."
+        },
+        "A10": {
+          "status": "EXECUTED",
+          "input": "timelines",
+          "reason": "Discovery, warrant, uptake, implementation, and outcome are separated."
+        },
+        "A11": {
+          "status": "EXECUTED",
+          "input": "formal_ontology",
+          "reason": "Formal and ontological components are audited separately."
+        },
+        "A12": {
+          "status": "EXECUTED",
+          "input": "layers",
+          "reason": "Constraint and mechanism layers are declared."
+        },
+        "A13": {
+          "status": "EXECUTED",
+          "input": "bridge_law",
+          "reason": "Cross-level mapping, limits, and assumptions are recorded."
+        },
+        "A14": {
+          "status": "EXECUTED",
+          "input": "transition_role",
+          "reason": "The contribution's transition role is labeled."
+        },
+        "A15": {
+          "status": "EXECUTED",
+          "input": "layers",
+          "reason": "Layered successor structure and limits are represented."
+        },
+        "A16": {
+          "status": "EXECUTED",
+          "input": "hindsight_partitioned",
+          "reason": "Evidence availability is checked against a dated cutoff."
+        },
+        "A17": {
+          "status": "EXECUTED",
+          "input": "decision_vector",
+          "reason": "Rejection, pursuit, provisional use, and acceptance are decided separately."
+        },
+        "A18": {
+          "status": "EXECUTED",
+          "input": "object_relation",
+          "reason": "Predecessor and successor object identity is explicitly tested."
+        },
+        "A19": {
+          "status": "EXECUTED",
+          "input": "evidence_ledger",
+          "reason": "Construction, tuning, independent testing, and independence groups are recorded."
+        },
+        "A20": {
+          "status": "EXECUTED",
+          "input": "observability",
+          "reason": "Current or future observability and the planned test are recorded."
+        }
+      },
+      "no_aggregate_score": true
+    },
+    {
+      "proposal_id": "C5",
+      "title": "Rigid plate tectonic synthesis assessed at 1968",
+      "evidence_cutoff": "1968-12-31",
+      "primary_stance": "ACCEPT",
+      "decision_vector": {
+        "reject": false,
+        "pursue": true,
+        "provisional_use": false,
+        "accept": true
+      },
+      "reject_reasons": [],
+      "pursuit_reasons": [
+        "REPRESENTATION_CHANGE",
+        "NEW_REACH",
+        "EXPLICIT_FAILURE_PATH",
+        "OBSERVABLE_TEST_PATH"
+      ],
+      "provisional_use_blockers": [
+        "NO_PROPOSED_PRACTICAL_ROLE",
+        "PRACTICAL_BOUNDED_ROLE_MISSING",
+        "PRACTICAL_MONITORING_MISSING",
+        "PRACTICAL_ROLLBACK_MISSING"
+      ],
+      "acceptance_blockers": [],
+      "independent_discriminating_evidence_groups": [
+        "deep-seismic-zones",
+        "marine-magnetism",
+        "spherical-kinematics",
+        "transform-geometry"
+      ],
+      "object_relation": {
+        "status": "REDEFINED",
+        "predecessor_object": "continents moving through fixed oceanic crust",
+        "successor_object": "lithospheric plates containing continental and oceanic material"
+      },
+      "rule_execution": {
+        "A1": {
+          "status": "EXECUTED",
+          "input": "retention",
+          "reason": "Retention mode and failure boundary are explicit."
+        },
+        "A2": {
+          "status": "EXECUTED",
+          "input": "component_scope",
+          "reason": "The evaluated component is explicit."
+        },
+        "A3": {
+          "status": "EXECUTED",
+          "input": "complexity",
+          "reason": "Four complexity dimensions and their tradeoff are recorded."
+        },
+        "A4": {
+          "status": "EXECUTED",
+          "input": "approximation",
+          "reason": "Approximation status and boundary are explicit."
+        },
+        "A5": {
+          "status": "EXECUTED",
+          "input": "underdetermination",
+          "reason": "Equivalence class and separating observation are recorded."
+        },
+        "A6": {
+          "status": "EXECUTED",
+          "input": "lineage",
+          "reason": "Contributing lineage nodes and distributed status are explicit."
+        },
+        "A7": {
+          "status": "EXECUTED",
+          "input": "causal_decomposition",
+          "reason": "Intervention, route, agent, mechanism, and etiology are separated."
+        },
+        "A8": {
+          "status": "EXECUTED",
+          "input": "evidence_ledger",
+          "reason": "Evidence modes are individually classified."
+        },
+        "A9": {
+          "status": "EXECUTED",
+          "input": "causal_scope",
+          "reason": "The causal role is explicitly scoped."
+        },
+        "A10": {
+          "status": "EXECUTED",
+          "input": "timelines",
+          "reason": "Discovery, warrant, uptake, implementation, and outcome are separated."
+        },
+        "A11": {
+          "status": "EXECUTED",
+          "input": "formal_ontology",
+          "reason": "Formal and ontological components are audited separately."
+        },
+        "A12": {
+          "status": "EXECUTED",
+          "input": "layers",
+          "reason": "Constraint and mechanism layers are declared."
+        },
+        "A13": {
+          "status": "EXECUTED",
+          "input": "bridge_law",
+          "reason": "Cross-level mapping, limits, and assumptions are recorded."
+        },
+        "A14": {
+          "status": "EXECUTED",
+          "input": "transition_role",
+          "reason": "The contribution's transition role is labeled."
+        },
+        "A15": {
+          "status": "EXECUTED",
+          "input": "layers",
+          "reason": "Layered successor structure and limits are represented."
+        },
+        "A16": {
+          "status": "EXECUTED",
+          "input": "hindsight_partitioned",
+          "reason": "Evidence availability is checked against a dated cutoff."
+        },
+        "A17": {
+          "status": "EXECUTED",
+          "input": "decision_vector",
+          "reason": "Rejection, pursuit, provisional use, and acceptance are decided separately."
+        },
+        "A18": {
+          "status": "EXECUTED",
+          "input": "object_relation",
+          "reason": "Predecessor and successor object identity is explicitly tested."
+        },
+        "A19": {
+          "status": "EXECUTED",
+          "input": "evidence_ledger",
+          "reason": "Construction, tuning, independent testing, and independence groups are recorded."
+        },
+        "A20": {
+          "status": "EXECUTED",
+          "input": "observability",
+          "reason": "Current or future observability and the planned test are recorded."
+        }
+      },
+      "no_aggregate_score": true
+    }
+  ],
+  "calibration_comparison": [
+    {
+      "proposal_id": "C1",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "match": true
+    },
+    {
+      "proposal_id": "C2",
+      "expected": "NON_ACCEPT",
+      "observed": "NON_ACCEPT",
+      "match": true
+    },
+    {
+      "proposal_id": "C3",
+      "expected": "PURSUE",
+      "observed": "PURSUE",
+      "match": true
+    },
+    {
+      "proposal_id": "C4",
+      "expected": "PROVISIONAL_USE",
+      "observed": "PROVISIONAL_USE",
+      "match": true
+    },
+    {
+      "proposal_id": "C5",
+      "expected": "ACCEPT",
+      "observed": "ACCEPT",
+      "match": true
+    }
+  ],
+  "mutation_tests": [
+    {
+      "test_id": "M1",
+      "description": "Post-cutoff evidence cannot be marked contemporaneously available.",
+      "status": "PASS",
+      "observed": "AssessmentValidationError"
+    },
+    {
+      "test_id": "M2",
+      "description": "Unknown evidence references fail.",
+      "status": "PASS",
+      "observed": "AssessmentValidationError"
+    },
+    {
+      "test_id": "M3",
+      "description": "Duplicate evidence IDs fail.",
+      "status": "PASS",
+      "observed": "AssessmentValidationError"
+    },
+    {
+      "test_id": "M4",
+      "description": "Missing contract fields fail.",
+      "status": "PASS",
+      "observed": "AssessmentValidationError"
+    },
+    {
+      "test_id": "M5",
+      "description": "Duplicated evidence streams cannot simulate independent convergence.",
+      "status": "PASS",
+      "observed": "PURSUE"
+    },
+    {
+      "test_id": "M6",
+      "description": "Unresolved object identity blocks acceptance.",
+      "status": "PASS",
+      "observed": "PURSUE"
+    },
+    {
+      "test_id": "M7",
+      "description": "Predictive usefulness does not imply explanatory acceptance.",
+      "status": "PASS",
+      "observed": "PROVISIONAL_USE"
+    },
+    {
+      "test_id": "M8",
+      "description": "Mere relabeling is rejected as a J-jump.",
+      "status": "PASS",
+      "observed": "REJECT"
+    }
+  ],
+  "diagnostics": {
+    "case_count": 5,
+    "stance_counts": {
+      "REJECT": 1,
+      "NON_ACCEPT": 1,
+      "PURSUE": 1,
+      "PROVISIONAL_USE": 1,
+      "ACCEPT": 1
+    },
+    "all_five_stances_reached": true,
+    "all_expected_decisions_matched": true,
+    "all_mutation_tests_passed": true,
+    "all_twenty_rules_executed": true,
+    "aggregate_score_emitted": false,
+    "red_flags": []
+  },
+  "significant_findings": [
+    "The twenty-rule contract is executable without collapsing epistemic judgment into one compensatory score.",
+    "The engine distinguishes rejection from non-acceptance: an unsupported but coherent idea is not automatically declared false.",
+    "Wegener at the 1924 cutoff is classified PURSUE rather than ACCEPT; later marine evidence cannot leak backward through the hindsight firewall.",
+    "A bounded high-accuracy lookup predictor can receive PROVISIONAL_USE while its explanatory J-jump claim remains unaccepted.",
+    "The 1968 plate architecture reaches ACCEPT only through multiple independent discriminating evidence groups and an explicit object redefinition.",
+    "Duplicated evidence, unresolved object identity, and post-cutoff evidence each prevent a false acceptance upgrade."
+  ],
+  "decision": "EXECUTABLE_PROTOCOL_SUCCESS_ALL_FIVE_STANCES_AND_ADVERSARIAL_GUARDS_PASS",
+  "next_stage": {
+    "name": "Prospective blind theory benchmark",
+    "purpose": "Give the frozen scorer unseen theory proposals with evidence packets and compare its decisions with blinded expert judgments and later outcomes.",
+    "constraint": "Do not tune thresholds on the evaluation set and do not let hypothesis-generation quality define the score."
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "experiment_name": "Meno-J Experiment 11: Representation-versus-Calibration Falsification",
+  "protocol_status": "FROZEN_BEFORE_EXPERIMENT_11_OUTCOME_ANALYSIS",
+  "frozen_date": "2026-08-09",
+  "prerequisites": {
+    "experiment_10_validation": "outputs/meno_j_experiment_10_validation.json must have status PASS",
+    "experiment_10_partitions": "Reuse the exact held-out-subject folds and deterministic personal test-window construction from Experiment 10.",
+    "feature_checkpoints": "Reuse all 15 hash-validated Experiment 9 feature checkpoints without loading raw WESAD pickles."
+  },
+  "research_question": "When S2 and S4 remain uninformative after personal calibration, is the limiting mechanism calibration order statistics, subject baseline mismatch, a misleading sensor family, or the classifier representation?",
+  "shared_contract": {
+    "subjects": ["S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10", "S11", "S13", "S14", "S15", "S16", "S17"],
+    "repetitions_per_subject": 3,
+    "training_subjects_per_fold": 10,
+    "external_calibration_subjects_per_fold": 4,
+    "personal_test_windows": {"baseline": 8, "stress": 4, "amusement": 3},
+    "target_coverage": 0.9,
+    "alpha": 0.1,
+    "score": "inverse_probability_score",
+    "test_windows_never_used_for_adaptation": true
+  },
+  "rival_explanations": [
+    {
+      "id": "R1_CALIBRATION_ORDER_STATISTICS",
+      "claim": "S2/S4 ambiguity is mainly caused by the maximum-score conformal quantile used for 9 through 18 personal calibration examples."
+    },
+    {
+      "id": "R2_SUBJECT_BASELINE_MISMATCH",
+      "claim": "Population-oriented features encode subject baselines more strongly than within-subject state changes."
+    },
+    {
+      "id": "R3_SENSOR_FAMILY_INTERFERENCE",
+      "claim": "One sensor family contributes subject-specific noise that damages state discrimination."
+    },
+    {
+      "id": "R4_CLASSIFIER_REPRESENTATION",
+      "claim": "The shared-covariance linear LDA representation is too restrictive for subject-specific class geometry."
+    }
+  ],
+  "calibration_frontier": {
+    "model": "Experiment 9 regularized LDA on all 81 features",
+    "nested_personal_counts": [9, 12, 15, 18, 19, 20],
+    "class_allocations": {
+      "9": {"baseline": 4, "stress": 3, "amusement": 2},
+      "12": {"baseline": 6, "stress": 4, "amusement": 2},
+      "15": {"baseline": 8, "stress": 4, "amusement": 3},
+      "18": {"baseline": 9, "stress": 6, "amusement": 3},
+      "19": {"baseline": 10, "stress": 6, "amusement": 3},
+      "20": {"baseline": 11, "stress": 6, "amusement": 3}
+    },
+    "order_statistic_fact": "At alpha=0.1 the threshold is the maximum calibration score through n=18; at n=19 it becomes the second-largest score.",
+    "support_rule": "From k=18 to k=19, mean full-set frequency decreases by at least 0.03, mean coverage remains at least 0.88, and worst-subject coverage decreases by no more than 0.05."
+  },
+  "representation_arms_at_k19": [
+    "lda_raw_all",
+    "lda_subject_robust_normalized",
+    "diagonal_qda_raw_all",
+    "distance_weighted_knn15_raw_all",
+    "lda_without_ECG",
+    "lda_without_EMG",
+    "lda_without_EDA",
+    "lda_without_Temp",
+    "lda_without_Resp",
+    "lda_without_ACC"
+  ],
+  "subject_normalization": {
+    "method": "Per-subject median centering and IQR-to-robust-standard-deviation scaling.",
+    "training_subject_statistics": "Computed separately from each training subject's own training windows.",
+    "held_out_subject_statistics": "Computed only from the unlabeled onboarding pool, never from personal test windows.",
+    "support_rule": "Compared with lda_raw_all, improve mean accuracy and mean robustness loss by at least 0.03 each; targeted S2/S4 support additionally requires at least 0.10 accuracy improvement for both subjects and at least 0.10 mean full-set reduction while coverage remains at least 0.80."
+  },
+  "sensor_ablation": {
+    "families": {
+      "ECG": "all ECG features",
+      "EMG": "all EMG features",
+      "EDA": "all EDA features",
+      "Temp": "all temperature features",
+      "Resp": "all respiration features",
+      "ACC": "ACC_X, ACC_Y, ACC_Z, and ACC_MAG features"
+    },
+    "support_rule": "At least one single-family removal improves mean S2/S4 classifier accuracy by at least 0.10, reduces their mean robustness loss by at least 0.03, and decreases overall mean accuracy by no more than 0.03 versus lda_raw_all."
+  },
+  "alternative_models": {
+    "diagonal_qda": "Class-specific diagonal Gaussian likelihood with 20% variance shrinkage toward unit variance.",
+    "distance_weighted_knn15": "Fifteen-neighbor classifier in training-standardized feature space with inverse-distance weights and 0.5 class pseudocounts.",
+    "dependency_policy": "NumPy-only deterministic implementations; no dependency installation or hyperparameter search.",
+    "support_rule": "At least one alternative improves mean S2/S4 classifier accuracy by at least 0.10, reduces their mean full-set frequency by at least 0.10 while maintaining at least 0.80 coverage, and decreases overall mean accuracy by no more than 0.03 versus lda_raw_all."
+  },
+  "continuity_validation": "The k=9 and k=12 LDA frontier rows must exactly reproduce the corresponding Experiment 10 personal-calibration scientific metrics.",
+  "interpretation_guardrails": [
+    "S2 and S4 remain post-selected exploratory cases.",
+    "A sensor ablation identifies predictive interference, not necessarily physical sensor malfunction.",
+    "Failure of the tested representations does not prove label ambiguity.",
+    "No literature novelty claim is made.",
+    "Coverage, accuracy, prediction-set size, and full-set frequency must be interpreted jointly."
+  ],
+  "safety": {
+    "model_call_used": false,
+    "api_key_required": false,
+    "raw_wesad_pickle_loading_required": false,
+    "classifier_hyperparameter_tuning": false,
+    "independent_exact_replay_required": true,
+    "utf8_outputs": true
+  }
+}

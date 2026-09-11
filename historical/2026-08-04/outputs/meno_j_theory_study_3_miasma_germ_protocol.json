@@ -1,0 +1,44 @@
+{
+  "study_name": "Meno-J Theory Study 3: Historical J-Jump Casebook 2",
+  "case": "Miasma, sanitation, transmission, and germ theories",
+  "protocol_date": "2026-08-17",
+  "status": "FROZEN_AFTER_SOURCE_SCOPING_BEFORE_FINAL_NETWORK_VERDICTS",
+  "scope": "Historical and conceptual analysis only; no medical recommendation, patient data, numerical experiment, LLM, or OpenRouter call.",
+  "question": "Does the amended J-jump contract distinguish practical sanitation success, transmission-route discovery, intervention evidence, microbial ontology, and disease-specific causal proof without inventing a single-hero germ-theory revolution?",
+  "predeclared_nodes": [
+    "miasmatic and sanitary environmental frameworks",
+    "Snow's cholera transmission-route account",
+    "Semmelweis's hand-disinfection intervention and cadaveric-material account",
+    "Pasteur's fermentation and anti-spontaneous-generation laboratory program",
+    "Koch's disease-specific experimental etiology",
+    "later host-pathogen-environment process corrections"
+  ],
+  "predeclared_traps": [
+    "Saying Snow identified or cultured the cholera germ",
+    "Saying pump-handle removal ended the already-waning epidemic",
+    "Inferring Semmelweis's entire etiology from successful hand disinfection",
+    "Treating miasma or contagionism as one uniform predecessor theory",
+    "Treating Pasteur or Koch as the single inventor of germ theory",
+    "Treating Koch's postulates as Koch's fixed universal rule for every pathogen",
+    "Treating sanitation success as evidence that foul air was the causal agent",
+    "Replacing miasmatic monocausality with microbial monocausality and ignoring host and environment"
+  ],
+  "success_criteria": {
+    "minimum_source_records": 14,
+    "minimum_primary_source_records": 8,
+    "minimum_transition_nodes": 4,
+    "minimum_false_jump_controls": 7,
+    "all_claims_map_to_source_ids": true,
+    "study_2_amendments_receive_explicit_stress_verdicts": true,
+    "new_contract_failure_triggers_extension": true,
+    "medical_scope_warning_present": true
+  },
+  "failure_conditions": [
+    "The report tells a linear miasma-to-germ victory story.",
+    "An effective intervention is treated as sufficient proof of the proposed mechanism.",
+    "Snow, Semmelweis, Pasteur, or Koch is credited with the whole transition.",
+    "The report ignores conflicting scholarly assessments of Semmelweis.",
+    "The report treats infection as a one-pathogen/one-outcome relation in every host.",
+    "The first historical amendment is silently changed rather than tested."
+  ]
+}

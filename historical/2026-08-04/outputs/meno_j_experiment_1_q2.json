@@ -1,0 +1,285 @@
+{
+  "experiment_name": "Meno-J Experiment 1: Auditor Calibration Test",
+  "research_question": "Why might conformal prediction fail to maintain stable coverage across different physiological signal segments?",
+  "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "stage_4_hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Inter-subject physiological heterogeneity violates the exchangeability assumption required for conformal prediction coverage guarantees.",
+      "proposed_mechanism": "Individual differences in autonomic regulation, anatomy, and baseline physiology cause the conditional distribution of prediction errors to vary systematically across subjects, making calibration scores from one subject non-representative for another.",
+      "core_assumption": "Conformal prediction assumes exchangeability of calibration and test points; this fails when subject-specific physiological factors create distinct error distributions.",
+      "knowledge_gap_addressed": "How subject-level physiological covariates modulate conformal prediction error distributions in multi-subject physiological monitoring.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Sensor-specific noise characteristics and placement variability induce heteroscedastic prediction errors that break conformal prediction's assumption of homogeneous noise structure.",
+      "proposed_mechanism": "Different sensor modalities (e.g., ECG vs. PPG), electrode placements, and contact impedances produce segment-specific noise distributions with varying variance and bias, causing calibration quantiles to misestimate true coverage.",
+      "core_assumption": "Conformal prediction implicitly assumes similar noise characteristics across calibration and test segments; sensor heterogeneity violates this.",
+      "knowledge_gap_addressed": "The impact of sensor-level technical variability on conformal prediction coverage stability in wearable and clinical physiological monitoring.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Abrupt physiological state transitions (e.g., sleep-stage changes, stress responses) create within-segment distribution shifts that invalidate calibration performed on preceding stable states.",
+      "proposed_mechanism": "Rapid autonomic shifts alter signal morphology and noise characteristics faster than the calibration window can adapt, causing prediction error distributions to diverge from those used to compute conformal quantiles.",
+      "core_assumption": "Calibration segments are assumed to be representative of test segments; physiological state transitions violate this stationarity assumption at short timescales.",
+      "knowledge_gap_addressed": "How rapid physiological state changes affect the validity of conformal prediction intervals computed from recent history.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Long-range temporal autocorrelation in physiological signals violates the i.i.d. assumption underlying standard conformal prediction, causing coverage to degrade with prediction horizon.",
+      "proposed_mechanism": "Physiological signals exhibit fractal-like correlations (e.g., 1/f noise in heart rate variability) that create dependence between calibration and test errors, making the effective sample size smaller than assumed and quantiles anti-conservative.",
+      "core_assumption": "Standard conformal prediction assumes independent errors; long-memory processes in physiology induce error dependence that inflates coverage variability.",
+      "knowledge_gap_addressed": "The effect of long-range temporal dependence on finite-sample conformal prediction coverage for physiological time series.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Inter-rater variability in ground-truth labeling differs systematically across physiological signal segments, causing the calibration labels themselves to be noisy in a segment-dependent way.",
+      "proposed_mechanism": "Expert annotation agreement for events like arrhythmias or apneas varies with signal quality, event morphology, and physiological context, making the 'true' coverage target a moving target across segments.",
+      "core_assumption": "Conformal prediction assumes fixed, correct labels; label noise that correlates with segment characteristics biases coverage estimates.",
+      "knowledge_gap_addressed": "How segment-dependent label uncertainty propagates into conformal prediction coverage guarantees for physician-annotated physiological data.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Systematic exclusion of low-signal-quality segments from calibration sets creates a selection bias where conformal prediction intervals are only valid for high-quality segments.",
+      "proposed_mechanism": "Quality-based filtering during dataset construction removes segments with motion artifacts, electrode pops, or saturation from calibration, but these segments appear at test time, causing coverage to collapse precisely when signals are most degraded.",
+      "core_assumption": "Calibration data is assumed representative of deployment data; quality-based curation breaks this representativeness.",
+      "knowledge_gap_addressed": "The impact of signal-quality-dependent sampling bias on conformal prediction coverage in real-world physiological monitoring.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Circadian rhythms induce time-of-day-dependent shifts in physiological signal distributions that are not captured by calibration sets collected at limited times.",
+      "proposed_mechanism": "Core body temperature, hormone levels, and autonomic tone follow circadian patterns that alter baseline signal characteristics and variability, causing prediction error distributions to shift predictably but unaccounted for across the 24-hour cycle.",
+      "core_assumption": "Calibration data spans the same circadian phases as test data; limited calibration windows miss systematic diurnal variation.",
+      "knowledge_gap_addressed": "How circadian non-stationarity affects conformal prediction coverage when calibration data lacks full diurnal representation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Gradual sensor drift and calibration decay create covariate shift that conformal prediction cannot adapt to without explicit recalibration triggers.",
+      "proposed_mechanism": "Electrode gel drying, sensor oxidation, and mechanical displacement cause slow, monotonic changes in signal amplitude and noise floor, shifting the error distribution away from the calibration quantiles over hours to days.",
+      "core_assumption": "Conformal prediction assumes a static relationship between inputs and errors; sensor degradation violates this stationarity.",
+      "knowledge_gap_addressed": "The timescale and magnitude of sensor degradation effects on conformal prediction coverage in long-term physiological monitoring.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Pharmacokinetic and pharmacodynamic effects of medications create time-varying physiological signal distributions that violate conformal prediction's stationarity assumptions.",
+      "proposed_mechanism": "Drug absorption, distribution, metabolism, and excretion cycles (e.g., beta-blockers, vasopressors) induce structured, non-stationary changes in heart rate variability, blood pressure waveforms, and ECG morphology that alter prediction error distributions in a dose- and time-dependent manner.",
+      "core_assumption": "Calibration and test segments share the same physiological regime; medication effects create regime shifts not represented in calibration.",
+      "knowledge_gap_addressed": "How medication-induced physiological non-stationarity impacts conformal prediction coverage in medicated patient populations.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Rare but clinically critical physiological patterns (e.g., pre-ictal states, pre-arrest rhythms) are underrepresented in calibration sets, causing conformal prediction to produce overconfident intervals for these high-stakes segments.",
+      "proposed_mechanism": "Calibration sets typically reflect common physiological states; the prediction model's error distribution on rare pathological precursors differs systematically (often larger errors), but conformal quantiles computed from common states fail to capture this tail behavior.",
+      "core_assumption": "Calibration error distribution adequately represents test error distribution; rare-event tails violate this.",
+      "knowledge_gap_addressed": "The coverage properties of conformal prediction for rare, high-acuity physiological events under realistic calibration set compositions.",
+      "status": "SPECULATIVE"
+    }
+  ],
+  "stage_5_audits": [
+    {
+      "hypothesis_id": "H1",
+      "audit_decision": "SALVAGEABLE",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": false,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "confounders_identified",
+        "mechanism_is_non_generic"
+      ],
+      "decision_reason": "Two critical checks fail: confounders are not identified and the mechanism (inter-subject heterogeneity violating exchangeability) is generic across many domains. However, the idea is concretely repairable by specifying physiological confounders and a more detailed causal path linking autonomic regulation to prediction error variance.",
+      "salvage_note": "Add confounders such as age, sex, comorbidities, and medication. Specify how autonomic regulation (e.g., HRV metrics) modulates prediction error variance for the specific predictor used, making the mechanism specific to physiological signal conformal prediction."
+    },
+    {
+      "hypothesis_id": "H2",
+      "audit_decision": "SALVAGEABLE",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": false,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "confounders_identified",
+        "mechanism_is_non_generic"
+      ],
+      "decision_reason": "Two critical checks fail: no confounders identified and the mechanism (sensor heterogeneity causing heteroscedastic errors) is generic to any multi-sensor domain. Repairable by identifying sensor-specific confounders and modeling noise characteristics unique to physiological sensors.",
+      "salvage_note": "Identify confounders like motion artifacts, skin impedance, and electrode type. Develop sensor-specific noise models (e.g., PPG motion artifact vs. ECG baseline wander) that link placement variability to prediction error distribution shifts in a physiologically grounded way."
+    },
+    {
+      "hypothesis_id": "H3",
+      "audit_decision": "SALVAGEABLE",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": false,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "confounders_identified",
+        "mechanism_is_non_generic"
+      ],
+      "decision_reason": "Two critical checks fail: confounders not identified and the mechanism (abrupt state transitions causing distribution shift) is generic to non-stationary time series. Repairable by specifying physiological confounders and detailing how autonomic shifts alter specific signal features used by the predictor.",
+      "salvage_note": "Add confounders such as circadian phase, medication, and sleep disorders. Specify how autonomic shifts (e.g., changes in HRV spectral power) affect the predictor's input features and error distribution, making the mechanism specific to physiological state transitions."
+    },
+    {
+      "hypothesis_id": "H4",
+      "audit_decision": "SALVAGEABLE",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": false,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "confounders_identified",
+        "mechanism_is_non_generic"
+      ],
+      "decision_reason": "Two critical checks fail: no confounders identified and the mechanism (long-range autocorrelation reducing effective sample size) is a generic statistical issue. Repairable by identifying physiological confounders and quantifying the relationship between long-memory parameters and conformal quantile inflation.",
+      "salvage_note": "Identify confounders like non-stationary trends and external interventions. Derive or simulate the relationship between Hurst exponent (or 1/f noise parameters) and the effective sample size for conformal prediction intervals, linking it to physiological signal properties."
+    },
+    {
+      "hypothesis_id": "H5",
+      "audit_decision": "SALVAGEABLE",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": false,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "confounders_identified",
+        "mechanism_is_non_generic"
+      ],
+      "decision_reason": "Two critical checks fail: confounders not identified and the mechanism (inter-rater label noise varying by segment) is generic to any domain with noisy labels. Repairable by specifying physiological factors that modulate annotation agreement and their impact on coverage targets.",
+      "salvage_note": "Identify confounders such as annotator experience, signal quality indices, and event morphology complexity. Model how physiological context (e.g., low-amplitude ECG, overlapping artifacts) specifically reduces inter-rater agreement for certain event types, making the label noise mechanism domain-specific."
+    },
+    {
+      "hypothesis_id": "H6",
+      "audit_decision": "SALVAGEABLE",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": false,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "confounders_identified",
+        "mechanism_is_non_generic"
+      ],
+      "decision_reason": "Two critical checks fail: no confounders identified and the mechanism (quality-based selection bias) is a generic data curation issue. Repairable by identifying confounders that affect both quality filtering and error distribution, and quantifying the coverage gap as a function of signal quality.",
+      "salvage_note": "Identify confounders like artifact type, patient population, and recording environment. Quantify the relationship between signal quality indices (e.g., SQI) and prediction error distribution shifts, and test coverage conditional on quality strata."
+    },
+    {
+      "hypothesis_id": "H7",
+      "audit_decision": "SALVAGEABLE",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": false,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "confounders_identified",
+        "mechanism_is_non_generic"
+      ],
+      "decision_reason": "Two critical checks fail: confounders not identified and the mechanism (circadian rhythms causing diurnal distribution shifts) is generic within physiological monitoring. Repairable by specifying confounders and linking specific circadian mediators to signal features that affect prediction errors.",
+      "salvage_note": "Add confounders such as sleep-wake cycle, shift work, and lighting conditions. Specify how cortisol, melatonin, and autonomic tone modulate specific signal features (e.g., QT interval, HRV) that the predictor relies on, creating a domain-specific causal chain."
+    },
+    {
+      "hypothesis_id": "H8",
+      "audit_decision": "SALVAGEABLE",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": false,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "confounders_identified",
+        "mechanism_is_non_generic"
+      ],
+      "decision_reason": "Two critical checks fail: no confounders identified and the mechanism (sensor drift causing covariate shift) is generic to any long-term sensor deployment. Repairable by identifying environmental and usage confounders and modeling the time-course of sensor degradation on signal amplitude and error variance.",
+      "salvage_note": "Identify confounders like temperature, humidity, sensor age, and patient activity. Model the kinetics of electrode gel drying and impedance change, linking them to signal amplitude attenuation and prediction error variance increase over hours to days."
+    },
+    {
+      "hypothesis_id": "H9",
+      "audit_decision": "SALVAGEABLE",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "confounders_identified"
+      ],
+      "decision_reason": "One critical check fails: confounders not identified. The mechanism (pharmacokinetic/pharmacodynamic effects) is non-generic, naming specific drug classes and physiological pathways. Repairable by adding confounders that affect drug response and linking PK/PD models to prediction error distributions.",
+      "salvage_note": "Identify confounders such as disease severity, drug interactions, renal/hepatic function, and genetic polymorphisms. Incorporate PK/PD models that link drug concentration time-courses to changes in HRV, blood pressure waveforms, and ECG morphology, and test coverage across dosing intervals."
+    },
+    {
+      "hypothesis_id": "H10",
+      "audit_decision": "SALVAGEABLE",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": false,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "confounders_identified",
+        "mechanism_is_non_generic"
+      ],
+      "decision_reason": "Two critical checks fail: no confounders identified and the mechanism (rare-event underrepresentation causing tail coverage failure) is generic to any imbalanced classification problem. Repairable by specifying pathophysiological mechanisms that make rare events have distinct error distributions and identifying confounders affecting event rarity.",
+      "salvage_note": "Identify confounders like comorbidities, medication, and demographic factors. Specify how pathophysiological mechanisms (e.g., pre-ictal synchronization, pre-arrest electrical instability) alter signal complexity and prediction error distributions, making the tail behavior specific to physiological rare events."
+    }
+  ],
+  "diagnostics": {
+    "generated_count": 10,
+    "passed_count": 0,
+    "rejected_count": 0,
+    "salvageable_count": 10,
+    "pass_survival_rate": 0.0,
+    "salvageable_rate": 1.0,
+    "rejection_reason_diversity": 2,
+    "top_failed_checklist_fields": {
+      "confounders_identified": 10,
+      "mechanism_is_non_generic": 9
+    },
+    "failure_points_consistency": true,
+    "rubber_stamp_red_flags": []
+  },
+  "stage_6_rival_prediction_matrix": [],
+  "stage_7_falsification_tests": []
+}

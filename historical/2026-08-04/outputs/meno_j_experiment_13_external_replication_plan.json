@@ -1,0 +1,88 @@
+{
+  "experiment_name": "Meno-J Experiment 13: Independent Wearable-Dataset Replication",
+  "plan_status": "DATASET_SELECTED_ACQUISITION_PENDING",
+  "selected_dataset": {
+    "name": "Wearable Device Dataset from Induced Stress and Structured Exercise Sessions",
+    "version": "1.0.1",
+    "publisher": "PhysioNet",
+    "doi": "10.13026/he0v-tf17",
+    "landing_page": "https://physionet.org/content/wearable-device-dataset/1.0.1/",
+    "official_zip": "https://physionet.org/content/wearable-device-dataset/get-zip/1.0.1/",
+    "compressed_size_reported": "69.7 MB",
+    "uncompressed_size_reported": "247.4 MB",
+    "license": "Open Data Commons Attribution License v1.0",
+    "access": "open"
+  },
+  "selection_reasons": [
+    "The stress cohort contains 36 healthy volunteers, larger than WESAD's 15-subject cohort.",
+    "The Empatica E4 provides EDA, skin temperature, and three-axis acceleration, enabling a shared-feature external test of subject baseline normalization.",
+    "The protocol contains baseline, rest, cognitive-stress, and social-stress blocks with event tags and self-reported stress levels.",
+    "The archive is openly licensed, versioned, DOI-addressed, and small enough for local deterministic validation.",
+    "The dataset was collected independently of WESAD with a different device placement and protocol."
+  ],
+  "pre_outcome_scope": {
+    "primary_subset": "STRESS sessions only",
+    "shared_modalities": ["EDA", "TEMP", "ACC_X", "ACC_Y", "ACC_Z", "ACC_MAG"],
+    "candidate_binary_labels": {
+      "non_stress": ["Baseline", "First Rest", "Second Rest"],
+      "stress": ["Stroop when present", "TMCT", "Real Opinion", "Opposite Opinion", "Subtract"]
+    },
+    "planned_window_seconds": 30,
+    "planned_features_per_channel": ["mean", "std", "min", "max", "median", "q25", "q75", "rms", "mean_absolute_difference"],
+    "primary_comparison": "subject-disjoint raw representation versus per-subject median/IQR-normalized representation",
+    "secondary_comparison": "calibration informativeness and worst-subject coverage reported jointly with accuracy and full-set frequency"
+  },
+  "known_quality_constraints": {
+    "S02": "Duplicated stress-session signals; exclude from the primary complete-case cohort unless exact truncation can be independently verified.",
+    "f07": "PPG and temperature sensors were covered; exclude from the primary all-shared-modality cohort.",
+    "f14": "Stress session split into baseline and protocol files; exclude from the primary complete-file cohort, retain for a separately validated sensitivity analysis if merge timing is unambiguous."
+  },
+  "freeze_sequence": [
+    "Validate ZIP central directory, CRCs, safe paths, size, and expected inventory.",
+    "Extract without overwriting an existing validated dataset.",
+    "Build a subject/session/tag inventory without computing scientific outcomes.",
+    "Freeze exact exclusions, stage intervals, minimum window counts, folds, and effect-size decision rules.",
+    "Only then compute raw-versus-normalized outcomes."
+  ],
+  "scientific_guardrails": [
+    "This dataset is an independent cohort and protocol, but its stress recordings are not necessarily multi-day repeated sessions.",
+    "Device placement differs from WESAD, so feature definitions will be shared at the summary-statistic level rather than assumed sensor-equivalent.",
+    "Protocol labels and self-reported stress are distinct outcomes and will not be silently conflated.",
+    "No outcome will be calculated before the exact analysis protocol is frozen from the validated inventory.",
+    "Failure to replicate normalization will weaken generality rather than invalidate the WESAD result."
+  ],
+  "sources": [
+    {
+      "claim": "Dataset identity, version, citation, protocol, population, sensors, access, license, and archive sizes.",
+      "url": "https://physionet.org/content/wearable-device-dataset/1.0.1/",
+      "accessed": "2026-08-09"
+    },
+    {
+      "claim": "Sensor names and sampling frequencies.",
+      "url": "https://physionet.org/content/wearable-device-dataset/1.0.1/Data_Dictionary.csv",
+      "accessed": "2026-08-09"
+    },
+    {
+      "claim": "Known subject-level data constraints.",
+      "url": "https://physionet.org/content/wearable-device-dataset/1.0.1/data_constraints.txt",
+      "accessed": "2026-08-09"
+    },
+    {
+      "claim": "V1 protocol stages and self-reported stress values.",
+      "url": "https://physionet.org/content/wearable-device-dataset/1.0.1/Stress_Level_v1.csv",
+      "accessed": "2026-08-09"
+    },
+    {
+      "claim": "V2 protocol stages and self-reported stress values.",
+      "url": "https://physionet.org/content/wearable-device-dataset/1.0.1/Stress_Level_v2.csv",
+      "accessed": "2026-08-09"
+    }
+  ],
+  "acquisition_status": {
+    "command_line_attempt": "BLOCKED_BY_OUTBOUND_SOCKET_POLICY",
+    "browser_attempt": "INCOMPLETE_DUE_TO_TRANSFER_STALL",
+    "incomplete_browser_bytes_preserved_in_downloads": 27181002,
+    "complete_archive_accepted": false,
+    "dataset_dependent_claims_made": false
+  }
+}

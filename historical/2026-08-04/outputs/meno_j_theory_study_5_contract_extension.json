@@ -1,0 +1,136 @@
+{
+  "extension_name": "Historical Calibration Extension 4",
+  "trigger": "The case requires scoring a precursor using only contemporaneous evidence, separating pursuit from acceptance, recognizing redefinition of the theoretical object, and treating observability infrastructure as part of the test architecture.",
+  "prior_rule_status": [
+    {
+      "rule_id": "A1_RETENTION_ACCOUNTING",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Wegener's mobility and reconstructions survive selectively; his forces and moving-object model do not."
+    },
+    {
+      "rule_id": "A2_COMPONENT_SCOPING",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Pattern, reconstruction, mechanism, ocean-floor renewal, boundary types, and kinematics require separate verdicts."
+    },
+    {
+      "rule_id": "A3_COMPRESSION_DIMENSIONS",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Global plate rotations compress surface motion while adding observational and computational machinery."
+    },
+    {
+      "rule_id": "A4_APPROXIMATION_BOUNDARY",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Rigid plates and sharp boundaries are strong approximations, not universal literal descriptions."
+    },
+    {
+      "rule_id": "A5_UNDERDETERMINATION",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Early cross-ocean matches supported mobility without uniquely determining plate tectonics."
+    },
+    {
+      "rule_id": "A6_DISTRIBUTED_LINEAGE_GRAPH",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "The successor arose across drift, paleomagnetism, oceanography, seismology, and spherical kinematics."
+    },
+    {
+      "rule_id": "A7_INTERVENTION_MECHANISM_DECOUPLING",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Generalized: accurate reconstruction can precede a valid transport mechanism."
+    },
+    {
+      "rule_id": "A8_EVIDENCE_TRIANGULATION_LADDER",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Independent magnetic, age, seismic, geometric, and fault evidence supplied convergent warrant."
+    },
+    {
+      "rule_id": "A9_RELATIONAL_CAUSAL_SCOPE",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Relative motion, driving force, material transport, and boundary response are different claims."
+    },
+    {
+      "rule_id": "A10_DISCOVERY_UPTAKE_OUTCOME_SEPARATION",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Early proposal, research pursuit, disciplinary rejection, and later acceptance followed distinct timelines."
+    },
+    {
+      "rule_id": "A11_FORMAL_ONTOLOGY_DECOUPLING",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Continental reconstructions can survive while the ontology of continents plowing through sima fails."
+    },
+    {
+      "rule_id": "A12_CONSTRAINT_MECHANISM_LAYERING",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Kinematics, boundary constraints, and mantle-driving mechanisms occupy different explanatory layers."
+    },
+    {
+      "rule_id": "A13_BRIDGE_LAW_REQUIREMENT",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Plate rotations and boundary vectors bridge global objects to measurable local motions."
+    },
+    {
+      "rule_id": "A14_TRANSITION_ROLE_TAXONOMY",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Wegener was a synthesis precursor; Holmes a mechanism program; Hess an architecture; later work supplied discriminators and kinematics."
+    },
+    {
+      "rule_id": "A15_LAYERED_SUCCESSOR_TEST",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Plate kinematics, geodynamics, seismology, and geological reconstruction coexist as constrained layers."
+    }
+  ],
+  "extensions": [
+    {
+      "extension_id": "A16_HINDSIGHT_FIREWALL",
+      "new_rule": "Partition evidence by availability date and issue a contemporaneous verdict before adding retrospective evidence. Never credit a precursor with later instruments, observations, concepts, or successful descendants.",
+      "guardrail": "Later vindication can update lineage credit but cannot rewrite the warrant originally available.",
+      "sources": [
+        "D02",
+        "D15",
+        "D16",
+        "D17"
+      ]
+    },
+    {
+      "extension_id": "A17_EPISTEMIC_STANCE_LADDER",
+      "new_rule": "Score rejection, non-acceptance, pursuit, provisional use, and acceptance separately. A hypothesis may rationally merit pursuit while rationally failing the acceptance threshold.",
+      "guardrail": "Promising is not true; premature non-acceptance is not the same as suppressing further investigation.",
+      "sources": [
+        "D04",
+        "D16"
+      ]
+    },
+    {
+      "extension_id": "A18_OBJECT_REDEFINITION_TEST",
+      "new_rule": "Record whether the successor preserves the predecessor's objects or replaces them. If the moving, causal, or measured object changes, treat the relation as transformation rather than simple confirmation.",
+      "guardrail": "Shared surface vocabulary such as drift does not establish identity between continents and lithospheric plates.",
+      "sources": [
+        "D02",
+        "D08",
+        "D13",
+        "D14"
+      ]
+    },
+    {
+      "extension_id": "A19_INDEPENDENT_PREDICTION_LEDGER",
+      "new_rule": "For each evidential success, record whether it was used to construct, tune, or independently test the proposal, and whether it discriminates against named rivals jointly or only in isolation.",
+      "guardrail": "Do not count multiple transformations of one dataset as independent convergence or call post-hoc fit a novel prediction.",
+      "sources": [
+        "D09",
+        "D10",
+        "D11",
+        "D12",
+        "D18"
+      ]
+    },
+    {
+      "extension_id": "A20_OBSERVABILITY_FRONTIER",
+      "new_rule": "Record which claims were untestable under the available measurement infrastructure and which new instruments, surveys, access, funding, or data-sharing changes expanded the falsification surface.",
+      "guardrail": "Do not treat infrastructure as automatic truth production; document sampling, classification, and institutional selection effects.",
+      "sources": [
+        "D18",
+        "D19"
+      ]
+    }
+  ],
+  "revised_j_jump_object": "A hindsight-controlled lineage subgraph with separate pursuit and acceptance verdicts, explicit object identity or redefinition, independently classified predictions, dated observability limits, and a successor architecture that survives cross-domain closure tests."
+}

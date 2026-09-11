@@ -1,0 +1,104 @@
+{
+  "rival_prediction_matrix": [
+    {
+      "hypothesis_id": "H1",
+      "meno_j_hypothesis": "Inter-subject variability in autonomic regulation causes non-exchangeability of physiological signal segments across individuals, breaking conformal prediction's exchangeability assumption.",
+      "meno_j_prediction": "Higher inter-subject variability in autonomic measures (RMSSD, BRS, LF/HF) correlates with larger conditional coverage deviations from nominal level for segments belonging to underrepresented autonomic phenotypes.",
+      "rival_explanation": "Coverage instability is driven by age-related autonomic changes rather than inter-subject variability per se; medication effects create apparent phenotype heterogeneity that is actually a treatment effect; fitness level differences cause systematic segment distribution shifts that mimic autonomic phenotype effects.",
+      "rival_prediction": "After controlling for age, medication, and fitness, conditional coverage deviations across autonomic phenotype tertiles will disappear, indicating the observed instability is confounded by these factors rather than inherent autonomic non-exchangeability.",
+      "distinguishing_test": "Stratified conformal evaluation within narrow age/fitness/medication strata: if coverage deviations persist across autonomic phenotypes within strata, the autonomic non-exchangeability mechanism is supported; if deviations vanish, the confounder rival is supported.",
+      "what_result_supports_meno_j": "Persistent conditional coverage deviations across autonomic phenotype tertiles even after rigorous matching on age, medication class, and fitness level (VO2 max), with significant partial Spearman correlation (ρ > 0.4) between inter-subject CV of RMSSD and coverage deviation controlling for confounders.",
+      "what_result_supports_rival": "Conditional coverage deviations across autonomic phenotype tertiles become non-significant (p > 0.05, mean difference < 2%) after stratification or matching on age, medication, and fitness, with partial Spearman correlation ρ < 0.2."
+    },
+    {
+      "hypothesis_id": "H2",
+      "meno_j_hypothesis": "Sensor-specific motion artifact profiles that vary systematically across signal segments induce covariate shift in the feature space used for conformal prediction.",
+      "meno_j_prediction": "Segments with higher accelerometer variance and lower SNR exhibit larger coverage deficits (under-coverage) relative to low-motion segments; conditional coverage for walking/running segments will be ≥15 percentage points lower than for sitting segments.",
+      "rival_explanation": "Coverage differences arise because walking segments are shorter, reducing effective sample size for nonconformity estimation; sensor displacement during activity changes electrode contact, altering signal morphology independent of motion artifacts; sweat-induced impedance changes during activity degrade signal quality in a way that correlates with activity label but is not motion artifact.",
+      "rival_prediction": "When segment duration, sensor placement, and skin impedance are held constant, conditional coverage across activity labels will equalize, showing that motion artifact profiles are not the primary driver.",
+      "distinguishing_test": "Controlled lab setting with fixed segment length, fixed sensor placement, and measured impedance: if coverage deficits persist only for segments with high accelerometer variance after regressing out impedance and placement effects, the motion artifact mechanism is supported; if deficits vanish when confounders are controlled, the rival is supported.",
+      "what_result_supports_meno_j": "Significant activity_label effect on coverage (p < 0.05) in beta regression controlling for segment duration, placement score, and impedance, with Spearman ρ > 0.5 between accelerometer variance and coverage error, and KS test showing nonconformity score distribution shift between sitting and walking.",
+      "what_result_supports_rival": "Activity_label effect becomes non-significant (p > 0.05) after controlling for segment duration, sensor placement, and skin impedance, with conditional coverage difference between high-motion and resting segments < 5 percentage points."
+    },
+    {
+      "hypothesis_id": "H3",
+      "meno_j_hypothesis": "Unobserved physiological state transitions (e.g., sleep stage changes, stress responses) create hidden distribution shifts between calibration and test segments.",
+      "meno_j_prediction": "Segments containing unobserved state transitions (e.g., NREM to REM, stress onset) show lower conditional coverage than segments with stable latent states, despite identical coarse_segment_label; coverage gap ≥8 percentage points.",
+      "rival_explanation": "Coverage drops during REM because REM segments occur at specific circadian phases where signal distributions differ systematically; temperature fluctuations across sleep stages alter sensor contact and signal morphology; undiagnosed sleep apnea causes respiratory artifacts that correlate with stage transitions and degrade coverage.",
+      "rival_prediction": "After controlling for circadian phase, temperature, and apnea severity, coverage during latent state transitions will match coverage during stable states, indicating transitions themselves are not the cause.",
+      "distinguishing_test": "Within a single circadian phase and constant temperature, compare segments with verified autonomic transitions (e.g., NREM to REM) vs stable segments with apnea events excluded: if transition segments show no coverage deficit, the rival is supported; if deficit persists, the hidden state transition mechanism is supported.",
+      "what_result_supports_meno_j": "Significant coverage difference between transition and stable segments within same coarse label after controlling for circadian phase, temperature, and apnea (paired t-test p < 0.05, mean difference ≥ 3%), with mutual information between latent state and nonconformity scores > 0.1 bits.",
+      "what_result_supports_rival": "No significant coverage difference between transition and stable segments within same coarse label after controlling for confounders (p > 0.05, mean difference < 3%), or mutual information not significantly > 0."
+    },
+    {
+      "hypothesis_id": "H4",
+      "meno_j_hypothesis": "Circadian and ultradian rhythms induce time-varying non-stationarity in physiological signals that correlates with segment timing, violating temporal exchangeability.",
+      "meno_j_prediction": "Conditional coverage will follow a cosinor rhythm with amplitude ≥5% (peak-to-trough); coverage deviation amplitude will correlate with HRV_RMSSD diurnal amplitude (Pearson r > 0.4); coverage lowest at circadian phases underrepresented in calibration set.",
+      "rival_explanation": "Coverage varies by time of day because morning segments contain more physical activity artifacts, not endogenous rhythms; post-prandial metabolic shifts alter HRV independently of circadian phase; light-induced alerting responses cause transient autonomic changes that mimic circadian effects.",
+      "rival_prediction": "When activity, meals, light, and posture are controlled, the circadian-phase coverage pattern will flatten, showing that behavioral/environmental confounders drive the apparent rhythm effect.",
+      "distinguishing_test": "Constant routine protocol (controlled posture, dim light, hourly isocaloric snacks): if coverage across circadian phases remains stable, the rival is supported; if persistent coverage variation driven by endogenous rhythms remains, the circadian mechanism is supported.",
+      "what_result_supports_meno_j": "Significant cosinor model amplitude (p < 0.05) with amplitude ≥5%, Pearson correlation > 0.4 between coverage deviation amplitude and HRV_RMSSD diurnal amplitude across subjects, and persistent coverage variation in constant routine subset.",
+      "what_result_supports_rival": "Cosinor model fit not significant (p > 0.05 for amplitude), coverage amplitude < 2%, or no correlation between HRV diurnal amplitude and coverage deviation amplitude after controlling for activity, meals, light."
+    },
+    {
+      "hypothesis_id": "H5",
+      "meno_j_hypothesis": "Segment-dependent annotation errors and label noise (e.g., mislabeled arrhythmia episodes) create asymmetric miscalibration that conformal prediction cannot correct.",
+      "meno_j_prediction": "Conditional coverage deviation will correlate with annotation error rate per segment type (Spearman ρ > 0.4); false negative errors cause under-coverage (coverage < nominal - 5%), false positive errors cause over-coverage (coverage > nominal + 5%); asymmetry index correlates with error type prevalence.",
+      "rival_explanation": "Coverage deficits in difficult segments are due to low SNR causing both annotation errors and prediction errors, not label noise per se; expert fatigue increases over the day, causing more errors in later segments regardless of difficulty; algorithmic pre-labels bias experts toward systematic errors in specific feature regions.",
+      "rival_prediction": "After matching on SQI and controlling for annotation session time, the correlation between annotation error rate and coverage deviation will vanish, indicating SNR and fatigue are the true drivers.",
+      "distinguishing_test": "Compare segments with high annotation error but high SQI (e.g., subtle arrhythmia in clean signal) vs low SQI segments with low annotation error: if high-error/high-SQI segments show no coverage deficit while low-SQI/low-error segments show under-coverage, the rival is supported; if coverage deficit tracks annotation error regardless of SQI, the label noise mechanism is supported.",
+      "what_result_supports_meno_j": "Significant correlation between annotation error rate and coverage deviation after matching on SQI and controlling for fatigue (partial ρ > 0.4, p < 0.05), with asymmetry index significantly different from zero and KS test showing nonconformity score distribution shift between clean and noisy labels.",
+      "what_result_supports_rival": "No significant correlation between annotation error rate and coverage deviation after matching on SQI and controlling for fatigue (partial ρ < 0.2, p > 0.05), or asymmetry index not significantly different from zero."
+    },
+    {
+      "hypothesis_id": "H6",
+      "meno_j_hypothesis": "Imbalanced segment representation in calibration data (e.g., rare pathological segments underrepresented) leads to finite-sample coverage failures for minority segments.",
+      "meno_j_prediction": "Conditional coverage deviation magnitude will follow power-law relationship with calibration sample size: |deviation| ∝ n_segment^{-0.5} (log-log slope ≈ -0.5); rare segments (n_segment < 30) will show deviations >10%; common segments (n_segment > 500) deviations <2%.",
+      "rival_explanation": "Conditional coverage fails for rare segments because they are physiologically more heterogeneous, not because of sample size; rare segments are overrepresented from a few subjects with atypical physiology, causing distribution shift; feature extraction algorithms fail more often on rare segments, adding noise that mimics finite-sample effects.",
+      "rival_prediction": "When rare segments are matched to common segments on signal variability and subject representation, and feature extraction quality is equalized, conditional coverage will be similar regardless of prevalence.",
+      "distinguishing_test": "Subsample common segments to match rare segment sample size while matching on variability and subject representation: if coverage degrades purely from reduced calibration sample size, the finite-sample mechanism is supported; if coverage remains stable when variability and representation are matched, the rival is supported.",
+      "what_result_supports_meno_j": "Log-log slope of deviation vs n_segment significantly different from 0 (p < 0.05) with slope ≈ -0.5, rare segments with matched variability/subject representation show deviations >10% when sub-sampled to same n_segment, and bootstrap estimates minimum n_segment for deviation <2% with 95% probability.",
+      "what_result_supports_rival": "Log-log slope not significantly different from 0 (p > 0.05), or rare segments with matched variability and subject representation show deviations <5% when sub-sampled to same n_segment."
+    },
+    {
+      "hypothesis_id": "H7",
+      "meno_j_hypothesis": "Temporal autocorrelation within and across physiological signal segments violates the exchangeability assumption by creating dependence structures that conformal prediction ignores.",
+      "meno_j_prediction": "Coverage will decrease as lag-1 autocorrelation increases (Spearman ρ < -0.4); coverage will approach nominal when segment_spacing_s > 5*autocorrelation_time_constant_s; effective sample size (n_eff = segment_length / τ) will predict coverage deviation (R² > 0.3).",
+      "rival_explanation": "Coverage drops because segments are non-stationary (trending mean/variance), not because of autocorrelation per se; adjacent segments overlap in time, creating artificial dependence that inflates coverage error; respiratory sinus arrhythmia induces autocorrelation that is actually a deterministic exogenous effect.",
+      "rival_prediction": "When segments are stationary, non-overlapping, and respiration is controlled, coverage will be nominal even with high lag-1 autocorrelation, showing that non-stationarity and overlap are the true culprits.",
+      "distinguishing_test": "Use non-overlapping, stationarity-verified segments with paced breathing (fixed respiration): if coverage remains stable across autocorrelation levels, the rival is supported; if coverage degradation proportional to autocorrelation strength persists, the autocorrelation mechanism is supported.",
+      "what_result_supports_meno_j": "Significant negative correlation between autocorrelation strength and coverage deviation after controlling for non-stationarity and overlap (partial ρ < -0.4, p < 0.05), coverage approaches nominal when segment_spacing_s > 5*τ, and effective sample size predicts coverage deviation (R² > 0.3).",
+      "what_result_supports_rival": "No significant correlation between autocorrelation strength and coverage deviation after controlling for non-stationarity and overlap (partial ρ > -0.2, p > 0.05), or coverage nominal even at zero spacing when segments are stationary and non-overlapping."
+    },
+    {
+      "hypothesis_id": "H8",
+      "meno_j_hypothesis": "Segment-specific signal-to-noise ratio (SNR) variations cause heteroscedastic prediction errors that conformal prediction's symmetric intervals cannot adapt to.",
+      "meno_j_prediction": "Conditional coverage will increase linearly with segment_SNR_dB (slope > 1%/dB); low SNR bin (<10 dB) coverage < nominal - 15%; high SNR bin (>30 dB) coverage > nominal + 15%; Breusch-Pagan test for heteroscedasticity of prediction errors significant (p < 0.001).",
+      "rival_explanation": "Coverage deficits in low SNR segments occur because they correspond to high-stress states with inherently higher prediction uncertainty; skin temperature affects both impedance and autonomic tone, creating a spurious SNR-coverage correlation; model errors increase in low SNR because features are corrupted, not because error variance is heteroscedastic.",
+      "rival_prediction": "After controlling for physiological state, skin temperature, and feature corruption, the SNR-coverage correlation will disappear, indicating SNR is a proxy for these confounders.",
+      "distinguishing_test": "Controlled setting where SNR is varied artificially (added noise) while physiological state, temperature, and features are held constant: if coverage remains stable across SNR bins, the rival is supported; if coverage degrades with decreasing SNR, the SNR heteroscedasticity mechanism is supported.",
+      "what_result_supports_meno_j": "Significant SNR coefficient in linear regression (p < 0.05) with slope > 1%/dB, low SNR bin coverage < nominal - 15%, high SNR bin coverage > nominal + 15%, and significant Breusch-Pagan test (p < 0.001); artificial noise addition at constant state shows coverage trend across SNR bins.",
+      "what_result_supports_rival": "Coverage-SNR correlation not significant after controlling for physiological state, skin temperature, feature corruption (partial ρ < 0.2, p > 0.05), or artificial noise addition at constant state shows no coverage trend across SNR bins."
+    },
+    {
+      "hypothesis_id": "H9",
+      "meno_j_hypothesis": "Unmeasured population heterogeneity (e.g., comorbidities, medication effects) creates latent subgroups with distinct signal distributions, causing conformal coverage to vary unpredictably across segments.",
+      "meno_j_prediction": "Conditional coverage will vary significantly across latent subgroups (ANOVA p < 0.01); subgroups on beta-blockers will show systematically different coverage (Δ > 5%) vs non-users; coverage variance explained by subgroup membership > 20% (η² > 0.2).",
+      "rival_explanation": "Coverage disparities across latent subgroups are driven by age and severity, not unmeasured heterogeneity per se; subgroups with comorbidities have poorer signal quality, causing coverage drops that mimic distributional differences; subgroups have different segment type distributions, and coverage varies by segment type, not subgroup.",
+      "rival_prediction": "After matching on age, severity, signal quality, and segment type distribution, coverage will not vary across latent subgroups, showing that observed disparities are confounded.",
+      "distinguishing_test": "Within a narrow stratum of age, severity, signal quality, and segment type, compare beta-blocker users vs non-users: if they show identical conditional coverage, the rival is supported; if persistent differences due to unmeasured autonomic effects remain, the latent subgroup mechanism is supported.",
+      "what_result_supports_meno_j": "Significant ANOVA across subgroups (p < 0.01), beta-blocker users vs non-users Δ > 5% in matched strata, η² > 0.2 for subgroup membership, and post-hoc clustering of coverage residuals reveals clinically meaningful subgroups.",
+      "what_result_supports_rival": "After matching on age, severity, signal quality, segment type distribution, coverage does not differ across subgroups (ANOVA p > 0.05, η² < 0.05), or beta-blocker users vs non-users show Δ < 2% in matched strata."
+    },
+    {
+      "hypothesis_id": "H10",
+      "meno_j_hypothesis": "Finite-sample effects in short physiological segments cause high variance in nonconformity score estimation, leading to unstable coverage that fluctuates with segment length.",
+      "meno_j_prediction": "Coverage variance across splits will decrease as segment_length_s increases (power-law: variance ∝ segment_length^{-1}); mean coverage will approach nominal as segment_length_s increases; minimum segment length for stable coverage (within ±1% with 95% probability) will be >5*autocorrelation_time_constant_s.",
+      "rival_explanation": "Coverage variance increases for short segments because autocorrelation time constant becomes comparable to segment length, not because of finite-sample quantile estimation; short segments yield unreliable features (e.g., RMSSD on 10s ECG), increasing prediction error variance and causing coverage instability; with fixed calibration set size, shorter segments increase the number of segments but reduce effective samples per segment, altering the bias-variance tradeoff.",
+      "rival_prediction": "When autocorrelation time constant, feature reliability, and effective degrees of freedom are matched across segment lengths, coverage variance will not depend on segment length.",
+      "distinguishing_test": "Use segments of varying length but with matched effective degrees of freedom (by adjusting spacing or using surrogate data): if coverage stability is identical across lengths, the rival is supported; if a direct segment-length effect on nonconformity score variance persists, the finite-sample mechanism is supported.",
+      "what_result_supports_meno_j": "Power-law fit slope = -1 (p < 0.05) for log(variance) vs log(segment_length), mean coverage approaches nominal with increasing length, minimum stable segment length > 5*τ for high-autocorrelation signals, and coverage variance vs effective_dof shows consistent relationship across signal types.",
+      "what_result_supports_rival": "Coverage variance does not decrease with segment length after matching effective degrees of freedom (partial correlation ρ > -0.2, p > 0.05), or minimum stable segment length < 2*τ for high-autocorrelation signals."
+    }
+  ]
+}

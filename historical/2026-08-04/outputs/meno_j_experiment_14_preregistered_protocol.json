@@ -1,0 +1,69 @@
+{
+  "experiment_name": "Meno-J Experiment 14: Class-Conditional Calibration Repair",
+  "protocol_status": "FROZEN_BEFORE_EXPERIMENT_14_OUTCOME_COMPUTATION",
+  "research_question": "Can class-Mondrian calibration preserve normalization's reduction in ambiguity while repairing its non-stress undercoverage on the independent wearable cohort?",
+  "frozen_on": "2026-08-09",
+  "prerequisite": {
+    "experiment": "Meno-J Experiment 13: Independent Wearable-Dataset Replication",
+    "required_validation_status": "PASS",
+    "reuse_exact_subjects_features_and_folds": true
+  },
+  "design": {
+    "subjects": 33,
+    "repetitions_per_subject": 3,
+    "training_subjects_per_fold": 24,
+    "external_calibration_subjects_per_fold": 8,
+    "calibration_examples_per_class": 128,
+    "heldout_onboarding_windows_per_class": 8,
+    "heldout_test_windows_per_class": 8,
+    "alpha": 0.1,
+    "marginal_conformal_rank": 232,
+    "class_mondrian_rank": 117,
+    "arms": [
+      "raw_marginal",
+      "normalized_marginal",
+      "raw_class_mondrian",
+      "normalized_class_mondrian"
+    ],
+    "expected_fold_rows": 396
+  },
+  "fixed_model_and_representation": {
+    "classifier": "Experiment 13 fixed regularized binary LDA",
+    "raw_representation": "Experiment 13 raw 54-feature representation",
+    "normalized_representation": "Experiment 13 per-subject median/IQR normalization using heldout onboarding windows only",
+    "nonconformity_score": "one minus predicted probability for each candidate class",
+    "marginal_rule": "one pooled threshold from all 256 external calibration scores",
+    "class_mondrian_rule": "one threshold per true calibration class, each from 128 scores"
+  },
+  "primary_candidate": "normalized_class_mondrian",
+  "primary_comparators": [
+    "normalized_marginal",
+    "raw_marginal"
+  ],
+  "primary_pass_rule": {
+    "all_checks_required": true,
+    "checks": {
+      "mean_coverage_at_least_0_88": 0.88,
+      "each_class_coverage_at_least_0_88": 0.88,
+      "class_coverage_gap_at_most_0_05": 0.05,
+      "worst_subject_coverage_change_vs_normalized_marginal_at_least_minus_0_05": -0.05,
+      "full_set_frequency_reduction_vs_raw_marginal_at_least_0_05": 0.05,
+      "coverage_change_vs_normalized_marginal_nonnegative_in_both_protocol_versions": true,
+      "subject_nonnegative_coverage_change_fraction_vs_normalized_marginal_at_least_0_60": 0.6,
+      "empty_set_frequency_at_most_0_01": 0.01
+    }
+  },
+  "interpretation_contract": {
+    "pass": "Class-asymmetric calibration is a supported repair component, conditional on every safety and usefulness check.",
+    "average_only": "Class conditioning repairs aggregate or class coverage but not subject-level safety; retain class asymmetry as partial mechanism only.",
+    "fail": "Class conditioning does not explain the external normalization safety failure; move to subject-level reliability or distribution-shift mechanisms."
+  },
+  "guardrails": [
+    "Do not alter features, classifier, subjects, folds, onboarding windows, test windows, alpha, or score definition.",
+    "Do not tune thresholds after viewing Experiment 14 outcomes.",
+    "Do not use heldout test labels for normalization, model fitting, threshold estimation, or arm selection.",
+    "Do not promote aggregate coverage when class or subject safety fails.",
+    "Do not claim literature novelty from this within-project follow-up.",
+    "No LLM or API call is permitted or required."
+  ]
+}

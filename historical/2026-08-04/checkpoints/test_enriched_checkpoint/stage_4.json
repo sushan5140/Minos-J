@@ -1,0 +1,84 @@
+{
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Experiment 2 hypothesis 1",
+      "proposed_mechanism": "Original mechanism 1",
+      "core_assumption": "Assumption 1",
+      "knowledge_gap_addressed": "Gap 1",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Experiment 2 hypothesis 2",
+      "proposed_mechanism": "Original mechanism 2",
+      "core_assumption": "Assumption 2",
+      "knowledge_gap_addressed": "Gap 2",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Experiment 2 hypothesis 3",
+      "proposed_mechanism": "Original mechanism 3",
+      "core_assumption": "Assumption 3",
+      "knowledge_gap_addressed": "Gap 3",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Experiment 2 hypothesis 4",
+      "proposed_mechanism": "Original mechanism 4",
+      "core_assumption": "Assumption 4",
+      "knowledge_gap_addressed": "Gap 4",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Experiment 2 hypothesis 5",
+      "proposed_mechanism": "Original mechanism 5",
+      "core_assumption": "Assumption 5",
+      "knowledge_gap_addressed": "Gap 5",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Experiment 2 hypothesis 6",
+      "proposed_mechanism": "Original mechanism 6",
+      "core_assumption": "Assumption 6",
+      "knowledge_gap_addressed": "Gap 6",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Experiment 2 hypothesis 7",
+      "proposed_mechanism": "Original mechanism 7",
+      "core_assumption": "Assumption 7",
+      "knowledge_gap_addressed": "Gap 7",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Experiment 2 hypothesis 8",
+      "proposed_mechanism": "Original mechanism 8",
+      "core_assumption": "Assumption 8",
+      "knowledge_gap_addressed": "Gap 8",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Experiment 2 hypothesis 9",
+      "proposed_mechanism": "Original mechanism 9",
+      "core_assumption": "Assumption 9",
+      "knowledge_gap_addressed": "Gap 9",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Experiment 2 hypothesis 10",
+      "proposed_mechanism": "Original mechanism 10",
+      "core_assumption": "Assumption 10",
+      "knowledge_gap_addressed": "Gap 10",
+      "status": "SPECULATIVE"
+    }
+  ]
+}

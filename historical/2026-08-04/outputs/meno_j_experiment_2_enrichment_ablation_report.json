@@ -1,0 +1,166 @@
+{
+  "experiment_name": "Meno-J Experiment 2: Confounder Enrichment Ablation",
+  "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "comparisons": {
+    "Q1": {
+      "research_question": "Why does Mondrian conformal prediction show undercoverage for some physiological stress subjects in WESAD?",
+      "v2_baseline": {
+        "generated_count": 10,
+        "passed_count": 0,
+        "salvageable_count": 2,
+        "rejected_count": 8,
+        "pass_survival_rate": 0.0,
+        "salvageable_rate": 0.2,
+        "failed_checklist_fields": {
+          "confounders_identified": 10,
+          "effect_size_plausible": 10,
+          "mechanism_is_non_generic": 3,
+          "data_requirements_clear": 5
+        },
+        "stage_6_ran": false,
+        "stage_7_ran": false,
+        "red_flags": [],
+        "avg_nonpass_decision_reason_words": 35
+      },
+      "v3_enriched": {
+        "generated_count": 10,
+        "passed_count": 9,
+        "salvageable_count": 0,
+        "rejected_count": 1,
+        "pass_survival_rate": 0.9,
+        "salvageable_rate": 0.0,
+        "failed_checklist_fields": {
+          "confounders_identified": 0,
+          "effect_size_plausible": 0,
+          "mechanism_is_non_generic": 1,
+          "data_requirements_clear": 0
+        },
+        "stage_6_ran": true,
+        "stage_7_ran": true,
+        "red_flags": [],
+        "avg_nonpass_decision_reason_words": 27,
+        "enriched_count": 10,
+        "avg_confounders_per_hypothesis": 3.0,
+        "avg_control_variables_per_hypothesis": 3.0,
+        "avg_rival_explanations_per_hypothesis": 2.0,
+        "hypotheses_with_effect_size_expectation": 10
+      },
+      "improvement": {
+        "confounders_identified_failures_decreased": true,
+        "effect_size_plausible_failures_decreased": true,
+        "pass_count_increased": true,
+        "stage_6_and_stage_7_ran": true,
+        "nonpass_reasons_became_more_specific": false
+      }
+    },
+    "Q2": {
+      "research_question": "Why might conformal prediction fail to maintain stable coverage across different physiological signal segments?",
+      "v2_baseline": {
+        "generated_count": 10,
+        "passed_count": 0,
+        "salvageable_count": 10,
+        "rejected_count": 0,
+        "pass_survival_rate": 0.0,
+        "salvageable_rate": 1.0,
+        "failed_checklist_fields": {
+          "confounders_identified": 10,
+          "effect_size_plausible": 0,
+          "mechanism_is_non_generic": 9,
+          "data_requirements_clear": 0
+        },
+        "stage_6_ran": false,
+        "stage_7_ran": false,
+        "red_flags": [],
+        "avg_nonpass_decision_reason_words": 39.2
+      },
+      "v3_enriched": {
+        "generated_count": 10,
+        "passed_count": 7,
+        "salvageable_count": 0,
+        "rejected_count": 3,
+        "pass_survival_rate": 0.7,
+        "salvageable_rate": 0.0,
+        "failed_checklist_fields": {
+          "confounders_identified": 0,
+          "effect_size_plausible": 0,
+          "mechanism_is_non_generic": 3,
+          "data_requirements_clear": 0
+        },
+        "stage_6_ran": true,
+        "stage_7_ran": true,
+        "red_flags": [],
+        "avg_nonpass_decision_reason_words": 35,
+        "enriched_count": 10,
+        "avg_confounders_per_hypothesis": 6.6,
+        "avg_control_variables_per_hypothesis": 5.0,
+        "avg_rival_explanations_per_hypothesis": 4.0,
+        "hypotheses_with_effect_size_expectation": 10
+      },
+      "improvement": {
+        "confounders_identified_failures_decreased": true,
+        "effect_size_plausible_failures_decreased": false,
+        "pass_count_increased": true,
+        "stage_6_and_stage_7_ran": true,
+        "nonpass_reasons_became_more_specific": false
+      }
+    },
+    "Q3": {
+      "research_question": "What mechanisms could explain subject-level variation in wearable stress-detection uncertainty?",
+      "v2_baseline": {
+        "generated_count": 10,
+        "passed_count": 0,
+        "salvageable_count": 7,
+        "rejected_count": 3,
+        "pass_survival_rate": 0.0,
+        "salvageable_rate": 0.7,
+        "failed_checklist_fields": {
+          "confounders_identified": 10,
+          "effect_size_plausible": 0,
+          "mechanism_is_non_generic": 3,
+          "data_requirements_clear": 0
+        },
+        "stage_6_ran": false,
+        "stage_7_ran": false,
+        "red_flags": [],
+        "avg_nonpass_decision_reason_words": 16.4
+      },
+      "v3_enriched": {
+        "generated_count": 10,
+        "passed_count": 9,
+        "salvageable_count": 1,
+        "rejected_count": 0,
+        "pass_survival_rate": 0.9,
+        "salvageable_rate": 0.1,
+        "failed_checklist_fields": {
+          "confounders_identified": 0,
+          "effect_size_plausible": 0,
+          "mechanism_is_non_generic": 1,
+          "data_requirements_clear": 0
+        },
+        "stage_6_ran": true,
+        "stage_7_ran": true,
+        "red_flags": [],
+        "avg_nonpass_decision_reason_words": 44,
+        "enriched_count": 10,
+        "avg_confounders_per_hypothesis": 5.8,
+        "avg_control_variables_per_hypothesis": 5.5,
+        "avg_rival_explanations_per_hypothesis": 3.0,
+        "hypotheses_with_effect_size_expectation": 10
+      },
+      "improvement": {
+        "confounders_identified_failures_decreased": true,
+        "effect_size_plausible_failures_decreased": false,
+        "pass_count_increased": true,
+        "stage_6_and_stage_7_ran": true,
+        "nonpass_reasons_became_more_specific": true
+      }
+    }
+  },
+  "overall_success_criteria": {
+    "confounders_identified_failures_decreased": true,
+    "effect_size_plausible_failures_decreased": true,
+    "pass_count_increased": true,
+    "stage_6_and_stage_7_ran_for_at_least_one_hypothesis": true,
+    "nonpass_reasons_became_more_specific": true
+  }
+}

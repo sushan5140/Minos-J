@@ -1,0 +1,90 @@
+{
+  "experiment_name": "Meno-J Experiment 10: Calibration Onboarding and Compatibility Bridge",
+  "protocol_status": "FROZEN_BEFORE_EXPERIMENT_10_OUTCOME_ANALYSIS",
+  "frozen_date": "2026-08-09",
+  "prerequisites": {
+    "experiment_9_integrity": "outputs/meno_j_experiment_9_wesad_integrity.json must have status PASS",
+    "experiment_9_validation": "outputs/meno_j_experiment_9_validation.json must have status PASS",
+    "feature_checkpoints": "Reuse all 15 hash-validated Experiment 9 feature checkpoints without re-extracting raw WESAD signals."
+  },
+  "research_questions": [
+    "How does coverage and prediction-set informativeness change as a previously unseen WESAD subject supplies limited labeled calibration windows?",
+    "Can unlabeled physiological compatibility identify external calibration subjects that serve a held-out subject better than dissimilar calibration subjects?",
+    "Do S2 and S4 recover under personal calibration, or remain difficult after calibration mismatch is reduced?"
+  ],
+  "data_contract": {
+    "subjects": ["S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10", "S11", "S13", "S14", "S15", "S16", "S17"],
+    "feature_version": "wesad_chest_60s_v1",
+    "window_seconds": 60,
+    "overlap": 0.0,
+    "labels": {"1": "baseline", "2": "stress", "3": "amusement"},
+    "raw_dataset_mutated": false
+  },
+  "fold_contract": {
+    "test_unit": "one held-out subject",
+    "repetitions_per_test_subject": 3,
+    "training_subjects_per_fold": 10,
+    "external_calibration_subjects_per_fold": 4,
+    "classifier": "The Experiment 9 NumPy regularized LDA, fit only on the 10 training subjects.",
+    "score": "inverse_probability_score",
+    "target_coverage": 0.9,
+    "alpha": 0.1,
+    "personal_test_windows_per_subject": {"baseline": 8, "stress": 4, "amusement": 3},
+    "personal_test_set": "Fifteen label-stratified, deterministic held-out windows per subject and repetition; never used for compatibility estimation or calibration.",
+    "onboarding_pool": "All remaining held-out-subject windows. Labels are hidden from compatibility estimation and used only when a window enters a personal calibration schedule."
+  },
+  "personal_calibration_schedule": {
+    "nested_labeled_window_counts": [3, 6, 9, 12],
+    "class_allocations": {
+      "3": {"baseline": 1, "stress": 1, "amusement": 1},
+      "6": {"baseline": 3, "stress": 2, "amusement": 1},
+      "9": {"baseline": 4, "stress": 3, "amusement": 2},
+      "12": {"baseline": 6, "stress": 4, "amusement": 2}
+    },
+    "small_sample_rule": "At alpha=0.1, fewer than nine personal scores cannot produce a finite split-conformal threshold. The honest personal-only result is therefore an infinite threshold and a full three-label prediction set; it must not be described as an informative repair.",
+    "model_updates": false
+  },
+  "compatibility_contract": {
+    "personal_information_used": "Unlabeled features from the held-out subject onboarding pool only.",
+    "representation": "Feature vectors standardized using training-subject mean and scale; each subject represented by its standardized onboarding centroid.",
+    "distance": "Euclidean centroid distance divided by square root of feature count.",
+    "external_all4": "All four external calibration subjects.",
+    "external_nearest2": "The two external calibration subjects with smallest compatibility distance.",
+    "external_farthest2": "The two external calibration subjects with largest compatibility distance; negative control.",
+    "no_test_labels_for_selection": true
+  },
+  "reported_outcomes": [
+    "coverage",
+    "coverage_by_class",
+    "average_prediction_set_size",
+    "full_set_frequency",
+    "empty_set_frequency",
+    "finite_threshold",
+    "base_classifier_accuracy",
+    "base_classifier_log_loss",
+    "feature_shift_distance",
+    "subject-level mean coverage",
+    "worst-subject mean coverage",
+    "paired subject bootstrap intervals"
+  ],
+  "decision_rules": {
+    "general_personal_repair": "At k=12 versus external_all4, mean subject coverage increases by at least 0.05, worst-subject coverage increases by at least 0.10, and mean full-set frequency increases by no more than 0.20.",
+    "s2_s4_personal_repair": "For both S2 and S4, k=12 coverage increases by at least 0.10, reaches at least 0.80, and full-set frequency increases by no more than 0.20 versus external_all4.",
+    "compatibility_support": "external_nearest2 improves mean robustness loss by at least 0.03 versus external_farthest2, where loss is absolute deviation from 0.90 coverage plus 0.25 times full-set frequency.",
+    "persistent_difficulty": "S2 or S4 remains below 0.80 mean coverage at k=12 with a finite threshold, or gains coverage only with a full-set-frequency increase above 0.20."
+  },
+  "interpretation_guardrails": [
+    "S2 and S4 were selected after Experiment 9 and are exploratory case studies, not an independent confirmation cohort.",
+    "Personal calibration changes the uncertainty threshold but does not retrain or personalize the classifier.",
+    "Compatibility associations are not causal physiological explanations.",
+    "No claim of literature novelty is made without a separate validated literature review.",
+    "Coverage improvements must be interpreted jointly with prediction-set informativeness."
+  ],
+  "safety": {
+    "model_call_used": false,
+    "api_key_required": false,
+    "raw_wesad_pickle_loading_required": false,
+    "utf8_outputs": true,
+    "independent_exact_replay_required": true
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "extension_name": "Historical Calibration Extension 2",
+  "trigger": "The case is a distributed network of complementary component jumps; no single arrow or successful intervention carries the whole explanatory transition.",
+  "prior_amendment_status": [
+    {
+      "amendment_id": "A1_RETENTION_ACCOUNTING",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Sanitation success can be recovered and re-explained without retaining foul air as the agent."
+    },
+    {
+      "amendment_id": "A2_COMPONENT_SCOPING",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Snow's route, Semmelweis's intervention, Pasteur's ontology, and Koch's agent-disease method need separate verdicts."
+    },
+    {
+      "amendment_id": "A3_COMPRESSION_DIMENSIONS",
+      "status": "PASS",
+      "finding": "Microbial specificity reduced causal ambiguity while increasing laboratory and disease-by-disease complexity."
+    },
+    {
+      "amendment_id": "A4_APPROXIMATION_BOUNDARY",
+      "status": "PASS_BUT_REQUIRES_DOMAIN_EXTENSION",
+      "finding": "Koch-style evidence is powerful within a domain but not universal across carriers, viruses, host variation, or polymicrobial disease."
+    },
+    {
+      "amendment_id": "A5_UNDERDETERMINATION",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Effective route/intervention evidence often preceded and underdetermined the agent and complete mechanism."
+    }
+  ],
+  "extensions": [
+    {
+      "extension_id": "A6_DISTRIBUTED_LINEAGE_GRAPH",
+      "new_rule": "Represent a proposed J-jump as a lineage graph when route, intervention, ontology, method, and mechanism arise in different agents or periods. Credit only the component and evidence actually supplied by each node.",
+      "guardrail": "Do not collapse a distributed discovery into a single-hero narrative or transfer later evidence backward to an earlier node.",
+      "sources": [
+        "B01",
+        "B03",
+        "B04",
+        "B06",
+        "B12"
+      ]
+    },
+    {
+      "extension_id": "A7_INTERVENTION_MECHANISM_DECOUPLING",
+      "new_rule": "Record separately: intervention effectiveness, transmission route, causal agent, production mechanism, and full etiology. Success at one level raises but does not automatically satisfy another level's warrant.",
+      "guardrail": "An effective action is not by itself proof of the action's proposed mechanism or of a complete cause set.",
+      "sources": [
+        "B01",
+        "B03",
+        "B09",
+        "B10",
+        "B11"
+      ]
+    },
+    {
+      "extension_id": "A8_EVIDENCE_TRIANGULATION_LADDER",
+      "new_rule": "For causal J-jumps, map which independent evidence modes support the claim: comparative pattern, intervention, localization, visualization, isolation/characterization, reproduction, re-identification, dose/host response, and alternative elimination.",
+      "guardrail": "No fixed rung is universal, but an association-only or rhetoric-only candidate cannot be promoted.",
+      "sources": [
+        "B06",
+        "B07",
+        "B10",
+        "B13",
+        "B14"
+      ]
+    },
+    {
+      "extension_id": "A9_RELATIONAL_CAUSAL_SCOPE",
+      "new_rule": "State whether the causal claim concerns a necessary agent, sufficient agent, contributing cause, route, virulence factor, susceptible host, or environment. Do not use a generic cause label across these roles.",
+      "guardrail": "A microbe's presence and a disease outcome must not be modeled as one inevitable one-to-one relation.",
+      "sources": [
+        "B13",
+        "B14"
+      ]
+    },
+    {
+      "extension_id": "A10_DISCOVERY_UPTAKE_OUTCOME_SEPARATION",
+      "new_rule": "Track conceptual discovery, evidential warrant, community uptake, implementation, and health outcome as separate timelines.",
+      "guardrail": "Later acceptance or beneficial policy cannot be back-projected as evidence available to the original proposal, and rejection alone does not prove a proposal was ahead of its time.",
+      "sources": [
+        "B09",
+        "B11",
+        "B12"
+      ]
+    }
+  ],
+  "revised_j_jump_object": "A component-scoped node or linked subgraph with declared lineage, evidence available at the time, retention accounting, causal level, approximation/domain boundary, rivals, and new failure conditions."
+}
