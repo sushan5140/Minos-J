@@ -1,0 +1,244 @@
+{
+  "confounder_rival_builds": [
+    {
+      "hypothesis_id": "H1",
+      "possible_confounders": [
+        "Baseline cardiovascular fitness (VO2max)",
+        "Medication affecting autonomic function (beta-blockers, anticholinergics)",
+        "Age-related autonomic decline",
+        "Stressor type (TSST vs. fun stressor)",
+        "Time of day of recording"
+      ],
+      "control_variables": [
+        "Baseline RMSSD (5-min resting)",
+        "Age group (decade bins)",
+        "Sex",
+        "Medication status (binary)",
+        "Stressor condition indicator"
+      ],
+      "boring_rival_explanations": [
+        "Undercoverage is driven by small calibration set size per stratum, not reactivity per se; high-reactivity subjects happen to fall in small strata.",
+        "The conformity score function (softmax margin) is globally miscalibrated for high-arousal states, not subject-specific."
+      ],
+      "rival_prediction": "If calibration set size per stratum is doubled via data augmentation, undercoverage for high-reactivity subjects disappears entirely.",
+      "distinguishing_condition": "Undercoverage persists for high-reactivity subjects (>2 SD above stratum mean EDA peak) even when stratum calibration size is increased to >100 via bootstrap resampling, while low-reactivity subjects achieve nominal coverage at n=30.",
+      "confounder_rival_notes": "Test by simulating increased calibration size via stratified bootstrap. If rival holds, coverage deficit should vanish with larger n; if mechanism holds, deficit remains due to distributional shift."
+    },
+    {
+      "hypothesis_id": "H2",
+      "possible_confounders": [
+        "Sensor band tightness (self-reported or technician-rated)",
+        "Skin hair density at wrist site",
+        "Ambient temperature (affects sweat and motion)",
+        "Activity type during stress (speaking vs. mental arithmetic)",
+        "Baseline skin conductance level"
+      ],
+      "control_variables": [
+        "ACC vector magnitude during stress (g)",
+        "BVP signal quality index (SQI)",
+        "EDA-ACC cross-correlation lag-0",
+        "Subject-specific motion-artifact coupling coefficient",
+        "Calibration period ACC magnitude (baseline)"
+      ],
+      "boring_rival_explanations": [
+        "Motion artifacts affect all subjects equally during high-stress periods; the feature extractor is simply not robust to motion, not subject-specific.",
+        "Coverage drop is due to stressor intensity correlating with motion, not subject-specific coupling."
+      ],
+      "rival_prediction": "All subjects show similar coverage degradation when test-period ACC magnitude exceeds a fixed threshold (e.g., >90th percentile of population baseline), regardless of individual coupling coefficients.",
+      "distinguishing_condition": "Coverage deficit correlates strongly with subject-specific motion-artifact coupling coefficient (slope of SQI on ACC during stress) but not with raw ACC magnitude alone; subjects with high ACC but low coupling maintain coverage.",
+      "confounder_rival_notes": "Compute coupling coefficient per subject via mixed model: SQI ~ ACC + (1|subject) during stress. Stratify by coupling tertiles and test ACC-coverage relationship within each."
+    },
+    {
+      "hypothesis_id": "H3",
+      "possible_confounders": [
+        "Sliding window overlap percentage (induces artificial autocorrelation)",
+        "Inter-trial interval duration (shorter intervals → incomplete recovery)",
+        "Number of stress-rest cycles per subject",
+        "Conformity score function (margin vs. probability)",
+        "Baseline autonomic tone (affects recovery speed)"
+      ],
+      "control_variables": [
+        "Window step size (seconds)",
+        "Inter-trial interval (seconds)",
+        "EDA recovery time constant (tau_EDA)",
+        "HRV recovery time constant (tau_HRV)",
+        "Conformity score lag-1 autocorrelation (rho_1)"
+      ],
+      "boring_rival_explanations": [
+        "Observed dependence is entirely due to overlapping sliding windows; using non-overlapping windows eliminates the coverage deficit.",
+        "The effective sample size correction (n_eff) is unnecessary because Mondrian's exchangeability assumption holds for block-exchangeable sequences."
+      ],
+      "rival_prediction": "Switching to non-overlapping windows (step = window length) with inter-trial intervals >5×tau eliminates coverage deficit for all subjects, including slow recoverers.",
+      "distinguishing_condition": "Slow-recovery subjects (tau_EDA >60s) still show coverage deficit with non-overlapping windows and sufficient inter-trial intervals, while fast recoverers achieve nominal coverage; block bootstrap calibration restores coverage only for slow recoverers.",
+      "confounder_rival_notes": "Recompute conformity scores with non-overlapping windows. Compare coverage before/after. Fit block bootstrap with block length = 2×tau. If mechanism holds, block bootstrap fixes coverage for slow recoverers only."
+    },
+    {
+      "hypothesis_id": "H4",
+      "possible_confounders": [
+        "Alexithymia (difficulty identifying feelings)",
+        "Social desirability bias",
+        "Cultural differences in stress expression",
+        "Language proficiency for VAS scale",
+        "Prior exposure to similar stressors"
+      ],
+      "control_variables": [
+        "Physiological arousal index (PC1 of EDA peak, HRV drop, HR increase)",
+        "Self-report VAS stress rating (0-10)",
+        "Label bias score (VAS - predicted arousal, standardized)",
+        "Alexithymia score (TAS-20 if available)",
+        "Social desirability score (Marlowe-Crowne if available)"
+      ],
+      "boring_rival_explanations": [
+        "Self-report labels are randomly noisy (classical measurement error), not systematically biased; undercoverage stems from classifier error on noisy labels.",
+        "Under-reporters have genuinely lower physiological arousal; the 'bias' reflects true inter-subject variability in stress response."
+      ],
+      "rival_prediction": "Relabeling calibration samples using a physiological arousal threshold (e.g., top 30% of arousal index = 'stress') does not improve coverage for under-reporters compared to using original labels.",
+      "distinguishing_condition": "Coverage for strong under-reporters (label bias < -1 SD) increases by >15 percentage points after physiological relabeling, while coverage for accurate reporters (|bias| < 0.5 SD) changes by <3 points.",
+      "confounder_rival_notes": "WESAD has VAS after each condition. Compute arousal index from EDA/HRV/HR during stress. Define physiological label: arousal >75th percentile = stress. Retrain/calibrate with new labels and compare coverage per bias group."
+    },
+    {
+      "hypothesis_id": "H5",
+      "possible_confounders": [
+        "Age (continuous, not just age group)",
+        "Cardiovascular fitness (VO2max or resting HR)",
+        "Medication (beta-blockers, SSRIs)",
+        "Ethnicity/ancestry (affects baseline HRV)",
+        "Smoking status"
+      ],
+      "control_variables": [
+        "Baseline RMSSD (ms, 5-min rest)",
+        "Baroreflex sensitivity (BRS, ms/mmHg)",
+        "Demographic stratum (age group × sex)",
+        "Physiological phenotype cluster (k-means on baseline features)",
+        "Medication status"
+      ],
+      "boring_rival_explanations": [
+        "Phenotype extremes are simply outliers with poor model fit; removing them yields nominal coverage for remaining subjects.",
+        "Continuous phenotypes are redundant with demographic strata; adding them does not improve exchangeability."
+      ],
+      "rival_prediction": "Data-driven physiological clustering (k-means on baseline HRV, BRS, HR) yields strata with equivalent coverage to demographic stratification; no reduction in coverage deficit for phenotype extremes.",
+      "distinguishing_condition": "Physiological clustering reduces coverage deficit for subjects >2 SD from demographic stratum centroid on baseline HRV by >50% compared to demographic strata, while maintaining coverage for central subjects.",
+      "confounder_rival_notes": "Compute baseline HRV/BRS from WESAD rest period. Assign demographic strata (age median split × sex). Compute coverage per HRV quantile within strata. Test k-means (k=4-6) on [HRV, BRS, HR] for alternative strata. Compare coverage distributions."
+    },
+    {
+      "hypothesis_id": "H6",
+      "possible_confounders": [
+        "Electrode type (dry vs. gel, manufacturer)",
+        "Skin preparation (alcohol wipe vs. none)",
+        "Ambient humidity and temperature",
+        "Subject hydration level",
+        "Recording duration (WESAD ~2 hours but varies)"
+      ],
+      "control_variables": [
+        "Baseline skin conductance level (SCL, µS)",
+        "SCL drift rate (µS/min, linear slope over recording)",
+        "Mean ACC during recording (proxy for movement-induced electrode shift)",
+        "Room temperature (if logged)",
+        "Time since electrode attachment"
+      ],
+      "boring_rival_explanations": [
+        "SCL drift is random and non-systematic; conformity score drift is due to physiological adaptation, not sensor degradation.",
+        "All subjects experience similar drift; coverage decreases uniformly over time, not selectively for high-sweat subjects."
+      ],
+      "rival_prediction": "Detrending conformity scores (subtracting linear time trend) does not improve coverage for high baseline SCL subjects; early vs. late coverage gap persists.",
+      "distinguishing_condition": "Subjects with baseline SCL >0.5 µS show >10% coverage drop from early (first 30%) to late (last 30%) test windows; detrending conformity scores restores late-window coverage to within 3% of early-window coverage for these subjects, while low-SCL subjects show <2% change.",
+      "confounder_rival_notes": "WESAD EDA at 4 Hz. Compute SCL per 1-min window, fit linear drift. Split test windows early/late. Fit conformity score ~ time per subject. Test coverage before/after subtracting subject-specific time trend."
+    },
+    {
+      "hypothesis_id": "H7",
+      "possible_confounders": [
+        "Medication affecting cardiovascular physiology (beta-blockers, calcium channel blockers)",
+        "Undiagnosed arrhythmia or autonomic neuropathy",
+        "Age-related feature distribution shift",
+        "Feature extraction pipeline differences (e.g., HRV time vs. frequency domain)",
+        "Classifier training set composition (class balance, subject overlap)"
+      ],
+      "control_variables": [
+        "Feature space density (mean 5-NN distance in training feature space)",
+        "Subject-level Expected Calibration Error (ECE) on calibration set",
+        "Medication status (binary)",
+        "Health screening flags (arrhythmia, hypertension)",
+        "Conformity score type (softmax margin vs. temperature-scaled)"
+      ],
+      "boring_rival_explanations": [
+        "The classifier is globally miscalibrated (high ECE for all subjects); out-of-distribution subjects are not uniquely affected.",
+        "Low feature density subjects have higher coverage because they are 'easier' to classify (distinctive patterns), not harder."
+      ],
+      "rival_prediction": "Temperature scaling (learned on calibration set) eliminates coverage deficit uniformly across all feature density quantiles.",
+      "distinguishing_condition": "Temperature scaling reduces coverage deficit to <2% for low-density subjects (feature density <5th percentile) but has minimal effect (<1% change) for high-density subjects; raw softmax margin shows >15% deficit for low-density vs. <3% for high-density.",
+      "confounder_rival_notes": "Extract WESAD stress classifier features. Compute 5-NN density in training feature space. Estimate per-subject ECE on calibration. Apply temperature scaling (single T learned on calibration). Compare coverage per density bin."
+    },
+    {
+      "hypothesis_id": "H8",
+      "possible_confounders": [
+        "Sleep duration and quality prior to recording",
+        "Caffeine/nicotine intake before session",
+        "Chronotype (morningness-eveningness)",
+        "Time since last meal",
+        "Season/daylight length (affects circadian phase)"
+      ],
+      "control_variables": [
+        "Recording start time (hours from 7 AM)",
+        "Hours from habitual wake time (estimated from sleep diary or actigraphy)",
+        "Chronotype score (MEQ if available)",
+        "Caffeine intake (binary, self-report)",
+        "Stress reactivity (EDA peak during TSST)"
+      ],
+      "boring_rival_explanations": [
+        "Time-of-day effects are due to fatigue accumulation (hours awake), not circadian biology; coverage declines monotonically with time awake.",
+        "Morning vs. afternoon differences reflect stressor order effects (TSST always first/last), not circadian phase."
+      ],
+      "rival_prediction": "Coverage varies linearly with hours since waking (fatigue), not sinusoidally with circadian phase; adding 'hours awake' as a stratification covariate eliminates the time-of-day coverage pattern.",
+      "distinguishing_condition": "Coverage shows a significant sinusoidal component (p<0.05, cosinor analysis) with nadir at ~16:00 (cortisol trough) after controlling for hours awake; adding circadian phase (estimated from temperature minimum) as a stratum covariate improves coverage more than adding hours awake.",
+      "confounder_rival_notes": "WESAD timestamps give recording start. Estimate habitual wake at 7 AM. Compute hours awake at stressor. Fit cosinor model: coverage ~ cos(2π*t/24) + sin(2π*t/24) + hours_awake. Test significance of circadian terms."
+    },
+    {
+      "hypothesis_id": "H9",
+      "possible_confounders": [
+        "Stratum definition granularity (age bins, sex only vs. adding BMI)",
+        "Calibration set composition (proportion of stress vs. non-stress)",
+        "Feature space dimensionality (curse of dimensionality in small strata)",
+        "Dependence within calibration set (violates i.i.d. assumption)",
+        "Outlier subjects in small strata distorting quantile estimation"
+      ],
+      "control_variables": [
+        "Stratum size (n_calibration)",
+        "Physiological distinctiveness (Mahalanobis distance to stratum centroid)",
+        "Effective calibration size (n_eff from H3 autocorrelation correction)",
+        "Stratum pooling indicator (pooled vs. unpooled)",
+        "Nominal coverage level (90%)"
+      ],
+      "boring_rival_explanations": [
+        "Undercoverage in small strata is due to high physiological distinctiveness of subjects in those strata, not stratum size per se; large strata with distinctive subjects show same deficit.",
+        "The 1/(n+1) discretization is negligible; the real issue is that small strata have higher variance in conformity score distribution estimation."
+      ],
+      "rival_prediction": "Pooling small strata (n<30) with the nearest larger stratum (by centroid distance) does not improve coverage for distinctive subjects; coverage deficit is driven by distinctiveness, not n.",
+      "distinguishing_condition": "For subjects with distinctiveness >2 SD in strata with n<20, pooling with nearest stratum (n>50) raises empirical coverage from <80% to >88% (nominal 90%), while distinctive subjects in large strata (n>50) already have >88% coverage without pooling.",
+      "confounder_rival_notes": "Compute stratum sizes from WESAD demographic splits. Calculate Mahalanobis distance using calibration feature covariance. Simulate pooling: merge strata with n<20 to nearest stratum by centroid distance. Bootstrap coverage (1000 reps) for distinctive subjects pre/post pooling."
+    },
+    {
+      "hypothesis_id": "H10",
+      "possible_confounders": [
+        "Personality traits (neuroticism, extraversion)",
+        "Cultural background (affects emotion expression)",
+        "Prior trauma or stress exposure",
+        "Stressor type (social-evaluative vs. cognitive)",
+        "Baseline affective state (PANAS pre-stress)"
+      ],
+      "control_variables": [
+        "Emotion Regulation Questionnaire (ERQ) reappraisal/suppression scores (if available)",
+        "Autonomic pathway index (cardiac: HR/HRV vs. vascular: EDA/SCL ratio during stress)",
+        "Physiological mode assignment (GMM cluster on stress features)",
+        "Stressor condition (TSST vs. fun)",
+        "Baseline PANAS negative affect"
+      ],
+      "boring_rival_explanations": [
+        "Physiological heterogeneity within 'stress' label is random noise; clustering finds spurious modes that do not replicate.",
+        "Different physiological patterns reflect different stressor intensities, not coping strategies; TSST elicits vascular-dominant, fun stressor elicits cardiac-dominant."
+      ],
+      "rival_prediction": "Gaussian mixture modeling on stress-period physiological features yields a single component (BIC favors k=1); coverage deficit is unrelated to cluster membership.",
+      "distinguishing_condition": "GMM on stress features (EDA peak, HRV drop, HR increase, SCL) selects k=2 components (BIC) with silhouette >0.5; subjects in the minority mode (n<30% of stratum) show >15% coverage deficit vs. majority mode; mode membership predicts ERQ suppression score (r>0.4) if ERQ available, or predicts coverage deficit in held-out data.",
+      "confounder_rival_notes": "WESAD lacks ERQ. Use physiological clustering as proxy: fit GMM on stress-window features (standardized). Test if mode membership predicts coverage deficit. If ERQ available in future data, test correlation. Stressor type (TSST vs. fun) must be controlled."
+    }
+  ]
+}

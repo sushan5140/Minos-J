@@ -1,0 +1,84 @@
+{
+  "rival_prediction_matrix": [
+    {
+      "hypothesis_id": "H1",
+      "meno_j_hypothesis": "Inter-subject variability in autonomic nervous system reactivity causes non-exchangeable conformity scores for high-reactivity individuals.",
+      "meno_j_prediction": "Positive correlation between SRI and undercoverage magnitude (higher SRI → lower coverage)",
+      "rival_explanation": "Small calibration set size per subject causes high-variance quantile estimates that happen to correlate with SRI by chance.",
+      "rival_prediction": "Undercoverage magnitude correlates with per-subject calibration sample count (n_calib) rather than SRI; when n_calib is matched across SRI tertiles, the SRI-undercoverage correlation disappears.",
+      "distinguishing_test": "Stratify subjects by SRI tertile and downsample calibration sets to equal size per tertile. Compute Spearman correlation between SRI and undercoverage magnitude after downsampling.",
+      "what_result_supports_meno_j": "SRI-undercoverage correlation persists after downsampling (Spearman p < 0.05).",
+      "what_result_supports_rival": "SRI-undercoverage correlation vanishes after downsampling (Spearman p > 0.2)."
+    },
+    {
+      "hypothesis_id": "H2",
+      "meno_j_hypothesis": "Wrist-worn sensor displacement during movement artifacts creates subject-specific non-stationarity in PPG and ACC signals that degrades calibration coverage.",
+      "meno_j_prediction": "Positive correlation between MAI and stress-class undercoverage; negative correlation between SQI and coverage",
+      "rival_explanation": "General PPG/EDA signal quality degradation (low SQI) reduces coverage uniformly across all subjects, not specifically those with high movement.",
+      "rival_prediction": "Stress-class coverage correlates with overall SQI (median across condition) but not with MAI specifically; subjects with low SQI from non-movement sources show equivalent undercoverage.",
+      "distinguishing_test": "Regress stress coverage on MAI and SQI simultaneously using multiple linear regression with covariates (wrist circumference, skin type, ambient temperature, strap tightness, baseline EDA tonic).",
+      "what_result_supports_meno_j": "MAI coefficient remains significant (p < 0.05) after controlling for SQI.",
+      "what_result_supports_rival": "Only SQI coefficient is significant (p < 0.05) and MAI coefficient is non-significant (p > 0.2)."
+    },
+    {
+      "hypothesis_id": "H4",
+      "meno_j_hypothesis": "Self-report labeling errors in the WESAD protocol disproportionately affect subjects with low interoceptive awareness, creating mislabeled calibration points.",
+      "meno_j_prediction": "Negative correlation between IA and stress undercoverage; positive correlation between label-physiology discrepancy and undercoverage",
+      "rival_explanation": "Random label noise at rate ~10-15% (typical for self-report) degrades conformal coverage uniformly, independent of interoceptive accuracy.",
+      "rival_prediction": "Injecting synthetic label noise at the observed discrepancy rate reduces coverage equally for all subjects; coverage does not correlate with individual label-physiology discrepancy after controlling for overall noise rate.",
+      "distinguishing_test": "Simulate mislabeling by flipping labels for windows where |self-report - PSI| > threshold. Measure coverage drop per subject. Compare to coverage drop from uniform random mislabeling at same global rate using mixed-effects model.",
+      "what_result_supports_meno_j": "Coverage drop correlates with subject's actual discrepancy (p < 0.05) beyond synthetic noise prediction.",
+      "what_result_supports_rival": "Synthetic noise alone explains >80% of coverage variance (R² > 0.8) and individual discrepancy adds no predictive power (p > 0.2)."
+    },
+    {
+      "hypothesis_id": "H5",
+      "meno_j_hypothesis": "Mondrian's fixed stratification by protocol-defined conditions ignores continuous stress intensity gradients that vary within-condition across subjects.",
+      "meno_j_prediction": "Positive correlation between WSI (or trait anxiety) and stress-class conformity score shift; negative correlation with coverage",
+      "rival_explanation": "Any additional stratification variable (even random) improves coverage by reducing stratum size and quantile variance.",
+      "rival_prediction": "Re-stratifying by any continuous variable (e.g., random noise, baseline HR) improves stress coverage equally; WSI-based stratification provides no specific advantage over arbitrary stratification.",
+      "distinguishing_test": "Compare stress-class coverage under three stratification schemes: (1) protocol label only, (2) WSI tertile × protocol label, (3) random continuous variable tertile × protocol label. Use paired bootstrap test (10,000 resamples) for coverage differences.",
+      "what_result_supports_meno_j": "WSI-based stratification (scheme 2) improves coverage significantly more than random-variable stratification (scheme 3) (paired bootstrap p < 0.05).",
+      "what_result_supports_rival": "WSI-based and random-variable stratification yield equivalent coverage improvement (paired bootstrap p > 0.2)."
+    },
+    {
+      "hypothesis_id": "H6",
+      "meno_j_hypothesis": "Subject-specific circadian phase at recording time modulates baseline autonomic tone, shifting feature distributions between calibration and test sets for evening-recorded subjects.",
+      "meno_j_prediction": "Evening-recorded subjects (after 14:00) show lower stress coverage; positive correlation between recording time and baseline sympathetic tone",
+      "rival_explanation": "Time-of-day effects are actually due to cumulative fatigue/protocol order: later recordings have more prior conditions, causing physiological drift.",
+      "rival_prediction": "Stress coverage correlates with session duration / number of prior conditions (fatigue) rather than clock time; when controlling for fatigue, recording time has no predictive power.",
+      "distinguishing_test": "Regress stress coverage on recording time (continuous) and session duration (minutes from start to TSST) simultaneously using multiple linear regression with covariates (sleep duration, sleep quality, chronotype, caffeine intake, ambient light, session order).",
+      "what_result_supports_meno_j": "Recording time coefficient remains significant (p < 0.05) after controlling for session duration.",
+      "what_result_supports_rival": "Only session duration coefficient is significant (p < 0.05) and recording time coefficient is non-significant (p > 0.2)."
+    },
+    {
+      "hypothesis_id": "H7",
+      "meno_j_hypothesis": "Non-linear feature interactions in high-dimensional physiological space create subject-specific conformity score distributions that Mondrian's marginal stratification cannot capture.",
+      "meno_j_prediction": "Subjects with high interaction weight magnitude show larger calibration-test conformity score KL divergence and lower coverage",
+      "rival_explanation": "Curse of dimensionality: high-dimensional feature space causes sparse calibration coverage for all subjects, not specifically those with rare interaction profiles.",
+      "rival_prediction": "Applying PCA to reduce to 3 dimensions before computing conformity scores improves coverage as much as interaction-aware stratification; the specific interaction structure is irrelevant.",
+      "distinguishing_test": "Compare stress-class coverage under three conformity score constructions: (1) original 26 features, (2) PCA-3D features, (3) interaction-aware stratification (k-means on interaction features, k=4). Use paired bootstrap test (10,000 resamples).",
+      "what_result_supports_meno_j": "Interaction-aware stratification (scheme 3) outperforms PCA-3D (scheme 2) significantly (paired bootstrap p < 0.05).",
+      "what_result_supports_rival": "PCA-3D and interaction-aware stratification yield equivalent coverage (paired bootstrap p > 0.2)."
+    },
+    {
+      "hypothesis_id": "H8",
+      "meno_j_hypothesis": "Calibration set size per stratum is insufficient for subjects with rare physiological response phenotypes, leading to high-variance quantile estimates.",
+      "meno_j_prediction": "Negative correlation between effective calibration size and coverage; rare phenotypes (frequency < 15%) show largest quantile bias and undercoverage",
+      "rival_explanation": "Small total calibration size (~210 windows) causes high quantile variance for all subjects; rare phenotypes just happen to have fewer subjects by chance.",
+      "rival_prediction": "Coverage correlates with per-subject calibration window count (n_calib_subject) regardless of phenotype; rare-phenotype subjects with matched n_calib show same coverage as common-phenotype subjects.",
+      "distinguishing_test": "Match rare-phenotype and common-phenotype subjects on effective calibration size by subsampling common-phenotype calibration windows. Compare coverage between matched groups using permutation test.",
+      "what_result_supports_meno_j": "Rare-phenotype group still shows lower coverage after matching (permutation test p < 0.05).",
+      "what_result_supports_rival": "Coverage equalizes between matched groups (permutation test p > 0.2)."
+    },
+    {
+      "hypothesis_id": "H9",
+      "meno_j_hypothesis": "Temperature-induced sensor drift affects EDA measurements differently across subjects due to individual thermoregulatory responses to stress.",
+      "meno_j_prediction": "Subjects with |ΔT| > 0.5°C show lower stress coverage; ΔT correlates with EDA baseline shift magnitude",
+      "rival_explanation": "EDA baseline drift is caused by sensor aging/battery depletion over session duration, not temperature change.",
+      "rival_prediction": "EDA baseline shift (ΔEDA_tonic) correlates with sensor age / session duration rather than skin temperature change (ΔT); temperature normalization does not improve coverage beyond session-time detrending.",
+      "distinguishing_test": "Regress ΔEDA_tonic on ΔT and session duration simultaneously. Apply temperature correction (k=0.07/°C) and session-time detrending; compare coverage improvement via paired bootstrap.",
+      "what_result_supports_meno_j": "ΔT coefficient remains significant (p < 0.05) after controlling for session duration, and temperature correction improves coverage more than detrending.",
+      "what_result_supports_rival": "Only session duration coefficient is significant (p < 0.05) and ΔT coefficient is non-significant (p > 0.2), and temperature correction does not improve coverage beyond detrending."
+    }
+  ]
+}

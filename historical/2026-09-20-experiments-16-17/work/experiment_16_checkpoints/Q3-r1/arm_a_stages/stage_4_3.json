@@ -1,0 +1,167 @@
+{
+  "statistical_testability_builds": [
+    {
+      "hypothesis_id": "H1",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Prior work shows moderate correlations (r ≈ 0.3–0.5) between resting HRV and stress reactivity; sensor noise floors are well-characterized for commercial PPG/EDA, allowing power analysis.",
+      "minimum_data_needed": [
+        "Resting 5-min supine RMSSD and HF-HRV for each subject",
+        "Phasic EDA reactivity (peak amplitude, SCR frequency) to standardized lab stressor (e.g., TSST)",
+        "Continuous wearable PPG/EDA during stressor with synchronized ground-truth stress labels",
+        "Per-subject sensor noise floor estimates (PPG SQI at rest, EDA baseline noise variance)",
+        "Subject-level stress classifier predictive entropy and false negative rate"
+      ],
+      "testable_prediction": "Subjects in the lowest tertile of resting RMSSD will show ≥2× higher false negative rate and ≥1.5× higher predictive entropy than subjects in the highest tertile, after controlling for age, sex, and fitness.",
+      "failure_condition": "No significant difference in false negative rate or predictive entropy across RMSSD tertiles (p > 0.05, equivalence test with Δ = 0.2 SD), or the correlation between RMSSD and uncertainty is fully mediated by sensor noise floor (indirect effect 95% CI excludes zero while direct effect includes zero).",
+      "statistical_test_plan": "1) Compute per-subject FNR and predictive entropy from stress classifier. 2) Fit linear mixed model: uncertainty ~ RMSSD_tertile + EDA_reactivity + age + sex + VO2max + (1|device_unit). 3) Test RMSSD_tertile contrast (low vs. high) with Holm-Bonferroni correction. 4) Mediation analysis: RMSSD → sensor_noise_floor → uncertainty. 5) Power: N=120 achieves 80% power to detect f²=0.15 at α=0.05.",
+      "statistical_testability_notes": "Requires standardized stressor to ensure comparable physiological demand; exclude beta-blocker/anticholinergic users; measure sensor noise floor per session per subject."
+    },
+    {
+      "hypothesis_id": "H2",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Published PPG signal quality differences across Fitzpatrick skin types show Cohen's d ≈ 0.6–0.8 for green-light PPG; EDA impedance differences across stratum corneum thickness show similar magnitudes.",
+      "minimum_data_needed": [
+        "Spectrophotometric melanin index at 650nm (forearm and wrist)",
+        "Stratum corneum thickness via confocal microscopy",
+        "Corneometry skin hydration values",
+        "Trichoscopy hair density counts at sensor site",
+        "Per-subject PPG signal quality index (SQI) and EDA contact impedance during standardized stress protocol",
+        "Subject-level classifier predictive entropy and calibration error"
+      ],
+      "testable_prediction": "Melanin index and stratum corneum thickness will each independently predict ≥15% of variance in predictive entropy (ΔR² ≥ 0.15) after controlling for motion artifact, ambient light, and device fit.",
+      "failure_condition": "In hierarchical regression, melanin index and stratum corneum thickness add no significant variance beyond motion artifact and device fit (ΔR² < 0.02, p > 0.05), or the association reverses direction when using multi-wavelength PPG (green + IR) that corrects for melanin attenuation.",
+      "statistical_test_plan": "1) Recruit stratified sample across Fitzpatrick I–VI (n≥20 per type). 2) Measure skin phenotypes and sensor metrics during controlled lab stressor. 3) Fit mixed model: entropy ~ melanin_index + corneum_thickness + hydration + hair_density + motion_var + strap_tension + (1|subject). 4) Test unique variance contribution of skin phenotypes via likelihood ratio test. 5) Repeat with multi-wavelength PPG features to test attenuation correction. 6) Power: N=120 achieves 80% power for f²=0.10 at α=0.05.",
+      "statistical_testability_notes": "Must control ambient light and temperature; standardize sensor placement; exclude skin pathologies; use multi-wavelength PPG to isolate melanin effect from perfusion."
+    },
+    {
+      "hypothesis_id": "H3",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Circadian phase effects on cortisol and autonomic reactivity show medium effect sizes (η² ≈ 0.06–0.14); chronotype × time-of-day interactions on cognitive performance show similar magnitudes.",
+      "minimum_data_needed": [
+        "Dim light melatonin onset (DLMO) or Morningness-Eveningness Questionnaire (MEQ) score for each subject",
+        "Timestamp of each stressor exposure relative to DLMO (hours since DLMO)",
+        "Salivary cortisol awakening response (CAR) magnitude",
+        "Continuous wearable HRV/EDA during stressors at varying circadian phases",
+        "Per-subject classifier stress probability outputs and ground-truth labels"
+      ],
+      "testable_prediction": "The chronotype × circadian phase interaction will explain ≥10% of variance in subject-level calibration error (ECE); morning types will show ≥20% higher ECE for stressors >10h post-DLMO vs. <4h post-DLMO, with reverse pattern for evening types.",
+      "failure_condition": "Adding circadian phase × chronotype interaction to a model predicting ECE does not significantly improve fit (ΔAIC > 2, p > 0.05), or the interaction effect disappears when time-of-day is added as an explicit feature to the classifier.",
+      "statistical_test_plan": "1) Measure DLMO in lab; collect 14-day free-living wearable + EMA data. 2) Bin stressors by hours since DLMO (4 bins). 3) Compute per-subject per-bin ECE and AUC. 4) Fit linear mixed model: ECE ~ chronotype * circadian_bin + sleep_duration + light_exposure + (1|subject). 5) Test interaction contrast with FDR correction. 6) Retrain classifier with time-of-day feature; compare ECE via paired bootstrap. 7) Power: N=80 with ≥5 stressors/bin achieves 80% power for f²=0.10.",
+      "statistical_testability_notes": "DLMO measurement essential; exclude shift workers and recent travelers; control prior light exposure; ensure stressor type balanced across circadian bins."
+    },
+    {
+      "hypothesis_id": "H4",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Emotion regulation effects on peripheral physiology are typically small (d ≈ 0.2–0.4); label-physiology decoupling may be subtle and require large samples to detect.",
+      "minimum_data_needed": [
+        "Emotion Regulation Questionnaire (ERQ) suppression and reappraisal subscale scores",
+        "State ERQ during each stressor epoch",
+        "Concurrent EMA subjective stress ratings (0–100 VAS)",
+        "Multi-modal wearable features (HRV, EDA, HR, respiration) during stress epochs",
+        "Per-subject classifier predictive entropy and label-physiology residuals"
+      ],
+      "testable_prediction": "Trait suppression score will correlate positively with predictive entropy (r ≥ 0.25) and label-physiology residual magnitude (r ≥ 0.25); reappraisal will correlate negatively (r ≤ -0.20).",
+      "failure_condition": "Correlations between ERQ subscales and uncertainty metrics are non-significant (p > 0.05) and Bayes factors favor null (BF₀₁ > 3), or the association is fully mediated by interoceptive awareness (MAIA) such that direct effect of suppression on uncertainty is zero.",
+      "statistical_test_plan": "1) Administer ERQ and MAIA. 2) TSST with concurrent EMA (every 2 min) and wearable recording. 3) Compute per-subject predictive entropy and label-physiology residual (|EMA - predicted_stress|). 4) Fit SEM: suppression → label_physiology_residual → entropy; reappraisal → label_physiology_residual → entropy; control MAIA, anxiety, alexithymia. 5) Test indirect effects via bootstrap (5000 samples). 6) Power: N=150 achieves 80% power for r=0.25 at α=0.05.",
+      "statistical_testability_notes": "Distinguish trait vs. state regulation; use multi-modal features; control baseline affect; consider regulation-aware labeling (separate labels for regulated vs. unregulated stress)."
+    },
+    {
+      "hypothesis_id": "H5",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on prevalence and stress-correlation of non-wear, which varies widely across populations and device types; no published estimates exist for stress-correlated non-wear bias magnitude.",
+      "minimum_data_needed": [
+        "Accelerometer-detected non-wear episodes (timestamp, duration) for ≥14 days",
+        "Event-contingent and random EMA stress ratings during wear periods",
+        "Retrospective EMA stress recall for non-wear periods (prompted at next wear)",
+        "Per-subject observed stress classifier uncertainty during wear",
+        "Imputed ground-truth stress time series (multiple imputation with stress-correlated missingness model)"
+      ],
+      "testable_prediction": "Subjects with >30% non-wear during high-stress EMA (top quartile) will show ≥25% downward bias in observed predictive entropy compared to imputed ground-truth entropy; low-stress non-wear subjects will show ≥15% upward bias.",
+      "failure_condition": "Pattern-mixture models show missingness is ignorable (MAR): observed stress distribution during wear does not differ by non-wear group (KS test p > 0.05), and retrospective recall during non-wear shows no association with non-wear timing (logistic regression OR 95% CI includes 1).",
+      "statistical_test_plan": "1) Detect non-wear via accelerometer (SD < 0.01g for >20 min). 2) Collect random + event-contingent EMA (6x/day). 3) At re-wear, prompt retrospective stress for non-wear windows. 4) Compute observed per-subject entropy (wear only) and imputed entropy (multiple imputation with stress-predictive missingness model). 5) Fit mixed model: entropy_bias ~ non_wear_stress_correlation + total_non_wear + (1|subject). 6) Sensitivity analysis: vary MNAR assumptions via δ-adjustment. 7) Minimum N=100 with ≥20% non-wear.",
+      "statistical_testability_notes": "Requires retrospective recall validation; use accelerometer to distinguish non-wear from sedentary wear; test pattern-mixture and selection models for informative missingness."
+    },
+    {
+      "hypothesis_id": "H6",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "RSA coupling strength explains 30–50% of HF-HRV variance; unmeasured respiration confounding of HRV stress reactivity shows medium effects in controlled studies (η² ≈ 0.08–0.12).",
+      "minimum_data_needed": [
+        "Concurrent respiration (thoracic impedance or respiratory inductance plethysmography) and ECG/PPG during paced breathing (0.25 Hz) and free-living stress",
+        "RSA coupling coefficient: HF-HRV power per unit respiratory depth (ms²/L)",
+        "Vagal tone index (HF-HRV during controlled breathing)",
+        "HRV stress reactivity (ΔRMSSD, ΔHF from baseline to stressor)",
+        "Per-subject classifier predictive entropy for HRV-only model"
+      ],
+      "testable_prediction": "RSA coupling coefficient will correlate negatively with HRV-only classifier entropy (r ≤ -0.35); adding respiration features to classifier will reduce entropy for weak couplers (lowest tertile) by ≥30% but not for strong couplers.",
+      "failure_condition": "RSA coupling coefficient shows no correlation with HRV-only classifier entropy (|r| < 0.15, p > 0.05), or respiration-augmented classifier does not differentially improve uncertainty for weak vs. strong couplers (interaction p > 0.05).",
+      "statistical_test_plan": "1) Paced breathing protocol (0.25 Hz, 5 min) to compute RSA coupling coefficient. 2) TSST with concurrent respiration + wearable. 3) Train HRV-only and HRV+respiration classifiers. 4) Compute per-subject entropy for both. 5) Fit mixed model: entropy ~ coupling_tertile * model_type + fitness + (1|subject). 6) Test interaction. 7) Mediation: coupling → HRV_reactivity → entropy. 8) Power: N=90 achieves 80% power for interaction f²=0.10.",
+      "statistical_testability_notes": "Must measure respiration concurrently; paced breathing for coupling assessment; exclude respiratory disorders; test free-breathing vs. stress breathing patterns."
+    },
+    {
+      "hypothesis_id": "H7",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Wear tightness effects on PPG signal quality show large within-subject effects (d > 0.8); between-subject variability in habitual tightness produces measurable heteroscedasticity in feature distributions.",
+      "minimum_data_needed": [
+        "Wrist circumference (mm) and bone prominence (ultrasound)",
+        "Objective strap tension (pressure sensor integrated in strap) during wear",
+        "Self-reported tightness preference (visual analog scale)",
+        "PPG SQI and EDA contact impedance during standardized activity protocol (rest, walk, stress)",
+        "Per-subject stress classifier predictive entropy and feature distribution moments"
+      ],
+      "testable_prediction": "Strap tension will show U-shaped relationship with predictive entropy (quadratic term p < 0.01); optimal tension minimizes entropy. Wrist circumference × tension interaction will explain ≥12% of entropy variance.",
+      "failure_condition": "Quadratic tension term non-significant (p > 0.05) and entropy monotonic in tension, or same subject wearing same device at same measured tension shows entropy variance > between-tension variance (ICC < 0.3).",
+      "statistical_test_plan": "1) Instrument strap with pressure sensor. 2) Lab protocol: rest, walk, TSST at 3 randomized tension levels (loose, medium, tight). 3) Measure PPG SQI, EDA impedance, entropy per condition. 4) Fit mixed model: entropy ~ tension + tension² + wrist_circ * tension + bone_prominence + activity + (1|subject). 5) Test quadratic and interaction terms. 6) Cross-validate personalized calibration (subject-specific tension offset) vs. population model. 7) Power: N=60 with 3 tensions achieves 80% power for quadratic f²=0.15.",
+      "statistical_testability_notes": "Objective tension measurement essential; test dynamic tension changes during activity; control device model and strap material; exclude vascular pathology."
+    },
+    {
+      "hypothesis_id": "H8",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Allostatic load composites correlate with blunted stress reactivity (r ≈ -0.3 to -0.5); feature dynamic range compression and class separation reduction show medium effects in clinical populations.",
+      "minimum_data_needed": [
+        "Validated allostatic load index (≥6 biomarkers: hair cortisol, CRP, HbA1c, SBP/DBP, waist-hip ratio, HDL, plus optional DHEA-S, fibrinogen)",
+        "Acute stress reactivity (HRV, EDA, cortisol) to TSST",
+        "Free-living wearable feature time series (≥7 days) with ground-truth stress labels",
+        "Per-subject feature dynamic range (max-min HRV/EDA during stress vs. baseline)",
+        "Per-subject class separation (Mahalanobis distance between stress/non-stress feature clusters)",
+        "Per-subject classifier predictive entropy"
+      ],
+      "testable_prediction": "Allostatic load index will correlate positively with predictive entropy (r ≥ 0.35) and negatively with class separation (r ≤ -0.35); feature dynamic range will mediate ≥50% of the allostatic load → entropy association.",
+      "failure_condition": "Allostatic load index shows no association with entropy (p > 0.05) after controlling for age, medication, and comorbidities, or signal quality metrics (PPG SQI, EDA impedance) fully mediate the association (direct effect 95% CI includes zero).",
+      "statistical_test_plan": "1) Collect allostatic load biomarkers (fasting blood, hair, anthropometrics). 2) TSST for acute reactivity. 3) 14-day free-living wearable + EMA. 4) Compute per-subject dynamic range, class separation, entropy. 5) Fit SEM: allostatic_load → dynamic_range → class_separation → entropy; control age, sex, meds, comorbidities. 6) Test mediation via bootstrap. 7) Stratify by allostatic load tertiles; compare calibration curves. 8) Power: N=120 achieves 80% power for r=0.35.",
+      "statistical_testability_notes": "Allostatic load requires ≥6 biomarkers; longitudinal design preferred for causality; test personalized baselines; exclude acute illness and ANS-affecting medications."
+    },
+    {
+      "hypothesis_id": "H9",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "EMA reactivity effects are typically small (d ≈ 0.1–0.3); interoceptive awareness moderation of reactivity is an understudied interaction likely requiring large samples.",
+      "minimum_data_needed": [
+        "Multidimensional Assessment of Interoceptive Awareness (MAIA) score and heartbeat counting task accuracy",
+        "EMA prompt timestamps and stress ratings (random + event-contingent)",
+        "Continuous wearable physiology (HRV, EDA) in 5-min windows pre- and post-EMA prompt",
+        "Per-subject classifier predictive entropy for pre-EMA vs. post-EMA epochs",
+        "Expected calibration error (ECE) for pre-EMA vs. post-EMA epochs by awareness group"
+      ],
+      "testable_prediction": "High awareness (MAIA top tertile) will show ≥15% lower predictive entropy but ≥20% higher ECE (overconfidence) for post-EMA epochs vs. pre-EMA; low awareness will show no pre/post difference in entropy or ECE.",
+      "failure_condition": "No pre/post EMA difference in entropy or ECE for either awareness group (paired t-test p > 0.05, equivalence Δ = 0.1 SD), or high awareness shows lower ECE (better calibration) post-EMA, indicating improved label accuracy not contamination.",
+      "statistical_test_plan": "1) Measure MAIA and heartbeat counting accuracy. 2) 14-day EMA (6 random + stress-contingent prompts/day) with continuous wearable. 3) Define pre-EMA (-5 to 0 min) and post-EMA (0 to +5 min) windows. 4) Compute entropy and ECE per subject per window. 5) Fit mixed model: entropy ~ awareness_tertile * window + prompt_type + (1|subject). 6) Test interaction. 7) Repeat for ECE. 8) Control prompts (non-stress questions) to isolate attention effect. 9) Power: N=150 achieves 80% power for interaction f²=0.06.",
+      "statistical_testability_notes": "Include control (neutral) EMA prompts; habituation period ≥7 days; randomize prompt timing relative to stressors; measure physiological response to prompt itself."
+    },
+    {
+      "hypothesis_id": "H10",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Ignoring hierarchical structure in multilevel data produces large calibration biases; simulation studies show coverage probability deviations of 20–40% for high-variability subjects when random effects are omitted.",
+      "minimum_data_needed": [
+        "≥50 stress epochs and ≥50 non-stress epochs per subject (wearable features + ground-truth labels)",
+        "Subject-specific stressor type/intensity variation",
+        "Flat (pooled) classifier predictive distributions (mean, variance) per epoch",
+        "Hierarchical (mixed-effects) classifier predictive distributions per epoch",
+        "Per-subject prediction interval coverage probability (nominal 95%) for both models",
+        "Per-subject expected calibration error (ECE) for both models"
+      ],
+      "testable_prediction": "Flat model 95% prediction intervals will achieve <85% coverage for high-variability subjects (top residual variance quartile) and >98% coverage for low-variability subjects (bottom quartile); hierarchical model will achieve 93–97% coverage for both groups.",
+      "failure_condition": "Flat model coverage probability does not differ significantly across subject variability quartiles (χ² test p > 0.05), or hierarchical model shows no improvement in coverage calibration (Δcoverage_bias < 2%, p > 0.05 via paired bootstrap).",
+      "statistical_test_plan": "1) Collect ≥100 epochs/subject across varied stressors. 2) Fit flat logistic regression (or RF) and hierarchical Bayesian logistic regression with random intercepts, slopes (stressor intensity), and AR1 residuals. 3) Compute per-subject 95% prediction interval coverage and ECE via leave-one-subject-out CV. 4) Fit mixed model: coverage_bias ~ subject_residual_variance_quartile * model_type + (1|subject). 5) Test interaction. 6) Compare log-likelihood and WAIC. 7) Power: N=80 subjects with 100 epochs achieves >95% power for large interaction.",
+      "statistical_testability_notes": "Requires multilevel modeling framework (Stan/brms or lme4); use subject-level CV folds; test random intercepts, slopes, AR1; compare Bayesian vs. frequentist hierarchical models."
+    }
+  ]
+}

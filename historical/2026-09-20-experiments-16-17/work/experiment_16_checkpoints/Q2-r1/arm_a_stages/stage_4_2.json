@@ -1,0 +1,204 @@
+{
+  "confounder_rival_builds": [
+    {
+      "hypothesis_id": "H1",
+      "possible_confounders": [
+        "Calibration sample size per subject (smaller within-subject sets may increase finite-sample variance)",
+        "Subject-specific signal quality differences (e.g., skin preparation, sensor fit)",
+        "Systematic differences in predictor performance across subjects due to model misspecification"
+      ],
+      "control_variables": [
+        "Subsample cross-subject calibration to match within-subject sample size",
+        "Include subject-level covariates (age, BMI, medication) in predictor",
+        "Use subject-specific non-conformity score normalization"
+      ],
+      "boring_rival_explanations": [
+        "Cross-subject calibration appears worse because within-subject calibration sets are too small for stable quantile estimation, not because of distribution shift",
+        "The predictor is globally misspecified for certain subjects, causing larger residuals that inflate non-conformity scores regardless of calibration source"
+      ],
+      "rival_prediction": "Cross-subject calibration yields equal or higher coverage than within-subject calibration when sample sizes are equalized, because increased data outweighs distribution shift.",
+      "distinguishing_condition": "After subsampling cross-subject calibration sets to match within-subject sample size, the coverage gap persists (supports mechanism) or disappears (supports sample-size rival).",
+      "confounder_rival_notes": "Test by constructing matched-sample-size calibration sets; measure non-conformity score distribution shift via Wasserstein distance between subject-specific and pooled CDFs; quantify coverage gap as function of subject physiological distance (PWV difference)."
+    },
+    {
+      "hypothesis_id": "H2",
+      "possible_confounders": [
+        "Segment duration (shorter segments have fewer samples for calibration)",
+        "Overall signal-to-noise ratio (SNR) differences across segments",
+        "Predictor model performance degradation in high-artifact segments"
+      ],
+      "control_variables": [
+        "Measure and regress out segment-level artifact metrics (RMS motion, electrode pop rate)",
+        "Use artifact-robust non-conformity measures (e.g., residual divided by local noise estimate)",
+        "Stratify calibration by artifact level when labels available"
+      ],
+      "boring_rival_explanations": [
+        "Coverage drops in high-artifact segments because the predictor produces larger residuals (scale change), not because the non-conformity score distribution shape changes",
+        "Finite-sample effects: high-artifact segments have more rejected samples, reducing effective calibration size"
+      ],
+      "rival_prediction": "Non-conformity score distributions in clean vs. artifact segments differ only in scale (variance), not shape (kurtosis, skewness); locally scaled non-conformity measures eliminate coverage differences.",
+      "distinguishing_condition": "After normalizing non-conformity scores by segment-specific MAD, the KS distance between clean and artifact segment distributions becomes negligible (supports scale-only rival) or remains significant (supports mechanism).",
+      "confounder_rival_notes": "Induce controlled motion artifacts; compute sliced Wasserstein distance between non-conformity score distributions; test if adaptive non-conformity (residual/local_MAD) stabilizes coverage across artifact levels."
+    },
+    {
+      "hypothesis_id": "H3",
+      "possible_confounders": [
+        "Calibration window length relative to transition duration",
+        "Transition detection accuracy (mislabeling pre/post periods)",
+        "Predictor performance drop during transitions due to signal morphology change"
+      ],
+      "control_variables": [
+        "Annotate transitions precisely (e.g., polysomnography, tilt-table markers)",
+        "Vary calibration window length systematically",
+        "Use transition-aware calibration (exclude transition-spanning windows)"
+      ],
+      "boring_rival_explanations": [
+        "Coverage drops near transitions because the predictor is less accurate during state changes (larger residuals), but non-conformity scores remain exchangeable within segments",
+        "Segment boundaries aligned with transitions create artificial distribution shifts due to edge effects in feature extraction"
+      ],
+      "rival_prediction": "Non-conformity scores within transition-spanning segments are exchangeable (single distribution) but have higher variance; coverage deficit is explained by increased residual magnitude, not bimodality.",
+      "distinguishing_condition": "Hartigan's dip test for bimodality on non-conformity scores in transition-spanning windows: significant bimodality supports mechanism; unimodal with increased variance supports rival.",
+      "confounder_rival_notes": "Use sleep-stage transitions or orthostatic stress; measure coverage in 30-sec bins relative to transition; test block conformal with transition-aware blocks."
+    },
+    {
+      "hypothesis_id": "H4",
+      "possible_confounders": [
+        "Segment length (shorter segments have higher coverage variance regardless of autocorrelation)",
+        "Heteroscedasticity in non-conformity scores (variance changes over time)",
+        "Non-stationary mean of non-conformity scores (drift) rather than autocorrelation"
+      ],
+      "control_variables": [
+        "Compute effective sample size n_eff = n * (1-rho)/(1+rho) for each segment",
+        "Apply block conformal prediction or thinning to decorrelate scores",
+        "Use stationary bootstrap for coverage estimation"
+      ],
+      "boring_rival_explanations": [
+        "Coverage fluctuations match binomial variance (1/(n_cal+1)) and are not exacerbated by autocorrelation; apparent instability is finite-sample noise",
+        "Segment-specific coverage variance is driven by heteroscedasticity, not serial dependence"
+      ],
+      "rival_prediction": "Coverage variance across segments equals theoretical binomial variance and does not correlate with segment AR(1) coefficient after controlling for segment length.",
+      "distinguishing_condition": "Regression of |coverage - nominal| on segment AR(1) coefficient controlling for segment length: significant positive slope supports mechanism; non-significant slope supports finite-sample rival.",
+      "confounder_rival_notes": "Simulate AR(1) non-conformity scores with known rho; compute n_eff via batch means; test block conformal with varying block sizes; measure coverage stability vs. effective sample size."
+    },
+    {
+      "hypothesis_id": "H5",
+      "possible_confounders": [
+        "Segment signal-to-noise ratio (SNR) affecting both annotation quality and predictor performance",
+        "True heteroscedasticity in physiological signal (not annotation noise)",
+        "Annotator fatigue correlating with segment order/time"
+      ],
+      "control_variables": [
+        "Obtain replicate annotations to estimate per-segment annotation error variance",
+        "Use high-SNR segments as ground truth for annotation error characterization",
+        "Apply noise-robust non-conformity measures (e.g., quantile regression residuals)"
+      ],
+      "boring_rival_explanations": [
+        "Coverage instability reflects true heteroscedasticity in prediction errors; annotation noise is a proxy for low SNR, not the cause",
+        "Systematic annotation bias shifts non-conformity scores uniformly across all segments, not differentially"
+      ],
+      "rival_prediction": "Coverage deviation correlates with true residual variance (estimated from clean segments) but not with annotation error variance after controlling for SNR.",
+      "distinguishing_condition": "In segments with matched SNR, coverage deviation correlates with replicate-annotation-derived error variance (supports mechanism) or shows no correlation (supports heteroscedasticity rival).",
+      "confounder_rival_notes": "Inject synthetic annotation jitter with known variance; compare coverage using clean vs. noisy labels; measure non-conformity score distribution shift via KL divergence."
+    },
+    {
+      "hypothesis_id": "H6",
+      "possible_confounders": [
+        "Observed covariates (time of day, activity level) that correlate with latent covariates",
+        "Segment-specific signal quality differences",
+        "Calibration set composition bias (e.g., more medicated subjects in calibration)"
+      ],
+      "control_variables": [
+        "Collect latent covariates in sub-study (medication logs, hydration markers, circadian phase)",
+        "Compute maximum mean discrepancy (MMD) between segment and calibration covariate distributions",
+        "Use weighted conformal prediction with importance weights for covariate shift"
+      ],
+      "boring_rival_explanations": [
+        "Coverage variation is fully explained by observed covariate shift (e.g., time-of-day effects); latent covariates add no explanatory power",
+        "The non-conformity measure is not adaptive to known covariate effects (e.g., beta-blocker reduces HRV), causing miscalibration that appears as latent confounding"
+      ],
+      "rival_prediction": "After adjusting for all observed covariates via propensity weighting, coverage gap across segments disappears; latent covariates do not improve calibration.",
+      "distinguishing_condition": "Weighted conformal prediction using observed covariates eliminates coverage stratification by latent covariate proxies (supports rival) or significant residual stratification remains (supports mechanism).",
+      "confounder_rival_notes": "Measure MMD between segment and calibration covariate distributions; test coverage improvement when stratifying by observed proxies (time-of-day, medication logs)."
+    },
+    {
+      "hypothesis_id": "H7",
+      "possible_confounders": [
+        "True distribution shifts that correlate with artifact rejection rate (e.g., active periods have more artifacts AND different physiology)",
+        "Segment length differences independent of artifact rejection",
+        "Adaptive windowing that changes calibration composition"
+      ],
+      "control_variables": [
+        "Subsample all segments to equal effective calibration size n_cal",
+        "Compare observed coverage variance to theoretical binomial variance 1/(n_cal+1)",
+        "Use fixed-size calibration windows regardless of artifact rejection"
+      ],
+      "boring_rival_explanations": [
+        "Apparent coverage instability is entirely due to finite-sample variance; segments with small n_cal show wider prediction sets and higher coverage variance by chance",
+        "Segments with high artifact rejection have systematically different signal characteristics (distribution shift), not just smaller calibration sets"
+      ],
+      "rival_prediction": "After subsampling all segments to the same minimum n_cal, coverage variance across segments reduces to binomial levels and no longer correlates with original artifact rejection rate.",
+      "distinguishing_condition": "Coverage variance after equalizing n_cal across segments: if variance drops to theoretical binomial variance, supports sample-size rival; if variance remains elevated and correlates with segment type, supports distribution-shift rival.",
+      "confounder_rival_notes": "Subsample calibration sets to fixed n_cal to isolate distribution shift from sample size effects; compare observed coverage variance to binomial variance."
+    },
+    {
+      "hypothesis_id": "H8",
+      "possible_confounders": [
+        "Segment-specific noise level (scale) rather than shape differences",
+        "Predictor performance variation across complexity strata",
+        "Non-conformity measure sensitivity to outliers in complex segments"
+      ],
+      "control_variables": [
+        "Compute local scale estimates (MAD, quantile regression) per segment",
+        "Use adaptive non-conformity measures: |residual| / local_MAD or quantile regression residuals",
+        "Stratify segments by morphological complexity (sample entropy, kurtosis)"
+      ],
+      "boring_rival_explanations": [
+        "Coverage variation is due to heteroscedasticity (scale changes) only; locally scaled non-conformity measures stabilize coverage completely",
+        "Complex segments have higher irreducible error variance; a single non-conformity measure cannot adapt to varying conditional variance"
+      ],
+      "rival_prediction": "Locally scaled non-conformity measure (residual / segment_MAD) achieves uniform coverage across complexity strata; residual shape (kurtosis, skewness) does not affect coverage after scaling.",
+      "distinguishing_condition": "Compare coverage uniformity using absolute residual vs. locally scaled residual vs. quantile regression non-conformity: if locally scaled residual yields uniform coverage (chi-squared GOF p>0.05), supports scale-only rival; if not, supports shape-variation mechanism.",
+      "confounder_rival_notes": "Compute local scale estimates per segment; test adaptive non-conformity measures; measure coverage uniformity across complexity strata using chi-squared goodness-of-fit."
+    },
+    {
+      "hypothesis_id": "H9",
+      "possible_confounders": [
+        "Accumulating sensor artifacts over time (e.g., electrode drying, motion increase)",
+        "Increasing autocorrelation in residuals as calibration window ages",
+        "Circadian rhythms causing periodic coverage variation mistaken for drift"
+      ],
+      "control_variables": [
+        "Track artifact metrics over time and include as covariates",
+        "Use sliding-window KS test on non-conformity scores to detect distribution shift",
+        "Implement periodic recalibration (e.g., every 4 hours) and compare to fixed calibration"
+      ],
+      "boring_rival_explanations": [
+        "Coverage decay is driven by gradual sensor degradation increasing noise floor, not physiological concept drift",
+        "Apparent drift is due to circadian modulation of error variance; coverage oscillates with 24h period rather than monotonic decay"
+      ],
+      "rival_prediction": "Coverage decay correlates with artifact metrics (e.g., impedance rise) not time per se; in low-artifact segments, coverage remains stable over time.",
+      "distinguishing_condition": "In segments with artifact metrics below threshold, coverage vs. hours-since-calibration slope is not significantly different from zero (supports artifact rival) or remains significantly negative (supports drift mechanism).",
+      "confounder_rival_notes": "Track non-conformity score distribution over 24-72h recordings; fit exponential decay to coverage; test periodic recalibration vs. adaptive windowing; quantify drift via Wasserstein distance between consecutive calibration windows."
+    },
+    {
+      "hypothesis_id": "H10",
+      "possible_confounders": [
+        "Periodic artifact patterns (e.g., movement during specific sleep phases)",
+        "Segment boundary alignment with external protocol (fixed windows) creating aliasing",
+        "Predictor performance variation with physiological phase (e.g., harder to predict during inspiration)"
+      ],
+      "control_variables": [
+        "Record concurrent respiration, continuous BP, skin temperature",
+        "Compute instantaneous phase via Hilbert transform for each oscillator",
+        "Bin segments by physiological phase and apply phase-stratified conformal prediction"
+      ],
+      "boring_rival_explanations": [
+        "Coverage oscillation is caused by periodic signal quality changes (e.g., motion artifacts at certain respiratory phases), not error variance modulation",
+        "The non-conformity measure (absolute residual) is sensitive to phase-dependent signal amplitude, creating apparent coverage oscillation without true exchangeability violation"
+      ],
+      "rival_prediction": "Coverage oscillation amplitude disappears when using artifact-free segments or when non-conformity measure is normalized by phase-dependent signal amplitude.",
+      "distinguishing_condition": "In clean segments (artifact metrics below threshold), circular correlation between segment boundary phase (from respiration/BP) and coverage remains significant (supports mechanism) or becomes non-significant (supports artifact rival).",
+      "confounder_rival_notes": "Record concurrent respiration, continuous BP, temperature; compute instantaneous phase via Hilbert transform; bin segments by phase; test if phase-stratified conformal prediction stabilizes coverage; measure coverage oscillation amplitude via Rayleigh test."
+    }
+  ]
+}

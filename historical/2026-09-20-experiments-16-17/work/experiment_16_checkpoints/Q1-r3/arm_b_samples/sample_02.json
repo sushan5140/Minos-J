@@ -1,0 +1,444 @@
+{
+  "sample_index": 2,
+  "valid": true,
+  "error": null,
+  "cards": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Subject-specific autonomic rigidity causes non-exchangeability within Mondrian taxonomy bins",
+      "proposed_mechanism": "Subjects with low heart rate variability (HRV) during baseline exhibit reduced physiological reactivity range, causing their calibration scores to concentrate near zero and violate the exchangeability assumption within their assigned Mondrian bin, leading to undersized prediction sets",
+      "causal_path": "Low baseline HRV (RMSSD < 20ms) → Compressed EDA/HR reactivity range during stress → Calibration nonconformity scores cluster near zero → Mondrian bin quantile underestimates true dispersion → Prediction intervals too narrow → Undercoverage",
+      "mechanism_variables": [
+        "baseline_RMSSD",
+        "stress_EDA_peak",
+        "stress_HR_peak",
+        "calibration_nonconformity_scores",
+        "mondrian_bin_assignment",
+        "prediction_interval_width",
+        "empirical_coverage"
+      ],
+      "possible_confounders": [
+        "age",
+        "fitness_level",
+        "medication_use",
+        "caffeine_intake",
+        "time_of_day"
+      ],
+      "control_variables": [
+        "age",
+        "sex",
+        "BMI",
+        "baseline_HRV",
+        "sensor_placement_quality"
+      ],
+      "rival_explanation": "Undercoverage stems from label noise in stress annotations rather than physiological rigidity",
+      "rival_prediction": "Subjects with high label disagreement between self-report and physiological markers show undercoverage regardless of baseline HRV",
+      "distinguishing_test": "Stratify by baseline RMSSD tertiles and label agreement; undercoverage should track with low RMSSD not label disagreement",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Prior WESAD analyses show ~30% of subjects have RMSSD < 20ms; simulation studies suggest 10-15% coverage drop for compressed reactivity distributions",
+      "minimum_data_needed": [
+        "Per-subject baseline RMSSD from ECG",
+        "Per-subject stress-condition EDA and HR peaks",
+        "Mondrian bin assignments per calibration sample",
+        "Nonconformity scores for calibration and test sets",
+        "Empirical coverage per subject"
+      ],
+      "testable_prediction": "Subjects with baseline RMSSD < 20ms will show empirical coverage at least 10 percentage points below nominal 90% level",
+      "failure_condition": "No significant correlation between baseline RMSSD and per-subject coverage deficit (p > 0.05, Spearman)",
+      "statistical_test_plan": "Spearman correlation between baseline RMSSD and per-subject coverage deficit; linear mixed model with subject random intercept predicting coverage from RMSSD controlling for age/sex/BMI",
+      "falsification_test": "Artificially inflate nonconformity scores for low-HRV subjects by adding noise matched to high-HRV score distribution; if undercoverage persists, mechanism is falsified"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Wrist sensor motion artifacts during stress tasks create heteroscedastic noise that violates Mondrian's conditional symmetry assumption",
+      "proposed_mechanism": "High accelerometer magnitude during stress tasks (particularly hand-grip and cold pressor) introduces non-Gaussian, heteroscedastic noise into wrist EDA and BVP signals, causing calibration nonconformity scores to have fatter tails than test scores for high-movement subjects",
+      "causal_path": "Stress task type (hand_grip/cold_pressor) → High wrist ACC magnitude (> 1.5g RMS) → Motion artifacts in wrist EDA/BVP → Inflated calibration nonconformity scores → Mondrian bin learns overestimated dispersion → Test samples with lower movement have tighter true distribution → Prediction intervals too wide for calibration but too narrow for test → Undercoverage",
+      "mechanism_variables": [
+        "task_type",
+        "wrist_ACC_RMS",
+        "wrist_EDA_artifact_index",
+        "wrist_BVP_artifact_index",
+        "calibration_nonconformity_scores",
+        "test_nonconformity_scores",
+        "mondrian_bin",
+        "empirical_coverage"
+      ],
+      "possible_confounders": [
+        "sensor_tightness",
+        "skin_hydration",
+        "ambient_temperature",
+        "subject_handedness"
+      ],
+      "control_variables": [
+        "task_type",
+        "chest_sensor_quality",
+        "wrist_sensor_tightness_rating"
+      ],
+      "rival_explanation": "Undercoverage is due to physiological non-stationarity across tasks, not motion artifacts",
+      "rival_prediction": "Undercoverage correlates with task sequence position (later tasks) not with ACC magnitude",
+      "distinguishing_test": "Compare coverage for high-ACC vs low-ACC periods within same task type; mechanism predicts ACC-driven effect",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "WESAD wrist ACC reaches 3-4g during hand-grip; literature shows 2-3x EDA noise amplification at >1.5g; Mondrian bins by task type so within-bin heteroscedasticity directly breaks exchangeability",
+      "minimum_data_needed": [
+        "Per-sample wrist ACC RMS",
+        "Wrist EDA/BVP artifact quality indices",
+        "Task type labels",
+        "Calibration/test split indices",
+        "Mondrian bin assignments",
+        "Per-subject coverage"
+      ],
+      "testable_prediction": "Subjects with >30% calibration samples at wrist ACC > 1.5g will show coverage deficit >15 percentage points vs subjects with <10% high-ACC samples",
+      "failure_condition": "No difference in coverage between high-ACC and low-ACC subjects after controlling for task type (p > 0.05)",
+      "statistical_test_plan": "Two-sample Kolmogorov-Smirnov test comparing nonconformity score distributions for high-ACC vs low-ACC calibration samples within same Mondrian bin; logistic regression predicting coverage failure from high-ACC proportion",
+      "falsification_test": "Re-run Mondrian using only chest sensor features (immune to wrist motion); if undercoverage disappears for high-ACC subjects, mechanism confirmed; if persists, mechanism falsified"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Delayed physiological recovery between stress trials causes carryover contamination of calibration nonconformity scores",
+      "proposed_mechanism": "Subjects with slow EDA/HR recovery (tau > 120s) after stress trials enter subsequent baseline periods with elevated arousal, contaminating 'non-stress' calibration samples with stress-like physiology and biasing Mondrian's category-conditional distribution estimates",
+      "causal_path": "Slow recovery phenotype (EDA_tau > 120s, HR_tau > 90s) → Incomplete return to baseline between trials → Contaminated non-stress calibration samples → Mondrian bin for 'non-stress' learns shifted distribution → Stress test samples appear more extreme relative to contaminated calibration → Nonconformity scores inflated → Prediction intervals too wide for non-stress but undercoverage for stress",
+      "mechanism_variables": [
+        "EDA_recovery_tau",
+        "HR_recovery_tau",
+        "inter_trial_interval",
+        "baseline_EDA_mean",
+        "baseline_HR_mean",
+        "mondrian_category",
+        "calibration_nonconformity_by_category",
+        "test_nonconformity_by_category",
+        "per_category_coverage"
+      ],
+      "possible_confounders": [
+        "trial_order",
+        "stress_intensity",
+        "baseline_duration",
+        "room_temperature"
+      ],
+      "control_variables": [
+        "inter_trial_interval",
+        "stress_task_type",
+        "baseline_duration",
+        "age"
+      ],
+      "rival_explanation": "Undercoverage reflects true physiological heterogeneity not recovery carryover",
+      "rival_prediction": "Coverage deficit correlates with trait anxiety not recovery time constants",
+      "distinguishing_test": "Subjects with long recovery tau but long inter-trial intervals (>300s) should show normal coverage; short intervals + long tau should show undercoverage",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "WESAD inter-trial intervals ~60-120s; literature shows 20-40% of subjects have EDA tau > 120s; simulation suggests 8-12% coverage drop when 30% of non-stress samples contaminated",
+      "minimum_data_needed": [
+        "Per-subject EDA/HR recovery time constants from exponential fits",
+        "Inter-trial intervals",
+        "Trial sequence order",
+        "Mondrian category labels (stress/non-stress)",
+        "Per-category nonconformity scores",
+        "Per-subject per-category coverage"
+      ],
+      "testable_prediction": "Subjects with EDA_tau > 120s AND mean inter-trial interval < 150s will show stress-category coverage < 80% at nominal 90%",
+      "failure_condition": "No interaction between recovery tau and inter-trial interval on coverage deficit (p > 0.05 interaction term)",
+      "statistical_test_plan": "Linear mixed model: coverage ~ EDA_tau * inter_trial_interval + (1|subject); mediation analysis testing if baseline EDA elevation mediates tau→coverage effect",
+      "falsification_test": "Exclude first 60s of each baseline period from calibration; if undercoverage disappears for slow-recovery subjects, mechanism confirmed; if persists, falsified"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Mondrian taxonomy bins by task type ignore within-task physiological phase differences causing conditional coverage failure",
+      "proposed_mechanism": "Mondrian categories correspond to WESAD task labels (baseline, TSST, fun, meditation, etc.) but each task contains distinct physiological phases (anticipation, reactivity, recovery) with different feature distributions; calibration samples over-represent late-phase recovery while test samples over-represent early-phase reactivity",
+      "causal_path": "Task structure (e.g., TSST: prep→speech→math→recovery) → Phase-dependent physiology (EDA/HR trajectory) → Calibration set samples late phases disproportionately → Mondrian bin learns recovery-phase distribution → Test set samples early phases → Nonconformity scores exceed learned quantiles → Undercoverage",
+      "mechanism_variables": [
+        "task_label",
+        "phase_within_task",
+        "time_since_task_onset",
+        "EDA_slope",
+        "HR_slope",
+        "mondrian_category",
+        "calibration_phase_distribution",
+        "test_phase_distribution",
+        "phase_conditional_coverage"
+      ],
+      "possible_confounders": [
+        "subject_compliance",
+        "experimenter_timing_variability",
+        "task_duration_variability"
+      ],
+      "control_variables": [
+        "task_label",
+        "total_task_duration",
+        "subject_id"
+      ],
+      "rival_explanation": "Phase differences are negligible; undercoverage stems from subject-level non-exchangeability",
+      "rival_prediction": "Coverage deficit uniform across phases within task; correlates with subject ID not phase",
+      "distinguishing_test": "Compute coverage separately for early (0-30%), middle (30-70%), late (70-100%) phases within each task; mechanism predicts early-phase undercoverage",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "TSST speech+math phases show 2-3x EDA amplitude vs recovery; WESAD calibration uses random split so phase imbalance likely; Mondrian conditions only on task label not phase",
+      "minimum_data_needed": [
+        "Task onset/offset timestamps",
+        "Phase annotations or time-since-onset per sample",
+        "Mondrian category assignments",
+        "Calibration/test split indices",
+        "Per-sample nonconformity scores",
+        "Per-phase coverage"
+      ],
+      "testable_prediction": "Early-phase (0-30% task duration) test samples will show coverage < 75% at nominal 90% while late-phase samples show coverage > 95%",
+      "failure_condition": "No significant difference in coverage across task phases (chi-square test p > 0.05)",
+      "statistical_test_plan": "Chi-square test of coverage homogeneity across 3 phase bins within each task type; logistic regression predicting miscoverage from phase_bin controlling for subject",
+      "falsification_test": "Re-define Mondrian categories as (task_label × phase_bin); if coverage equalizes across phases, mechanism confirmed; if undercoverage persists within phase bins, mechanism falsified"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Self-report stress labels misaligned with physiological ground truth for subset of subjects creates label noise in Mondrian categories",
+      "proposed_mechanism": "Subjects with high alexithymia or interoceptive insensitivity show discordance between self-reported stress (VAS) and physiological arousal (EDA/HR); Mondrian uses task labels as categories but true physiological state differs, causing category-conditional distributions to mix distinct physiological populations",
+      "causal_path": "High alexithymia (TAS-20 > 60) → Low correlation between VAS_stress and physiological_arousal → Task label 'stress' contains mixed physiological states → Mondrian bin learns bimodal distribution → Calibration quantiles cover mixture not modes → Test samples from either mode fall in low-density region → Undercoverage",
+      "mechanism_variables": [
+        "TAS_20_score",
+        "VAS_stress",
+        "physiological_arousal_index",
+        "VAS_physio_correlation",
+        "mondrian_category",
+        "calibration_nonconformity_distribution",
+        "test_nonconformity_scores",
+        "empirical_coverage"
+      ],
+      "possible_confounders": [
+        "depression_score",
+        "anxiety_score",
+        "task_compliance",
+        "language_barrier"
+      ],
+      "control_variables": [
+        "age",
+        "sex",
+        "education",
+        "task_type"
+      ],
+      "rival_explanation": "Label noise is random not systematic; undercoverage from statistical fluctuation",
+      "rival_prediction": "Coverage deficit uncorrelated with alexithymia; correlates with calibration set size",
+      "distinguishing_test": "Split subjects by median TAS-20; high-alexithymia group should show lower coverage and higher VAS-physio discordance",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "~25% population high alexithymia; WESAD has VAS ratings; literature shows r=0.3-0.5 VAS-physio correlation in low-alexithymia vs r<0.1 in high; mixture distribution quantile inflation ~15-20%",
+      "minimum_data_needed": [
+        "TAS-20 or equivalent alexithymia measure per subject",
+        "VAS stress ratings per trial",
+        "Physiological arousal index (EDA+HR composite) per trial",
+        "Mondrian category assignments",
+        "Per-subject coverage"
+      ],
+      "testable_prediction": "Subjects with VAS-physio correlation < 0.2 will show coverage < 80% at nominal 90%; subjects with correlation > 0.5 will show coverage > 88%",
+      "failure_condition": "No correlation between VAS-physio correlation and coverage deficit (p > 0.05)",
+      "statistical_test_plan": "Spearman correlation between per-subject VAS-physio correlation and coverage deficit; t-test comparing coverage for high vs low alexithymia groups",
+      "falsification_test": "Re-assign Mondrian categories using physiological clustering (k-means on EDA/HR features) instead of task labels; if coverage equalizes across alexithymia groups, mechanism confirmed; if not, falsified"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Chest sensor detachment during high-movement tasks creates missing-not-at-random data that biases Mondrian calibration",
+      "proposed_mechanism": "During high-intensity stress tasks (hand-grip, cold pressor), chest RESP/ECG electrodes detach partially in subjects with high thoracic movement or body hair, creating systematic missingness in high-arousal calibration samples; Mondrian learns distribution from remaining low-movement high-arousal samples only",
+      "causal_path": "High thoracic movement (chest_ACC_RMS > 2g) + body_hair/skin_type → Chest electrode detachment → Missing RESP/ECG features in high-arousal calibration samples → Mondrian stress bin learns from low-movement subset only → Distribution underestimated for high-movement physiology → Test samples with high movement get narrow intervals → Undercoverage",
+      "mechanism_variables": [
+        "chest_ACC_RMS",
+        "chest_ECG_quality",
+        "chest_RESP_quality",
+        "electrode_contact_impedance",
+        "body_hair_rating",
+        "missingness_indicator",
+        "mondrian_category",
+        "calibration_feature_distribution",
+        "test_coverage_by_movement"
+      ],
+      "possible_confounders": [
+        "sensor_brand",
+        "electrode_gel_age",
+        "room_humidity",
+        "subject_sweating"
+      ],
+      "control_variables": [
+        "task_type",
+        "wrist_sensor_quality",
+        "subject_BMI"
+      ],
+      "rival_explanation": "Missing data is random; undercoverage from physiological differences not sensor failure",
+      "rival_prediction": "Coverage deficit unrelated to chest ACC or electrode quality metrics",
+      "distinguishing_test": "Compare coverage for subjects with >20% missing chest data in stress trials vs <5%; mechanism predicts deficit only in high-missingness group",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "WESAD chest sensors known to detach during movement; ~15% subjects have >20% missing chest data in stress tasks; missingness correlates with high arousal so bias is systematic and large",
+      "minimum_data_needed": [
+        "Per-sample chest ECG/RESP quality flags or impedance",
+        "Chest ACC RMS per sample",
+        "Missingness indicators per channel per sample",
+        "Task type labels",
+        "Mondrian bin assignments",
+        "Per-subject coverage"
+      ],
+      "testable_prediction": "Subjects with >20% missing chest ECG/RESP in stress calibration samples will show stress-category coverage < 70% at nominal 90%",
+      "failure_condition": "No association between chest data missingness rate and coverage deficit (p > 0.05)",
+      "statistical_test_plan": "Logistic regression predicting per-sample miscoverage from chest_missingness_indicator + chest_ACC_RMS + task_type; subject-level beta-binomial model for coverage vs missingness rate",
+      "falsification_test": "Impute missing chest features using wrist features + movement context; re-run Mondrian; if undercoverage disappears for high-missingness subjects, mechanism confirmed; if persists, falsified"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Mondrian's fixed taxonomy cannot adapt to subject-specific stress response phenotypes (sympathetic vs parasympathetic dominant)",
+      "proposed_mechanism": "Subjects cluster into distinct stress response phenotypes: sympathetic-dominant (large HR/EDA increase) vs parasympathetic-dominant (HR decrease, EDA flat); Mondrian uses same task-based categories for all, but nonconformity score distributions differ fundamentally between phenotypes causing miscalibration for minority phenotype",
+      "causal_path": "Stress phenotype (sympathetic_dominant vs parasympathetic_dominant) → Divergent HR/EDA response patterns → Different nonconformity score distributions within same Mondrian bin → Minority phenotype (parasympathetic, ~20%) has scores outside majority quantiles → Prediction intervals miss minority phenotype test samples → Undercoverage",
+      "mechanism_variables": [
+        "stress_phenotype_cluster",
+        "stress_HR_delta",
+        "stress_EDA_delta",
+        "stress_RMSSD_delta",
+        "mondrian_category",
+        "phenotype_conditional_nonconformity_dist",
+        "phenotype_conditional_coverage"
+      ],
+      "possible_confounders": [
+        "fitness_level",
+        "beta_blocker_use",
+        "age",
+        "sex"
+      ],
+      "control_variables": [
+        "task_type",
+        "baseline_HRV",
+        "age",
+        "sex"
+      ],
+      "rival_explanation": "Phenotypes don't exist; response variation is continuous and Mondrian handles it",
+      "rival_prediction": "Coverage deficit correlates with response magnitude not phenotype cluster membership",
+      "distinguishing_test": "Cluster subjects by (HR_delta, EDA_delta, RMSSD_delta); compute coverage per cluster; mechanism predicts cluster-specific deficit",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Literature identifies 2-3 stable stress phenotypes; parasympathetic-dominant ~15-25%; Mondrian bins by task so phenotype mixture within bin; quantile mismatch ~10-15% coverage drop for minority",
+      "minimum_data_needed": [
+        "Per-subject stress HR/EDA/RMSSD change scores",
+        "Clustering assignments (k-means or GMM)",
+        "Mondrian category assignments",
+        "Per-subject per-category nonconformity scores",
+        "Per-cluster coverage"
+      ],
+      "testable_prediction": "Parasympathetic-dominant cluster (HR decrease, EDA flat) will show coverage < 80% at nominal 90% while sympathetic-dominant shows coverage > 88%",
+      "failure_condition": "No significant coverage difference between phenotype clusters (p > 0.05)",
+      "statistical_test_plan": "Gaussian mixture model on (HR_delta, EDA_delta, RMSSD_delta); chi-square test of coverage homogeneity across clusters; KS test of nonconformity distributions across clusters within same Mondrian bin",
+      "falsification_test": "Add phenotype cluster as additional Mondrian category dimension (task × phenotype); if coverage equalizes, mechanism confirmed; if deficit persists within phenotype bins, falsified"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Temporal concept drift in physiological baselines across session violates Mondrian's i.i.d. calibration assumption",
+      "proposed_mechanism": "Physiological baselines drift systematically across the ~2hr WESAD session due to circadian effects, fatigue, or sensor drift; calibration samples (random split) span full session but test samples concentrate in later session where baseline has shifted, causing distribution shift within Mondrian categories",
+      "causal_path": "Session time → Circadian/fatigue/sensor drift → Baseline EDA/HR/TEMP trend → Calibration set spans full time range → Test set enriched for late session → Mondrian bin learns time-averaged distribution → Late-session test samples shifted relative to calibration → Nonconformity scores exceed quantiles → Undercoverage",
+      "mechanism_variables": [
+        "session_time_minutes",
+        "baseline_EDA_trend",
+        "baseline_HR_trend",
+        "baseline_TEMP_trend",
+        "calibration_time_distribution",
+        "test_time_distribution",
+        "mondrian_category",
+        "time_conditional_coverage"
+      ],
+      "possible_confounders": [
+        "task_order",
+        "meal_timing",
+        "caffeine_timing",
+        "room_temperature_drift"
+      ],
+      "control_variables": [
+        "task_type",
+        "time_since_wake",
+        "session_start_time"
+      ],
+      "rival_explanation": "No temporal drift; undercoverage from subject heterogeneity not time",
+      "rival_prediction": "Coverage deficit uncorrelated with session time; correlates with subject ID",
+      "distinguishing_test": "Bin test samples by session quartile; mechanism predicts coverage drops in later quartiles",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Circadian EDA drift ~5-10% over 2hr; sensor drift minimal; random calibration/test split reduces but doesn't eliminate time imbalance; expected 3-5% coverage drop in last quartile",
+      "minimum_data_needed": [
+        "Session timestamp per sample",
+        "Baseline physiological measures per trial",
+        "Calibration/test split indices",
+        "Mondrian category assignments",
+        "Per-time-bin coverage"
+      ],
+      "testable_prediction": "Test samples in last session quartile (minutes 90-120) will show coverage 5-8 percentage points lower than first quartile",
+      "failure_condition": "No monotonic coverage decline across session time quartiles (Jonckheere-Terpstra p > 0.05)",
+      "statistical_test_plan": "Jonckheere-Terpstra test for ordered coverage across 4 time quartiles; logistic regression predicting miscoverage from session_time + task_type",
+      "falsification_test": "Stratify calibration/test split by time (early calibration → early test, late calibration → late test); if undercoverage disappears, mechanism confirmed; if persists, falsified"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Mondrian's category-conditional coverage guarantee fails when category frequencies are highly imbalanced in calibration set",
+      "proposed_mechanism": "WESAD has imbalanced task durations (baseline ~20min, TSST ~10min, meditation ~5min); random calibration split yields few samples for short tasks; Mondrian's quantile estimation for rare categories has high variance causing undercoverage specifically for minority categories",
+      "causal_path": "Task duration imbalance → Calibration sample size per category highly variable (n_baseline >> n_meditation) → High variance in empirical quantiles for small-n categories → Prediction intervals too narrow for rare categories by chance → Undercoverage for minority categories",
+      "mechanism_variables": [
+        "task_label",
+        "calibration_sample_size_per_category",
+        "category_nonconformity_quantile_variance",
+        "category_empirical_coverage",
+        "nominal_coverage"
+      ],
+      "possible_confounders": [
+        "subject_dropout",
+        "sensor_failure_by_task",
+        "random_split_variability"
+      ],
+      "control_variables": [
+        "total_calibration_size",
+        "random_seed"
+      ],
+      "rival_explanation": "Imbalance doesn't matter; undercoverage from physiological difficulty of short tasks",
+      "rival_prediction": "Coverage deficit correlates with task physiological complexity not sample size",
+      "distinguishing_test": "Compare coverage for meditation (short) vs fun (similar physiology, longer); mechanism predicts meditation worse due to n not physiology",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Meditation ~5min vs baseline ~20min → 4x sample size difference; quantile estimation error ~1/sqrt(n) → 2x higher variance for meditation; simulation suggests 8-12% coverage deficit for n<50",
+      "minimum_data_needed": [
+        "Task durations",
+        "Calibration sample counts per task",
+        "Per-task empirical coverage",
+        "Nonconformity score distributions per task",
+        "Multiple random split replicates"
+      ],
+      "testable_prediction": "Categories with calibration n < 50 will show coverage < 82% at nominal 90%; categories with n > 200 will show coverage > 88%",
+      "failure_condition": "No correlation between calibration sample size and coverage deficit across categories (p > 0.05)",
+      "statistical_test_plan": "Spearman correlation between log(calibration_n) and coverage deficit across categories; bootstrap confidence intervals for quantile estimates per category",
+      "falsification_test": "Use stratified calibration split ensuring equal n per category; if coverage equalizes, mechanism confirmed; if deficit persists for short tasks, falsified"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Non-exchangeability from subject-specific sensor calibration offsets violates Mondrian's category-level exchangeability",
+      "proposed_mechanism": "Wrist sensor placement variability (tightness, position, skin contact) creates subject-specific additive/multiplicative offsets in EDA/BVP/TEMP; Mondrian categories pool across subjects but offsets shift feature distributions per subject, making calibration scores non-exchangeable within category",
+      "causal_path": "Wrist_sensor_tightness + placement_position + skin_properties → Subject-specific feature offsets (EDA_baseline_shift, BVP_amplitude_scale) → Within-category feature distribution becomes mixture of shifted subject distributions → Calibration quantiles reflect mixture not individual → Test samples from extreme-offset subjects fall outside mixture quantiles → Undercoverage",
+      "mechanism_variables": [
+        "wrist_tightness_rating",
+        "wrist_placement_mm_from_ulnar",
+        "skin_hydration",
+        "EDA_baseline_offset",
+        "BVP_amplitude_scale",
+        "TEMP_offset",
+        "mondrian_category",
+        "subject_conditional_nonconformity",
+        "subject_coverage"
+      ],
+      "possible_confounders": [
+        "subject_arm_circumference",
+        "sensor_batch",
+        "experimenter_id"
+      ],
+      "control_variables": [
+        "task_type",
+        "chest_sensor_features",
+        "subject_id"
+      ],
+      "rival_explanation": "Offsets are negligible; undercoverage from physiological not sensor differences",
+      "rival_prediction": "Coverage deficit correlates with physiological traits not sensor fit metrics",
+      "distinguishing_test": "Regress per-subject coverage on sensor fit metrics controlling for physiology; mechanism predicts fit metrics significant",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "WESAD wrist placement varies; literature shows 2-5x EDA amplitude variation from placement; Mondrian pools across subjects so mixture quantile inflation ~10-15% for extreme offsets",
+      "minimum_data_needed": [
+        "Wrist sensor placement metadata (tightness, position)",
+        "Per-subject baseline feature statistics",
+        "Mondrian category assignments",
+        "Per-subject nonconformity scores",
+        "Per-subject coverage"
+      ],
+      "testable_prediction": "Subjects in worst quartile of wrist sensor fit (loose + poor contact) will show coverage < 80% at nominal 90%; best quartile > 88%",
+      "failure_condition": "No association between sensor fit metrics and coverage deficit after controlling for physiology (p > 0.05)",
+      "statistical_test_plan": "Linear mixed model: coverage ~ tightness + placement + skin_hydration + baseline_physiology + (1|subject); variance decomposition of nonconformity scores into within-subject vs between-subject components",
+      "falsification_test": "Normalize wrist features per-subject using baseline statistics before Mondrian; if coverage equalizes across fit quartiles, mechanism confirmed; if deficit persists, falsified"
+    }
+  ],
+  "total_tokens": 7572,
+  "completion_tokens": 7020
+}

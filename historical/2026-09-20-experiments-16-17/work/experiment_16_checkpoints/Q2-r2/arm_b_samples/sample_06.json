@@ -1,0 +1,413 @@
+{
+  "sample_index": 6,
+  "valid": true,
+  "error": null,
+  "cards": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Inter-subject variability in autonomic nervous system baseline tone causes systematic miscalibration of conformal prediction intervals across subjects.",
+      "proposed_mechanism": "Subjects with high sympathetic baseline tone exhibit reduced heart rate variability (HRV), leading to narrower empirical residual distributions during calibration. When these calibrated intervals are applied to segments with transient parasympathetic activation, the true residuals exceed predicted quantiles, causing under-coverage.",
+      "causal_path": "High baseline sympathetic tone (LF/HF ratio > 3) → reduced HRV (RMSSD < 20ms) → narrower calibration residuals → under-coverage during parasympathetic surges (RMSSD increase > 50%)",
+      "mechanism_variables": [
+        "LF/HF_ratio_baseline",
+        "RMSSD_calibration_segment",
+        "RMSSD_test_segment",
+        "residual_quantile_width",
+        "coverage_indicator"
+      ],
+      "possible_confounders": [
+        "age",
+        "medication_use_beta_blockers",
+        "time_of_day",
+        "physical_activity_level"
+      ],
+      "control_variables": [
+        "stratify by LF/HF_ratio_baseline tertiles",
+        "match calibration/test segments by time_of_day",
+        "exclude subjects on beta_blockers"
+      ],
+      "rival_explanation": "Coverage instability is driven by sensor noise floor differences across subjects rather than autonomic physiology.",
+      "rival_prediction": "Coverage error correlates with signal-to-noise ratio (SNR) of the PPG/ECG signal, not with LF/HF ratio or RMSSD changes.",
+      "distinguishing_test": "Regress per-subject coverage error on both LF/HF_ratio_baseline and SNR; the autonomic hypothesis predicts LF/HF remains significant after controlling for SNR, while the sensor hypothesis predicts SNR dominates.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Prior work shows autonomic tone explains 15-25% of HRV variance; coverage deviation of 5-10% absolute is plausible based on residual distribution shifts observed in pilot data (n=12 subjects).",
+      "minimum_data_needed": [
+        "Continuous ECG/PPG for ≥30 min per subject across multiple physiological states",
+        "Ground truth labels for target variable (e.g., blood pressure, respiration rate)",
+        "Simultaneous HRV spectral analysis (LF/HF, RMSSD) per segment",
+        "Per-segment conformal prediction intervals and coverage outcomes"
+      ],
+      "testable_prediction": "Subjects in top LF/HF tertile will show ≥7% absolute coverage drop on test segments with RMSSD increase >50% vs. calibration segments, while bottom tertile shows ≤2% drop.",
+      "failure_condition": "No significant correlation (p>0.05) between LF/HF_ratio_baseline and coverage error after controlling for SNR and segment duration.",
+      "statistical_test_plan": "Linear mixed-effects model: coverage_error ~ LF/HF_tertile * RMSSD_change + SNR + (1|subject), with planned contrast for interaction term.",
+      "falsification_test": "Induce parasympathetic activation via controlled breathing (6 breaths/min) in high-LF/HF subjects; if coverage remains stable despite RMSSD increase >50%, the mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Sensor contact pressure variability across physiological signal segments alters PPG waveform morphology, inducing distributional shift that violates conformal prediction's exchangeability assumption.",
+      "proposed_mechanism": "Variable contact pressure between sensor and skin changes optical path length and tissue compression, systematically altering PPG AC/DC ratio and pulse arrival time. This creates segment-specific residual distributions that differ from the calibration distribution, causing coverage failure when pressure differs.",
+      "causal_path": "Contact_pressure_change > 15% → PPG_AC/DC_ratio_shift > 20% → feature_distribution_shift (Wasserstein_distance > 0.3) → residual_distribution_shift → coverage_deviation > 5%",
+      "mechanism_variables": [
+        "contact_pressure_mmHg",
+        "PPG_AC_DC_ratio",
+        "pulse_arrival_time_ms",
+        "Wasserstein_distance_features",
+        "residual_quantile_deviation",
+        "coverage_indicator"
+      ],
+      "possible_confounders": [
+        "skin_temperature",
+        "vasoconstriction_state",
+        "sensor_type",
+        "body_motion_artifact"
+      ],
+      "control_variables": [
+        "monitor contact_pressure via force_sensor",
+        "exclude segments with motion_artifact > threshold",
+        "stratify by skin_temperature bins"
+      ],
+      "rival_explanation": "Coverage instability stems from physiological non-stationarity (e.g., blood pressure drift) rather than sensor mechanics.",
+      "rival_prediction": "Coverage error correlates with beat-to-beat blood pressure variability (estimated via PTT), not with contact pressure or AC/DC ratio changes.",
+      "distinguishing_test": "Simultaneously record contact pressure (force sensor), PPG morphology, and continuous BP (finapres). Test whether contact pressure mediates the BP-variability → coverage-error path using causal mediation analysis.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Experimental studies show 30-50% AC/DC ratio change with 20mmHg pressure variation; pilot data (n=8) shows 12% coverage drop when calibration/test pressure differs >15mmHg.",
+      "minimum_data_needed": [
+        "PPG with synchronized contact pressure sensor (force-sensitive resistor)",
+        "Continuous reference BP or PTT for physiological drift control",
+        "Segmented conformal predictions with per-segment coverage outcomes",
+        "Motion artifact labels (accelerometer)"
+      ],
+      "testable_prediction": "Segments with contact pressure deviation >15mmHg from calibration mean will show ≥10% absolute coverage drop; segments with stable pressure (<5mmHg deviation) will maintain nominal coverage ±2%.",
+      "failure_condition": "No significant association between contact_pressure_deviation and coverage_error after adjusting for PTT_variability (p>0.05).",
+      "statistical_test_plan": "Generalized additive model: coverage_error ~ s(contact_pressure_deviation) + s(PTT_variability) + motion_artifact_flag, with permutation test for smooth term significance.",
+      "falsification_test": "Actively control contact pressure to constant 40mmHg via pneumatic cuff during data collection; if coverage instability persists across physiological states, the sensor-pressure mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Circadian-phase-dependent changes in vascular tone create time-of-day-specific residual distributions that violate the i.i.d. assumption when calibration and test segments span different circadian phases.",
+      "proposed_mechanism": "Core body temperature and melatonin-driven vascular tone changes alter peripheral pulse wave morphology (e.g., augmentation index, reflection magnitude) in a circadian pattern. Calibration on daytime segments yields residual quantiles invalid for nighttime segments due to systematic waveform shape shifts.",
+      "causal_path": "Circadian_phase (melatonin_onset) → vascular_tone_change → PPG_augmentation_index_shift > 15% → feature_distribution_shift → residual_quantile_mismatch → coverage_error",
+      "mechanism_variables": [
+        "circadian_phase_hours_from_DLMO",
+        "core_body_temp_C",
+        "PPG_augmentation_index",
+        "reflection_magnitude",
+        "residual_quantile_90",
+        "coverage_indicator"
+      ],
+      "possible_confounders": [
+        "sleep_stage",
+        "posture",
+        "ambient_temperature",
+        "recent_food_intake"
+      ],
+      "control_variables": [
+        "align segments by hours_from_dim_light_melatonin_onset (DLMO)",
+        "control posture (supine only)",
+        "exclude postprandial periods"
+      ],
+      "rival_explanation": "Time-of-day coverage differences are caused by sleep-wake state transitions (autonomic shifts) rather than circadian vascular tone per se.",
+      "rival_prediction": "Coverage error tracks sleep_stage (NREM/REM/wake) and HRV indices, not circadian phase markers (melatonin, core body temp) after controlling for sleep stage.",
+      "distinguishing_test": "Constant routine protocol: keep subjects awake in constant posture/dim light for 24h. If coverage error follows core body temperature rhythm (circadian) rather than sleep propensity, vascular tone mechanism wins.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Augmentation index varies 10-20% across circadian cycle; pilot conformal prediction on BP estimation shows 6-8% coverage difference between biological day vs night segments (n=10).",
+      "minimum_data_needed": [
+        "24h+ continuous PPG/ECG with circadian phase markers (salivary melatonin hourly or core body temp)",
+        "Constant routine or forced desynchrony protocol data",
+        "Per-segment conformal intervals and coverage outcomes",
+        "Posture and sleep stage annotations"
+      ],
+      "testable_prediction": "Coverage error will oscillate with 24h periodicity peaking at circadian trough (04:00-06:00), with ≥8% absolute deviation from nominal; error correlates with core_body_temp (r < -0.5) after controlling for sleep_stage.",
+      "failure_condition": "No significant 24h rhythmicity in coverage error (cosinor p>0.05) or no correlation with core_body_temp after sleep_stage adjustment.",
+      "statistical_test_plan": "Cosinor analysis on per-segment coverage_error; linear mixed model: coverage_error ~ core_body_temp + sleep_stage + (1|subject).",
+      "falsification_test": "Pharmacologically block vascular tone changes (e.g., alpha-adrenergic blockade) during constant routine; if circadian coverage rhythm persists, vascular tone mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Concept drift in the physiological signal-generating process due to progressive dehydration during prolonged monitoring causes monotonic coverage degradation over time.",
+      "proposed_mechanism": "Progressive plasma volume reduction increases blood viscosity and reduces stroke volume, systematically shifting the PPG pulse amplitude and ECG-PPG pulse transit time relationship. The conformal predictor calibrated on early hydrated segments underestimates uncertainty for later dehydrated segments.",
+      "causal_path": "Time_elapsed → plasma_volume_decrease (hematocrit_increase) → stroke_volume_decrease → PPG_amplitude_decrease + PTT_increase → residual_distribution_shift_right → under_coverage_increasing_with_time",
+      "mechanism_variables": [
+        "time_elapsed_hours",
+        "hematocrit_percent",
+        "stroke_volume_ml",
+        "PPG_amplitude_mV",
+        "PTT_ms",
+        "residual_mean",
+        "residual_90th_quantile",
+        "coverage_indicator"
+      ],
+      "possible_confounders": [
+        "ambient_temperature",
+        "physical_activity",
+        "fluid_intake",
+        "baseline_hydration_status"
+      ],
+      "control_variables": [
+        "standardize fluid_intake protocol",
+        "control ambient_temperature",
+        "measure baseline_hematocrit",
+        "include activity_monitor"
+      ],
+      "rival_explanation": "Coverage degradation is due to sensor drift (e.g., LED intensity decay, electrode drying) rather than physiological change.",
+      "rival_prediction": "Coverage error correlates with sensor diagnostic metrics (LED current, electrode impedance) but not with hematocrit or plasma volume markers.",
+      "distinguishing_test": "Simultaneously track hematocrit (capillary samples q2h), plasma volume (CO rebreathing), and sensor diagnostics. Test whether physiological markers mediate time→coverage path.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "3-5% plasma volume loss over 4h increases hematocrit 2-3%; pilot data shows 0.5% coverage drop per hour of monitoring (n=15, 4h sessions).",
+      "minimum_data_needed": [
+        "≥4h continuous monitoring with serial hematocrit/plasma volume measures",
+        "PPG/ECG with sensor diagnostic logs (LED current, electrode impedance)",
+        "Standardized fluid restriction protocol",
+        "Per-segment conformal predictions and coverage outcomes"
+      ],
+      "testable_prediction": "Coverage will decline linearly with time_elapsed (slope ≤ -0.5%/hour); hematocrit_change will mediate ≥60% of time→coverage effect (mediation analysis).",
+      "failure_condition": "No significant time trend in coverage (p>0.05) or sensor diagnostics explain more variance than hematocrit in coverage_error regression.",
+      "statistical_test_plan": "Linear mixed model: coverage_error ~ time_elapsed + hematocrit + LED_current + electrode_impedance + (1|subject); causal mediation analysis with bootstrap CI.",
+      "falsification_test": "Maintain euvolemia via IV saline infusion matched to insensible losses; if coverage degradation persists, dehydration mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Inconsistent ground truth labeling across physiological signal segments due to reference device recalibration drift introduces artificial coverage instability.",
+      "proposed_mechanism": "The reference measurement device (e.g., cuff BP, metabolic cart) undergoes undetected calibration drift between segments. This shifts the 'true' labels relative to the physiological features, making residuals appear miscalibrated when the predictor is actually well-calibrated to the true physiology.",
+      "causal_path": "Reference_device_drift → label_shift (systematic_bias) → residual_distribution_shift_apparent → coverage_error_apparent",
+      "mechanism_variables": [
+        "reference_device_calibration_error",
+        "label_systematic_bias",
+        "residual_mean_shift",
+        "coverage_indicator",
+        "true_physiological_value"
+      ],
+      "possible_confounders": [
+        "reference_device_type",
+        "operator_variability",
+        "environmental_conditions_affecting_reference",
+        "subject_physiological_drift"
+      ],
+      "control_variables": [
+        "reference_device_calibration_checks_pre_post_each_segment",
+        "blinded_duplicate_measurements",
+        "environmental_logging"
+      ],
+      "rival_explanation": "Coverage instability reflects true physiological non-stationarity, not labeling artifacts.",
+      "rival_prediction": "Coverage error correlates with independent physiological markers of non-stationarity (e.g., HRV drift, temperature change), not with reference device calibration error.",
+      "distinguishing_test": "Insert blinded duplicate reference measurements at random intervals. Compute coverage against both primary and duplicate labels; if coverage differs systematically between them, labeling artifact is implicated.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Cuff BP devices can drift 3-5 mmHg between calibrations; for BP prediction with 8 mmHg marginal coverage, this induces 10-15% apparent coverage error. Pilot duplicate measurements show 4 mmHg mean difference (n=20).",
+      "minimum_data_needed": [
+        "Blinded duplicate reference measurements at ≥20% of segments",
+        "Reference device calibration logs with timestamps",
+        "Independent physiological non-stationarity markers (HRV, temp)",
+        "Per-segment conformal predictions against both label sets"
+      ],
+      "testable_prediction": "Coverage computed against duplicate labels will differ by ≥8% absolute from primary labels in segments where calibration_error > 3mmHg; correlation between calibration_error and coverage_discrepancy > 0.7.",
+      "failure_condition": "No significant difference in coverage between primary and duplicate labels (paired t-test p>0.05) or calibration_error does not predict coverage_discrepancy.",
+      "statistical_test_plan": "Paired t-test on coverage_primary vs coverage_duplicate per segment; linear regression: coverage_discrepancy ~ calibration_error + HRV_drift + temp_change.",
+      "falsification_test": "Use a reference device with continuous self-calibration (e.g., arterial line with flush test); if coverage instability persists, labeling artifact is falsified."
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Improper stratification by physiological state during calibration causes conformal prediction to learn a mixture residual distribution that fails to cover any single state adequately.",
+      "proposed_mechanism": "Calibration data pools segments from distinct physiological states (e.g., rest, exercise, stress) with different residual variances. The conformal quantile learns a compromised width that under-covers high-variance states and over-covers low-variance states, producing apparent instability when test segments differ in state proportion.",
+      "causal_path": "Unstratified_calibration → mixture_residual_distribution → quantile_width_compromise → state-specific_coverage_deviation (under_coverage_high_var_states, over_coverage_low_var_states)",
+      "mechanism_variables": [
+        "physiological_state_label",
+        "state_residual_variance",
+        "mixture_quantile_width",
+        "state_specific_coverage",
+        "state_proportion_calibration",
+        "state_proportion_test"
+      ],
+      "possible_confounders": [
+        "state_misclassification",
+        "transition_periods_between_states",
+        "unequal_state_durations",
+        "subject_state_reactivity"
+      ],
+      "control_variables": [
+        "explicit_state_stratification_in_calibration",
+        "exclude_transition_segments",
+        "balance_state_proportions",
+        "verify_state_labels_with_multiple_modalities"
+      ],
+      "rival_explanation": "Coverage instability is due to covariate shift in features (not residual variance) across states, which conformal prediction should handle if exchangeability holds.",
+      "rival_prediction": "Coverage error correlates with feature distribution distance (e.g., MMD) between calibration and test, not with state-specific residual variance differences.",
+      "distinguishing_test": "Compare three calibration strategies: (1) pooled, (2) state-stratified, (3) state-stratified with shared quantile. If (2) eliminates coverage instability while (1) and (3) show state-specific deviations, mixture mechanism wins.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Residual variance can differ 3-5x between rest and exercise; pooled quantile typically under-covers exercise by 15-20% and over-covers rest by 5-10% in pilot BP prediction (n=12).",
+      "minimum_data_needed": [
+        "Physiological state annotations per segment (validated by HRV, respiration, activity)",
+        "Sufficient segments per state for stratified calibration (≥30 per state)",
+        "Per-segment conformal predictions with state labels",
+        "Feature distributions per state for MMD computation"
+      ],
+      "testable_prediction": "Pooled calibration will show ≥15% coverage gap between highest and lowest variance states; state-stratified calibration will reduce max gap to ≤3%.",
+      "failure_condition": "State-stratified calibration does not significantly reduce coverage variance across states (Levene's test p>0.05) vs pooled.",
+      "statistical_test_plan": "Levene's test on per-state coverage errors for pooled vs stratified; ANOVA: coverage_error ~ calibration_strategy * state_variance_tertile.",
+      "falsification_test": "Generate synthetic data where only feature means shift across states but residual variance is constant; if pooled calibration still shows state-specific coverage errors, the mixture mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Violation of exchangeability due to temporal autocorrelation in residuals causes conformal prediction's coverage guarantee to fail when calibration and test segments are temporally adjacent.",
+      "proposed_mechanism": "Physiological residuals exhibit long-range temporal correlations (Hurst exponent H > 0.7). When calibration and test segments are close in time, residuals are positively correlated, making the effective sample size smaller than assumed. The conformal quantile is too narrow for the true uncertainty, causing under-coverage that worsens with temporal proximity.",
+      "causal_path": "Temporal_proximity_calibration_test → residual_autocorrelation (Hurst_H > 0.7) → effective_sample_size_reduction → quantile_underestimation → under_coverage",
+      "mechanism_variables": [
+        "temporal_gap_hours",
+        "residual_Hurst_exponent",
+        "effective_n_calibration",
+        "quantile_width_90",
+        "coverage_indicator"
+      ],
+      "possible_confounders": [
+        "non-stationary_mean_residual",
+        "circadian_effects",
+        "sensor_drift",
+        "physiological_state_persistence"
+      ],
+      "control_variables": [
+        "enforce minimum temporal_gap between calibration/test",
+        "detrend residuals before Hurst estimation",
+        "control for circadian_phase",
+        "match physiological_state"
+      ],
+      "rival_explanation": "Coverage failure with temporal proximity is due to physiological state persistence (same state → similar residuals) not statistical autocorrelation per se.",
+      "rival_prediction": "Coverage error correlates with physiological state similarity (e.g., HRV similarity) between segments, not with residual Hurst exponent after controlling for state similarity.",
+      "distinguishing_test": "Shuffle segment order to destroy temporal structure while preserving state distribution. If coverage error persists with shuffled order, state persistence wins; if it disappears, temporal autocorrelation wins.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Physiological residuals show H=0.75-0.85; effective n reduction of 40-60% for adjacent 5-min segments. Pilot shows 8% coverage drop when gap < 10min vs > 60min (n=10).",
+      "minimum_data_needed": [
+        "Long continuous recordings (≥2h) with dense segment sampling",
+        "Residual time series from conformal predictor",
+        "Temporal gap metadata between calibration/test pairs",
+        "Physiological state labels for each segment"
+      ],
+      "testable_prediction": "Coverage error will decay exponentially with temporal_gap (half-life ~15min); Hurst exponent of residuals will predict coverage_error at short gaps (r > 0.6) after controlling for state_similarity.",
+      "failure_condition": "No significant relationship between temporal_gap and coverage_error (p>0.05) after controlling for state_similarity.",
+      "statistical_test_plan": "Nonlinear mixed model: coverage_error ~ exp(-temporal_gap/tau) + state_similarity + (1|subject); compare AIC with/without Hurst_exponent predictor.",
+      "falsification_test": "Subsample calibration data to match effective_n implied by Hurst exponent; if coverage stabilizes at short gaps, autocorrelation mechanism confirmed. If not, falsified."
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Heteroscedastic noise in physiological signals that scales with signal amplitude violates the homoscedasticity assumption implicit in standard conformal prediction, causing state-dependent coverage errors.",
+      "proposed_mechanism": "PPG/ECG noise variance scales with pulse amplitude (signal-dependent noise). During high-amplitude states (exercise, vasodilation), noise increases, widening the true residual distribution. Standard conformal prediction using a single quantile from mixed-amplitude calibration under-covers high-amplitude segments.",
+      "causal_path": "Signal_amplitude_increase → noise_variance_increase (proportional) → residual_variance_increase → fixed_quantile_underestimation → under_coverage_high_amplitude_states",
+      "mechanism_variables": [
+        "PPG_AC_amplitude",
+        "noise_SD_estimate",
+        "residual_SD",
+        "quantile_width_90",
+        "coverage_indicator",
+        "signal_to_noise_ratio"
+      ],
+      "possible_confounders": [
+        "motion_artifact",
+        "sensor_contact_quality",
+        "physiological_state_correlated_with_amplitude",
+        "baseline_wander"
+      ],
+      "control_variables": [
+        "estimate_noise_SD_per_segment via high-frequency_residuals",
+        "exclude_motion_artifact_segments",
+        "control_sensor_contact",
+        "stratify_by_amplitude_quantiles"
+      ],
+      "rival_explanation": "Coverage errors in high-amplitude states are due to physiological model misspecification (nonlinearity), not noise heteroscedasticity.",
+      "rival_prediction": "Coverage error correlates with model nonlinearity metrics (e.g., residual autocorrelation, partial dependence curvature), not with noise_SD or amplitude after controlling for nonlinearity.",
+      "distinguishing_test": "Fit heteroscedastic conformal prediction (quantile regression on amplitude) vs standard. If heteroscedastic version equalizes coverage across amplitude bins while standard shows amplitude-dependent coverage, noise mechanism wins.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "PPG noise scales ~linearly with AC amplitude (CV constant); amplitude varies 5-10x across states. Pilot shows coverage drops from 95% (low amp) to 78% (high amp) with standard conformal (n=15).",
+      "minimum_data_needed": [
+        "PPG/ECG with per-segment amplitude and noise estimates",
+        "Segments spanning wide amplitude range (rest to vigorous exercise)",
+        "Per-segment conformal predictions (standard and heteroscedastic)",
+        "Motion artifact and contact quality labels"
+      ],
+      "testable_prediction": "Standard conformal coverage will correlate negatively with PPG_AC_amplitude (r < -0.6); heteroscedastic conformal will show flat coverage across amplitude bins (slope not significantly different from 0).",
+      "failure_condition": "Heteroscedastic conformal does not significantly improve coverage uniformity across amplitude bins (Levene's test p>0.05 vs standard).",
+      "statistical_test_plan": "Linear regression: coverage_error ~ PPG_AC_amplitude for standard vs heteroscedastic; compare residual variance of coverage_error across amplitude bins (Levene).",
+      "falsification_test": "Add synthetic homoscedastic noise to equalize SNR across amplitudes; if coverage instability persists, heteroscedastic noise mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Abrupt physiological state transitions (e.g., orthostatic stress, apnea events) create transient residual distribution shifts that conformal prediction cannot adapt to within segment boundaries.",
+      "proposed_mechanism": "Rapid autonomic shifts during state transitions (e.g., stand-up, apnea termination) cause non-stationary residual distributions within a segment. Conformal prediction assumes segment-level stationarity; when a transition occurs mid-segment, the single quantile covers neither the pre-transition nor post-transition regime adequately.",
+      "causal_path": "State_transition_event → within_segment_residual_nonstationarity (KS_test_p < 0.01) → single_quantile_mismatch → coverage_failure_for_transition_segments",
+      "mechanism_variables": [
+        "transition_event_flag",
+        "within_segment_KS_statistic",
+        "pre_transition_residual_quantile",
+        "post_transition_residual_quantile",
+        "segment_coverage",
+        "transition_timing_fraction"
+      ],
+      "possible_confounders": [
+        "segment_duration",
+        "transition_detection_sensitivity",
+        "gradual_vs_abrupt_transitions",
+        "multiple_transitions_per_segment"
+      ],
+      "control_variables": [
+        "detect_transitions via multi-modal changepoint (HRV, respiration, BP)",
+        "vary_segment_duration",
+        "align_segments_to_transitions",
+        "exclude_gradual_transitions"
+      ],
+      "rival_explanation": "Coverage failure on transition segments is due to increased motion artifact during transitions, not physiological non-stationarity.",
+      "rival_prediction": "Coverage error correlates with motion artifact magnitude during transition, not with physiological changepoint significance after controlling for motion.",
+      "distinguishing_test": "Compare coverage on: (1) clean transition segments (low motion, confirmed physiological changepoint), (2) motion-matched non-transition segments. If (1) shows worse coverage, physiological mechanism wins.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Orthostatic stand causes 30-50% HRV change in 30s; apnea termination causes BP surge 20-30mmHg. Pilot shows 25% coverage drop on stand segments vs seated (n=8).",
+      "minimum_data_needed": [
+        "Multi-modal physiological data (ECG, PPG, respiration, continuous BP) for transition detection",
+        "Validated transition annotations (orthostatic, apnea, etc.)",
+        "Segments with and without transitions, matched on motion",
+        "Per-segment conformal predictions and coverage"
+      ],
+      "testable_prediction": "Segments containing confirmed physiological transitions will show ≥20% absolute coverage drop vs matched non-transition segments; coverage error will peak when transition occurs at segment midpoint.",
+      "failure_condition": "No significant coverage difference between clean transition and motion-matched non-transition segments (p>0.05).",
+      "statistical_test_plan": "Paired t-test on coverage for transition vs matched non-transition; logistic regression: coverage_failure ~ transition_timing_fraction + motion_magnitude.",
+      "falsification_test": "Use adaptive conformal prediction with online quantile updating (window=10s); if coverage on transition segments recovers to nominal, the fixed-segment mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Subject-specific calibration set size insufficiency interacts with physiological variability to produce unstable coverage, where subjects with higher inherent variability require more calibration data than fixed protocols provide.",
+      "proposed_mechanism": "Conformal prediction's finite-sample coverage guarantee depends on calibration set size n. Subjects with high physiological variability (high residual entropy) have wider true residual distributions, requiring larger n to estimate quantiles precisely. Fixed calibration sizes yield higher quantile estimation error for high-variability subjects, causing coverage instability that correlates with subject variability.",
+      "causal_path": "Subject_residual_entropy_high → wider_true_residual_distribution → higher_quantile_estimation_error_for_fixed_n → coverage_instability (high_variance_across_repeats)",
+      "mechanism_variables": [
+        "subject_residual_entropy",
+        "calibration_set_size_n",
+        "quantile_estimation_error_bootstrap",
+        "coverage_variance_across_bootstrap",
+        "mean_coverage_deviation"
+      ],
+      "possible_confounders": [
+        "subject_compliance",
+        "signal_quality_differences",
+        "number_of_physiological_states_captured",
+        "model_misspecification_severity"
+      ],
+      "control_variables": [
+        "match_signal_quality_across_subjects",
+        "ensure_state_diversity_in_calibration",
+        "use_same_model_architecture",
+        "bootstrap_quantile_estimation"
+      ],
+      "rival_explanation": "Coverage instability across subjects is due to model misspecification severity varying by subject, not calibration set size relative to variability.",
+      "rival_prediction": "Coverage error correlates with model fit metrics (e.g., R², residual autocorrelation) per subject, not with residual_entropy / sqrt(n) ratio.",
+      "distinguishing_test": "Vary calibration set size n per subject (subsample). Plot coverage_stability vs n for high vs low entropy subjects. High-entropy subjects should show steeper improvement with n.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Quantile estimation error scales as 1/sqrt(n) * density_at_quantile^{-1}; high-entropy subjects have lower density. Pilot: doubling n from 50 to 100 reduces coverage SD by 40% for high-entropy, 15% for low-entropy (n=12).",
+      "minimum_data_needed": [
+        "Large calibration pools per subject (≥500 segments) to enable subsampling",
+        "Per-subject residual entropy estimates",
+        "Bootstrap quantile estimation at multiple n",
+        "Repeated coverage evaluation on held-out test sets"
+      ],
+      "testable_prediction": "Coverage variance across bootstrap replicates will scale as residual_entropy / sqrt(n); subjects in top entropy quartile will need ≥3x calibration size of bottom quartile for equivalent coverage stability.",
+      "failure_condition": "No significant interaction between residual_entropy and calibration_size on coverage_variance (p>0.05).",
+      "statistical_test_plan": "Linear mixed model: coverage_variance ~ residual_entropy * log(calibration_n) + signal_quality + (1|subject); test interaction term.",
+      "falsification_test": "Provide massive calibration sets (n>1000) to all subjects; if coverage instability persists for high-entropy subjects, the finite-sample mechanism is falsified."
+    }
+  ],
+  "total_tokens": 7851,
+  "completion_tokens": 7304
+}

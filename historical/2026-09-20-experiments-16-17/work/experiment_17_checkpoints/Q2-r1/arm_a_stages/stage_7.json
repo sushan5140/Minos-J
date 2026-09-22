@@ -1,0 +1,84 @@
+{
+  "falsification_tests": [
+    {
+      "minimum_data_needed": "Multi-subject ECG dataset with baseline heart rate, respiration rate, and QRS amplitude measured per subject; at least 20 subjects; segment length ≥30 seconds; sampling rate ≥250 Hz; calibration and test splits per subject.",
+      "hypothesis_id": "H1",
+      "failure_condition": "If the slope of coverage deviation on baseline variability is not significantly less than zero (one-sided p > 0.05), the hypothesis fails.",
+      "most_likely_false_positive_risk": "Confounding by age, medication use, or signal-to-noise ratio creating a spurious association between baseline variability and coverage deviation.",
+      "most_likely_false_negative_risk": "Insufficient inter‑subject variability in baseline measures or low statistical power due to small sample size masking a true negative slope.",
+      "strongest_falsification_test": "Fit a linear mixed‑effects model with coverage deviation as outcome, baseline variability score (PCA of HR, respiration, QRS amplitude) as fixed effect, subject as random intercept, controlling for age, sex, and SNR; test the fixed‑effect slope < 0 with a one‑sided Wald test."
+    },
+    {
+      "minimum_data_needed": "Wearable ECG patch recordings with electrode impedance, amplifier gain, environmental interference power, and noise variance logged over time; at least 1 hour per subject; sampling rate 500 Hz; stable ambient temperature; segments sufficient for sliding‑window coverage.",
+      "hypothesis_id": "H2",
+      "failure_condition": "If coverage deviation does not show a significant negative association with impedance/noise variance (one-sided p > 0.05), the hypothesis fails.",
+      "most_likely_false_positive_risk": "Uncontrolled changes in ambient temperature, subject movement, or battery voltage correlating with impedance shifts and producing spurious coverage effects.",
+      "most_likely_false_negative_risk": "Limited range of impedance variation during recording or high measurement noise obscuring the true relationship.",
+      "strongest_falsification_test": "Compute coverage deviation in temporal windows; correlate window‑level impedance and noise variance with coverage deviation using Spearman correlation; test one‑sided hypothesis that correlation < 0 while controlling for temperature, movement, and battery voltage."
+    },
+    {
+      "minimum_data_needed": "Polysomnography or controlled exercise dataset with physiological state labels (sleep/wake, rest/exercise); heart‑rate variability index, movement count, and MET per segment; segment length ≥1 minute; stable ambient conditions; at least 30 segments per state.",
+      "hypothesis_id": "H3",
+      "failure_condition": "If empirical coverage in higher arousal states is not significantly lower than in lower arousal states (one-sided p > 0.05), the hypothesis fails.",
+      "most_likely_false_positive_risk": "Confounding by time of day, caffeine intake, or ambient noise that co‑varies with state and influences coverage independently.",
+      "most_likely_false_negative_risk": "Insufficient contrast between low and high arousal states or low event count reducing power to detect a coverage drop.",
+      "strongest_falsification_test": "Compute coverage deviation per segment; compare coverage between low and high arousal states using a one‑sided paired t‑test (or Wilcoxon signed‑rank if non‑normal) testing that coverage in high arousal < coverage in low arousal, adjusting for time of day, caffeine, and ambient noise."
+    },
+    {
+      "minimum_data_needed": "Physiological signals (EEG or ECG) with sampling rate ≥250 Hz; segment length ≥10 seconds; lag‑1 autocorrelation coefficient estimated per segment; at least 50 segments.",
+      "hypothesis_id": "H4",
+      "failure_condition": "If the slope of coverage deviation on autocorrelation is not significantly less than zero (one-sided p > 0.05), the hypothesis fails.",
+      "most_likely_false_positive_risk": "Variations in segment length, sampling rate, or filtering bandwidth that co‑vary with autocorrelation and affect coverage independently.",
+      "most_likely_false_negative_risk": "Low variability in autocorrelation across segments or high measurement error in ρ reducing ability to detect a true negative slope.",
+      "strongest_falsification_test": "Regress coverage deviation on lag‑1 autocorrelation using linear regression (optionally with block bootstrap for robust SEs); test slope < 0 with a one‑sided t‑test, controlling for segment length, sampling rate, and filtering bandwidth."
+    },
+    {
+      "minimum_data_needed": "Expert‑annotated arrhythmia dataset with ability to synthetically corrupt labels; known label error rates (e.g., 0%, 5%, 10%, 20%); segments containing ≥1 annotated event; inter‑annotator agreement <0.8.",
+      "hypothesis_id": "H5",
+      "failure_condition": "If coverage deviation does not show a significant decreasing trend with increasing label error rate (one-sided p > 0.05 for Jonckheere‑Terpstra trend test), the hypothesis fails.",
+      "most_likely_false_positive_risk": "Confounding by annotator experience, signal clarity, or event rarity that co‑varies with induced label errors and influences coverage.",
+      "most_likely_false_negative_risk": "Synthetic label corruption not reflecting real error patterns or insufficient granularity of error levels to detect a trend.",
+      "strongest_falsification_test": "For each label error level compute coverage deviation; apply the Jonckheere‑Terpstra test for ordered alternatives (decreasing coverage with increasing error) using a one‑sided alternative, controlling for annotator experience, signal clarity, and event rarity."
+    },
+    {
+      "minimum_data_needed": "Dataset with physiological rare events (e.g., seizures or rare arrhythmias) prevalence <1%; calibration set size ≥5000 samples; ability to vary number of rare samples in calibration (e.g., via subsampling); at least 100 rare‑event test segments.",
+      "hypothesis_id": "H6",
+      "failure_condition": "If coverage on rare‑event test segments does not increase significantly with more rare samples in calibration (one-sided p > 0.05), the hypothesis fails.",
+      "most_likely_false_positive_risk": "Confounding by overall calibration set size, class imbalance in training data, or signal quality for rare events that co‑vary with rare sample count and affect coverage.",
+      "most_likely_false_negative_risk": "Too few rare‑event test segments or insufficient variation in rare sample count limiting power to detect a positive association.",
+      "strongest_falsification_test": "Create multiple calibration sets with varying rare sample counts; compute coverage on a held‑out rare‑event test set; test for a positive association between rare sample count and coverage using Spearman correlation (one‑sided > 0), controlling for overall calibration size, training‑data class imbalance, and rare‑event signal quality."
+    },
+    {
+      "minimum_data_needed": "ECG recordings with amplitude range 0.1–5 mV; segments with varying activity levels; sampling rate ≥250 Hz; amplitude measured as RMS per segment; at least 30 segments distributed across amplitude bins.",
+      "hypothesis_id": "H7",
+      "failure_condition": "If the slope of coverage deviation on amplitude is not significantly less than zero (one-sided p > 0.05), the hypothesis fails.",
+      "most_likely_false_positive_risk": "Confounding by baseline noise level, filtering cutoff, or subject movement that co‑varies with amplitude and influences coverage independently.",
+      "most_likely_false_negative_risk": "Limited amplitude range or high measurement error in RMS reducing ability to detect a true negative slope.",
+      "strongest_falsification_test": "Bin segments by amplitude (low, medium, high); compute coverage deviation per bin; fit linear regression of coverage deviation on mean amplitude; test slope < 0 using a one‑sided t‑test, controlling for baseline noise, filtering cutoff, and subject movement."
+    },
+    {
+      "minimum_data_needed": "Ambulatory recordings with mild exercise; artifact detection threshold >3 SD; segment length ≥5 seconds; at least 20 minutes of recording; artifact occurrence logged per minute.",
+      "hypothesis_id": "H8",
+      "failure_condition": "If mean interval width does not show a significant positive association with artifact occurrence rate (one-sided p > 0.05), the hypothesis fails.",
+      "most_likely_false_positive_risk": "Confounding by subject activity level, electrode contact quality, or recording duration that co‑varies with artifact rate and affects interval width.",
+      "most_likely_false_negative_risk": "Low variability in artifact occurrence or high measurement noise obscuring the true positive relationship.",
+      "strongest_falsification_test": "Compute artifact occurrence rate per minute and mean interval width in non‑overlapping windows; test for a positive correlation using Spearman correlation with a one‑sided alternative (correlation > 0), controlling for activity level, electrode contact quality, and recording duration."
+    },
+    {
+      "minimum_data_needed": "Multi‑site study with varying devices and documented protocol changes (sampling rate, filter cutoff, segmentation window); segment length ≥5 seconds; at least 10 segments per protocol condition.",
+      "hypothesis_id": "H9",
+      "failure_condition": "If coverage deviation does not show a significant positive association with sampling rate and filter cutoff (one-sided p > 0.05 for each coefficient), the hypothesis fails.",
+      "most_likely_false_positive_risk": "Confounding by subject demographics, signal condition, or experimenter that co‑varies with protocol changes and influences coverage independently.",
+      "most_likely_false_negative_risk": "Insufficient variation in sampling rate or filter cutoff across sites or high measurement noise reducing power to detect the expected positive association.",
+      "strongest_falsification_test": "Compute coverage deviation per segment; fit a linear mixed‑effects model with coverage deviation as outcome, sampling rate (Hz) and filter cutoff (Hz) as fixed effects, site as random intercept; test each fixed effect > 0 using one‑sided Wald tests, controlling for subject demographics, signal condition, and experimenter."
+    },
+    {
+      "minimum_data_needed": "Closed‑loop neurostimulation or adaptive filtering system; real‑time processing latency <50 ms; calibration set collected before feedback activation; at least 30 minutes of post‑feedback data; adaptive filter gain logged over time.",
+      "hypothesis_id": "H10",
+      "failure_condition": "If coverage deviation does not show a significant negative association with adaptive filter gain (one-sided p > 0.05), the hypothesis fails.",
+      "most_likely_false_positive_risk": "Confounding by feedback loop latency, baseline signal stability, or adaptive filter type that co‑varies with gain and influences coverage independently.",
+      "most_likely_false_negative_risk": "Limited range of adaptive filter gain variation or high measurement noise obscuring the true negative relationship.",
+      "strongest_falsification_test": "Compute coverage deviation in sliding windows; correlate adaptive filter gain with coverage deviation using Spearman correlation; test one‑sided hypothesis that correlation < 0 while controlling for loop latency, baseline signal stability, and filter type."
+    }
+  ]
+}

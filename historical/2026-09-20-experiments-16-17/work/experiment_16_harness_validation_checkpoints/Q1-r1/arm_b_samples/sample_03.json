@@ -1,0 +1,279 @@
+{
+  "sample_index": 3,
+  "valid": true,
+  "error": null,
+  "cards": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Fake hypothesis 1 (n809) with a specific variable relation.",
+      "proposed_mechanism": "Fake proposed_mechanism 1 (n144) with a specific variable relation.",
+      "causal_path": "Fake causal_path 1 (n411) with a specific variable relation.",
+      "mechanism_variables": [
+        "Fake mechanism_variables 1 (n80) with a specific variable relation."
+      ],
+      "possible_confounders": [
+        "Fake possible_confounders 1 (n325) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control_variables 1 (n86) with a specific variable relation."
+      ],
+      "rival_explanation": "Fake rival_explanation 1 (n888) with a specific variable relation.",
+      "rival_prediction": "Fake rival_prediction 1 (n537) with a specific variable relation.",
+      "distinguishing_test": "Fake distinguishing_test 1 (n149) with a specific variable relation.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Fake effect_size_rationale 1 (n484) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake minimum_data_needed 1 (n41) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake testable_prediction 1 (n322) with a specific variable relation.",
+      "failure_condition": "Fake failure_condition 1 (n675) with a specific variable relation.",
+      "statistical_test_plan": "Fake statistical_test_plan 1 (n409) with a specific variable relation.",
+      "falsification_test": "Fake falsification_test 1 (n363) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Fake hypothesis 2 (n486) with a specific variable relation.",
+      "proposed_mechanism": "Fake proposed_mechanism 2 (n194) with a specific variable relation.",
+      "causal_path": "Fake causal_path 2 (n800) with a specific variable relation.",
+      "mechanism_variables": [
+        "Fake mechanism_variables 2 (n135) with a specific variable relation."
+      ],
+      "possible_confounders": [
+        "Fake possible_confounders 2 (n0) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control_variables 2 (n541) with a specific variable relation."
+      ],
+      "rival_explanation": "Fake rival_explanation 2 (n849) with a specific variable relation.",
+      "rival_prediction": "Fake rival_prediction 2 (n64) with a specific variable relation.",
+      "distinguishing_test": "Fake distinguishing_test 2 (n84) with a specific variable relation.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Fake effect_size_rationale 2 (n510) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake minimum_data_needed 2 (n624) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake testable_prediction 2 (n423) with a specific variable relation.",
+      "failure_condition": "Fake failure_condition 2 (n535) with a specific variable relation.",
+      "statistical_test_plan": "Fake statistical_test_plan 2 (n493) with a specific variable relation.",
+      "falsification_test": "Fake falsification_test 2 (n902) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Fake hypothesis 3 (n34) with a specific variable relation.",
+      "proposed_mechanism": "Fake proposed_mechanism 3 (n569) with a specific variable relation.",
+      "causal_path": "Fake causal_path 3 (n800) with a specific variable relation.",
+      "mechanism_variables": [
+        "Fake mechanism_variables 3 (n520) with a specific variable relation."
+      ],
+      "possible_confounders": [
+        "Fake possible_confounders 3 (n972) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control_variables 3 (n40) with a specific variable relation."
+      ],
+      "rival_explanation": "Fake rival_explanation 3 (n908) with a specific variable relation.",
+      "rival_prediction": "Fake rival_prediction 3 (n771) with a specific variable relation.",
+      "distinguishing_test": "Fake distinguishing_test 3 (n754) with a specific variable relation.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Fake effect_size_rationale 3 (n576) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake minimum_data_needed 3 (n713) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake testable_prediction 3 (n725) with a specific variable relation.",
+      "failure_condition": "Fake failure_condition 3 (n8) with a specific variable relation.",
+      "statistical_test_plan": "Fake statistical_test_plan 3 (n171) with a specific variable relation.",
+      "falsification_test": "Fake falsification_test 3 (n917) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Fake hypothesis 4 (n565) with a specific variable relation.",
+      "proposed_mechanism": "Fake proposed_mechanism 4 (n187) with a specific variable relation.",
+      "causal_path": "Fake causal_path 4 (n517) with a specific variable relation.",
+      "mechanism_variables": [
+        "Fake mechanism_variables 4 (n894) with a specific variable relation."
+      ],
+      "possible_confounders": [
+        "Fake possible_confounders 4 (n692) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control_variables 4 (n105) with a specific variable relation."
+      ],
+      "rival_explanation": "Fake rival_explanation 4 (n40) with a specific variable relation.",
+      "rival_prediction": "Fake rival_prediction 4 (n222) with a specific variable relation.",
+      "distinguishing_test": "Fake distinguishing_test 4 (n989) with a specific variable relation.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Fake effect_size_rationale 4 (n767) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake minimum_data_needed 4 (n658) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake testable_prediction 4 (n38) with a specific variable relation.",
+      "failure_condition": "Fake failure_condition 4 (n525) with a specific variable relation.",
+      "statistical_test_plan": "Fake statistical_test_plan 4 (n108) with a specific variable relation.",
+      "falsification_test": "Fake falsification_test 4 (n5) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Fake hypothesis 5 (n359) with a specific variable relation.",
+      "proposed_mechanism": "Fake proposed_mechanism 5 (n145) with a specific variable relation.",
+      "causal_path": "Fake causal_path 5 (n443) with a specific variable relation.",
+      "mechanism_variables": [
+        "Fake mechanism_variables 5 (n415) with a specific variable relation."
+      ],
+      "possible_confounders": [
+        "Fake possible_confounders 5 (n943) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control_variables 5 (n198) with a specific variable relation."
+      ],
+      "rival_explanation": "Fake rival_explanation 5 (n805) with a specific variable relation.",
+      "rival_prediction": "Fake rival_prediction 5 (n653) with a specific variable relation.",
+      "distinguishing_test": "Fake distinguishing_test 5 (n651) with a specific variable relation.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Fake effect_size_rationale 5 (n372) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake minimum_data_needed 5 (n955) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake testable_prediction 5 (n985) with a specific variable relation.",
+      "failure_condition": "Fake failure_condition 5 (n558) with a specific variable relation.",
+      "statistical_test_plan": "Fake statistical_test_plan 5 (n535) with a specific variable relation.",
+      "falsification_test": "Fake falsification_test 5 (n662) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Fake hypothesis 6 (n237) with a specific variable relation.",
+      "proposed_mechanism": "Fake proposed_mechanism 6 (n23) with a specific variable relation.",
+      "causal_path": "Fake causal_path 6 (n883) with a specific variable relation.",
+      "mechanism_variables": [
+        "Fake mechanism_variables 6 (n232) with a specific variable relation."
+      ],
+      "possible_confounders": [
+        "Fake possible_confounders 6 (n594) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control_variables 6 (n64) with a specific variable relation."
+      ],
+      "rival_explanation": "Fake rival_explanation 6 (n140) with a specific variable relation.",
+      "rival_prediction": "Fake rival_prediction 6 (n215) with a specific variable relation.",
+      "distinguishing_test": "Fake distinguishing_test 6 (n496) with a specific variable relation.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Fake effect_size_rationale 6 (n402) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake minimum_data_needed 6 (n643) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake testable_prediction 6 (n85) with a specific variable relation.",
+      "failure_condition": "Fake failure_condition 6 (n593) with a specific variable relation.",
+      "statistical_test_plan": "Fake statistical_test_plan 6 (n218) with a specific variable relation.",
+      "falsification_test": "Fake falsification_test 6 (n939) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Fake hypothesis 7 (n311) with a specific variable relation.",
+      "proposed_mechanism": "Fake proposed_mechanism 7 (n168) with a specific variable relation.",
+      "causal_path": "Fake causal_path 7 (n320) with a specific variable relation.",
+      "mechanism_variables": [
+        "Fake mechanism_variables 7 (n529) with a specific variable relation."
+      ],
+      "possible_confounders": [
+        "Fake possible_confounders 7 (n167) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control_variables 7 (n866) with a specific variable relation."
+      ],
+      "rival_explanation": "Fake rival_explanation 7 (n715) with a specific variable relation.",
+      "rival_prediction": "Fake rival_prediction 7 (n399) with a specific variable relation.",
+      "distinguishing_test": "Fake distinguishing_test 7 (n469) with a specific variable relation.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Fake effect_size_rationale 7 (n595) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake minimum_data_needed 7 (n800) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake testable_prediction 7 (n83) with a specific variable relation.",
+      "failure_condition": "Fake failure_condition 7 (n942) with a specific variable relation.",
+      "statistical_test_plan": "Fake statistical_test_plan 7 (n771) with a specific variable relation.",
+      "falsification_test": "Fake falsification_test 7 (n358) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Fake hypothesis 8 (n862) with a specific variable relation.",
+      "proposed_mechanism": "Fake proposed_mechanism 8 (n244) with a specific variable relation.",
+      "causal_path": "Fake causal_path 8 (n227) with a specific variable relation.",
+      "mechanism_variables": [
+        "Fake mechanism_variables 8 (n440) with a specific variable relation."
+      ],
+      "possible_confounders": [
+        "Fake possible_confounders 8 (n783) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control_variables 8 (n80) with a specific variable relation."
+      ],
+      "rival_explanation": "Fake rival_explanation 8 (n406) with a specific variable relation.",
+      "rival_prediction": "Fake rival_prediction 8 (n703) with a specific variable relation.",
+      "distinguishing_test": "Fake distinguishing_test 8 (n925) with a specific variable relation.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Fake effect_size_rationale 8 (n901) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake minimum_data_needed 8 (n922) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake testable_prediction 8 (n313) with a specific variable relation.",
+      "failure_condition": "Fake failure_condition 8 (n504) with a specific variable relation.",
+      "statistical_test_plan": "Fake statistical_test_plan 8 (n1) with a specific variable relation.",
+      "falsification_test": "Fake falsification_test 8 (n205) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Fake hypothesis 9 (n196) with a specific variable relation.",
+      "proposed_mechanism": "Fake proposed_mechanism 9 (n85) with a specific variable relation.",
+      "causal_path": "Fake causal_path 9 (n193) with a specific variable relation.",
+      "mechanism_variables": [
+        "Fake mechanism_variables 9 (n986) with a specific variable relation."
+      ],
+      "possible_confounders": [
+        "Fake possible_confounders 9 (n572) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control_variables 9 (n7) with a specific variable relation."
+      ],
+      "rival_explanation": "Fake rival_explanation 9 (n956) with a specific variable relation.",
+      "rival_prediction": "Fake rival_prediction 9 (n932) with a specific variable relation.",
+      "distinguishing_test": "Fake distinguishing_test 9 (n387) with a specific variable relation.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Fake effect_size_rationale 9 (n661) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake minimum_data_needed 9 (n382) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake testable_prediction 9 (n706) with a specific variable relation.",
+      "failure_condition": "Fake failure_condition 9 (n821) with a specific variable relation.",
+      "statistical_test_plan": "Fake statistical_test_plan 9 (n221) with a specific variable relation.",
+      "falsification_test": "Fake falsification_test 9 (n745) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Fake hypothesis 10 (n412) with a specific variable relation.",
+      "proposed_mechanism": "Fake proposed_mechanism 10 (n350) with a specific variable relation.",
+      "causal_path": "Fake causal_path 10 (n719) with a specific variable relation.",
+      "mechanism_variables": [
+        "Fake mechanism_variables 10 (n28) with a specific variable relation."
+      ],
+      "possible_confounders": [
+        "Fake possible_confounders 10 (n172) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control_variables 10 (n436) with a specific variable relation."
+      ],
+      "rival_explanation": "Fake rival_explanation 10 (n588) with a specific variable relation.",
+      "rival_prediction": "Fake rival_prediction 10 (n551) with a specific variable relation.",
+      "distinguishing_test": "Fake distinguishing_test 10 (n789) with a specific variable relation.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Fake effect_size_rationale 10 (n578) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake minimum_data_needed 10 (n358) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake testable_prediction 10 (n631) with a specific variable relation.",
+      "failure_condition": "Fake failure_condition 10 (n981) with a specific variable relation.",
+      "statistical_test_plan": "Fake statistical_test_plan 10 (n77) with a specific variable relation.",
+      "falsification_test": "Fake falsification_test 10 (n432) with a specific variable relation."
+    }
+  ],
+  "total_tokens": 4256,
+  "completion_tokens": 3622
+}

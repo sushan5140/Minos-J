@@ -1,0 +1,234 @@
+{
+  "confounder_rival_builds": [
+    {
+      "hypothesis_id": "H1",
+      "possible_confounders": [
+        "Sensor placement variability across subjects (e.g., wrist vs. chest, tightness)",
+        "Body composition differences (BMI, adiposity) affecting signal quality",
+        "Age-related vascular stiffness differences not captured by HRV",
+        "Medication use (beta-blockers, antihypertensives) altering autonomic readings"
+      ],
+      "control_variables": [
+        "Standardized sensor placement protocol",
+        "BMI, age, sex as covariates in conformal predictor",
+        "Medication logs and exclusion criteria",
+        "Within-subject normalization of HRV metrics"
+      ],
+      "boring_rival_explanations": [
+        "Coverage instability stems from systematic sensor placement differences across subjects, not autonomic physiology",
+        "Body composition (adiposity) attenuates PPG/ECG amplitude, increasing residual variance independent of autonomic state",
+        "Age-related arterial stiffening changes pulse wave morphology, causing model misspecification that mimics autonomic heterogeneity"
+      ],
+      "rival_prediction": "If sensor placement or body composition drives coverage deviation, then coverage will correlate with signal amplitude/quality metrics (e.g., PPG AC/DC ratio) rather than autonomic parameters (RMSSD, BRS) after controlling for subject ID.",
+      "distinguishing_condition": "In a multivariate regression of per-subject coverage deviation on both autonomic parameters (RMSSD, LF/HF) and signal quality metrics (PPG SNR, AC/DC ratio), the signal quality metrics remain significant predictors (p < 0.01) while autonomic parameters become non-significant (p > 0.05).",
+      "confounder_rival_notes": "Requires simultaneous measurement of autonomic markers and signal quality indices per subject per segment. Testable by re-analyzing existing multi-subject datasets with added signal quality covariates."
+    },
+    {
+      "hypothesis_id": "H2",
+      "possible_confounders": [
+        "Physiological state changes co-occurring with motion (e.g., stress increases both movement and HRV)",
+        "Electrode impedance changes due to sweating (physiological) vs. mechanical loosening (artifact)",
+        "Skin temperature changes affecting both impedance and vascular tone",
+        "Circadian variation in baseline impedance independent of motion"
+      ],
+      "control_variables": [
+        "Simultaneous reference ECG/PPG with gel electrodes as ground truth",
+        "Skin temperature and sweat rate monitoring",
+        "Controlled motion protocols (treadmill, arm movements) at fixed physiological states",
+        "Impedance spectroscopy at multiple frequencies to separate contact vs. tissue effects"
+      ],
+      "boring_rival_explanations": [
+        "Coverage drops during high-motion segments because physiological dynamics genuinely change (e.g., HRV suppression during exercise), not because sensor noise corrupts measurements",
+        "Sweating reduces electrode impedance and improves contact, counteracting motion artifacts; net effect on coverage is non-monotonic",
+        "Impedance drift correlates with recording duration (gel drying), which also correlates with circadian phase, creating spurious motion-artifact association"
+      ],
+      "rival_prediction": "If physiological state changes drive coverage failure, then segments with matched motion levels but different physiological states (e.g., stress vs. exercise at same accelerometer variance) will show different coverage; if sensor noise drives it, coverage will depend only on motion/impedance metrics regardless of physiological state.",
+      "distinguishing_condition": "In a controlled protocol where subjects perform matched-motion tasks at different physiological arousal levels (e.g., mental stress vs. physical exercise at same accelerometer RMS), coverage deviation correlates with physiological state markers (e.g., cortisol, HRV) after adjusting for motion metrics (p < 0.01 for state, p > 0.05 for motion).",
+      "confounder_rival_notes": "Requires disentangling motion artifact from true physiological non-stationarity. Best tested with simultaneous reference-grade and wearable sensors during controlled state manipulations."
+    },
+    {
+      "hypothesis_id": "H3",
+      "possible_confounders": [
+        "Movement artifacts coinciding with state transitions (e.g., body movements during arousals)",
+        "Signal quality degradation during transitions (e.g., electrode displacement during posture change)",
+        "Circadian modulation of state transition frequency and duration",
+        "Medication effects on sleep architecture and transition dynamics"
+      ],
+      "control_variables": [
+        "Accelerometer-derived movement intensity during transitions",
+        "Signal quality indices (SQI) per 30-sec epoch",
+        "Time-of-day and circadian phase as covariates",
+        "Medication status and timing"
+      ],
+      "boring_rival_explanations": [
+        "Coverage drops at state transitions because movement artifacts corrupt the signal during transitions (e.g., body movements during arousals), not because autonomic dynamics change",
+        "Transitions involve brief signal quality drops (electrode displacement, sensor motion) that bias conformity scores, mimicking distributional shifts",
+        "The apparent transition effect is confounded by circadian phase: transitions cluster at certain phases where coverage is worse for independent reasons"
+      ],
+      "rival_prediction": "If movement artifacts drive coverage drops, then coverage will correlate with movement intensity during transition windows regardless of state type; if autonomic shifts drive it, coverage will correlate with autonomic markers (HRV complexity, RSA) after controlling for movement.",
+      "distinguishing_condition": "In segments with verified state transitions (PSG-scored) but low movement (accelerometer variance < 10th percentile), coverage still drops ≥ 10% post-transition; conversely, high-movement periods without state transitions show no coverage drop.",
+      "confounder_rival_notes": "Requires high-resolution PSG + accelerometer + physiological signals. Testable by stratifying transitions by movement intensity and measuring coverage recovery dynamics."
+    },
+    {
+      "hypothesis_id": "H4",
+      "possible_confounders": [
+        "Daily activity/sleep patterns (behavioral) driving both circadian phase and signal characteristics",
+        "Environmental temperature cycles affecting both skin temperature and sensor performance",
+        "Mealtimes and metabolic cycles influencing physiology and signal quality",
+        "Light exposure patterns affecting both circadian phase and activity"
+      ],
+      "control_variables": [
+        "Continuous actigraphy and light exposure monitoring",
+        "Ambient and skin temperature logging",
+        "Meal timing and composition logs",
+        "Forced desynchrony or constant routine protocol data (gold standard)"
+      ],
+      "boring_rival_explanations": [
+        "Coverage oscillates because daily activity patterns (sleep/wake, exercise) create non-stationarity, not endogenous circadian rhythms",
+        "Environmental temperature cycles cause sensor drift (e.g., PPG baseline wander) that mimics circadian residual shifts",
+        "Postprandial hemodynamic changes after meals create periodic residual shifts aligned with mealtimes, not circadian phase"
+      ],
+      "rival_prediction": "If behavioral/environmental cycles drive coverage oscillation, then coverage rhythm will persist in constant routine conditions (constant posture, dim light, hourly snacks) but with altered phase/amplitude; if endogenous circadian drives it, rhythm will free-run with ~24.2h period in constant routine.",
+      "distinguishing_condition": "In a constant routine protocol (≥ 40h), coverage oscillation persists with a period significantly different from 24h (e.g., 24.2 ± 0.5h) and phase-locks to DLMO, not clock time; in normal conditions, coverage oscillation phase-locks to clock time/activity.",
+      "confounder_rival_notes": "Gold standard test requires constant routine or forced desynchrony data. In observational data, use structural equation modeling to separate endogenous vs. exogenous rhythmic components."
+    },
+    {
+      "hypothesis_id": "H5",
+      "possible_confounders": [
+        "True physiological variability in ambiguous segments (e.g., N1/N2 boundary) that raters disagree on because physiology is genuinely intermediate",
+        "Signal quality degradation causing both labeling difficulty and prediction difficulty",
+        "Rater fatigue/drift correlating with recording duration or time-of-day",
+        "Systematic scoring differences between labs/scorers unrelated to signal characteristics"
+      ],
+      "control_variables": [
+        "Signal quality index (SQI) per segment",
+        "Physiological ambiguity metrics (e.g., entropy, spectral boundary features)",
+        "Rater identity, experience, and time-on-task",
+        "Adjudicated consensus labels as ground truth reference"
+      ],
+      "boring_rival_explanations": [
+        "Low inter-rater agreement marks segments where physiology is genuinely ambiguous (transitional states), and the model correctly reflects this uncertainty; conformal coverage appears off because the 'true' label is undefined",
+        "Poor signal quality causes both labeling disagreement and prediction errors; label noise is a proxy for signal quality, not an independent confounder",
+        "Rater drift over time creates artificial segment-dependent noise that correlates with recording session, not physiology"
+      ],
+      "rival_prediction": "If true physiological ambiguity drives coverage deviation, then segments with low rater agreement but high signal quality will show symmetric coverage errors (both over/under); if label noise drives it, coverage errors will correlate with rater-specific biases (e.g., systematic over-scoring of N3) after controlling for SQI.",
+      "distinguishing_condition": "Using adjudicated labels as ground truth, segments with high initial disagreement (kappa < 0.6) but high SQI show coverage within 2% of nominal when calibrated on adjudicated labels; segments with low SQI show coverage deviation > 8% even with adjudicated labels.",
+      "confounder_rival_notes": "Requires multi-rater annotated data with adjudication. Testable by simulating label noise at known rates vs. selecting genuinely ambiguous segments via physiological features."
+    },
+    {
+      "hypothesis_id": "H6",
+      "possible_confounders": [
+        "Motion artifacts during exercise corrupting sensor signals (confounded with activity)",
+        "Hemodynamic changes (BP, vascular tone) during exercise altering signal morphology independent of autonomic dynamics",
+        "Sensor displacement during vigorous activity changing optical path / electrode contact",
+        "Sweating altering electrode impedance and PPG baseline"
+      ],
+      "control_variables": [
+        "Reference-grade signals (arterial line, cuff BP) during controlled exercise protocols",
+        "Accelerometer-derived motion artifact metrics (frequency-domain separation)",
+        "Skin temperature and sweat rate",
+        "Sensor contact force/pressure monitoring (if available)"
+      ],
+      "boring_rival_explanations": [
+        "Undercoverage during exercise is caused by motion artifacts corrupting the PPG/ECG waveform, not by genuine cardiovascular dynamics changes",
+        "Sensor displacement during movement changes the measurement geometry, creating apparent residual shifts that are measurement artifacts",
+        "Sweating reduces electrode impedance, changing noise characteristics in a way that mimics physiological non-stationarity"
+      ],
+      "rival_prediction": "If motion artifacts drive undercoverage, then coverage during exercise will correlate with motion artifact metrics (accelerometer high-frequency power) after controlling for activity intensity (METs); if cardiovascular dynamics drive it, coverage will correlate with hemodynamic markers (pulse transit time, BP variability) after controlling for motion.",
+      "distinguishing_condition": "In a controlled exercise protocol with simultaneous reference BP and wearable PPG, segments matched on METs but differing in motion artifact severity (e.g., cycling vs. running at same METs) show coverage deviation tracking motion metrics (p < 0.01) not METs (p > 0.05).",
+      "confounder_rival_notes": "Critical to separate motion artifact from true physiological non-stationarity. Best tested with reference hemodynamics during controlled activities with different motion profiles at matched intensity."
+    },
+    {
+      "hypothesis_id": "H7",
+      "possible_confounders": [
+        "Measured covariates that are imperfect proxies for the true confounders (e.g., self-reported medication adherence vs. actual plasma levels)",
+        "Time-varying measured covariates not included in the model (e.g., posture, recent food intake)",
+        "Selection bias: segments with certain confounder values are more likely to be recorded",
+        "Carryover effects from prior segments (e.g., medication half-life, hydration persistence)"
+      ],
+      "control_variables": [
+        "Objective confounder measures: plasma drug levels, urine specific gravity, salivary caffeine",
+        "High-frequency posture/activity monitoring",
+        "Segment sequencing and temporal dependency modeling",
+        "Sensitivity analysis parameters (Rosenbaum Γ bounds)"
+      ],
+      "boring_rival_explanations": [
+        "Coverage variation is explained by measured covariates that were omitted from the conformal predictor (e.g., posture, recent caffeine), not by unmeasured confounders",
+        "The apparent confounder effect is actually selection bias: segments with extreme confounder values are underrepresented in calibration",
+        "Temporal autocorrelation in residuals creates spurious segment-wise coverage variation that mimics confounding"
+      ],
+      "rival_prediction": "If measured but omitted covariates drive coverage variation, then adding them to the conformal predictor (as stratification or covariates) will eliminate the coverage-confounder correlation; if truly unmeasured confounders drive it, coverage variation will persist even after adjusting for all measured covariates, and sensitivity analysis will require large Γ to explain away.",
+      "distinguishing_condition": "In a dataset with gold-standard confounder measures (plasma drug levels, urine osmolarity), adding these to the conformal framework reduces coverage-confounder correlation to non-significance (p > 0.05) and brings conditional coverage within 2% of nominal across confounder strata.",
+      "confounder_rival_notes": "Requires dataset with measured putative confounders. Testable via sequential addition of confounder proxies to conformal predictor and Rosenbaum sensitivity analysis on residual coverage variation."
+    },
+    {
+      "hypothesis_id": "H8",
+      "possible_confounders": [
+        "Physiological state changes causing both missingness and signal changes (e.g., arrhythmia causing both dropout and HRV changes)",
+        "Device-specific firmware/algorithm differences affecting both sampling and signal processing",
+        "Battery voltage drops causing both reduced sampling and sensor performance degradation",
+        "Environmental interference (EMI) causing both packet loss and signal corruption"
+      ],
+      "control_variables": [
+        "Device firmware version and hardware revision",
+        "Battery voltage logging",
+        "EMI environment monitoring (if feasible)",
+        "Simultaneous reference sensor with wired connection"
+      ],
+      "boring_rival_explanations": [
+        "Missing data is a symptom of physiological events (e.g., arrhythmia, movement) that also change the signal distribution; the missingness mechanism is not the cause",
+        "Device firmware updates change both sampling behavior and signal processing, creating apparent missingness effects that are actually software version effects",
+        "Low battery reduces both transmission rate and sensor drive current, degrading signal quality independently of missing data pattern"
+      ],
+      "rival_prediction": "If physiological events drive both missingness and coverage failure, then segments with artificially induced MCAR missingness (simulated dropout) will maintain nominal coverage, while segments with physiologically correlated missingness will not; if missingness mechanism itself drives it, MCAR missingness will also degrade coverage.",
+      "distinguishing_condition": "In a dataset with simultaneous wired reference and wireless wearable, artificially imposing MCAR missingness (random dropout) on the wireless stream at 30% rate yields coverage within 3% of nominal, while the native MNAR missingness at same rate yields coverage deviation > 10%.",
+      "confounder_rival_notes": "Testable by controlled missingness injection experiments on complete datasets with known ground truth. Requires distinguishing missingness mechanism from physiological correlates."
+    },
+    {
+      "hypothesis_id": "H9",
+      "possible_confounders": [
+        "Segment length correlates with physiological state (e.g., short segments during transitions, long during stable sleep)",
+        "Segment length correlates with signal quality (e.g., event-triggered recordings stop when signal degrades)",
+        "Model complexity interacts with segment-specific non-stationarity, not just sample size",
+        "Calibration segment selection bias: shorter segments may be systematically different"
+      ],
+      "control_variables": [
+        "Physiological state labels per segment",
+        "Signal quality metrics per segment",
+        "Explicit modeling of segment-length-dependent quantile estimation error (bootstrap)",
+        "Hierarchical/Bayesian conformal methods that pool information across segments"
+      ],
+      "boring_rival_explanations": [
+        "Short segments have worse coverage because they occur during physiologically unstable periods (transitions, artifacts), not because of finite-sample quantile estimation error",
+        "Segment length is a proxy for signal quality: event-triggered recordings capture brief clean epochs; coverage fails due to signal quality, not sample size",
+        "The model is misspecified for certain physiological regimes that happen to produce shorter segments; coverage fails due to misspecification, not finite-sample effects"
+      ],
+      "rival_prediction": "If finite-sample effects drive coverage instability, then coverage variance will scale as √(DoF/n_seg) even when segments are randomly subsampled from a stationary process; if physiological confounding drives it, coverage variance will correlate with state/quality metrics after controlling for n_seg.",
+      "distinguishing_condition": "In a stationary physiological signal (e.g., resting ECG during stable sleep), randomly subsampled segments of varying lengths show coverage variance scaling as √(DoF/n_seg) with no residual correlation with any physiological metric; in real heterogeneous data, this scaling explains < 50% of coverage variance.",
+      "confounder_rival_notes": "Requires separating statistical finite-sample effects from physiological confounding. Best tested by subsampling experiments on known-stationary data vs. real heterogeneous data."
+    },
+    {
+      "hypothesis_id": "H10",
+      "possible_confounders": [
+        "Covariate shift: morphology distribution changes across segments, but model error is independent of morphology (coverage fails due to covariate shift, not morphology-dependent misspecification)",
+        "Unmeasured hemodynamic variables (e.g., vascular resistance, compliance) driving both morphology and target, creating spurious morphology-error correlation",
+        "Sensor-specific morphology differences (e.g., wrist vs. finger PPG) confounded with subject groups",
+        "Calibration set morphology distribution not representative of deployment distribution (dataset shift)"
+      ],
+      "control_variables": [
+        "Simultaneous reference waveforms (tonometry, arterial line) for morphology validation",
+        "Vascular tone interventions (cold pressor, nitroglycerin, tilt table) to induce controlled morphology shifts",
+        "Multi-site PPG recordings to separate sensor-specific from physiological morphology variation",
+        "Explicit morphology features as covariates in conformal predictor"
+      ],
+      "boring_rival_explanations": [
+        "Coverage fails because the test morphology distribution shifts outside the calibration support (covariate shift), not because model error depends on morphology per se",
+        "Unmeasured hemodynamic state (e.g., vascular resistance) drives both morphology and BP; model error correlates with morphology only because both correlate with the true driver",
+        "Sensor placement differences (wrist vs. finger) create morphology differences that correlate with subject cohorts; coverage fails due to sensor-specific calibration, not morphology-dependent error"
+      ],
+      "rival_prediction": "If covariate shift drives coverage failure, then importance-weighted conformal prediction (weighting calibration by test morphology density) will restore nominal coverage without adding morphology as a covariate; if morphology-dependent misspecification drives it, importance weighting will fail but morphology-stratified conformal will succeed.",
+      "distinguishing_condition": "In a dataset with induced morphology shifts (vascular interventions), importance-weighted conformal prediction using morphology density ratios achieves coverage within 3% of nominal across all shift magnitudes, while standard conformal shows > 10% deviation; morphology-stratified conformal also works but is not necessary.",
+      "confounder_rival_notes": "Critical distinction: covariate shift vs. concept shift (morphology-dependent error). Testable via vascular interventions that shift morphology while monitoring reference hemodynamics, comparing importance weighting vs. stratification."
+    }
+  ]
+}

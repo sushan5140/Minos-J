@@ -1,0 +1,254 @@
+{
+  "mechanism_builds": [
+    {
+      "hypothesis_id": "H1",
+      "mechanism_variables": [
+        "Subject-specific HRV metrics (RMSSD, LF/HF ratio)",
+        "Baroreflex sensitivity (BRS) estimated via sequence method",
+        "Sympathetic/parasympathetic balance index (e.g., LFnu/HFnu)",
+        "Segment-wise residual mean and variance",
+        "Subject ID and segment ID"
+      ],
+      "causal_path": "Inter-subject variation in autonomic control parameters (HRV, BRS) → systematic differences in segment-wise residual distribution parameters (mean, variance, skewness) across subjects → violation of exchangeability assumption when pooling calibration residuals across subjects → coverage probability for new subject deviates from nominal level",
+      "expected_direction": "Higher inter-subject coefficient of variation in autonomic parameters (e.g., RMSSD CV > 30%) predicts larger absolute coverage deviation (|empirical coverage - nominal| > 0.05) for left-one-subject-out calibration",
+      "domain_specific_boundary_conditions": [
+        "Calibration set excludes target subject (leave-one-subject-out)",
+        "Segments ≥ 5 minutes for reliable HRV/BRS estimation",
+        "Autonomic parameter variability across subjects exceeds within-subject variability across segments",
+        "No subject-level covariates included in conformal predictor"
+      ],
+      "measurable_outcomes": [
+        "Per-subject coverage probability at nominal 90% level",
+        "Correlation between subject autonomic parameter distance from calibration pool mean and coverage deviation",
+        "Calibration set coverage vs. test subject coverage gap",
+        "Quantile-quantile plot deviation of test residuals vs. calibration residuals"
+      ],
+      "mechanism_builder_notes": "Mechanism requires quantifying autonomic parameters per subject per segment; testable via leave-one-subject-out conformal prediction on multi-subject physiological datasets (e.g., MESA, CAP, or wearable studies)."
+    },
+    {
+      "hypothesis_id": "H2",
+      "mechanism_variables": [
+        "Electrode-skin impedance magnitude (ohms) at segment start/end",
+        "Triaxial accelerometer variance (motion artifact proxy)",
+        "Signal-to-noise ratio (SNR) of PPG/ECG per segment",
+        "Segment-wise residual variance and kurtosis",
+        "Conformity score empirical quantile per segment"
+      ],
+      "causal_path": "Electrode impedance drift + motion artifacts → heteroscedastic, non-stationary noise process → segment-dependent residual variance and heavy-tailed distributions → calibration quantile estimated on low-noise segments underestimates required interval width for high-noise segments → systematic undercoverage on noisy segments",
+      "expected_direction": "Segments in top quartile of impedance drift (>20% change) or accelerometer variance show coverage ≤ 80% at nominal 90%, while bottom quartile segments maintain ≥ 88% coverage",
+      "domain_specific_boundary_conditions": [
+        "Dry-electrode wearable sensors (PPG/ECG) in free-living conditions",
+        "Motion artifacts correlated with physiological state (e.g., stress-induced movement)",
+        "Calibration segments predominantly low-noise (resting)",
+        "No artifact rejection or adaptive noise modeling in predictor"
+      ],
+      "measurable_outcomes": [
+        "Coverage probability stratified by impedance drift quartile",
+        "Coverage probability stratified by accelerometer variance quartile",
+        "Correlation between segment SNR and coverage deviation",
+        "Residual variance vs. artifact metrics regression slope"
+      ],
+      "mechanism_builder_notes": "Testable by inducing controlled impedance changes (e.g., gel drying) and motion protocols while recording reference signals; compare conformal coverage across artifact-severity strata."
+    },
+    {
+      "hypothesis_id": "H3",
+      "mechanism_variables": [
+        "Physiological state labels (sleep stage: N1/N2/N3/REM, arousal level)",
+        "State transition timestamps (from PSG or validated algorithms)",
+        "Segment-wise residual distribution parameters (mean, variance, entropy)",
+        "Sliding calibration window size (samples)",
+        "Recalibration frequency (segments between updates)"
+      ],
+      "causal_path": "Autonomic state transition (e.g., NREM→REM, sleep→wake) → step-change in signal dynamics (HRV complexity, RSA amplitude) → abrupt shift in residual distribution → sliding-window recalibration lag exceeds state duration → conformity score quantile miscalibrated during transition → coverage drop",
+      "expected_direction": "Coverage drops ≥ 10% below nominal within 2 minutes post-transition; drop magnitude inversely proportional to (window size / state duration) ratio; coverage recovers only after window fully contains new-state samples",
+      "domain_specific_boundary_conditions": [
+        "State transitions faster than calibration window (e.g., micro-arousals < 30s, window ≥ 5 min)",
+        "State labels unavailable for stratified conformal prediction",
+        "Autonomic shift magnitude alters residual variance by ≥ 2×",
+        "Continuous monitoring with ground-truth state annotations (PSG)"
+      ],
+      "measurable_outcomes": [
+        "Coverage as function of time since state transition (0-10 min bins)",
+        "Minimum window size achieving ≤ 5% coverage drop at transitions",
+        "Coverage drop magnitude vs. state transition type (e.g., N2→REM vs. N3→wake)",
+        "Recalibration frequency needed for nominal coverage per state"
+      ],
+      "mechanism_builder_notes": "Requires high-resolution state annotations; testable on sleep datasets (e.g., SHHS, MESA Sleep) with sliding-window conformal prediction and known state transitions."
+    },
+    {
+      "hypothesis_id": "H4",
+      "mechanism_variables": [
+        "Circadian phase (hours from dim-light melatonin onset, DLMO)",
+        "Ultradian phase (cycle index within 90-120 min cycles)",
+        "Core body temperature (CBT) or proxy (wrist skin temperature)",
+        "Cortisol level or proxy (time since wake)",
+        "Segment-wise residual mean, variance, and conformity score quantile"
+      ],
+      "causal_path": "Endogenous circadian/ultradian rhythms → periodic modulation of baseline physiology (CBT, cortisol, autonomic tone) and signal-to-noise ratio → periodic shifts in residual distribution (mean bias, variance) → fixed calibration set (single time window) fails to capture phase-dependent shifts → coverage oscillates with time-of-day",
+      "expected_direction": "Coverage oscillates with circadian period (24h) and ultradian period (90-120 min); minimum coverage at circadian phases with maximal residual variance (e.g., circadian trough ~04:00-06:00) and/or maximal model bias; amplitude of coverage oscillation ≥ 5% at nominal 90%",
+      "domain_specific_boundary_conditions": [
+        "Continuous monitoring ≥ 48 hours spanning multiple circadian cycles",
+        "Rhythmic variations not fully mediated by observed covariates (e.g., activity, posture)",
+        "Calibration window shorter than circadian period (e.g., 24h calibration on 7-day data)",
+        "No time-of-day or phase features in predictor or conformal framework"
+      ],
+      "measurable_outcomes": [
+        "Coverage probability binned by circadian phase (4-h bins relative to DLMO)",
+        "Amplitude and phase of coverage oscillation (cosinor analysis)",
+        "Correlation between residual variance and CBT/cortisol proxy",
+        "Coverage deviation when calibrating on single phase vs. all phases"
+      ],
+      "mechanism_builder_notes": "Testable in multi-day ambulatory studies with circadian phase markers (DLMO, CBT); compare conformal coverage across circadian bins using fixed vs. phase-stratified calibration."
+    },
+    {
+      "hypothesis_id": "H5",
+      "mechanism_variables": [
+        "Inter-rater agreement (Cohen's kappa) per segment for target annotation",
+        "Intra-rater consistency (within-rater kappa across time)",
+        "Label noise rate estimated via latent class model or adjudication",
+        "Signal quality index (SQI) per segment",
+        "Conformity score distribution parameters per segment"
+      ],
+      "causal_path": "Inter-rater variability + intra-rater drift → segment-dependent label noise distribution (heteroscedastic, correlated with SQI) → conformity scores computed against noisy labels reflect annotation artifacts → calibration quantile biased toward noise distribution → coverage guarantee invalid (covers noisy labels, not true state)",
+      "expected_direction": "Segments with kappa < 0.7 show coverage deviation ≥ 8% from nominal; direction of deviation depends on noise asymmetry (e.g., systematic over-scoring of deep sleep → overcoverage for deep sleep, undercoverage for light sleep)",
+      "domain_specific_boundary_conditions": [
+        "Physiological event labeling with known inter-rater variability (e.g., sleep staging, seizure detection)",
+        "Label noise heteroscedastic across segments (worse in low-SQI segments)",
+        "No gold-standard adjudicated labels for calibration",
+        "Conformal predictor uses raw annotations as ground truth"
+      ],
+      "measurable_outcomes": [
+        "Coverage vs. segment-level inter-rater kappa (binned)",
+        "Bias in conformity score quantile vs. label noise rate estimate",
+        "Coverage stratified by SQI tertiles",
+        "Difference in coverage when using adjudicated vs. single-rater labels for calibration"
+      ],
+      "mechanism_builder_notes": "Requires multi-rater annotated dataset (e.g., MASS, Sleep-EDF with multiple scorers); testable by simulating label noise at known rates and measuring conformal coverage degradation."
+    },
+    {
+      "hypothesis_id": "H6",
+      "mechanism_variables": [
+        "Activity type (rest, walk, run, bike, etc.) from accelerometer classification",
+        "Activity intensity (METs or vector magnitude counts/min)",
+        "Cardiovascular dynamics metrics (HR turbulence, BP variability, pulse transit time)",
+        "Sensor noise metrics (motion artifact power, SNR)",
+        "Residual distribution parameters per activity stratum"
+      ],
+      "causal_path": "Physical activity → altered cardiovascular dynamics (HR turbulence, BP variability) + increased sensor noise → distinct residual regimes per activity → unstratified calibration mixes regimes → empirical quantile reflects mixture distribution → intervals too narrow for high-dynamic states (exercise) → systematic undercoverage during exercise",
+      "expected_direction": "Undercoverage ≥ 15% at nominal 90% during vigorous activity (METs > 6) when calibrated on mixed/rest data; overcoverage ≥ 5% during rest if calibration dominated by exercise; activity-stratified calibration restores nominal coverage per stratum",
+      "domain_specific_boundary_conditions": [
+        "Free-living monitoring with diverse activities (rest to vigorous)",
+        "Activity context unobserved or not used for stratified conformal prediction",
+        "Residual variance during exercise ≥ 3× rest variance",
+        "Sufficient samples per activity for stratified calibration (≥ 100 segments)"
+      ],
+      "measurable_outcomes": [
+        "Coverage per activity type/intensity bin",
+        "Coverage deviation vs. METs (continuous)",
+        "Minimum activity stratification granularity (number of strata) for nominal coverage",
+        "Calibration quantile shift when adding activity as stratification variable"
+      ],
+      "mechanism_builder_notes": "Testable on datasets with synchronized accelerometer and physiological signals (e.g., PPG-DaLiA, WESAD, Apple Watch studies); compare unstratified vs. activity-stratified conformal prediction."
+    },
+    {
+      "hypothesis_id": "H7",
+      "mechanism_variables": [
+        "Unmeasured confounder proxies: hydration (urine specific gravity, bioimpedance), medication timing (hours since dose), caffeine/alcohol intake (self-report)",
+        "Measured covariates (age, sex, BMI, activity, time-of-day)",
+        "Segment/session indicator",
+        "Residual values and conformity scores",
+        "Confounder distribution shift magnitude across segments (e.g., KL divergence)"
+      ],
+      "causal_path": "Unobserved confounders (hydration, medication, caffeine) → simultaneous influence on physiological signal (e.g., HRV, BP) and prediction target → segment-wise residual dependencies conditional on observed covariates → marginal conformal coverage guarantee does not protect against conditional coverage failure → coverage varies with confounder distribution across segments",
+      "expected_direction": "Coverage deviation correlates with confounder distribution shift magnitude (e.g., |coverage - nominal| > 0.05 when KL divergence of hydration distribution > 0.5); segments with medication-on vs. medication-off show ≥ 10% coverage gap",
+      "domain_specific_boundary_conditions": [
+        "Key confounders vary systematically across recording sessions/segments",
+        "Confounders not captured in feature set (no medication logs, hydration measures)",
+        "Exchangeability violated conditional on observed covariates",
+        "No randomized intervention to break confounding"
+      ],
+      "measurable_outcomes": [
+        "Coverage vs. proxy confounder measures (binned)",
+        "Sensitivity analysis bounds (e.g., Γ-value for hidden bias)",
+        "Residual correlation with unmeasured factors in subset with proxy data",
+        "Conditional coverage given observed covariates vs. marginal coverage gap"
+      ],
+      "mechanism_builder_notes": "Requires dataset with measured confounders (e.g., medication timestamps, hydration markers) to simulate hidden confounding; testable via sensitivity analysis (Rosenbaum bounds) on conformal coverage."
+    },
+    {
+      "hypothesis_id": "H8",
+      "mechanism_variables": [
+        "Effective sampling rate per segment (Hz)",
+        "Missing data rate (%) and pattern (burst vs. random)",
+        "Missingness mechanism classification (MCAR/MAR/MNAR via Little's test)",
+        "Imputation method (linear, spline, model-based) or downsampling factor",
+        "Residual distribution parameters and conformity score quantile per segment"
+      ],
+      "causal_path": "Non-random missingness correlated with signal quality (e.g., Bluetooth dropout during motion) → selection bias in observed calibration residuals → imputation/downsampling alters residual distributions differently across segments (distortion depends on missingness pattern) → conformity score distribution shifts across segments → coverage instability",
+      "expected_direction": "Segments with MNAR missingness > 20% show coverage deviation ≥ 10% from nominal; direction depends on imputation bias (e.g., linear interpolation underestimates variability → overcoverage); MCAR missingness ≤ 30% maintains nominal coverage",
+      "domain_specific_boundary_conditions": [
+        "Wearable sensors with Bluetooth/wireless transmission (dropout-prone)",
+        "Missingness correlated with motion/physiological state (MNAR)",
+        "Irregular sampling rates across segments/devices",
+        "No missing-data-aware conformal method (e.g., weighted conformal)"
+      ],
+      "measurable_outcomes": [
+        "Coverage vs. missing data rate (binned by mechanism: MCAR/MAR/MNAR)",
+        "Coverage vs. effective sampling rate",
+        "Bias in conformity score quantile under different imputation methods",
+        "Coverage when using missingness-aware vs. standard conformal prediction"
+      ],
+      "mechanism_builder_notes": "Testable by artificially introducing controlled missingness patterns (MCAR/MAR/MNAR) into complete physiological datasets and measuring conformal coverage degradation across imputation strategies."
+    },
+    {
+      "hypothesis_id": "H9",
+      "mechanism_variables": [
+        "Segment length (number of calibration samples n_seg)",
+        "Model effective degrees of freedom (DoF) or complexity measure (e.g., number of parameters, Rademacher complexity)",
+        "Conformity score empirical quantile estimation error (bootstrap SE)",
+        "Nominal coverage level (1-α)",
+        "Empirical coverage per segment"
+      ],
+      "causal_path": "Short segment length relative to model complexity → high-variance empirical quantile of conformity scores (finite-sample effect) → noisy coverage estimate per segment → segment-length-dependent coverage instability → variance of coverage across segments increases as n_seg/DoF decreases → worst for complex models (high DoF) on short segments",
+      "expected_direction": "Coverage standard deviation across segments scales as √(DoF / n_seg); segments with n_seg/DoF < 10 show coverage variance ≥ 0.02² at nominal 90%; bias toward undercoverage for shortest segments due to quantile estimation bias",
+      "domain_specific_boundary_conditions": [
+        "Segment lengths vary substantially (e.g., event-triggered recordings: 30s to 30min)",
+        "Model complexity high relative to shortest segments (DoF > n_min/5)",
+        "Finite calibration set (no asymptotic regime)",
+        "No pooling or hierarchical modeling across segments"
+      ],
+      "measurable_outcomes": [
+        "Coverage variance across segments vs. n_seg/DoF ratio",
+        "Coverage bias (mean - nominal) vs. segment length",
+        "Minimum n_seg for coverage variance < 0.01² at given DoF",
+        "Coverage improvement with hierarchical/Bayesian conformal methods"
+      ],
+      "mechanism_builder_notes": "Testable by subsampling calibration segments to varying lengths and measuring coverage distribution; compare fixed-window vs. adaptive conformal methods on heterogeneous segment lengths."
+    },
+    {
+      "hypothesis_id": "H10",
+      "mechanism_variables": [
+        "Pulse wave morphology features: augmentation index (AIx), pulse wave velocity (PWV), systolic/diastolic peak ratio, waveform entropy",
+        "Vascular tone indicators: mean arterial pressure, arterial stiffness index",
+        "Model prediction error (residual) per beat/segment",
+        "Morphology distribution shift metric (e.g., Wasserstein distance between calibration and test morphology features)",
+        "Segment-wise coverage"
+      ],
+      "causal_path": "Model misspecification (e.g., BP from PPG using fixed transfer function) → systematic error dependent on pulse wave morphology → morphology changes across segments due to vascular tone, aging, pathology → residual distribution shifts with morphology distribution → conformal calibration on one morphology distribution fails on shifted distribution → coverage breaks",
+      "expected_direction": "Coverage deviation correlates with morphology distribution shift magnitude (Wasserstein distance > 0.5 → |coverage - nominal| > 0.08); segments with morphology features outside calibration convex hull show undercoverage ≥ 15%; including morphology as covariate in stratified conformal prediction restores nominal coverage",
+      "domain_specific_boundary_conditions": [
+        "Predictive model for hemodynamic target from waveform (e.g., cuffless BP from PPG)",
+        "Model error depends on morphology features not included as covariates",
+        "Morphology varies across segments (vasodilation/constriction, pathology, aging)",
+        "Calibration morphology distribution differs from test deployment distribution"
+      ],
+      "measurable_outcomes": [
+        "Coverage vs. morphology distribution shift (Wasserstein distance bins)",
+        "Residual error vs. morphology features (AIx, PWV) regression",
+        "Coverage when adding morphology features to conformal stratification",
+        "Calibration quantile shift per morphology cluster"
+      ],
+      "mechanism_builder_notes": "Testable on cuffless BP datasets with simultaneous PPG and tonometry (e.g., MIMIC, VitalDB, or dedicated calibration studies); induce morphology shifts via vascular interventions (cold pressor, nitroglycerin) or compare young vs. old cohorts."
+    }
+  ]
+}

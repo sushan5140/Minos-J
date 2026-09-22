@@ -1,0 +1,8 @@
+{
+  "sample_index": 2,
+  "valid": false,
+  "error": "PipelineValidationError: Baseline sample must contain exactly 10 hypotheses; got 9.",
+  "cards": [],
+  "total_tokens": 3892,
+  "completion_tokens": 3258
+}

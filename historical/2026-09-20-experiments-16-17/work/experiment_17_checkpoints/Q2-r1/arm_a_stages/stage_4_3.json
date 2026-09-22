@@ -1,0 +1,159 @@
+{
+  "statistical_testability_builds": [
+    {
+      "hypothesis_id": "H1",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "To estimate effect size, a pilot study is needed that measures the change in empirical coverage (difference from nominal) per unit increase in a composite baseline variability score (e.g., PCA of baseline heart rate, respiration, and QRS amplitude) across subjects, allowing calculation of Cohen's d or regression slope magnitude.",
+      "minimum_data_needed": [
+        "Multi-subject physiological signal dataset (e.g., ECG) with baseline heart rate, respiration rate, and QRS amplitude measured per subject",
+        "At least 20 subjects",
+        "Segment length >=30 seconds",
+        "Sampling rate >=250 Hz",
+        "Calibration and test splits per subject"
+      ],
+      "testable_prediction": "Higher subject-specific baseline physiological variability leads to lower empirical coverage (under-coverage) relative to the nominal level.",
+      "failure_condition": "If the slope of coverage deviation on baseline variability is not significantly less than zero (one-sided p > 0.05), the hypothesis fails.",
+      "statistical_test_plan": "Compute empirical coverage per test segment; fit a linear mixed-effects model with coverage deviation as outcome, baseline variability score as fixed effect, and subject as random intercept; test the fixed effect slope < 0 using a one-sided Wald test.",
+      "statistical_testability_notes": "Control for age, sex, and signal-to-noise ratio as confounders."
+    },
+    {
+      "hypothesis_id": "H2",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size estimation requires a pilot experiment where electrode impedance or noise variance is systematically varied (e.g., via saline injection) and the resulting change in coverage deviation is measured, allowing computation of the standardized mean difference or regression slope.",
+      "minimum_data_needed": [
+        "Wearable ECG patch recordings with electrode impedance, amplifier gain, environmental interference power, and noise variance logged over time",
+        "At least 1 hour recording per subject",
+        "Sampling rate 500 Hz",
+        "Ambient temperature stable",
+        "Segments sufficient to compute coverage in sliding windows"
+      ],
+      "testable_prediction": "Higher electrode impedance or noise variance leads to lower empirical coverage (under-coverage).",
+      "failure_condition": "If coverage deviation does not show a significant negative association with impedance/noise variance (one-sided p > 0.05), the hypothesis fails.",
+      "statistical_test_plan": "Compute coverage deviation in temporal windows; correlate window-level impedance/noise variance with coverage deviation using Spearman correlation; test one-sided hypothesis that correlation < 0.",
+      "statistical_testability_notes": "Control for ambient temperature, subject movement, and battery voltage as confounders."
+    },
+    {
+      "hypothesis_id": "H3",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "To estimate effect size, a pilot study measuring coverage deviation across physiological state transitions (e.g., rest vs exercise) is needed, allowing calculation of the mean difference in coverage between states and its standard deviation to derive Cohen's d.",
+      "minimum_data_needed": [
+        "Polysomnography or controlled exercise dataset with physiological state labels (sleep/wake, rest/exercise)",
+        "Heart-rate variability index, movement count, and MET recorded per segment",
+        "Segment length >=1 minute",
+        "Stable ambient conditions",
+        "At least 30 segments per state"
+      ],
+      "testable_prediction": "Transition to higher arousal states (e.g., exercise) leads to lower empirical coverage (under-coverage).",
+      "failure_condition": "If empirical coverage in higher arousal states is not significantly lower than in lower arousal states (one-sided p > 0.05), the hypothesis fails.",
+      "statistical_test_plan": "Compute coverage deviation per segment; compare coverage between low and high arousal states using a one-sided paired t-test (or Wilcoxon signed-rank if non-normal) testing that coverage in high arousal < coverage in low arousal.",
+      "statistical_testability_notes": "Control for time of day, caffeine intake, and ambient noise as confounders."
+    },
+    {
+      "hypothesis_id": "H4",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size can be estimated from a pilot study that quantifies the change in coverage deviation per unit increase in lag-1 autocorrelation, enabling calculation of a standardized regression coefficient.",
+      "minimum_data_needed": [
+        "Physiological signals (EEG or ECG) with sampling rate >=250 Hz",
+        "Segment length >=10 seconds",
+        "Lag-1 autocorrelation coefficient estimated per segment",
+        "At least 50 segments"
+      ],
+      "testable_prediction": "Higher lag-1 autocorrelation leads to lower empirical coverage (under-coverage).",
+      "failure_condition": "If the slope of coverage deviation on autocorrelation is not significantly less than zero (one-sided p > 0.05), the hypothesis fails.",
+      "statistical_test_plan": "Regress coverage deviation on lag-1 autocorrelation using linear regression; test the slope < 0 with a one-sided t-test; optionally use block bootstrap to obtain robust standard errors.",
+      "statistical_testability_notes": "Control for segment length, sampling rate, and filtering bandwidth as confounders."
+    },
+    {
+      "hypothesis_id": "H5",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "To estimate effect size, a pilot study where known proportions of labels are synthetically corrupted and the resulting coverage deviation is measured is needed, allowing computation of the trend effect size (e.g., Cohen's f for trend).",
+      "minimum_data_needed": [
+        "Expert-annotated arrhythmia dataset with ability to synthetically corrupt labels",
+        "Known label error rates (e.g., 0%, 5%, 10%, 20%)",
+        "Segments containing at least one annotated event",
+        "Inter-annotator agreement <0.8"
+      ],
+      "testable_prediction": "Higher label error rate leads to lower empirical coverage (under-coverage) when errors increase residuals.",
+      "failure_condition": "If coverage deviation does not show a significant decreasing trend with increasing label error rate (one-sided p > 0.05 for Jonckheere-Terpstra trend test), the hypothesis fails.",
+      "statistical_test_plan": "For each label error level, compute coverage deviation; apply the Jonckheere-Terpstra test for ordered alternatives (decreasing coverage with increasing error) using a one-sided alternative.",
+      "statistical_testability_notes": "Control for annotator experience, signal clarity, and event rarity as confounders."
+    },
+    {
+      "hypothesis_id": "H6",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size estimation requires a pilot study varying the number of rare-event samples in the calibration set and measuring the resulting coverage on rare-event test segments, enabling calculation of the slope of coverage vs rare sample count and its standard deviation.",
+      "minimum_data_needed": [
+        "Dataset with physiological rare events (e.g., seizures or rare arrhythmias) with known prevalence <1%",
+        "Calibration set size >=5000 samples",
+        "Ability to vary the number of rare samples in calibration (e.g., via subsampling)",
+        "At least 100 rare-event test segments"
+      ],
+      "testable_prediction": "Lower prevalence of rare events in the calibration set leads to lower empirical coverage for rare-event test segments (under-coverage).",
+      "failure_condition": "If coverage on rare-event test segments does not increase significantly with more rare samples in calibration (one-sided p > 0.05), the hypothesis fails.",
+      "statistical_test_plan": "Create multiple calibration sets with varying rare sample counts; compute coverage on a held-out rare-event test set; test for a positive association between rare sample count and coverage using Spearman correlation (one-sided > 0).",
+      "statistical_testability_notes": "Control for overall calibration size, class imbalance in training data, and signal quality for rare events as confounders."
+    },
+    {
+      "hypothesis_id": "H7",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "To estimate effect size, a pilot study measuring coverage deviation across amplitude bins and regressing on mean amplitude is needed, allowing derivation of the standardized slope (effect size).",
+      "minimum_data_needed": [
+        "ECG recordings with amplitude range 0.1–5 mV",
+        "Segments with varying activity levels",
+        "Sampling rate >=250 Hz",
+        "Amplitude measured as RMS per segment",
+        "At least 30 segments distributed across amplitude bins"
+      ],
+      "testable_prediction": "Higher signal amplitude leads to lower empirical coverage (under-coverage) when error variance increases with amplitude.",
+      "failure_condition": "If the slope of coverage deviation on amplitude is not significantly less than zero (one-sided p > 0.05), the hypothesis fails.",
+      "statistical_test_plan": "Bin segments by amplitude (e.g., low, medium, high); compute coverage deviation per bin; fit a linear regression of coverage deviation on mean amplitude; test slope < 0 using a one-sided t-test.",
+      "statistical_testability_notes": "Control for baseline noise level, filtering cutoff, and subject movement as confounders."
+    },
+    {
+      "hypothesis_id": "H8",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size can be estimated from a pilot study that quantifies the change in mean interval width per unit increase in artifact occurrence rate, allowing calculation of a standardized regression coefficient.",
+      "minimum_data_needed": [
+        "Ambulatory recordings with mild exercise",
+        "Artifact detection threshold >3 SD",
+        "Segment length >=5 seconds",
+        "At least 20 minutes of recording",
+        "Artifact occurrence logged per minute"
+      ],
+      "testable_prediction": "Higher artifact occurrence rate leads to increased mean conformal interval width (and thus decreased coverage stability).",
+      "failure_condition": "If mean interval width does not show a significant positive association with artifact occurrence rate (one-sided p > 0.05), the hypothesis fails.",
+      "statistical_test_plan": "Compute artifact occurrence rate per minute and mean interval width in non-overlapping windows; test for a positive correlation using Spearman correlation with a one-sided alternative (correlation > 0).",
+      "statistical_testability_notes": "Control for subject activity level, electrode contact quality, and recording duration as confounders."
+    },
+    {
+      "hypothesis_id": "H9",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "To estimate effect size, a pilot study varying sampling rate and filter cutoff while measuring coverage deviation is needed, allowing computation of the standardized coefficients for each protocol variable.",
+      "minimum_data_needed": [
+        "Multi-site study with varying devices and documented protocol changes (sampling rate, filter cutoff, segmentation window)",
+        "Segment length >=5 seconds",
+        "At least 10 segments per protocol condition"
+      ],
+      "testable_prediction": "Lower sampling rate or stronger low-pass filtering leads to lower empirical coverage (under-coverage).",
+      "failure_condition": "If coverage deviation does not show a significant positive association with sampling rate and filter cutoff (one-sided p > 0.05 for each coefficient), the hypothesis fails.",
+      "statistical_test_plan": "Compute coverage deviation per segment; fit a linear mixed-effects model with coverage deviation as outcome, sampling rate (Hz) and filter cutoff (Hz) as fixed effects, and site as random intercept; test each fixed effect > 0 using one-sided Wald tests.",
+      "statistical_testability_notes": "Control for subject demographics, signal condition, and experimenter as confounders."
+    },
+    {
+      "hypothesis_id": "H10",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size estimation requires a pilot study where adaptive filter gain is varied and the resulting coverage deviation is measured, enabling calculation of the standardized slope (effect size).",
+      "minimum_data_needed": [
+        "Closed-loop neurostimulation or adaptive filtering system",
+        "Real-time processing latency <50 ms",
+        "Calibration set collected before feedback activation",
+        "At least 30 minutes of post-feedback data",
+        "Adaptive filter gain logged over time"
+      ],
+      "testable_prediction": "Stronger feedback influence (higher adaptive filter gain) leads to lower empirical coverage (under-coverage).",
+      "failure_condition": "If coverage deviation does not show a significant negative association with adaptive filter gain (one-sided p > 0.05), the hypothesis fails.",
+      "statistical_test_plan": "Compute coverage deviation in sliding windows; correlate adaptive filter gain with coverage deviation using Spearman correlation; test one-sided hypothesis that correlation < 0.",
+      "statistical_testability_notes": "Control for feedback loop latency, baseline signal stability, and adaptive filter type as confounders."
+    }
+  ]
+}

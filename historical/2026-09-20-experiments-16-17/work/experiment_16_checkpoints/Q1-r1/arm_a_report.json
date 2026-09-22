@@ -1,0 +1,1066 @@
+{
+  "experiment_name": "Meno-J Experiment 7: v4 Architecture Upgrade and Ablation",
+  "version": "v4_mechanism_confounder_testability",
+  "research_question": "Why does Mondrian conformal prediction show undercoverage for some physiological stress subjects in WESAD?",
+  "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "stage_4_hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Inter-subject variability in autonomic nervous system reactivity causes non-exchangeable conformity scores for high-reactivity individuals.",
+      "proposed_mechanism": "Subjects with exaggerated sympathetic responses produce EDA and HRV trajectories that fall outside the calibration distribution's support, violating the exchangeability assumption required for valid conformal prediction intervals.",
+      "core_assumption": "Autonomic reactivity magnitude is a latent variable that systematically shifts the conditional distribution of physiological features given stress labels.",
+      "knowledge_gap_addressed": "Whether Mondrian stratification by coarse stress labels adequately captures continuous autonomic reactivity spectra that determine conformity score distributions.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Wrist-worn sensor displacement during movement artifacts creates subject-specific non-stationarity in PPG and ACC signals that degrades calibration coverage.",
+      "proposed_mechanism": "Subjects with higher movement variability during stress tasks experience greater sensor-skin interface disruption, introducing structured noise that shifts feature distributions between calibration and test phases in a subject-dependent manner.",
+      "core_assumption": "Sensor displacement correlates with individual movement patterns during stress induction, and this correlation differs across subjects.",
+      "knowledge_gap_addressed": "The extent to which motion artifact profiles are subject-specific and whether they violate the i.i.d. assumption within Mondrian strata.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Delayed physiological recovery kinetics in certain subjects create temporal leakage where post-stress calibration samples contaminate stress-class conformity scores.",
+      "proposed_mechanism": "Slow HRV/EDA recovery causes calibration samples labeled 'baseline' to retain residual stress physiology, inflating conformity scores for the baseline class and narrowing prediction intervals for the stress class during subsequent test windows.",
+      "core_assumption": "Recovery half-life varies significantly across subjects and exceeds the inter-trial interval in the WESAD protocol for a subset of participants.",
+      "knowledge_gap_addressed": "Whether the temporal spacing of WESAD conditions permits full physiological reset for all subjects, and how incomplete recovery biases Mondrian's class-conditional calibration.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Self-report labeling errors in the WESAD protocol disproportionately affect subjects with low interoceptive awareness, creating mislabeled calibration points.",
+      "proposed_mechanism": "Subjects who poorly discriminate internal states provide inaccurate stress/baseline labels during calibration, causing Mondrian to compute conformity scores against incorrect class-conditional distributions.",
+      "core_assumption": "Interoceptive accuracy varies across subjects and correlates with physiological stress reactivity patterns.",
+      "knowledge_gap_addressed": "The impact of subjective label noise on conformal prediction validity when labels are treated as ground truth in Mondrian stratification.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Mondrian's fixed stratification by protocol-defined conditions ignores continuous stress intensity gradients that vary within-condition across subjects.",
+      "proposed_mechanism": "Subjects experiencing the same protocol condition (e.g., TSST) exhibit different stress intensities due to trait anxiety or prior exposure, but Mondrian pools them into identical strata, violating the assumption that conformity scores are identically distributed within strata.",
+      "core_assumption": "Within-condition stress intensity is a continuous latent variable with subject-specific distributions that affect feature-conformity relationships.",
+      "knowledge_gap_addressed": "Whether discrete protocol-based stratification suffices for conformal validity when physiological stress response is a continuous, subject-varying quantity.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Subject-specific circadian phase at recording time modulates baseline autonomic tone, shifting feature distributions between calibration and test sets for evening-recorded subjects.",
+      "proposed_mechanism": "WESAD recordings occurred at different times of day; subjects recorded in late afternoon/evening have higher baseline sympathetic tone, causing their 'baseline' calibration samples to resemble 'stress' samples from morning-recorded subjects, breaking stratum-wise exchangeability.",
+      "core_assumption": "Circadian variation in autonomic balance is large enough to cause distributional overlap between baseline and stress classes across recording times.",
+      "knowledge_gap_addressed": "The effect of uncontrolled recording time on Mondrian's assumption that class-conditional distributions are stable within strata.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Non-linear feature interactions in high-dimensional physiological space create subject-specific conformity score distributions that Mondrian's marginal stratification cannot capture.",
+      "proposed_mechanism": "Mondrian stratification conditions only on discrete stress labels, but the true conformity score distribution depends on high-order interactions (e.g., EDA×HRV×respiration phase) that vary idiosyncratically across subjects, making calibration scores non-representative for test samples from the same stratum.",
+      "core_assumption": "The conditional distribution of conformity scores given stress label has subject-specific higher-order moments not captured by marginal stratification.",
+      "knowledge_gap_addressed": "Whether label-only stratification is sufficient for conformal validity when feature interactions governing conformity scores are subject-heterogeneous.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Calibration set size per stratum is insufficient for subjects with rare physiological response phenotypes, leading to high-variance quantile estimates.",
+      "proposed_mechanism": "Subjects exhibiting atypical stress response patterns (e.g., parasympathetic-dominant reactivity) form small effective calibration subsets within their assigned strata, causing the empirical quantile used for prediction intervals to have high sampling variability and systematic downward bias.",
+      "core_assumption": "Physiological stress response phenotypes follow a long-tailed distribution where some phenotypes are underrepresented in WESAD's 15-subject cohort.",
+      "knowledge_gap_addressed": "The finite-sample behavior of Mondrian conformal prediction when calibration strata contain very few samples from certain physiological subpopulations.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Temperature-induced sensor drift affects EDA measurements differently across subjects due to individual thermoregulatory responses to stress.",
+      "proposed_mechanism": "Stress-induced peripheral vasoconstriction/vasodilation changes skin temperature at the wrist sensor site, altering EDA baseline and gain in a subject-specific manner that shifts feature distributions between calibration (cooler) and test (warmer) phases.",
+      "core_assumption": "Cutaneous blood flow responses to stress vary significantly across individuals and systematically bias EDA-derived features used in the conformity score.",
+      "knowledge_gap_addressed": "Whether thermoregulatory physiology confounds EDA-based stress detection in a subject-heterogeneous way that violates conformal exchangeability.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Anticipatory anxiety during the pre-stress baseline period creates a continuum of physiological states that Mondrian's binary stratification forces into a single 'baseline' stratum.",
+      "proposed_mechanism": "Subjects with high trait anxiety exhibit elevated sympathetic activity during the nominal 'baseline' period due to anticipation of upcoming stressors, making their baseline conformity scores resemble stress scores and causing the stress-class prediction interval to be miscalibrated for these individuals.",
+      "core_assumption": "Anticipatory physiological activation correlates with trait anxiety and is present during WESAD's baseline recordings for a subset of subjects.",
+      "knowledge_gap_addressed": "The validity of discrete stress/baseline labels when anticipatory effects create a physiological gradient that crosses label boundaries in a subject-dependent manner.",
+      "status": "SPECULATIVE"
+    }
+  ],
+  "stage_4_1_mechanism_builder": [
+    {
+      "hypothesis_id": "H1",
+      "mechanism_variables": [
+        "Sympathetic reactivity index (SRI): normalized peak EDA phasic driver amplitude during TSST relative to baseline",
+        "HRV reactivity index: log(RMSSD_baseline / RMSSD_TSST)",
+        "Conformity score quantile: empirical quantile of nonconformity scores for true class in calibration set",
+        "Coverage indicator: binary (1 if true label in prediction set, 0 otherwise)"
+      ],
+      "causal_path": "High SRI → shifted conditional feature distribution p(X|Y=stress) → conformity scores from calibration (lower SRI) underestimate test nonconformity → prediction intervals too narrow → undercoverage for high-SRI subjects",
+      "expected_direction": "Positive correlation between SRI and undercoverage magnitude (higher SRI → lower coverage)",
+      "domain_specific_boundary_conditions": [
+        "WESAD protocol: TSST as sole psychosocial stressor",
+        "Empatica E4 sampling: EDA 4Hz, BVP 64Hz",
+        "Mondrian stratification: 3 classes (baseline, stress, amusement)",
+        "Calibration set: first 70% of each condition per subject"
+      ],
+      "measurable_outcomes": [
+        "Per-subject coverage rate for stress class",
+        "Calibration vs. test conformity score distribution KS distance stratified by SRI tertile",
+        "Conditional coverage given SRI > 75th percentile vs. SRI < 25th percentile"
+      ],
+      "mechanism_builder_notes": "SRI must be computed from calibration-phase data only to avoid circularity. Use phasic EDA driver (cvxEDA) not raw SCR peaks. HRV reactivity uses RMSSD from 5-min windows. Test coverage computed on held-out 30%."
+    },
+    {
+      "hypothesis_id": "H2",
+      "mechanism_variables": [
+        "Movement artifact index (MAI): median ACC magnitude (sqrt(x^2+y^2+z^2)) during stress condition",
+        "PPG signal quality index (SQI): proportion of 10s windows with kurtosis in [1,5] and spectral entropy > 0.7",
+        "EDA tonic drift: slope of EDA tonic component (cvxEDA) over stress condition duration",
+        "Stratum-wise conformity score variance: variance of nonconformity scores within Mondrian stress stratum"
+      ],
+      "causal_path": "High MAI → sensor-skin gap modulation → PPG/EDA signal corruption → feature distribution shift between calibration (low MAI) and test (high MAI) → inflated conformity score variance → quantile overestimation → undercoverage",
+      "expected_direction": "Positive correlation between MAI and stress-class undercoverage; negative correlation between SQI and coverage",
+      "domain_specific_boundary_conditions": [
+        "Empatica E4 wrist placement: non-dominant wrist",
+        "WESAD TSST involves seated speech/math with limited gross movement",
+        "ACC range: ±2g, 32Hz",
+        "Mondrian strata: protocol-defined conditions only"
+      ],
+      "measurable_outcomes": [
+        "Per-subject MAI vs. stress coverage correlation (Spearman)",
+        "Calibration-test feature distribution MMD (maximum mean discrepancy) for PPG/EDA features vs. MAI",
+        "Conformity score variance inflation factor: var_test / var_calibration per subject"
+      ],
+      "mechanism_builder_notes": "MAI computed from ACC during stress condition only. SQI uses template matching (Orphanidou 2015). Feature set: 12 EDA + 8 HRV + 6 RESP features per 60s window. MMD with RBF kernel bandwidth = median pairwise distance."
+    },
+    {
+      "hypothesis_id": "H3",
+      "mechanism_variables": [
+        "HRV recovery half-life: time (seconds) for RMSSD to return to 50% of baseline→stress drop during post-stress rest",
+        "EDA recovery half-life: time for tonic EDA to decay 50% from stress peak",
+        "Inter-trial interval (ITI): WESAD protocol rest duration between conditions (fixed ~5-10 min)",
+        "Baseline-class conformity score contamination: proportion of 'baseline' calibration windows with RMSSD < baseline_median - 0.5*stress_drop"
+      ],
+      "causal_path": "Long recovery half-life > ITI → residual stress physiology in subsequent 'baseline' period → baseline calibration samples contaminated with stress-like features → baseline conformity scores inflated → stress-class prediction intervals narrowed (Mondrian uses per-class quantiles) → stress undercoverage",
+      "expected_direction": "Subjects with recovery half-life > ITI show lower stress coverage; positive correlation between half-life and baseline contamination proportion",
+      "domain_specific_boundary_conditions": [
+        "WESAD condition order: baseline → TSST → amusement → meditation → recovery",
+        "ITI between TSST and next baseline-like condition (meditation) ≈ 5 min",
+        "HRV computed from 5-min windows with 50% overlap",
+        "Mondrian calibration: class-conditional quantiles per stratum"
+      ],
+      "measurable_outcomes": [
+        "Per-subject HRV/EDA recovery half-life (exponential fit to post-stress decay)",
+        "Baseline contamination rate: % of post-TSST 'baseline' windows with stress-like features",
+        "Stress coverage vs. recovery half-life (logistic regression)",
+        "Calibration baseline conformity score median vs. true baseline (pre-TSST) median"
+      ],
+      "mechanism_builder_notes": "Fit exponential decay: RMSSD(t) = RMSSD_stress + (RMSSD_baseline - RMSSD_stress)*(1 - exp(-t/tau)). Half-life = tau*ln(2). Use only first post-TSST rest period. Contamination threshold: RMSSD < baseline_median - 0.5*(baseline_median - stress_median)."
+    },
+    {
+      "hypothesis_id": "H4",
+      "mechanism_variables": [
+        "Interoceptive accuracy (IA): heartbeat counting task score (Schandry) or heartbeat discrimination AUC if available",
+        "Self-report stress label: WESAD questionnaire rating (0-10) per condition",
+        "Physiological stress index (PSI): composite z-score of EDA phasic rate, HR, HRV during condition",
+        "Label-physiology discrepancy: |self-report - PSI| normalized"
+      ],
+      "causal_path": "Low IA → high label-physiology discrepancy during calibration → mislabeled calibration points (e.g., true stress labeled baseline) → Mondrian computes conformity scores against wrong class-conditional distribution → prediction intervals miscalibrated for true stress class → undercoverage",
+      "expected_direction": "Negative correlation between IA and stress undercoverage; positive correlation between label-physiology discrepancy and undercoverage",
+      "domain_specific_boundary_conditions": [
+        "WESAD self-report: PANAS + stress questionnaire after each condition",
+        "No concurrent interoceptive measure in WESAD; IA must be inferred or from external cohort",
+        "Mondrian treats protocol condition labels as ground truth",
+        "15 subjects, 3 stress-relevant conditions (TSST, amusement, meditation)"
+      ],
+      "measurable_outcomes": [
+        "Simulated label noise experiment: inject synthetic mislabels at rates matching observed discrepancy, measure coverage drop",
+        "Per-subject label-physiology discrepancy vs. coverage (if IA proxy available)",
+        "Conformity score distribution shift when recalibrating with PSI-derived labels vs. protocol labels"
+      ],
+      "mechanism_builder_notes": "Since WESAD lacks direct IA measure, use PSI-protocol label discrepancy as proxy. PSI = first PC of [EDA_phasic_rate, HR, -logRMSSD, RESP_rate] z-scored per subject. Discrepancy = |questionnaire_stress - PSI|. Simulate mislabeling by flipping labels for windows with discrepancy > threshold."
+    },
+    {
+      "hypothesis_id": "H5",
+      "mechanism_variables": [
+        "Within-condition stress intensity (WSI): continuous PSI (see H4) during TSST",
+        "Trait anxiety: STAI-T score (WESAD includes STAI)",
+        "Stratum conformity score distribution: empirical CDF of nonconformity scores for stress class",
+        "Subject-specific conformity score shift: median(test_scores) - median(calibration_scores) for stress class"
+      ],
+      "causal_path": "High trait anxiety → higher WSI for same protocol condition (TSST) → feature distribution shifts toward more extreme stress physiology → test conformity scores exceed calibration quantile (computed from lower-WSI subjects) → undercoverage for high-WSI subjects",
+      "expected_direction": "Positive correlation between WSI (or trait anxiety) and stress-class conformity score shift; negative correlation with coverage",
+      "domain_specific_boundary_conditions": [
+        "WESAD: single TSST exposure per subject",
+        "STAI-T available for all 15 subjects",
+        "Mondrian stress stratum pools all TSST windows across subjects",
+        "Calibration: 70% of TSST windows per subject"
+      ],
+      "measurable_outcomes": [
+        "WSI vs. stress coverage correlation (Spearman)",
+        "Conformity score shift vs. WSI (linear regression)",
+        "Stratum-wise conformity score CDF separation: high-WSI (top 33%) vs. low-WSI (bottom 33%) subjects",
+        "Coverage when re-stratifying by WSI tertile vs. protocol label"
+      ],
+      "mechanism_builder_notes": "WSI = mean PSI during TSST. PSI as defined in H4. Trait anxiety = STAI-T. Test conformity score shift computed on held-out 30% TSST windows. Re-stratification experiment: bin subjects by WSI tertile, compute Mondrian per bin, compare coverage."
+    },
+    {
+      "hypothesis_id": "H6",
+      "mechanism_variables": [
+        "Recording time: clock time of WESAD session start (metadata)",
+        "Circadian phase proxy: hours from habitual wake time (estimated from baseline HRV)",
+        "Baseline sympathetic tone: EDA tonic level + HR during pre-TSST baseline",
+        "Stratum exchangeability violation: MMD between baseline-class feature distributions for morning vs. evening subjects"
+      ],
+      "causal_path": "Late recording time → advanced circadian phase → higher baseline sympathetic tone → baseline feature distribution shifts toward stress distribution → Mondrian baseline stratum mixes circadian states → stress-class quantile contaminated by circadian-shifted baseline scores → stress undercoverage for evening subjects",
+      "expected_direction": "Evening-recorded subjects (after 14:00) show lower stress coverage; positive correlation between recording time and baseline sympathetic tone",
+      "domain_specific_boundary_conditions": [
+        "WESAD recording times: range ~09:00-17:00 (per metadata)",
+        "Circadian cortisol peak ~30-45 min post-wake; autonomic follows similar rhythm",
+        "Mondrian baseline stratum: all pre-TSST baseline windows pooled",
+        "No time-of-day covariate in Mondrian stratification"
+      ],
+      "measurable_outcomes": [
+        "Recording time vs. baseline EDA tonic / HR correlation",
+        "Morning (before 12:00) vs. evening (after 14:00) stress coverage comparison",
+        "MMD between morning/evening baseline feature distributions",
+        "Coverage when adding time-of-day as stratification variable"
+      ],
+      "mechanism_builder_notes": "Use WESAD metadata for recording start time. Baseline sympathetic tone = mean EDA tonic (cvxEDA) + mean HR over 5-min pre-TSST baseline. MMD with RBF kernel on 26-dim feature vector. Morning/evening split at median recording time."
+    },
+    {
+      "hypothesis_id": "H7",
+      "mechanism_variables": [
+        "High-order interaction features: EDA_phasic × HRV_RMSSD × RESP_phase (binned)",
+        "Subject-specific interaction weight: coefficient from subject-wise logistic regression (stress vs. baseline) using interaction terms",
+        "Marginal vs. conditional conformity score variance: var(scores|label) vs. var(scores|label, interaction_tertile)",
+        "Calibration representativeness: KL divergence between calibration and test conformity score distributions within stress stratum"
+      ],
+      "causal_path": "Subject-heterogeneous feature interactions → true conformity score distribution depends on interaction state → marginal stratification (label only) averages over interaction states → calibration scores non-representative for test samples with different interaction profile → quantile miscalibration → undercoverage for subjects with rare interaction profiles",
+      "expected_direction": "Subjects with high interaction weight magnitude show larger calibration-test conformity score KL divergence and lower coverage",
+      "domain_specific_boundary_conditions": [
+        "Feature set: 26 features (12 EDA, 8 HRV, 6 RESP) per 60s window",
+        "Interaction terms: 3-way products of z-scored key features (EDA_phasic, RMSSD, RESP_rate)",
+        "Mondrian: no interaction conditioning",
+        "15 subjects → limited calibration samples per interaction state"
+      ],
+      "measurable_outcomes": [
+        "Per-subject interaction weight (logistic regression coefficient for top interaction term)",
+        "KL divergence: calibration vs. test conformity scores within stress stratum per subject",
+        "Coverage vs. interaction weight correlation",
+        "Coverage improvement when using interaction-aware stratification (e.g., k-means on interaction features)"
+      ],
+      "mechanism_builder_notes": "Compute interaction features as element-wise product of z-scored EDA_phasic_driver, logRMSSD, RESP_rate. Fit subject-wise logistic regression (stress vs. baseline) with main effects + 3-way interaction. Weight = interaction coefficient. KL divergence estimated via k-nearest neighbors (k=5) on conformity scores."
+    },
+    {
+      "hypothesis_id": "H8",
+      "mechanism_variables": [
+        "Physiological phenotype cluster: k-means (k=4) on subject-level stress response features (mean PSI, EDA/HRV ratio, recovery slope)",
+        "Effective calibration size per phenotype: n_calibration_windows for subject's phenotype within stress stratum",
+        "Quantile estimation error: |empirical_quantile(0.9) - true_quantile(0.9)| via bootstrap",
+        "Phenotype rarity: proportion of total calibration windows belonging to subject's phenotype"
+      ],
+      "causal_path": "Rare phenotype (e.g., parasympathetic-dominant) → small effective calibration subset within stress stratum → high-variance empirical quantile → systematic downward bias (order statistic bias) → prediction intervals too narrow → undercoverage for rare-phenotype subjects",
+      "expected_direction": "Negative correlation between effective calibration size and coverage; rare phenotypes (frequency < 15%) show largest quantile bias and undercoverage",
+      "domain_specific_boundary_conditions": [
+        "WESAD: 15 subjects, ~300 stress windows total, ~210 calibration",
+        "Phenotype clustering on subject-level aggregates (not window-level)",
+        "Mondrian stress stratum: all TSST windows pooled",
+        "Target coverage: 90% (alpha=0.1)"
+      ],
+      "measurable_outcomes": [
+        "Phenotype frequency distribution across 15 subjects",
+        "Per-phenotype effective calibration size vs. coverage",
+        "Bootstrap quantile bias: mean(empirical_q90 - true_q90) per phenotype (true_q90 from pooled bootstrap)",
+        "Coverage when using phenotype-stratified Mondrian vs. standard"
+      ],
+      "mechanism_builder_notes": "Phenotype features: [mean_PSI_TSST, EDA_phasic/HRV_ratio, HRV_recovery_slope]. K=4 clusters (GMM). Effective size = sum of calibration windows from subjects in same cluster. Bootstrap: resample calibration windows 1000x, compute 90th percentile each time, bias = mean(boot_q90) - pooled_q90."
+    },
+    {
+      "hypothesis_id": "H9",
+      "mechanism_variables": [
+        "Skin temperature change: ΔT = T_wrist_stress - T_wrist_baseline (Empatica E4 thermistor)",
+        "EDA baseline shift: ΔEDA_tonic = tonic_stress - tonic_baseline (cvxEDA)",
+        "EDA gain change: ΔEDA_phasic_per_stimulus = (phasic_rate_stress / SCR_count_stress) - (phasic_rate_baseline / SCR_count_baseline)",
+        "Thermoregulatory response type: vasoconstriction (ΔT < -0.5°C) vs. vasodilation (ΔT > 0.5°C) vs. stable"
+      ],
+      "causal_path": "Stress → subject-specific thermoregulatory response (vasoconstriction/dilation) → skin temperature change at wrist → EDA baseline/gain shift (temperature-dependent sweat gland conductance) → EDA feature distribution shift between calibration (baseline temp) and test (stress temp) → conformity score miscalibration → undercoverage for large |ΔT| subjects",
+      "expected_direction": "Subjects with |ΔT| > 0.5°C show lower stress coverage; ΔT correlates with EDA baseline shift magnitude",
+      "domain_specific_boundary_conditions": [
+        "Empatica E4 thermistor: 0.1°C resolution, 4Hz, wrist skin temperature",
+        "EDA temperature coefficient: ~5-10% per °C (literature)",
+        "WESAD: baseline → TSST transition ~5 min",
+        "Mondrian: EDA features computed per 60s window, no temperature correction"
+      ],
+      "measurable_outcomes": [
+        "ΔT vs. stress coverage correlation",
+        "ΔT vs. ΔEDA_tonic correlation (per subject)",
+        "Calibration-test EDA feature MMD vs. |ΔT|",
+        "Coverage when adding temperature as covariate in conformity score (e.g., temperature-normalized EDA)"
+      ],
+      "mechanism_builder_notes": "ΔT = median(T_last_5min_TSST) - median(T_last_5min_baseline). EDA tonic from cvxEDA. Phasic rate = SCR peaks/min. SCR detection: threshold 0.01 μS. Temperature normalization: EDA_corrected = EDA_raw * exp(-k*(T - T_ref)) with k=0.07/°C (Boucsein 2012)."
+    },
+    {
+      "hypothesis_id": "H10",
+      "mechanism_variables": [
+        "Trait anxiety: STAI-T score (WESAD)",
+        "Anticipatory activation index (AAI): (HR_baseline - HR_rest) / (HR_TSST - HR_rest) where HR_rest = first 2 min of recording",
+        "Baseline conformity score contamination: proportion of baseline windows with conformity score > stress-class median",
+        "Stress-class prediction interval width: 90th percentile of stress calibration conformity scores"
+      ],
+      "causal_path": "High trait anxiety → anticipatory activation during nominal baseline (high AAI) → baseline conformity scores resemble stress scores → Mondrian baseline stratum inflated → stress-class quantile computed from contaminated baseline (Mondrian uses all classes for normalization?) → stress prediction interval narrowed → stress undercoverage for high-anxiety subjects",
+      "expected_direction": "Positive correlation between STAI-T and AAI; positive correlation between AAI and baseline contamination; negative correlation between AAI and stress coverage",
+      "domain_specific_boundary_conditions": [
+        "WESAD: STAI-T available, baseline = 20 min pre-TSST (includes anticipation period)",
+        "Mondrian: class-conditional quantiles, but baseline contamination affects stress quantile if conformity score function uses all classes",
+        "AAI denominator: HR_TSST - HR_rest (full stress response range)",
+        "HR_rest: first 2 min of recording (pre-anticipation)"
+      ],
+      "measurable_outcomes": [
+        "STAI-T vs. AAI correlation",
+        "AAI vs. baseline contamination rate correlation",
+        "High-STAI (top 33%) vs. low-STAI (bottom 33%) stress coverage comparison",
+        "Coverage when re-labeling high-AAI baseline windows as 'anticipation' stratum"
+      ],
+      "mechanism_builder_notes": "AAI = (mean_HR_baseline_last_5min - mean_HR_first_2min) / (mean_HR_TSST - mean_HR_first_2min). Baseline contamination: conformity score > median(stress_calibration_scores). Conformity score = 1 - softmax(stress_class) from base classifier. Re-labeling experiment: create 4th stratum for high-AAI baseline windows."
+    }
+  ],
+  "stage_4_2_confounder_rival_builder": [
+    {
+      "hypothesis_id": "H1",
+      "possible_confounders": [
+        "Age",
+        "Cardiorespiratory fitness (VO2max)",
+        "Medication affecting autonomic function (beta-blockers, anticholinergics)",
+        "Caffeine/nicotine use within 4 hours",
+        "Time of day (circadian autonomic variation)"
+      ],
+      "control_variables": [
+        "Age (years)",
+        "BMI (kg/m²)",
+        "Self-reported fitness level (IPAQ)",
+        "Medication inventory (binary per class)",
+        "Hours since last caffeine/nicotine",
+        "Recording start time (hours from midnight)"
+      ],
+      "boring_rival_explanations": [
+        "Small calibration set size per subject causes high-variance quantile estimates that happen to correlate with SRI by chance",
+        "General non-stationarity in physiological signals affects high-reactivity subjects more because their signals have larger dynamic range"
+      ],
+      "rival_prediction": "Undercoverage magnitude correlates with per-subject calibration sample count (n_calib) rather than SRI; when n_calib is matched across SRI tertiles, the SRI-undercoverage correlation disappears.",
+      "distinguishing_condition": "Stratify subjects by SRI tertile and downsample calibration sets to equal size per tertile. If SRI-undercoverage correlation persists (p<0.05, Spearman), H1 is supported; if correlation vanishes (p>0.2), the sampling-variability rival is supported.",
+      "confounder_rival_notes": "SRI must be computed from calibration-phase only. Control for fitness via IPAQ or estimated VO2max from resting HR. Medication inventory from WESAD health questionnaire. The rival exploits the fact that high-SRI subjects may have fewer usable calibration windows due to signal saturation."
+    },
+    {
+      "hypothesis_id": "H2",
+      "possible_confounders": [
+        "Wrist circumference (sensor fit)",
+        "Skin type (Fitzpatrick scale) and hair density",
+        "Ambient temperature and humidity",
+        "Sensor strap tightness (self-reported)",
+        "Baseline skin conductance level (affects SNR)"
+      ],
+      "control_variables": [
+        "Wrist circumference (cm)",
+        "Skin type (1-6) and hair density (subjective 1-3)",
+        "Ambient temperature (°C) and humidity (%) at recording",
+        "Strap tightness (1-5 Likert)",
+        "Baseline EDA tonic level (μS)"
+      ],
+      "boring_rival_explanations": [
+        "General PPG/EDA signal quality degradation (low SQI) reduces coverage uniformly across all subjects, not specifically those with high movement",
+        "Feature extraction pipeline fails on noisy segments regardless of movement source"
+      ],
+      "rival_prediction": "Stress-class coverage correlates with overall SQI (median across condition) but not with MAI specifically; subjects with low SQI from non-movement sources (e.g., poor perfusion) show equivalent undercoverage.",
+      "distinguishing_condition": "Regress stress coverage on MAI and SQI simultaneously. If MAI coefficient remains significant (p<0.05) after controlling for SQI, H2 is supported; if only SQI is significant (p<0.05) and MAI is not (p>0.2), the general-SQI rival is supported.",
+      "confounder_rival_notes": "MAI computed from ACC during TSST only. SQI uses Orphanidou 2015 template matching on BVP. Non-movement SQI degradation: simulate by adding Gaussian noise to clean PPG. Wrist circumference measured at sensor site. Strap tightness from post-session questionnaire."
+    },
+    {
+      "hypothesis_id": "H3",
+      "possible_confounders": [
+        "Cardiorespiratory fitness (faster recovery in fit individuals)",
+        "Age (slower recovery with age)",
+        "Baseline HRV level (ceiling effects)",
+        "Hydration status (affects blood volume and HRV)",
+        "Respiratory rate during recovery (confounds RMSSD)"
+      ],
+      "control_variables": [
+        "Estimated VO2max (from resting HR and age)",
+        "Age (years)",
+        "Baseline RMSSD (ms, 5-min pre-TSST)",
+        "Self-reported hydration (1-5 Likert)",
+        "Mean respiratory rate during recovery (breaths/min from RESP)"
+      ],
+      "boring_rival_explanations": [
+        "Any calibration set contamination (mislabeling, sensor drift, artifacts) inflates baseline conformity scores and narrows stress intervals, not specifically recovery-related contamination",
+        "Mondrian's class-conditional quantile estimation is biased downward for small calibration sets, affecting all subjects with few baseline samples"
+      ],
+      "rival_prediction": "Undercoverage correlates with any measure of baseline calibration contamination (e.g., proportion of baseline windows with stress-like features from any source), not specifically with recovery half-life exceeding ITI.",
+      "distinguishing_condition": "Compute baseline contamination from three sources: (1) slow recovery (H3), (2) simulated random mislabeling, (3) sensor drift. Regress stress coverage on each contamination measure. If only recovery-based contamination predicts coverage (p<0.05) while others do not (p>0.2), H3 is supported; if all contamination measures predict equally, the general-contamination rival is supported.",
+      "confounder_rival_notes": "Recovery half-life: exponential fit to post-TSST RMSSD/EDA tonic. ITI = time from TSST end to next baseline-like condition (meditation). Contamination threshold: RMSSD < baseline_median - 0.5*(baseline_median - stress_median). Control for fitness via VO2max estimate. Respiratory rate from RESP belt to correct RMSSD."
+    },
+    {
+      "hypothesis_id": "H4",
+      "possible_confounders": [
+        "Education level and language proficiency (questionnaire comprehension)",
+        "Cognitive load during self-report (fatigue, time pressure)",
+        "Social desirability bias (underreporting stress)",
+        "Alexithymia (trait difficulty identifying feelings, distinct from interoception)",
+        "Questionnaire administration order effects"
+      ],
+      "control_variables": [
+        "Years of education",
+        "Language proficiency (self-rated 1-5)",
+        "Time since condition end to questionnaire (minutes)",
+        "Social desirability scale (Marlowe-Crowne short form)",
+        "Alexithymia score (TAS-20 if available, else proxy)",
+        "Questionnaire order (counterbalanced)"
+      ],
+      "boring_rival_explanations": [
+        "Random label noise at rate ~10-15% (typical for self-report) degrades conformal coverage uniformly, independent of interoceptive accuracy",
+        "Protocol labels are systematically biased (e.g., amusement condition rated as stressful by all subjects) causing stratum-wide miscalibration"
+      ],
+      "rival_prediction": "Injecting synthetic label noise at the observed discrepancy rate reduces coverage equally for all subjects; coverage does not correlate with individual label-physiology discrepancy after controlling for overall noise rate.",
+      "distinguishing_condition": "Simulate mislabeling: flip labels for windows where |self-report - PSI| > threshold. Measure coverage drop per subject. If coverage drop correlates with subject's actual discrepancy (p<0.05) beyond what synthetic noise predicts, H4 is supported; if synthetic noise alone explains coverage variance (R² > 0.8), the random-noise rival is supported.",
+      "confounder_rival_notes": "PSI = first PC of [EDA_phasic_rate, HR, -logRMSSD, RESP_rate] z-scored per subject. Discrepancy = |questionnaire_stress - PSI|. WESAD lacks direct IA measure; use discrepancy as proxy. Control for alexithymia via TAS-20 if available in extended metadata. Social desirability from post-study questionnaire."
+    },
+    {
+      "hypothesis_id": "H5",
+      "possible_confounders": [
+        "Prior TSST or public speaking experience",
+        "Neuroticism (Big Five) and extraversion",
+        "Social support network size",
+        "Current life stress (recent life events)",
+        "Time of day (cortisol rhythm affects stress reactivity)"
+      ],
+      "control_variables": [
+        "Prior TSST exposure (binary, self-report)",
+        "Neuroticism and extraversion (BFI-10)",
+        "Social support (MSPSS score)",
+        "Recent life events count (LES)",
+        "Recording start time (hours from midnight)"
+      ],
+      "boring_rival_explanations": [
+        "General model misspecification (e.g., wrong nonconformity function) causes undercoverage for extreme feature values, not specifically due to stratification granularity",
+        "Any additional stratification variable (even random) improves coverage by reducing stratum size and quantile variance"
+      ],
+      "rival_prediction": "Re-stratifying by any continuous variable (e.g., random noise, baseline HR) improves stress coverage equally; WSI-based stratification provides no specific advantage over arbitrary stratification.",
+      "distinguishing_condition": "Compare coverage under three stratification schemes: (1) protocol label only (Mondrian), (2) WSI tertile + protocol label, (3) random continuous variable tertile + protocol label. If (2) improves coverage significantly more than (3) (paired t-test p<0.05), H5 is supported; if (2) and (3) improve equally (p>0.2), the arbitrary-stratification rival is supported.",
+      "confounder_rival_notes": "WSI = mean PSI during TSST. PSI as in H4. Trait anxiety = STAI-T (available in WESAD). Random variable: Gaussian noise matched to WSI variance. Stratification: create 3×3 = 9 strata (condition × tertile). Calibration: 70% per stratum per subject. Test: 30% held out."
+    },
+    {
+      "hypothesis_id": "H6",
+      "possible_confounders": [
+        "Sleep duration and quality previous night",
+        "Chronotype (morningness-eveningness questionnaire)",
+        "Caffeine intake timing and dose",
+        "Light exposure before recording",
+        "Protocol order fatigue (later sessions more fatigued)"
+      ],
+      "control_variables": [
+        "Sleep duration (hours, self-report)",
+        "Sleep quality (1-5 Likert)",
+        "Chronotype (MEQ score if available, else midpoint of sleep on free days)",
+        "Caffeine dose (mg) and time since last intake",
+        "Ambient light level (lux) during baseline",
+        "Session order (1st, 2nd, ... if multiple sessions)"
+      ],
+      "boring_rival_explanations": [
+        "Time-of-day effects are actually due to cumulative fatigue/protocol order: later recordings have more prior conditions, causing physiological drift",
+        "Morning/evening coverage difference reflects selection bias (different subject populations recruited at different times)"
+      ],
+      "rival_prediction": "Stress coverage correlates with session duration / number of prior conditions (fatigue) rather than clock time; when controlling for fatigue, recording time has no predictive power.",
+      "distinguishing_condition": "Regress stress coverage on recording time (continuous) and session duration (minutes from start to TSST) simultaneously. If recording time coefficient remains significant (p<0.05) after controlling for duration, H6 is supported; if only duration is significant (p<0.05) and time is not (p>0.2), the fatigue rival is supported.",
+      "confounder_rival_notes": "WESAD recording times from metadata (range ~09:00-17:00). Baseline sympathetic tone = mean EDA tonic (cvxEDA) + mean HR over 5-min pre-TSST baseline. Morning/evening split at median recording time. Chronotype: use MEQ if in extended data; else estimate from sleep midpoint. Fatigue proxy: session duration to TSST."
+    },
+    {
+      "hypothesis_id": "H7",
+      "possible_confounders": [
+        "Feature selection method (which 26 features used)",
+        "Window length and overlap (60s/50% vs alternatives)",
+        "Preprocessing pipeline (filtering, artifact removal)",
+        "Base classifier architecture (RF, XGBoost, MLP)",
+        "Number of interaction terms considered"
+      ],
+      "control_variables": [
+        "Feature set (fixed 26 features: 12 EDA, 8 HRV, 6 RESP)",
+        "Window length (60s) and overlap (50%)",
+        "Preprocessing: bandpass filters, artifact rejection thresholds",
+        "Base classifier: fixed Random Forest (n_estimators=500, max_depth=10)",
+        "Interaction terms: fixed 3-way product of z-scored EDA_phasic, logRMSSD, RESP_rate"
+      ],
+      "boring_rival_explanations": [
+        "Curse of dimensionality: high-dimensional feature space causes sparse calibration coverage for all subjects, not specifically those with rare interaction profiles",
+        "Any dimensionality reduction (PCA, autoencoder) before conformity scoring improves coverage equally, not specifically interaction-aware methods"
+      ],
+      "rival_prediction": "Applying PCA to reduce to 3 dimensions before computing conformity scores improves coverage as much as interaction-aware stratification; the specific interaction structure is irrelevant.",
+      "distinguishing_condition": "Compare coverage under three conformity score constructions: (1) original 26 features, (2) PCA-3D features, (3) interaction-aware stratification (k-means on interaction features, k=4). If (3) outperforms (2) significantly (paired bootstrap p<0.05), H7 is supported; if (2) and (3) perform equally (p>0.2), the dimensionality-reduction rival is supported.",
+      "confounder_rival_notes": "Interaction features: element-wise product of z-scored EDA_phasic_driver, logRMSSD, RESP_rate. Subject-wise logistic regression (stress vs baseline) with main effects + 3-way interaction. Weight = interaction coefficient. KL divergence via k-NN (k=5) on conformity scores. PCA on 26 features, keep 3 PCs. k-means on interaction features for stratification."
+    },
+    {
+      "hypothesis_id": "H8",
+      "possible_confounders": [
+        "Phenotype clustering method (k-means vs GMM vs hierarchical)",
+        "Number of clusters (k=3,4,5)",
+        "Features used for clustering (subject-level vs window-level)",
+        "Calibration set split randomness (70/30 split seed)",
+        "Base classifier randomness affecting conformity scores"
+      ],
+      "control_variables": [
+        "Clustering algorithm: Gaussian Mixture Model (GMM) with BIC selection",
+        "Number of clusters: fixed k=4 (validated by silhouette)",
+        "Clustering features: subject-level [mean_PSI_TSST, EDA_phasic/HRV_ratio, HRV_recovery_slope]",
+        "Calibration split: fixed random seed (42) for reproducibility",
+        "Base classifier: fixed Random Forest seed (42)"
+      ],
+      "boring_rival_explanations": [
+        "Small total calibration size (~210 windows) causes high quantile variance for all subjects; rare phenotypes just happen to have fewer subjects by chance",
+        "Order statistic bias of empirical quantile affects all small strata equally, not specifically rare phenotypes"
+      ],
+      "rival_prediction": "Coverage correlates with per-subject calibration window count (n_calib_subject) regardless of phenotype; rare-phenotype subjects with matched n_calib show same coverage as common-phenotype subjects.",
+      "distinguishing_condition": "Match rare-phenotype and common-phenotype subjects on effective calibration size (subsample common-phenotype calibration windows). Compare coverage between matched groups. If rare-phenotype group still shows lower coverage (p<0.05, permutation test), H8 is supported; if coverage equalizes (p>0.2), the calibration-size rival is supported.",
+      "confounder_rival_notes": "Phenotype features: [mean_PSI_TSST, EDA_phasic/HRV_ratio, HRV_recovery_slope]. GMM k=4. Effective size = sum of calibration windows from subjects in same cluster. Bootstrap quantile bias: resample calibration windows 1000x, compute 90th percentile, bias = mean(boot_q90) - pooled_q90. Matching: for each rare-phenotype subject, sample common-phenotype subject with closest effective size."
+    },
+    {
+      "hypothesis_id": "H9",
+      "possible_confounders": [
+        "Ambient temperature and humidity",
+        "Clothing (long sleeves vs short sleeves)",
+        "Sensor contact pressure (strap tightness)",
+        "Sensor age / battery level (affects EDA gain)",
+        "Baseline skin hydration (affects EDA conductance)"
+      ],
+      "control_variables": [
+        "Ambient temperature (°C) and humidity (%)",
+        "Clothing type (long/short sleeve, binary)",
+        "Strap tightness (1-5 Likert)",
+        "Sensor serial number / age (months since manufacture)",
+        "Baseline skin hydration (corneometer if available, else baseline EDA tonic)"
+      ],
+      "boring_rival_explanations": [
+        "EDA baseline drift is caused by sensor aging/battery depletion over session duration, not temperature change",
+        "General EDA non-stationarity (slow tonic drift) occurs in all subjects and correlates with session time, not specifically with ΔT"
+      ],
+      "rival_prediction": "EDA baseline shift (ΔEDA_tonic) correlates with sensor age / session duration rather than skin temperature change (ΔT); temperature normalization does not improve coverage beyond session-time detrending.",
+      "distinguishing_condition": "Regress ΔEDA_tonic on ΔT and session duration (minutes from baseline to TSST end) simultaneously. If ΔT coefficient remains significant (p<0.05) after controlling for duration, H9 is supported; if only duration is significant (p<0.05) and ΔT is not (p>0.2), the sensor-aging rival is supported. Additionally, apply temperature correction (k=0.07/°C) and session-time detrending; compare coverage improvement.",
+      "confounder_rival_notes": "ΔT = median(T_last_5min_TSST) - median(T_last_5min_baseline) from E4 thermistor. EDA tonic from cvxEDA. Phasic rate = SCR peaks/min (threshold 0.01 μS). Temperature correction: EDA_corrected = EDA_raw * exp(-0.07*(T - T_ref)). Session-time detrending: linear fit to EDA tonic over session, subtract trend. Sensor age from device logs if available."
+    },
+    {
+      "hypothesis_id": "H10",
+      "possible_confounders": [
+        "Prior knowledge of protocol (expectancy effects)",
+        "Generalized anxiety disorder (GAD) diagnosis",
+        "Baseline physical activity before recording (walking to lab)",
+        "Caffeine intake before baseline",
+        "Experimenter interaction effects (different experimenters)"
+      ],
+      "control_variables": [
+        "Protocol knowledge (self-report: 'did you know what TSST involves?')",
+        "GAD-7 score (if available, else STAI-T > 50 as proxy)",
+        "Pre-baseline activity (accelerometer counts in 30 min before baseline)",
+        "Caffeine dose (mg) and time since intake before baseline",
+        "Experimenter ID (categorical)"
+      ],
+      "boring_rival_explanations": [
+        "Baseline contamination reflects incomplete physiological rest (subjects not fully relaxed) rather than anticipatory anxiety specifically",
+        "Mondrian's conformity score function (1 - softmax) inherently produces higher baseline scores for any subject with elevated baseline arousal, regardless of cause"
+      ],
+      "rival_prediction": "Baseline conformity score contamination correlates with pre-baseline physical activity (ACC magnitude) rather than STAI-T or AAI; subjects with high pre-baseline activity show contamination even with low STAI-T.",
+      "distinguishing_condition": "Regress baseline contamination rate on AAI and pre-baseline ACC magnitude (30-min window) simultaneously. If AAI coefficient remains significant (p<0.05) after controlling for ACC, H10 is supported; if only ACC is significant (p<0.05) and AAI is not (p>0.2), the incomplete-rest rival is supported. Verify rest: require ACC < 0.05g for 10 min pre-baseline.",
+      "confounder_rival_notes": "AAI = (mean_HR_baseline_last_5min - mean_HR_first_2min) / (mean_HR_TSST - mean_HR_first_2min). Baseline contamination: conformity score > median(stress_calibration_scores). Conformity score = 1 - softmax(stress_class) from base RF. Pre-baseline ACC: magnitude in 30 min before baseline start. STAI-T from WESAD. GAD-7 not in WESAD; use STAI-T > 50 as high-anxiety proxy. Experimenter ID from metadata."
+    }
+  ],
+  "stage_4_3_statistical_testability_builder": [
+    {
+      "hypothesis_id": "H1",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size cannot be estimated without empirical data on the distribution of sympathetic reactivity index (SRI) across subjects and its relationship to conformity score quantile shifts. Required data: per-subject SRI computed from calibration-phase EDA phasic driver amplitude and HRV reactivity, per-subject stress-class coverage rates on held-out test windows, and calibration/test conformity score distributions for stress class.",
+      "minimum_data_needed": [
+        "Per-subject SRI computed from calibration-phase EDA phasic driver amplitude (cvxEDA) and HRV reactivity (log RMSSD ratio)",
+        "Per-subject stress-class coverage rate on held-out 30% test windows",
+        "Calibration and test conformity scores for stress class per subject",
+        "Subject-level covariates: age, BMI, fitness (IPAQ/VO2max), medication inventory, caffeine/nicotine use, recording start time"
+      ],
+      "testable_prediction": "Subjects with higher SRI (top tertile) will show significantly lower stress-class coverage than subjects with lower SRI (bottom tertile), with a positive Spearman correlation between SRI and undercoverage magnitude (1 - coverage rate).",
+      "failure_condition": "If after downsampling calibration sets to equal size across SRI tertiles, the Spearman correlation between SRI and undercoverage magnitude becomes non-significant (p > 0.2), the hypothesis fails.",
+      "statistical_test_plan": "Compute SRI for each subject using calibration-phase data only (first 70% of TSST windows). Compute stress-class coverage on held-out 30% test windows. Perform Spearman correlation between SRI and undercoverage (1 - coverage). Stratify subjects by SRI tertile, downsample calibration windows to equal size per tertile, recompute coverage, and test if correlation persists via permutation test (10,000 permutations). Control for covariates via partial Spearman correlation.",
+      "statistical_testability_notes": "SRI must be computed from calibration-phase only to avoid circularity. Use phasic EDA driver (cvxEDA) not raw SCR peaks. HRV reactivity uses RMSSD from 5-min windows. The distinguishing condition from the small-calibration-size rival is implemented via downsampling."
+    },
+    {
+      "hypothesis_id": "H2",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the magnitude of movement artifact index (MAI) variation across subjects and its specific impact on PPG/EDA feature distributions beyond general signal quality degradation. Required data: per-subject MAI, SQI, stress-class coverage, calibration/test feature distributions, and physical confounders.",
+      "minimum_data_needed": [
+        "Per-subject MAI (median ACC magnitude during TSST)",
+        "Per-subject SQI (proportion of 10s windows with kurtosis in [1,5] and spectral entropy > 0.7)",
+        "Per-subject stress-class coverage rate on held-out test windows",
+        "Calibration and test feature distributions for 26 features (12 EDA, 8 HRV, 6 RESP) per subject",
+        "Wrist circumference, skin type, hair density, ambient temperature/humidity, strap tightness, baseline EDA tonic level"
+      ],
+      "testable_prediction": "MAI will have a significant positive partial correlation with stress-class undercoverage after controlling for SQI (p < 0.05), while SQI alone will not fully mediate the MAI-undercoverage relationship.",
+      "failure_condition": "If in a multiple regression of stress coverage on MAI and SQI, the MAI coefficient is non-significant (p > 0.2) while SQI coefficient is significant (p < 0.05), the hypothesis fails.",
+      "statistical_test_plan": "Compute MAI from ACC during TSST. Compute SQI using Orphanidou 2015 template matching on BVP. Compute stress coverage on held-out test windows. Fit linear regression: coverage ~ MAI + SQI + covariates (wrist circumference, skin type, ambient temp, strap tightness, baseline EDA tonic). Test significance of MAI coefficient. Compute MMD between calibration and test feature distributions per subject and correlate with MAI.",
+      "statistical_testability_notes": "MAI computed from ACC during TSST only. SQI uses template matching. Feature set: 26 features per 60s window. MMD with RBF kernel bandwidth = median pairwise distance. The rival (general SQI) is tested via simultaneous regression."
+    },
+    {
+      "hypothesis_id": "H3",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the distribution of recovery half-lives relative to the inter-trial interval (ITI) and the resulting baseline contamination magnitude. Required data: per-subject HRV/EDA recovery half-lives, ITI duration, baseline contamination rates, stress-class coverage, and fitness/age covariates.",
+      "minimum_data_needed": [
+        "Per-subject HRV recovery half-life (exponential fit to post-TSST RMSSD decay)",
+        "Per-subject EDA recovery half-life (exponential fit to post-TSST tonic EDA decay)",
+        "Inter-trial interval (ITI) duration from TSST end to next baseline-like condition",
+        "Baseline contamination rate: proportion of post-TSST 'baseline' windows with RMSSD < baseline_median - 0.5*(baseline_median - stress_median)",
+        "Per-subject stress-class coverage rate",
+        "Covariates: estimated VO2max, age, baseline RMSSD, hydration, respiratory rate during recovery"
+      ],
+      "testable_prediction": "Subjects with HRV recovery half-life exceeding the ITI will have significantly lower stress-class coverage than those with half-life below ITI (logistic regression p < 0.05). Recovery half-life will positively correlate with baseline contamination rate (Spearman p < 0.05).",
+      "failure_condition": "If baseline contamination from simulated random mislabeling or sensor drift predicts stress coverage equally well as recovery-based contamination (all p < 0.05 with similar effect sizes), the hypothesis fails.",
+      "statistical_test_plan": "Fit exponential decay to post-TSST RMSSD and EDA tonic: RMSSD(t) = RMSSD_stress + (RMSSD_baseline - RMSSD_stress)*(1 - exp(-t/tau)). Half-life = tau*ln(2). Use first post-TSST rest period. Compute ITI from protocol timestamps. Define contamination threshold. Compute per-subject contamination rate. Perform logistic regression: coverage ~ recovery_half_life + covariates. Simulate random mislabeling and sensor drift contamination measures. Compare predictive power via AIC or nested model comparison.",
+      "statistical_testability_notes": "Recovery half-life estimated from first post-TSST rest only. Contamination threshold: RMSSD < baseline_median - 0.5*(baseline_median - stress_median). Control for fitness via VO2max estimate. Respiratory rate from RESP belt to correct RMSSD. The rival is tested by comparing contamination sources."
+    },
+    {
+      "hypothesis_id": "H4",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the relationship between interoceptive accuracy (proxied by label-physiology discrepancy) and the resulting mislabeling rate in calibration data. Required data: per-subject physiological stress index (PSI), self-report stress ratings, label-physiology discrepancy, coverage rates under simulated mislabeling, and questionnaire confounders.",
+      "minimum_data_needed": [
+        "Per-subject PSI (first PC of z-scored EDA_phasic_rate, HR, -logRMSSD, RESP_rate) during each condition",
+        "Self-report stress questionnaire ratings per condition (0-10)",
+        "Per-subject label-physiology discrepancy: |questionnaire_stress - PSI| normalized",
+        "Per-subject stress-class coverage rate",
+        "Simulated mislabeling coverage drop per subject at varying discrepancy thresholds",
+        "Covariates: education, language proficiency, time to questionnaire, social desirability, alexithymia proxy"
+      ],
+      "testable_prediction": "Subjects with higher label-physiology discrepancy will show larger coverage drops when synthetic mislabels are injected at their personal discrepancy threshold, compared to coverage drops from uniform random mislabeling at the same overall rate (paired t-test p < 0.05).",
+      "failure_condition": "If synthetic random label noise at the observed global discrepancy rate explains >80% of coverage variance (R² > 0.8) and individual discrepancy adds no significant predictive power (p > 0.2), the hypothesis fails.",
+      "statistical_test_plan": "Compute PSI per subject per condition. Compute discrepancy = |questionnaire_stress - PSI|. Simulate mislabeling: for each subject, flip labels for windows where discrepancy > threshold (vary threshold). Measure coverage drop. Compare to coverage drop from uniform random mislabeling at same global rate. Use mixed-effects model: coverage_drop ~ discrepancy + (1|subject) vs coverage_drop ~ random_noise_rate. Test if discrepancy coefficient significant.",
+      "statistical_testability_notes": "WESAD lacks direct IA measure; discrepancy is proxy. PSI = first PC of [EDA_phasic_rate, HR, -logRMSSD, RESP_rate] z-scored per subject. Simulate mislabeling by flipping labels for windows with discrepancy > threshold. Control for alexithymia via TAS-20 if available."
+    },
+    {
+      "hypothesis_id": "H5",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the variance of within-condition stress intensity (WSI) across subjects and the coverage improvement from WSI-aware stratification over arbitrary stratification. Required data: per-subject WSI, STAI-T, conformity score shifts, coverage under three stratification schemes, and personality/life-event covariates.",
+      "minimum_data_needed": [
+        "Per-subject WSI (mean PSI during TSST)",
+        "STAI-T scores for all 15 subjects",
+        "Per-subject stress-class conformity score shift: median(test_scores) - median(calibration_scores)",
+        "Per-subject stress-class coverage rate",
+        "Coverage under three stratification schemes: (1) protocol label only, (2) WSI tertile × protocol label, (3) random noise tertile × protocol label",
+        "Covariates: prior TSST exposure, neuroticism, extraversion, social support, life events, recording time"
+      ],
+      "testable_prediction": "WSI-based stratification (scheme 2) will improve stress-class coverage significantly more than random-variable stratification (scheme 3) (paired bootstrap test p < 0.05). WSI will positively correlate with conformity score shift (Spearman p < 0.05).",
+      "failure_condition": "If WSI-based stratification and random-variable stratification yield equivalent coverage improvement (paired test p > 0.2), the hypothesis fails.",
+      "statistical_test_plan": "Compute WSI = mean PSI during TSST. Create 9 strata: 3 conditions × 3 WSI tertiles. Compute Mondrian per stratum per subject (70% calibration, 30% test). Compare coverage to standard Mondrian (3 strata) and random stratification (3 conditions × 3 random tertiles). Use paired bootstrap (10,000 resamples) to test coverage difference. Correlate WSI with conformity score shift and coverage.",
+      "statistical_testability_notes": "WSI = mean PSI during TSST. PSI as in H4. Trait anxiety = STAI-T. Random variable: Gaussian noise matched to WSI variance. Stratification: 3×3 = 9 strata. Calibration: 70% per stratum per subject."
+    },
+    {
+      "hypothesis_id": "H6",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the range of recording times in WESAD, the magnitude of circadian autonomic variation, and whether time-of-day effects are separable from fatigue. Required data: recording start times, baseline sympathetic tone, stress-class coverage, session duration, and sleep/chronotype covariates.",
+      "minimum_data_needed": [
+        "Recording start time (clock time) from WESAD metadata",
+        "Baseline sympathetic tone: mean EDA tonic (cvxEDA) + mean HR over 5-min pre-TSST baseline",
+        "Per-subject stress-class coverage rate",
+        "Session duration from recording start to TSST onset",
+        "Covariates: sleep duration, sleep quality, chronotype, caffeine intake, ambient light, session order"
+      ],
+      "testable_prediction": "Recording time (continuous) will have a significant negative partial correlation with stress-class coverage after controlling for session duration (p < 0.05). Morning subjects (before 12:00) will have higher coverage than evening subjects (after 14:00) (t-test p < 0.05).",
+      "failure_condition": "If session duration fully mediates the recording time-coverage relationship (recording time coefficient p > 0.2 when duration included), the hypothesis fails.",
+      "statistical_test_plan": "Extract recording start time from metadata. Compute baseline sympathetic tone. Split at median recording time for morning/evening comparison. Regress stress coverage on recording time (continuous) and session duration (minutes) simultaneously. Test significance of recording time coefficient. Compute MMD between morning/evening baseline feature distributions. Test coverage improvement when adding time-of-day as stratification variable.",
+      "statistical_testability_notes": "WESAD recording times range ~09:00-17:00. Baseline sympathetic tone = mean EDA tonic (cvxEDA) + mean HR over 5-min pre-TSST baseline. Morning/evening split at median recording time. Chronotype: use MEQ if available; else estimate from sleep midpoint. Fatigue proxy: session duration to TSST."
+    },
+    {
+      "hypothesis_id": "H7",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the heterogeneity of high-order feature interaction weights across subjects and the coverage gain from interaction-aware stratification over dimensionality reduction. Required data: per-subject interaction weights, KL divergence between calibration/test conformity scores, coverage under three conformity score constructions, and pipeline covariates.",
+      "minimum_data_needed": [
+        "Per-subject interaction weight (logistic regression coefficient for 3-way interaction term EDA_phasic × logRMSSD × RESP_rate)",
+        "KL divergence between calibration and test conformity score distributions within stress stratum per subject",
+        "Per-subject stress-class coverage rate",
+        "Coverage under three conformity score constructions: (1) original 26 features, (2) PCA-3D features, (3) interaction-aware stratification (k-means on interaction features, k=4)",
+        "Covariates: feature selection method, window length, preprocessing, base classifier architecture"
+      ],
+      "testable_prediction": "Interaction-aware stratification (scheme 3) will yield significantly higher stress-class coverage than PCA-3D conformity scores (scheme 2) (paired bootstrap p < 0.05). Interaction weight magnitude will positively correlate with KL divergence (Spearman p < 0.05).",
+      "failure_condition": "If PCA-3D and interaction-aware stratification yield equivalent coverage (paired test p > 0.2), the hypothesis fails.",
+      "statistical_test_plan": "Compute interaction features as element-wise product of z-scored EDA_phasic_driver, logRMSSD, RESP_rate. Fit subject-wise logistic regression (stress vs baseline) with main effects + 3-way interaction. Weight = interaction coefficient. Estimate KL divergence via k-NN (k=5) on conformity scores. For interaction-aware stratification: k-means on interaction features (k=4), then Mondrian per cluster. Compare coverage across three schemes using paired bootstrap (10,000 resamples).",
+      "statistical_testability_notes": "Interaction features: product of z-scored EDA_phasic_driver, logRMSSD, RESP_rate. Subject-wise logistic regression with main effects + 3-way interaction. KL divergence via k-NN (k=5). PCA on 26 features, keep 3 PCs. k-means on interaction features for stratification."
+    },
+    {
+      "hypothesis_id": "H8",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the frequency distribution of physiological phenotypes, the effective calibration size per phenotype, and the resulting quantile estimation bias. Required data: phenotype clusters, effective calibration sizes, bootstrap quantile bias, coverage rates, and coverage under phenotype-stratified Mondrian.",
+      "minimum_data_needed": [
+        "Physiological phenotype clusters (GMM k=4) on subject-level features [mean_PSI_TSST, EDA_phasic/HRV_ratio, HRV_recovery_slope]",
+        "Effective calibration size per phenotype: sum of calibration windows from subjects in same cluster",
+        "Bootstrap quantile bias: mean(empirical_q90 - true_q90) per phenotype (true_q90 from pooled bootstrap)",
+        "Per-subject stress-class coverage rate",
+        "Coverage under phenotype-stratified Mondrian vs standard",
+        "Covariates: clustering method, number of clusters, clustering features, calibration split seed, base classifier seed"
+      ],
+      "testable_prediction": "Rare phenotypes (frequency < 15%) will show significantly larger bootstrap quantile bias (more negative) than common phenotypes (permutation test p < 0.05). After matching on effective calibration size, rare-phenotype subjects will still have lower coverage than common-phenotype subjects (permutation test p < 0.05).",
+      "failure_condition": "If after matching on effective calibration size, rare and common phenotype subjects show equivalent coverage (p > 0.2), the hypothesis fails.",
+      "statistical_test_plan": "Cluster subjects using GMM (k=4) on [mean_PSI_TSST, EDA_phasic/HRV_ratio, HRV_recovery_slope]. Compute effective calibration size per cluster. Bootstrap quantile bias: resample calibration windows 1000x, compute 90th percentile, bias = mean(boot_q90) - pooled_q90. Match rare-phenotype subjects to common-phenotype subjects with closest effective size (subsample common calibration windows). Compare coverage between matched groups via permutation test. Test phenotype-stratified Mondrian vs standard.",
+      "statistical_testability_notes": "Phenotype features: [mean_PSI_TSST, EDA_phasic/HRV_ratio, HRV_recovery_slope]. GMM k=4. Effective size = sum of calibration windows from subjects in same cluster. Bootstrap: 1000 resamples. Matching: for each rare-phenotype subject, sample common-phenotype subject with closest effective size."
+    },
+    {
+      "hypothesis_id": "H9",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the magnitude of skin temperature change (ΔT) during stress, its correlation with EDA baseline/gain shifts, and the coverage improvement from temperature correction over session-time detrending. Required data: per-subject ΔT, ΔEDA_tonic, ΔEDA_phasic_per_stimulus, stress-class coverage, session duration, and sensor/environmental covariates.",
+      "minimum_data_needed": [
+        "Per-subject ΔT = median(T_last_5min_TSST) - median(T_last_5min_baseline) from E4 thermistor",
+        "Per-subject ΔEDA_tonic = tonic_stress - tonic_baseline (cvxEDA)",
+        "Per-subject ΔEDA_phasic_per_stimulus = (phasic_rate_stress/SCR_count_stress) - (phasic_rate_baseline/SCR_count_baseline)",
+        "Per-subject stress-class coverage rate",
+        "Session duration from baseline to TSST end",
+        "Sensor age/battery level, ambient temperature, clothing, strap tightness, baseline skin hydration"
+      ],
+      "testable_prediction": "ΔT will have a significant positive partial correlation with |ΔEDA_tonic| after controlling for session duration (p < 0.05). Subjects with |ΔT| > 0.5°C will have significantly lower stress coverage than those with |ΔT| ≤ 0.5°C (t-test p < 0.05). Temperature correction (k=0.07/°C) will improve coverage more than session-time detrending.",
+      "failure_condition": "If session duration fully mediates the ΔT-ΔEDA_tonic relationship (ΔT coefficient p > 0.2 when duration included), and temperature correction does not improve coverage beyond detrending, the hypothesis fails.",
+      "statistical_test_plan": "Compute ΔT from E4 thermistor. Compute EDA tonic via cvxEDA. Compute phasic rate = SCR peaks/min (threshold 0.01 μS). Regress ΔEDA_tonic on ΔT and session duration simultaneously. Compare coverage improvement from temperature correction (EDA_corrected = EDA_raw * exp(-0.07*(T - T_ref))) vs linear session-time detrending. Test coverage difference via paired bootstrap.",
+      "statistical_testability_notes": "ΔT = median(T_last_5min_TSST) - median(T_last_5min_baseline). EDA tonic from cvxEDA. Phasic rate = SCR peaks/min. Temperature correction: k=0.07/°C (Boucsein 2012). Session-time detrending: linear fit to EDA tonic over session, subtract trend."
+    },
+    {
+      "hypothesis_id": "H10",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the correlation between trait anxiety (STAI-T) and anticipatory activation index (AAI), the resulting baseline conformity score contamination, and the coverage difference between high/low anxiety subjects. Required data: STAI-T scores, AAI, baseline contamination rates, stress-class coverage, pre-baseline ACC magnitude, and expectancy/caffeine covariates.",
+      "minimum_data_needed": [
+        "STAI-T scores for all 15 subjects",
+        "Per-subject AAI = (mean_HR_baseline_last_5min - mean_HR_first_2min) / (mean_HR_TSST - mean_HR_first_2min)",
+        "Baseline contamination rate: proportion of baseline windows with conformity score > median(stress_calibration_scores)",
+        "Per-subject stress-class coverage rate",
+        "Pre-baseline ACC magnitude (30-min window before baseline)",
+        "Covariates: protocol knowledge, GAD-7 proxy (STAI-T > 50), caffeine intake, experimenter ID"
+      ],
+      "testable_prediction": "AAI will have a significant positive partial correlation with baseline contamination rate after controlling for pre-baseline ACC magnitude (p < 0.05). High-STAI-T subjects (top tertile) will have significantly lower stress coverage than low-STAI-T subjects (bottom tertile) (t-test p < 0.05).",
+      "failure_condition": "If pre-baseline ACC magnitude fully mediates the AAI-contamination relationship (AAI coefficient p > 0.2 when ACC included), the hypothesis fails.",
+      "statistical_test_plan": "Compute AAI using HR from first 2 min (HR_rest), last 5 min of baseline, and TSST. Compute conformity scores = 1 - softmax(stress_class) from base RF. Baseline contamination: conformity score > median(stress_calibration_scores). Regress contamination rate on AAI and pre-baseline ACC magnitude simultaneously. Compare coverage between high/low STAI-T tertiles. Test re-labeling experiment: create 4th stratum for high-AAI baseline windows.",
+      "statistical_testability_notes": "AAI = (mean_HR_baseline_last_5min - mean_HR_first_2min) / (mean_HR_TSST - mean_HR_first_2min). Baseline contamination: conformity score > median(stress_calibration_scores). Conformity score = 1 - softmax(stress_class) from base RF. Pre-baseline ACC: magnitude in 30 min before baseline start. STAI-T from WESAD. GAD-7 not in WESAD; use STAI-T > 50 as high-anxiety proxy."
+    }
+  ],
+  "stage_5_audits": [
+    {
+      "hypothesis_id": "H1",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism specifies a concrete causal path from inter-subject autonomic reactivity differences (measured by SRI from cvxEDA phasic driver and HRV reactivity) to Mondrian conformal undercoverage via violation of within-subject exchangeability between calibration and test windows. Variables are measurable from WESAD E4 data, confounders are identified, and the prediction is testable via correlation and downsampling controls.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H2",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism links subject-specific movement artifact profiles (MAI from ACC) to PPG/EDA signal corruption, feature distribution shift between calibration and test phases, and inflated conformity score variance causing quantile overestimation. Domain-specific boundary conditions (Empatica E4 wrist placement, WESAD TSST seated protocol, ACC range) are specified. The prediction is testable via partial correlation controlling for general signal quality (SQI) and MMD analysis.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H3",
+      "audit_decision": "SALVAGEABLE",
+      "variables_measurable": true,
+      "causal_chain_valid": false,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "causal_chain_valid"
+      ],
+      "decision_reason": "The causal chain contains a logical gap: it asserts that contamination of baseline-class calibration samples narrows stress-class prediction intervals because 'Mondrian uses per-class quantiles', but per-class quantile estimation for the stress class uses only stress-labeled calibration samples. Baseline contamination would affect the baseline quantile, not the stress quantile, unless the nonconformity score function pools information across classes (e.g., 1 - softmax(true class)), which is not specified in the mechanism.",
+      "salvage_note": "Repair by specifying the nonconformity function (e.g., 1 - predicted probability of true class from a multi-class classifier) and demonstrating how baseline contamination biases the classifier's stress-class probability estimates, thereby shifting stress conformity scores. Alternatively, redefine the mechanism to involve contamination of the stress stratum itself if post-TSST windows are mislabeled as stress."
+    },
+    {
+      "hypothesis_id": "H4",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism proposes that low interoceptive awareness (proxied by label-physiology discrepancy) causes self-report mislabeling in calibration, leading to Mondrian computing conformity scores against incorrect class-conditional distributions. Variables are measurable (PSI from physiological features, self-report from questionnaires, discrepancy as proxy). The simulated mislabeling experiment provides a concrete test. Confounders like alexithymia and social desirability are identified.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H5",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism identifies a specific failure of Mondrian's discrete protocol-based stratification: continuous within-condition stress intensity (WSI) varies across subjects due to trait anxiety, causing feature distribution shifts that make calibration conformity scores non-representative for high-WSI subjects. The re-stratification experiment (WSI tertile vs. random variable) provides a strong distinguishing test against the arbitrary-stratification rival.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H6",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism links uncontrolled recording time (09:00-17:00) to circadian variation in baseline autonomic tone, causing baseline feature distributions to shift toward stress distributions for evening subjects and violating stratum-wise exchangeability. The simultaneous regression of coverage on recording time and session duration cleanly distinguishes circadian effects from fatigue. Domain-specific boundary conditions (cortisol rhythm, Empatica E4, Mondrian baseline stratum) are well-specified.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H7",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism posits that subject-heterogeneous high-order feature interactions (EDA×HRV×respiration) create conformity score distributions that marginal label-only stratification cannot capture. The interaction weight (logistic regression coefficient) and KL divergence between calibration/test conformity scores are measurable. The comparison of interaction-aware stratification against PCA dimensionality reduction provides a specific test against the curse-of-dimensionality rival.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H8",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism addresses finite-sample behavior of Mondrian conformal prediction: rare physiological phenotypes (identified via GMM clustering on subject-level stress response features) have small effective calibration sizes, leading to high-variance and downward-biased empirical quantiles. The matching design (subsampling common-phenotype calibration windows to match rare-phenotype effective size) isolates phenotype rarity from calibration size effects.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H9",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism specifies a concrete thermoregulatory pathway: stress-induced cutaneous blood flow changes alter wrist skin temperature (measured by E4 thermistor), which shifts EDA baseline and gain via temperature-dependent sweat gland conductance (5-10%/°C), causing calibration-test feature distribution shifts. The temperature correction (k=0.07/°C) vs. session-time detrending comparison cleanly tests against the sensor-aging rival.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H10",
+      "audit_decision": "SALVAGEABLE",
+      "variables_measurable": true,
+      "causal_chain_valid": false,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "causal_chain_valid"
+      ],
+      "decision_reason": "The causal chain is incomplete: it questions whether 'Mondrian uses all classes for normalization' but does not specify the nonconformity function. Under standard Mondrian with per-class quantiles, baseline contamination affects only the baseline quantile. The mechanism must explain how contaminated baseline conformity scores narrow the stress-class prediction interval (e.g., via a shared classifier whose stress-class probability estimates are biased by baseline contamination).",
+      "salvage_note": "Repair by specifying the nonconformity function (e.g., 1 - softmax probability of true class from a multi-class Random Forest) and showing how baseline windows with stress-like physiology receive high stress-class probability, biasing the classifier's calibration and shifting stress conformity scores. Alternatively, define a conformity score that explicitly uses all class probabilities."
+    }
+  ],
+  "diagnostics": {
+    "generated_count": 10,
+    "passed_count": 8,
+    "rejected_count": 0,
+    "salvageable_count": 2,
+    "pass_survival_rate": 0.8,
+    "salvageable_rate": 0.2,
+    "rejection_reason_diversity": 1,
+    "top_failed_checklist_fields": {
+      "causal_chain_valid": 2
+    },
+    "failure_points_consistency": true,
+    "rubber_stamp_red_flags": [],
+    "mechanism_builder_count": 10,
+    "confounder_rival_builder_count": 10,
+    "statistical_testability_builder_count": 10,
+    "avg_mechanism_variables_per_hypothesis": 4.0,
+    "avg_confounders_per_hypothesis": 5.0,
+    "avg_rivals_per_hypothesis": 2.0,
+    "hypotheses_with_effect_size_expectation": 10,
+    "hypotheses_with_failure_condition": 10,
+    "hypotheses_with_testable_prediction": 10
+  },
+  "stage_6_rival_prediction_matrix": [
+    {
+      "hypothesis_id": "H1",
+      "meno_j_hypothesis": "Inter-subject variability in autonomic nervous system reactivity causes non-exchangeable conformity scores for high-reactivity individuals.",
+      "meno_j_prediction": "Positive correlation between SRI and undercoverage magnitude (higher SRI → lower coverage)",
+      "rival_explanation": "Small calibration set size per subject causes high-variance quantile estimates that happen to correlate with SRI by chance.",
+      "rival_prediction": "Undercoverage magnitude correlates with per-subject calibration sample count (n_calib) rather than SRI; when n_calib is matched across SRI tertiles, the SRI-undercoverage correlation disappears.",
+      "distinguishing_test": "Stratify subjects by SRI tertile and downsample calibration sets to equal size per tertile. Compute Spearman correlation between SRI and undercoverage magnitude after downsampling.",
+      "what_result_supports_meno_j": "SRI-undercoverage correlation persists after downsampling (Spearman p < 0.05).",
+      "what_result_supports_rival": "SRI-undercoverage correlation vanishes after downsampling (Spearman p > 0.2)."
+    },
+    {
+      "hypothesis_id": "H2",
+      "meno_j_hypothesis": "Wrist-worn sensor displacement during movement artifacts creates subject-specific non-stationarity in PPG and ACC signals that degrades calibration coverage.",
+      "meno_j_prediction": "Positive correlation between MAI and stress-class undercoverage; negative correlation between SQI and coverage",
+      "rival_explanation": "General PPG/EDA signal quality degradation (low SQI) reduces coverage uniformly across all subjects, not specifically those with high movement.",
+      "rival_prediction": "Stress-class coverage correlates with overall SQI (median across condition) but not with MAI specifically; subjects with low SQI from non-movement sources show equivalent undercoverage.",
+      "distinguishing_test": "Regress stress coverage on MAI and SQI simultaneously using multiple linear regression with covariates (wrist circumference, skin type, ambient temperature, strap tightness, baseline EDA tonic).",
+      "what_result_supports_meno_j": "MAI coefficient remains significant (p < 0.05) after controlling for SQI.",
+      "what_result_supports_rival": "Only SQI coefficient is significant (p < 0.05) and MAI coefficient is non-significant (p > 0.2)."
+    },
+    {
+      "hypothesis_id": "H4",
+      "meno_j_hypothesis": "Self-report labeling errors in the WESAD protocol disproportionately affect subjects with low interoceptive awareness, creating mislabeled calibration points.",
+      "meno_j_prediction": "Negative correlation between IA and stress undercoverage; positive correlation between label-physiology discrepancy and undercoverage",
+      "rival_explanation": "Random label noise at rate ~10-15% (typical for self-report) degrades conformal coverage uniformly, independent of interoceptive accuracy.",
+      "rival_prediction": "Injecting synthetic label noise at the observed discrepancy rate reduces coverage equally for all subjects; coverage does not correlate with individual label-physiology discrepancy after controlling for overall noise rate.",
+      "distinguishing_test": "Simulate mislabeling by flipping labels for windows where |self-report - PSI| > threshold. Measure coverage drop per subject. Compare to coverage drop from uniform random mislabeling at same global rate using mixed-effects model.",
+      "what_result_supports_meno_j": "Coverage drop correlates with subject's actual discrepancy (p < 0.05) beyond synthetic noise prediction.",
+      "what_result_supports_rival": "Synthetic noise alone explains >80% of coverage variance (R² > 0.8) and individual discrepancy adds no predictive power (p > 0.2)."
+    },
+    {
+      "hypothesis_id": "H5",
+      "meno_j_hypothesis": "Mondrian's fixed stratification by protocol-defined conditions ignores continuous stress intensity gradients that vary within-condition across subjects.",
+      "meno_j_prediction": "Positive correlation between WSI (or trait anxiety) and stress-class conformity score shift; negative correlation with coverage",
+      "rival_explanation": "Any additional stratification variable (even random) improves coverage by reducing stratum size and quantile variance.",
+      "rival_prediction": "Re-stratifying by any continuous variable (e.g., random noise, baseline HR) improves stress coverage equally; WSI-based stratification provides no specific advantage over arbitrary stratification.",
+      "distinguishing_test": "Compare stress-class coverage under three stratification schemes: (1) protocol label only, (2) WSI tertile × protocol label, (3) random continuous variable tertile × protocol label. Use paired bootstrap test (10,000 resamples) for coverage differences.",
+      "what_result_supports_meno_j": "WSI-based stratification (scheme 2) improves coverage significantly more than random-variable stratification (scheme 3) (paired bootstrap p < 0.05).",
+      "what_result_supports_rival": "WSI-based and random-variable stratification yield equivalent coverage improvement (paired bootstrap p > 0.2)."
+    },
+    {
+      "hypothesis_id": "H6",
+      "meno_j_hypothesis": "Subject-specific circadian phase at recording time modulates baseline autonomic tone, shifting feature distributions between calibration and test sets for evening-recorded subjects.",
+      "meno_j_prediction": "Evening-recorded subjects (after 14:00) show lower stress coverage; positive correlation between recording time and baseline sympathetic tone",
+      "rival_explanation": "Time-of-day effects are actually due to cumulative fatigue/protocol order: later recordings have more prior conditions, causing physiological drift.",
+      "rival_prediction": "Stress coverage correlates with session duration / number of prior conditions (fatigue) rather than clock time; when controlling for fatigue, recording time has no predictive power.",
+      "distinguishing_test": "Regress stress coverage on recording time (continuous) and session duration (minutes from start to TSST) simultaneously using multiple linear regression with covariates (sleep duration, sleep quality, chronotype, caffeine intake, ambient light, session order).",
+      "what_result_supports_meno_j": "Recording time coefficient remains significant (p < 0.05) after controlling for session duration.",
+      "what_result_supports_rival": "Only session duration coefficient is significant (p < 0.05) and recording time coefficient is non-significant (p > 0.2)."
+    },
+    {
+      "hypothesis_id": "H7",
+      "meno_j_hypothesis": "Non-linear feature interactions in high-dimensional physiological space create subject-specific conformity score distributions that Mondrian's marginal stratification cannot capture.",
+      "meno_j_prediction": "Subjects with high interaction weight magnitude show larger calibration-test conformity score KL divergence and lower coverage",
+      "rival_explanation": "Curse of dimensionality: high-dimensional feature space causes sparse calibration coverage for all subjects, not specifically those with rare interaction profiles.",
+      "rival_prediction": "Applying PCA to reduce to 3 dimensions before computing conformity scores improves coverage as much as interaction-aware stratification; the specific interaction structure is irrelevant.",
+      "distinguishing_test": "Compare stress-class coverage under three conformity score constructions: (1) original 26 features, (2) PCA-3D features, (3) interaction-aware stratification (k-means on interaction features, k=4). Use paired bootstrap test (10,000 resamples).",
+      "what_result_supports_meno_j": "Interaction-aware stratification (scheme 3) outperforms PCA-3D (scheme 2) significantly (paired bootstrap p < 0.05).",
+      "what_result_supports_rival": "PCA-3D and interaction-aware stratification yield equivalent coverage (paired bootstrap p > 0.2)."
+    },
+    {
+      "hypothesis_id": "H8",
+      "meno_j_hypothesis": "Calibration set size per stratum is insufficient for subjects with rare physiological response phenotypes, leading to high-variance quantile estimates.",
+      "meno_j_prediction": "Negative correlation between effective calibration size and coverage; rare phenotypes (frequency < 15%) show largest quantile bias and undercoverage",
+      "rival_explanation": "Small total calibration size (~210 windows) causes high quantile variance for all subjects; rare phenotypes just happen to have fewer subjects by chance.",
+      "rival_prediction": "Coverage correlates with per-subject calibration window count (n_calib_subject) regardless of phenotype; rare-phenotype subjects with matched n_calib show same coverage as common-phenotype subjects.",
+      "distinguishing_test": "Match rare-phenotype and common-phenotype subjects on effective calibration size by subsampling common-phenotype calibration windows. Compare coverage between matched groups using permutation test.",
+      "what_result_supports_meno_j": "Rare-phenotype group still shows lower coverage after matching (permutation test p < 0.05).",
+      "what_result_supports_rival": "Coverage equalizes between matched groups (permutation test p > 0.2)."
+    },
+    {
+      "hypothesis_id": "H9",
+      "meno_j_hypothesis": "Temperature-induced sensor drift affects EDA measurements differently across subjects due to individual thermoregulatory responses to stress.",
+      "meno_j_prediction": "Subjects with |ΔT| > 0.5°C show lower stress coverage; ΔT correlates with EDA baseline shift magnitude",
+      "rival_explanation": "EDA baseline drift is caused by sensor aging/battery depletion over session duration, not temperature change.",
+      "rival_prediction": "EDA baseline shift (ΔEDA_tonic) correlates with sensor age / session duration rather than skin temperature change (ΔT); temperature normalization does not improve coverage beyond session-time detrending.",
+      "distinguishing_test": "Regress ΔEDA_tonic on ΔT and session duration simultaneously. Apply temperature correction (k=0.07/°C) and session-time detrending; compare coverage improvement via paired bootstrap.",
+      "what_result_supports_meno_j": "ΔT coefficient remains significant (p < 0.05) after controlling for session duration, and temperature correction improves coverage more than detrending.",
+      "what_result_supports_rival": "Only session duration coefficient is significant (p < 0.05) and ΔT coefficient is non-significant (p > 0.2), and temperature correction does not improve coverage beyond detrending."
+    }
+  ],
+  "stage_7_falsification_tests": [
+    {
+      "hypothesis_id": "H1",
+      "strongest_falsification_test": "Downsample calibration windows to equal size across SRI tertiles; compute stress-class coverage on held-out test windows; test if Spearman correlation between SRI and undercoverage (1 - coverage) remains significant (p < 0.05) via permutation test (10,000 permutations). If correlation vanishes (p > 0.2), the mechanism is falsified.",
+      "failure_condition": "Spearman correlation between SRI and undercoverage magnitude becomes non-significant (p > 0.2) after calibration set size equalization across SRI tertiles.",
+      "minimum_data_needed": "Per-subject SRI computed from calibration-phase EDA phasic driver amplitude (cvxEDA) and HRV reactivity (log RMSSD ratio); per-subject stress-class coverage rate on held-out 30% test windows; calibration and test conformity scores for stress class per subject; subject-level covariates (age, BMI, fitness, medication, caffeine/nicotine, recording start time).",
+      "most_likely_false_positive_risk": "Residual confounding by unmeasured fitness or medication effects that correlate with SRI and independently affect coverage, creating a spurious SRI-undercoverage correlation that survives downsampling.",
+      "most_likely_false_negative_risk": "Insufficient statistical power due to small sample size (15 subjects) to detect a true SRI-undercoverage correlation after downsampling reduces effective calibration size, leading to Type II error."
+    },
+    {
+      "hypothesis_id": "H2",
+      "strongest_falsification_test": "Fit multiple regression of stress-class coverage on MAI and SQI simultaneously with covariates (wrist circumference, skin type, ambient temperature, strap tightness, baseline EDA tonic). If MAI coefficient is non-significant (p > 0.2) while SQI coefficient is significant (p < 0.05), the mechanism is falsified.",
+      "failure_condition": "MAI coefficient non-significant (p > 0.2) in multiple regression controlling for SQI and physical confounders, while SQI coefficient remains significant (p < 0.05).",
+      "minimum_data_needed": "Per-subject MAI (median ACC magnitude during TSST); per-subject SQI (proportion of 10s windows with kurtosis in [1,5] and spectral entropy > 0.7); per-subject stress-class coverage rate; calibration and test feature distributions for 26 features (12 EDA, 8 HRV, 6 RESP); wrist circumference, skin type, hair density, ambient temperature/humidity, strap tightness, baseline EDA tonic level.",
+      "most_likely_false_positive_risk": "Collinearity between MAI and SQI inflates standard errors, causing MAI to appear non-significant even if it has a true effect, or conversely, an unmeasured confounder (e.g., sensor fit) drives both MAI and coverage.",
+      "most_likely_false_negative_risk": "Measurement error in MAI (ACC magnitude may not capture sensor-skin gap dynamics) attenuates the MAI coefficient, failing to detect a true causal effect."
+    },
+    {
+      "hypothesis_id": "H4",
+      "strongest_falsification_test": "Simulate mislabeling by flipping labels for windows where |self-report - PSI| > threshold; measure coverage drop per subject. Compare to coverage drop from uniform random mislabeling at same global rate. Fit mixed-effects model: coverage_drop ~ discrepancy + (1|subject) vs coverage_drop ~ random_noise_rate. If discrepancy coefficient non-significant (p > 0.2) and random noise model explains >80% variance (R² > 0.8), the mechanism is falsified.",
+      "failure_condition": "Synthetic random label noise at observed global discrepancy rate explains >80% of coverage variance (R² > 0.8) and individual label-physiology discrepancy adds no significant predictive power (p > 0.2).",
+      "minimum_data_needed": "Per-subject PSI (first PC of z-scored EDA_phasic_rate, HR, -logRMSSD, RESP_rate) during each condition; self-report stress questionnaire ratings per condition (0-10); per-subject label-physiology discrepancy: |questionnaire_stress - PSI| normalized; per-subject stress-class coverage rate; simulated mislabeling coverage drop per subject at varying discrepancy thresholds; covariates: education, language proficiency, time to questionnaire, social desirability, alexithymia proxy.",
+      "most_likely_false_positive_risk": "PSI-proxy discrepancy correlates with an unmeasured variable (e.g., alexithymia) that independently affects both self-report accuracy and physiological reactivity, creating a spurious association.",
+      "most_likely_false_negative_risk": "Low inter-subject variability in label-physiology discrepancy within WESAD's small cohort (n=15) limits power to detect a true effect; simulation-based mislabeling may not reflect true mislabeling process."
+    },
+    {
+      "hypothesis_id": "H5",
+      "strongest_falsification_test": "Compare stress-class coverage under three stratification schemes: (1) protocol label only (Mondrian), (2) WSI tertile × protocol label, (3) random continuous variable tertile × protocol label. Use paired bootstrap (10,000 resamples) to test if scheme (2) improves coverage significantly more than scheme (3). If improvement difference is non-significant (p > 0.2), the mechanism is falsified.",
+      "failure_condition": "WSI-based stratification (scheme 2) and random-variable stratification (scheme 3) yield equivalent coverage improvement (paired bootstrap p > 0.2).",
+      "minimum_data_needed": "Per-subject WSI (mean PSI during TSST); STAI-T scores for all 15 subjects; per-subject stress-class conformity score shift: median(test_scores) - median(calibration_scores); per-subject stress-class coverage rate; coverage under three stratification schemes: (1) protocol label only, (2) WSI tertile × protocol label, (3) random noise tertile × protocol label; covariates: prior TSST exposure, neuroticism, extraversion, social support, life events, recording time.",
+      "most_likely_false_positive_risk": "WSI and random variable accidentally correlate due to small sample size, making WSI appear superior by chance; or WSI captures a confound (e.g., time of day) that also affects coverage.",
+      "most_likely_false_negative_risk": "WSI tertile stratification reduces calibration samples per stratum too much, increasing quantile variance and masking true coverage improvement; limited subjects (15) reduce power to detect difference between stratification schemes."
+    },
+    {
+      "hypothesis_id": "H6",
+      "strongest_falsification_test": "Regress stress-class coverage on recording time (continuous) and session duration (minutes from start to TSST) simultaneously. If recording time coefficient is non-significant (p > 0.2) while session duration coefficient is significant (p < 0.05), the mechanism is falsified. Additionally, compare morning (before 12:00) vs evening (after 14:00) coverage via t-test; if non-significant (p > 0.2) after controlling for duration, falsified.",
+      "failure_condition": "Recording time coefficient non-significant (p > 0.2) in multiple regression controlling for session duration, and morning/evening coverage difference non-significant (p > 0.2) after adjusting for duration.",
+      "minimum_data_needed": "Recording start time (clock time) from WESAD metadata; baseline sympathetic tone: mean EDA tonic (cvxEDA) + mean HR over 5-min pre-TSST baseline; per-subject stress-class coverage rate; session duration from recording start to TSST onset; covariates: sleep duration, sleep quality, chronotype, caffeine intake, ambient light, session order.",
+      "most_likely_false_positive_risk": "Recording time correlates with an unmeasured confound (e.g., chronotype distribution across recruitment times) that drives coverage differences; session duration may not fully capture fatigue if fatigue is non-linear.",
+      "most_likely_false_negative_risk": "Small range of recording times (09:00-17:00) limits variability; circadian effect may be non-linear (e.g., U-shaped) and missed by linear term; session duration and recording time highly collinear, reducing power to separate effects."
+    },
+    {
+      "hypothesis_id": "H7",
+      "strongest_falsification_test": "Compare stress-class coverage under three conformity score constructions: (1) original 26 features, (2) PCA-3D features, (3) interaction-aware stratification (k-means on interaction features, k=4). Use paired bootstrap (10,000 resamples) to test if scheme (3) outperforms scheme (2). If difference non-significant (p > 0.2), the mechanism is falsified. Also test if interaction weight magnitude correlates with KL divergence (Spearman p < 0.05).",
+      "failure_condition": "PCA-3D and interaction-aware stratification yield equivalent coverage (paired bootstrap p > 0.2), and interaction weight magnitude does not significantly correlate with KL divergence (Spearman p > 0.2).",
+      "minimum_data_needed": "Per-subject interaction weight (logistic regression coefficient for 3-way interaction term EDA_phasic × logRMSSD × RESP_rate); KL divergence between calibration and test conformity score distributions within stress stratum per subject; per-subject stress-class coverage rate; coverage under three conformity score constructions: (1) original 26 features, (2) PCA-3D features, (3) interaction-aware stratification (k-means on interaction features, k=4); covariates: feature selection method, window length, preprocessing, base classifier architecture.",
+      "most_likely_false_positive_risk": "Interaction-aware stratification overfits due to small sample size (15 subjects, few windows per cluster), appearing to improve coverage by chance; PCA may inadvertently capture interaction structure.",
+      "most_likely_false_negative_risk": "k-means on interaction features fails to recover true interaction states due to noise; KL divergence estimation via k-NN is unreliable with small calibration sets; base classifier (RF) may not exploit interactions, making conformity scores insensitive to them."
+    },
+    {
+      "hypothesis_id": "H8",
+      "strongest_falsification_test": "Cluster subjects using GMM (k=4) on [mean_PSI_TSST, EDA_phasic/HRV_ratio, HRV_recovery_slope]. Compute effective calibration size per cluster. Match rare-phenotype subjects to common-phenotype subjects with closest effective size (subsample common calibration windows). Compare coverage between matched groups via permutation test. If coverage equalizes (p > 0.2), the mechanism is falsified. Also test if rare phenotypes (frequency < 15%) show larger bootstrap quantile bias (permutation test p < 0.05).",
+      "failure_condition": "After matching on effective calibration size, rare and common phenotype subjects show equivalent coverage (permutation test p > 0.2), and rare phenotypes do not exhibit significantly larger bootstrap quantile bias (p > 0.2).",
+      "minimum_data_needed": "Physiological phenotype clusters (GMM k=4) on subject-level features [mean_PSI_TSST, EDA_phasic/HRV_ratio, HRV_recovery_slope]; effective calibration size per phenotype: sum of calibration windows from subjects in same cluster; bootstrap quantile bias: mean(empirical_q90 - true_q90) per phenotype (true_q90 from pooled bootstrap); per-subject stress-class coverage rate; coverage under phenotype-stratified Mondrian vs standard; covariates: clustering method, number of clusters, clustering features, calibration split seed, base classifier seed.",
+      "most_likely_false_positive_risk": "Phenotype clustering is unstable (small n=15), creating spurious rare clusters; matching on effective size may not account for within-cluster heterogeneity in conformity score distributions.",
+      "most_likely_false_negative_risk": "Bootstrap quantile bias estimation is noisy with small calibration sets; rare phenotypes may have too few subjects (1-2) to reliably estimate bias or coverage difference after matching."
+    },
+    {
+      "hypothesis_id": "H9",
+      "strongest_falsification_test": "Regress ΔEDA_tonic on ΔT and session duration simultaneously. If ΔT coefficient non-significant (p > 0.2) while session duration coefficient significant (p < 0.05), the mechanism is falsified. Apply temperature correction (k=0.07/°C) and session-time detrending; compare coverage improvement via paired bootstrap. If temperature correction does not improve coverage beyond detrending (p > 0.2), falsified.",
+      "failure_condition": "Session duration fully mediates ΔT-ΔEDA_tonic relationship (ΔT coefficient p > 0.2 when duration included), and temperature correction does not improve coverage beyond session-time detrending (paired bootstrap p > 0.2).",
+      "minimum_data_needed": "Per-subject ΔT = median(T_last_5min_TSST) - median(T_last_5min_baseline) from E4 thermistor; per-subject ΔEDA_tonic = tonic_stress - tonic_baseline (cvxEDA); per-subject ΔEDA_phasic_per_stimulus = (phasic_rate_stress/SCR_count_stress) - (phasic_rate_baseline/SCR_count_baseline); per-subject stress-class coverage rate; session duration from baseline to TSST end; sensor age/battery level, ambient temperature, clothing, strap tightness, baseline skin hydration.",
+      "most_likely_false_positive_risk": "ΔT and session duration are highly collinear (later recordings have longer duration), making it impossible to separate effects; temperature correction coefficient (k=0.07) may be inaccurate for wrist-worn sensor.",
+      "most_likely_false_negative_risk": "Skin temperature change ΔT is small relative to thermistor resolution (0.1°C), leading to measurement error that attenuates ΔT coefficient; EDA temperature coefficient varies across individuals, making fixed correction suboptimal."
+    }
+  ]
+}

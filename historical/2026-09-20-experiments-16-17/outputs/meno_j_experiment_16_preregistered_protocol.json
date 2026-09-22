@@ -1,0 +1,116 @@
+{
+  "experiment_name": "Meno-J Experiment 16: Matched-Compute Architecture Falsification",
+  "protocol_status": "FROZEN_BEFORE_ANY_EXPERIMENT_16_MODEL_CALL",
+  "frozen_on": "2026-09-17",
+  "naming_note": "Requested as 'Experiment 8'. Numbered 16 because the historical record already contains Experiment 8 (rare-subgroup frontier) through Experiment 15. No historical file is touched.",
+  "research_question": "If a multi-stage reasoning pipeline performs better than a simpler baseline, does the architecture itself deserve the credit once inference budget, sampling, retries, and evaluator passes are controlled?",
+  "task_set": {
+    "questions": {
+      "Q1": "Why does Mondrian conformal prediction show undercoverage for some physiological stress subjects in WESAD?",
+      "Q2": "Why might conformal prediction fail to maintain stable coverage across different physiological signal segments?",
+      "Q3": "What mechanisms could explain subject-level variation in wearable stress-detection uncertainty?"
+    },
+    "source": "Identical Q1-Q3 used by Experiments 1, 2 and 7 (run_v4_architecture_ablation.QUESTIONS).",
+    "replicates_per_question": 3,
+    "unit_of_analysis": "(question, replicate) pair; both arms run fresh on every unit"
+  },
+  "arms": {
+    "A_minos_j_v4": {
+      "implementation": "historical pipeline.run_v4_pipeline, unchanged, fresh Stage 4 (no reuse of historical checkpoints)",
+      "stages": [
+        "4 Dreamer",
+        "4.1 Mechanism Builder",
+        "4.2 Confounder/Rival Builder",
+        "4.3 Statistical Testability Builder (auto-splits into 2 batches on failure)",
+        "5 Strict Auditor (evaluator)",
+        "6 Rival Matrix (PASS only)",
+        "7 Falsification (PASS only)"
+      ],
+      "final_deliverable": "hypotheses the Stage 5 auditor marked PASS, with their builds, rival row and falsification test"
+    },
+    "B_matched_budget_sample_and_select": {
+      "implementation": "K independent one-shot calls, each producing 10 complete hypothesis cards with every field Arm A ends up with, then ONE selector/verifier call applying the same strict audit checklist and decision rules to the pooled candidates",
+      "final_deliverable": "up to 10 distinct selected cards that the selector marked PASS",
+      "not_handicapped_because": [
+        "same model, temperature, max_tokens, system message, client and retry policy",
+        "asked for the same final fields and the same quality requirements as Arm A's builders",
+        "receives the same total token budget as Arm A on the same unit (K chosen by the budget controller)",
+        "receives the same number of evaluator/verifier calls (1)",
+        "gets to choose among 10*K sampled candidates, versus 10 for Arm A"
+      ]
+    }
+  },
+  "held_constant": {
+    "underlying_model": "OPENROUTER_MODEL (single value for both arms; recorded per request, including provider-returned model id)",
+    "model_settings": "historical llm_client: temperature 0.4, max_tokens 12000, same system message, same JSON-repair and retry policy",
+    "retrieval_evidence": "none in either arm (the v4 pipeline has no retrieval stage); both arms receive only the research question",
+    "task_inputs": "identical research question text"
+  },
+  "matched_compute_rule": {
+    "budget_currency": "total tokens = provider-reported prompt_tokens + completion_tokens over every successful HTTP request of the arm, including JSON-repair requests; chars/4 estimate only if the provider omits usage (flagged)",
+    "order": "Arm A runs first on a unit; its realized total T_A becomes Arm B's budget for that unit",
+    "evaluator_parity": "Arm B makes exactly as many evaluator/verifier calls as Arm A made (1 per unit)",
+    "controller": "Arm B keeps adding one-shot samples while the projected total (samples spent + estimated selector cost) after one more sample is closer to T_A than the projected total without it; at least 1 sample; hard cap K <= 2 * L_A",
+    "selector_cost_estimate": "selector prompt template chars/4 + sum of sample completion tokens + Arm A's realized Stage 5 completion tokens",
+    "tolerance": "a unit is budget-matched iff 0.85 <= T_B / T_A <= 1.15 and E_B == E_A",
+    "reported_not_matched": [
+      "logical calls",
+      "HTTP attempts",
+      "timeout/network/429 retries",
+      "JSON repair requests",
+      "sampled candidates",
+      "cost (if provider returns it)",
+      "wall-clock latency"
+    ],
+    "failed_requests": "HTTP attempts that failed carry no token usage; they are counted as attempts in both arms",
+    "judge_calls": "excluded from both arms' budgets (measurement, not inference) and reported separately"
+  },
+  "evaluation": {
+    "judge": "blinded LLM judge using MINOS_J_JUDGE_MODEL, which must differ from the generator model",
+    "normalization": "every final deliverable is converted to the identical 16-field card schema; arm-specific field names and IDs are removed",
+    "blinding": "cards from both arms of a unit are pooled, given random opaque IDs, shuffled with a seed derived from the unit ID, and judged in mixed batches of 10; the card->arm key never enters a prompt; prompts are scanned for arm-revealing strings",
+    "judge_checklist": [
+      "variables_measurable",
+      "causal_chain_valid",
+      "base_rate_plausible",
+      "confounders_identified",
+      "effect_size_plausible",
+      "data_requirements_clear",
+      "mechanism_is_non_generic",
+      "prediction_is_testable",
+      "rival_prediction_diverges",
+      "failure_condition_operational"
+    ],
+    "judge_validated_card": "all six historical CRITICAL_AUDIT_FIELDS true AND rival_prediction_diverges AND failure_condition_operational",
+    "judge_retry": "one retry per judge batch on invalid output; otherwise the unit is marked JUDGE_FAILED"
+  },
+  "metrics": {
+    "primary": "V = number of judge-validated cards in an arm's final deliverable (0-10); paired difference D = V_A - V_B per unit",
+    "secondary": [
+      "precision = V / reported survivors",
+      "mean judge checklist fraction over reported cards",
+      "within-arm near-duplicate rate (word-set Jaccard >= 0.6 on hypothesis text)",
+      "mean card length in characters (verbosity confound)",
+      "arm failure rate (pipeline or validation failure)",
+      "per-question paired differences"
+    ]
+  },
+  "falsification_criterion": {
+    "statement": "If the matched-budget simple baseline performs similarly to or better than Minos-J within reasonable experimental variation, Experiment 16 does NOT support the claim that the Minos-J architecture itself is responsible for the gain.",
+    "analysis_set": "units where both arms completed, the judge completed, and the budget was matched",
+    "statistics": "mean D; paired bootstrap 95% CI (10000 resamples, seed 16); exact two-sided sign test on non-zero D",
+    "practical_margin_delta": 1.0,
+    "minimum_analysable_units": 6,
+    "decisions": {
+      "ARCHITECTURE_ADVANTAGE_SURVIVED": "mean D >= 1.0 AND bootstrap CI lower bound > 0",
+      "BASELINE_SUPERIOR_ARCHITECTURE_NOT_SUPPORTED": "bootstrap CI upper bound < 0",
+      "ARCHITECTURE_ADVANTAGE_NOT_SUPPORTED": "any other outcome (CI includes 0, or mean D below the margin)",
+      "INCONCLUSIVE_INSUFFICIENT_MATCHED_UNITS": "fewer than 6 analysable units, or more than one third of attempted units unmatched/failed"
+    },
+    "negative_results": "reported with the same prominence as positive results"
+  },
+  "seeds": {
+    "bootstrap_seed": 16,
+    "blinding_seed_derivation": "sha256('E16|' + unit_id)"
+  }
+}

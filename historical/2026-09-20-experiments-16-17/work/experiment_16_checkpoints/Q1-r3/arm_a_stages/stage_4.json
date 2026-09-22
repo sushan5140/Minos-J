@@ -1,0 +1,84 @@
+{
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Inter-subject variability in autonomic nervous system reactivity causes systematic miscalibration of prediction intervals for high-reactivity individuals.",
+      "proposed_mechanism": "Subjects with exaggerated sympathetic responses (e.g., larger EDA phasic peaks, greater HR acceleration) produce feature vectors that fall in low-density regions of the calibration set, leading to inflated nonconformity scores and undercoverage when Mondrian binning groups them with typical responders.",
+      "core_assumption": "The calibration set underrepresents extreme physiological reactivity phenotypes, and Mondrian taxonomy bins do not adequately separate high-reactivity from typical subjects.",
+      "knowledge_gap_addressed": "Whether conformal prediction's exchangeability assumption holds across the full spectrum of autonomic reactivity in WESAD, and how taxonomy granularity interacts with physiological outliers.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Wrist-worn sensor (Empatica E4) motion artifacts during stress tasks disproportionately affect certain subjects, corrupting features used for nonconformity scoring.",
+      "proposed_mechanism": "Subjects who gesture more during the TSST or have looser watch fit generate correlated noise in BVP and ACC channels that mimics stress signatures, causing the model to assign high confidence to incorrect predictions; Mondrian bins based on predicted class then pool clean and artifact-contaminated samples.",
+      "core_assumption": "Motion artifact severity correlates with stress expression behavior (e.g., fidgeting, speaking gestures) and is not fully captured by existing signal quality indices in WESAD preprocessing.",
+      "knowledge_gap_addressed": "The extent to which subject-specific motion patterns during psychosocial stress violate the i.i.d. assumption within Mondrian taxonomy bins, and whether artifact-aware taxonomies could restore coverage.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Temporal non-stationarity in physiological stress trajectories violates the exchangeability assumption within Mondrian calibration folds for slow-responding subjects.",
+      "proposed_mechanism": "Subjects with delayed cortisol/HRV recovery exhibit feature distributions that drift across the calibration window; when Mondrian bins pool early and late calibration samples, the resulting prediction intervals are too narrow for the late-phase distribution.",
+      "core_assumption": "Stress recovery dynamics vary systematically across subjects (fast vs. slow recoverers) and the calibration set's temporal ordering is not accounted for in the Mondrian taxonomy.",
+      "knowledge_gap_addressed": "Whether conformal prediction's finite-sample coverage guarantees degrade under temporal distribution shift within taxonomy bins, and how to design time-aware taxonomies for longitudinal physiological data.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Inconsistent self-report labeling (VAS scores) for subjective stress creates noisy ground truth that disproportionately impacts coverage for subjects with high interoceptive variability.",
+      "proposed_mechanism": "Subjects who poorly discriminate physiological arousal from emotional valence produce VAS ratings that mismatch their physiological state; Mondrian bins conditioned on predicted class then mix truly stressed and mislabeled calm samples, widening the true nonconformity distribution beyond the calibrated quantile.",
+      "core_assumption": "Label noise is heteroscedastic across subjects and correlates with alexithymia or interoceptive accuracy traits not captured in WESAD metadata.",
+      "knowledge_gap_addressed": "The interaction between label noise heterogeneity and Mondrian conditional coverage guarantees, and whether proxy physiological labels (e.g., EDA peak count) could provide more stable taxonomy conditioning.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Mondrian taxonomy based on predicted class alone ignores continuous stress intensity, causing undercoverage for subjects at extreme intensity levels within each class.",
+      "proposed_mechanism": "The binary stress/non-stress taxonomy pools mild and severe stress responses; subjects with extreme physiological responses (top decile of EDA/HR) have systematically higher nonconformity scores than the bin's quantile threshold, but their rarity prevents the calibration quantile from adapting.",
+      "core_assumption": "Stress intensity is a continuous latent variable not captured by the binary WESAD protocol labels, and its extremes coincide with coverage failures.",
+      "knowledge_gap_addressed": "Whether Mondrian conformal prediction requires intensity-aware taxonomies (e.g., predicted probability bins) to maintain coverage across the full stress response spectrum.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Subject-specific sensor-skin interface impedance (especially for EDA) creates systematic feature distribution shifts that violate the identical distribution assumption within taxonomy bins.",
+      "proposed_mechanism": "Dry skin, calluses, or excessive sweating alter EDA tonic level and phasic driver amplitude independently of sympathetic activity; these subjects' features occupy different manifold regions, but Mondrian bins group them by predicted class rather than signal quality, leading to miscalibrated intervals.",
+      "core_assumption": "EDA signal quality varies systematically across subjects due to anatomical/dermatological factors, and this variation is not captured by WESAD's signal quality flags.",
+      "knowledge_gap_addressed": "How sensor-skin interface variability interacts with conformal prediction's exchangeability assumption, and whether impedance-aware taxonomies or feature normalization could mitigate coverage gaps.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Circadian phase at time of TSST administration modulates baseline autonomic tone, creating a hidden covariate shift that Mondrian taxonomy does not condition on.",
+      "proposed_mechanism": "Subjects tested in morning vs. afternoon have different baseline cortisol and HRV; the model trained on pooled data learns a decision boundary that miscalibrates for one circadian group, and Mondrian bins by predicted class fail to separate these groups because both classes contain mixed circadian phases.",
+      "core_assumption": "WESAD data collection times vary across subjects and circadian effects on physiological features are large enough to induce covariate shift within taxonomy bins.",
+      "knowledge_gap_addressed": "Whether time-of-day should be an explicit conditioning variable in Mondrian taxonomies for physiological stress detection, and how to estimate its effect size on coverage.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "The nonconformity score function (e.g., 1 - predicted probability) is poorly calibrated for subjects with atypical feature covariance structure, causing systematic undercoverage.",
+      "proposed_mechanism": "Subjects with comorbid conditions (undetected in WESAD screening) or unique physiological phenotypes (e.g., athletes with high HRV) exhibit feature correlations that differ from the training population; the model's predicted probabilities are overconfident for these out-of-distribution samples, and Mondrian binning by class does not correct this because the miscalibration is conditional on features, not class.",
+      "core_assumption": "Feature covariance heterogeneity across subjects violates the model's inductive bias, and the resulting probability miscalibration is not fully captured by class-conditional nonconformity scores.",
+      "knowledge_gap_addressed": "Whether conformal prediction with class-conditional taxonomies can correct for feature-conditional miscalibration, or if feature-aware taxonomies (e.g., k-NN based) are needed for physiological data.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Finite calibration set size combined with rare subject phenotypes leads to high variance in empirical quantile estimates for those subjects' effective taxonomy bins.",
+      "proposed_mechanism": "Subjects belonging to rare physiological phenotypes (e.g., non-responders, paradoxical responders) have few calibration samples in their Mondrian bin; the empirical (1-α) quantile is then upwardly biased (too small) due to order statistic variability, producing intervals that undercover in expectation for that phenotype.",
+      "core_assumption": "The WESAD calibration set contains insufficient samples from certain physiological response phenotypes to reliably estimate conditional quantiles, and Mondrian's fixed taxonomy cannot adapt bin granularity to data density.",
+      "knowledge_gap_addressed": "The finite-sample coverage properties of Mondrian conformal prediction under phenotype imbalance, and whether adaptive taxonomy granularity or Bayesian quantile estimation could improve worst-case coverage.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Anticipatory anxiety during the pre-TSST baseline period contaminates 'non-stress' calibration samples for high-trait-anxiety subjects, shrinking the effective nonconformity gap between classes.",
+      "proposed_mechanism": "Subjects with high trait anxiety show elevated EDA/HR during the supposed baseline; when these samples are used to calibrate the 'non-stress' class bin, the nonconformity score distribution for true non-stress shifts upward, causing the quantile threshold to be too low for genuinely calm periods and too high for stress periods, resulting in undercoverage for both classes for these subjects.",
+      "core_assumption": "Baseline periods are not physiologically neutral for all subjects, and trait anxiety (unmeasured in WESAD) systematically biases baseline features in a way that Mondrian's class-conditional taxonomy cannot disentangle.",
+      "knowledge_gap_addressed": "Whether baseline contamination violates the label-conditional exchangeability assumption in Mondrian conformal prediction, and how to design taxonomies robust to imperfect 'negative' class samples in physiological stress detection.",
+      "status": "SPECULATIVE"
+    }
+  ]
+}

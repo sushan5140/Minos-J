@@ -1,0 +1,154 @@
+{
+  "statistical_testability_builds": [
+    {
+      "hypothesis_id": "H1",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Known physiological variability across individuals (autonomic tone, vascular compliance) produces measurable distribution shifts in non-conformity scores; prior work shows subject-specific effects on prediction intervals in physiological monitoring.",
+      "minimum_data_needed": [
+        "Multi-subject physiological recordings (ECG, PPG, or BP) with ground-truth annotations",
+        "Subject-level metadata: age, BMI, medication status, PWV measurements",
+        "At least 20 subjects with ≥30 minutes clean data each for within-subject calibration",
+        "Cross-subject calibration sets of matched sample size"
+      ],
+      "testable_prediction": "Cross-subject calibration yields lower empirical coverage than within-subject calibration; coverage gap increases monotonically with Wasserstein distance between subject non-conformity score distributions.",
+      "failure_condition": "After subsampling cross-subject calibration sets to match within-subject sample size, the coverage gap is not statistically significant (paired t-test p > 0.05) and does not correlate with subject physiological distance (PWV difference, Spearman ρ ≈ 0, p > 0.05).",
+      "statistical_test_plan": "1) For each subject, construct within-subject calibration (80% of subject data) and test on held-out 20%. 2) Construct cross-subject calibration using all other subjects' data, subsampled to match within-subject calibration size. 3) Compute empirical coverage at nominal 90% for both. 4) Paired t-test on coverage differences across subjects. 5) Compute Wasserstein distance between subject non-conformity score CDFs. 6) Spearman correlation between coverage gap and Wasserstein distance / PWV difference. 7) Linear mixed model with subject as random effect, calibration type as fixed effect.",
+      "statistical_testability_notes": "Controls for finite-sample rival by matching calibration sizes. Uses Wasserstein distance as continuous measure of distribution shift. Requires sufficient subjects for mixed-model power (target n≥20)."
+    },
+    {
+      "hypothesis_id": "H2",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Motion artifacts and electrode pops produce heavy-tailed residual distributions; prior studies show artifact amplitude correlates with prediction error inflation in wearable PPG/ECG.",
+      "minimum_data_needed": [
+        "Physiological recordings with synchronized motion reference (accelerometer) and artifact annotations",
+        "Segments spanning clean to severe artifact levels (≥50 segments per artifact quartile)",
+        "Quantified artifact metrics: motion RMS (g), electrode pop rate (per min), baseline wander amplitude (µV)",
+        "Ground-truth labels for target variable (e.g., HR, BP, SpO2)"
+      ],
+      "testable_prediction": "Empirical coverage decreases monotonically with increasing segment artifact RMS; negative Spearman correlation between artifact level and coverage when calibrated on low-artifact segments. Locally scaled non-conformity (residual / segment_MAD) reduces coverage-artifact correlation to non-significance.",
+      "failure_condition": "After normalizing non-conformity scores by segment-specific MAD, the KS distance between clean and artifact segment distributions is not significant (p > 0.05) and coverage-artifact correlation becomes non-significant (Spearman ρ ≈ 0, p > 0.05).",
+      "statistical_test_plan": "1) Induce controlled motion artifacts via standardized protocol (walking, arm movement, vibration). 2) Quantify artifact metrics per 30-sec segment. 3) Calibrate conformal predictor on clean segments (bottom artifact quartile). 4) Test coverage on all segments. 5) Compute Spearman correlation between artifact RMS and coverage. 6) Compute sliced Wasserstein distance between non-conformity score distributions in clean vs. artifact segments. 7) Repeat with adaptive non-conformity measure (|residual| / segment_MAD). 8) Compare coverage uniformity via chi-squared goodness-of-fit across artifact quartiles.",
+      "statistical_testability_notes": "Distinguishes shape-shift mechanism from scale-only rival via KS distance after MAD normalization. Requires artifact induction protocol for controlled variation."
+    },
+    {
+      "hypothesis_id": "H3",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Autonomic shifts during sleep-stage transitions or orthostatic stress cause rapid signal morphology changes; calibration windows spanning transitions mix distinct non-conformity score distributions.",
+      "minimum_data_needed": [
+        "Continuous physiological recordings with precise transition annotations (polysomnography sleep stages or tilt-table markers)",
+        "At least 50 annotated transitions (e.g., NREM-REM, supine-standing)",
+        "Calibration window lengths varied systematically (30s, 60s, 120s, 300s)",
+        "Non-conformity scores computed for segments centered on transitions"
+      ],
+      "testable_prediction": "Coverage is lowest for segments centered on transitions; coverage decreases as proportion of transition-spanning calibration windows increases. Non-conformity scores in transition-spanning windows show significant bimodality (Hartigan's dip test p < 0.05).",
+      "failure_condition": "Hartigan's dip test on non-conformity scores in transition-spanning windows shows no bimodality (p > 0.05), and coverage deficit is fully explained by increased residual variance (unimodal distribution with higher variance).",
+      "statistical_test_plan": "1) Annotate transitions precisely (PSG for sleep, tilt-table for orthostasis). 2) Define segments in 30-sec bins relative to transition time (-5min to +5min). 3) Vary calibration window length (30s-300s). 4) Compute empirical coverage per bin. 5) Hartigan's dip test for bimodality on non-conformity scores in transition-spanning windows. 6) Compare coverage in pure pre-transition vs. pure post-transition segments (t-test). 7) Regression of coverage on proportion of transition-spanning calibration windows. 8) Test block conformal with transition-aware blocks.",
+      "statistical_testability_notes": "Uses dip test to distinguish bimodality (mechanism) from variance increase (rival). Requires precise transition annotations. Window length variation tests adaptation speed."
+    },
+    {
+      "hypothesis_id": "H4",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Physiological signals (R-R intervals, PPG pulse rate) exhibit AR(1) coefficients 0.3-0.8; effective sample size reduction directly impacts finite-sample coverage guarantees.",
+      "minimum_data_needed": [
+        "Physiological time series with segment-level AR(1) coefficients computed on non-conformity scores",
+        "Segments of varying lengths (100-5000 samples) and autocorrelation strengths",
+        "At least 100 segments spanning range of AR(1) coefficients (0.1-0.9)",
+        "Nominal coverage target (90% or 95%)"
+      ],
+      "testable_prediction": "Absolute coverage deviation from nominal increases with segment AR(1) coefficient; coverage variance across segments positively correlates with mean segment autocorrelation. Nominal coverage achieved only when effective sample size n_eff = n*(1-ρ)/(1+ρ) > 30.",
+      "failure_condition": "Regression of |coverage - nominal| on segment AR(1) coefficient controlling for segment length yields non-significant slope (p > 0.05), and coverage variance matches theoretical binomial variance 1/(n_cal+1).",
+      "statistical_test_plan": "1) Compute AR(1) coefficient for non-conformity scores in each segment. 2) Calculate effective sample size n_eff per segment. 3) Compute empirical coverage per segment at nominal 90%. 4) Linear regression: |coverage - 0.9| ~ AR(1) + segment_length. 5) Correlation between segment coverage variance and mean AR(1). 6) Simulate AR(1) non-conformity scores with known ρ to validate n_eff formula. 7) Test block conformal prediction with varying block sizes; measure coverage stability vs. block size. 8) Thinning experiment: subsample scores at lag > mixing time, compare coverage.",
+      "statistical_testability_notes": "Controls for segment length confound via regression. Simulation validates n_eff theory. Block conformal and thinning test exchangeability restoration."
+    },
+    {
+      "hypothesis_id": "H5",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Annotation error variance typically small relative to physiological variability; effect detectable only with replicate annotations or controlled jitter injection.",
+      "minimum_data_needed": [
+        "Replicate annotations for ≥30 segments (multiple annotators or repeated annotations)",
+        "Segments with varying SNR (clean to noisy) to proxy annotation quality",
+        "Synthetic annotation jitter injection capability with known variance (0-50ms for R-peaks)",
+        "Ground-truth labels from gold-standard modality where available"
+      ],
+      "testable_prediction": "Coverage deviation from nominal correlates with replicate-annotation-derived error variance per segment (Spearman ρ > 0, p < 0.05). Induced annotation bias shifts median non-conformity score proportionally. Noise-robust non-conformity (quantile regression residuals) reduces coverage deviation.",
+      "failure_condition": "In segments matched for SNR, coverage deviation shows no correlation with annotation error variance (Spearman ρ ≈ 0, p > 0.05), and deviation correlates only with true residual variance estimated from clean segments.",
+      "statistical_test_plan": "1) Obtain replicate annotations for subset of segments; compute per-segment annotation error variance. 2) Inject synthetic R-peak jitter with known variance (0, 10, 20, 50ms). 3) Compute non-conformity scores using clean vs. noisy labels. 4) Measure coverage deviation per segment. 5) Spearman correlation between annotation error variance and coverage deviation, controlling for SNR (partial correlation). 6) KL divergence between non-conformity score distributions (clean vs. noisy labels). 7) Test quantile regression non-conformity measure vs. absolute residual. 8) Compare coverage in high-SNR vs. low-SNR segments.",
+      "statistical_testability_notes": "Partial correlation controls for SNR confound. Synthetic jitter isolates annotation noise effect. Quantile regression residuals test noise-robust alternative."
+    },
+    {
+      "hypothesis_id": "H6",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on prevalence and effect magnitude of unmeasured covariates (medication, hydration, circadian phase) which are rarely quantified in existing datasets. Need data on covariate distribution shifts and their impact on signal predictability.",
+      "minimum_data_needed": [
+        "Sub-study with measured latent covariates: medication logs (beta-blocker y/n), hydration (urine specific gravity), circadian phase (DLMO or melatonin)",
+        "Concurrent physiological recordings across covariate strata",
+        "Maximum mean discrepancy (MMD) computation between segment and calibration covariate distributions",
+        "Observed covariates for propensity weighting: time-of-day, activity level, demographics"
+      ],
+      "testable_prediction": "Coverage gap between segment and calibration correlates with MMD of latent covariate distributions (Spearman ρ > 0, p < 0.05). Weighted conformal prediction with importance weights for observed covariates reduces but does not eliminate stratification by latent covariates.",
+      "failure_condition": "After propensity weighting using all observed covariates, coverage stratification by latent covariate proxies (e.g., medication status) disappears (chi-squared GOF p > 0.05 across strata).",
+      "statistical_test_plan": "1) Collect latent covariates in sub-study (n≥50 subjects). 2) Compute MMD between each segment's covariate distribution and calibration distribution. 3) Stratify segments by latent covariates (medication on/off, hydration tertiles, circadian phase bins). 4) Compute coverage per stratum. 5) Spearman correlation between MMD and coverage gap. 6) Weighted conformal prediction using propensity scores from observed covariates. 7) Compare coverage uniformity before/after weighting via chi-squared GOF across latent strata. 8) Test if adding latent covariates to weighting further improves calibration.",
+      "statistical_testability_notes": "Requires prospective sub-study for latent covariates. MMD quantifies covariate shift. Weighted conformal tests observed-covariate rival. Chi-squared GOF assesses uniformity."
+    },
+    {
+      "hypothesis_id": "H7",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Finite-sample coverage variance scales as 1/(n_cal+1); typical calibration sizes (50-500) yield small variance. Effect detectable only when n_cal varies widely (e.g., 10 vs 500).",
+      "minimum_data_needed": [
+        "Segments with varying artifact rejection rates (0-80%) producing different effective calibration sizes n_cal",
+        "At least 100 segments spanning range of n_cal (10-500)",
+        "Segment type labels (rest, exercise, sleep) to control for distribution shift",
+        "Fixed nominal coverage target (90%)"
+      ],
+      "testable_prediction": "Coverage variance across segments inversely proportional to n_cal; mean coverage conservative (over-coverage) for small n_cal due to quantile inflation. After subsampling all segments to equal minimum n_cal, coverage variance drops to theoretical binomial variance and no longer correlates with original artifact rejection rate.",
+      "failure_condition": "After equalizing n_cal across segments via subsampling, coverage variance remains significantly above binomial variance (Levene's test p < 0.05) and correlates with segment type (e.g., exercise vs rest).",
+      "statistical_test_plan": "1) Compute effective calibration size n_cal per segment after artifact rejection. 2) Compute empirical coverage per segment. 3) Regression of segment coverage on n_cal controlling for segment type. 4) Compare observed coverage variance to theoretical binomial variance 1/(n_cal+1). 5) Subsample all segments to minimum n_cal across dataset. 6) Recompute coverage variance; Levene's test for equality of variance before/after subsampling. 7) Correlation between original artifact rejection rate and coverage after subsampling. 8) Fixed-window calibration (no artifact rejection) as control.",
+      "statistical_testability_notes": "Subsampling isolates distribution shift from sample-size effects. Binomial variance provides theoretical benchmark. Fixed-window control tests adaptive windowing confound."
+    },
+    {
+      "hypothesis_id": "H8",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Morphological complexity (arrhythmia, motion-corrupted PPG) produces heavy-tailed, skewed residuals; fixed absolute residual non-conformity cannot adapt to shape changes, causing systematic under/over-coverage.",
+      "minimum_data_needed": [
+        "Segments spanning morphological complexity range (normal sinus rhythm to arrhythmia, clean to motion-corrupted PPG)",
+        "Per-segment residual distribution parameters: kurtosis, skewness, sample entropy, heteroscedasticity index",
+        "At least 30 segments per complexity stratum (low/medium/high)",
+        "Local scale estimates: segment MAD, quantile regression prediction intervals"
+      ],
+      "testable_prediction": "Coverage negatively correlated with segment sample entropy and residual kurtosis (Spearman ρ < -0.3, p < 0.05). Under-coverage in high-complexity segments (top kurtosis quartile), over-coverage in low-complexity segments. Locally adaptive non-conformity (|residual|/segment_MAD) achieves uniform coverage (chi-squared GOF p > 0.05).",
+      "failure_condition": "Locally scaled non-conformity measure (residual / segment_MAD) yields uniform coverage across complexity strata (chi-squared GOF p > 0.05), and residual kurtosis/skewness no longer predict coverage deviation.",
+      "statistical_test_plan": "1) Compute segment morphological complexity: sample entropy, residual kurtosis, skewness. 2) Stratify segments into complexity quartiles. 3) Calibrate conformal predictor with fixed absolute residual non-conformity. 4) Compute coverage per stratum. 5) Spearman correlation between complexity metrics and coverage. 6) Chi-squared GOF test for coverage uniformity across strata. 7) Repeat with adaptive non-conformity: |residual|/segment_MAD and quantile regression residuals. 8) Compare coverage uniformity (GOF p-value) and mean absolute coverage deviation across methods.",
+      "statistical_testability_notes": "Chi-squared GOF directly tests coverage uniformity. Adaptive non-conformity comparison distinguishes shape vs scale effects. Requires complexity stratification."
+    },
+    {
+      "hypothesis_id": "H9",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Circadian rhythms and sensor degradation cause measurable drift over hours; PPG shows faster drift than ECG due to optical coupling changes. Coverage decay slope quantifiable in long recordings.",
+      "minimum_data_needed": [
+        "Long-duration recordings (24-72 hours) with continuous physiological signals",
+        "Time-stamped calibration windows of fixed size (e.g., 1 hour) at varying ages (0-72h)",
+        "Artifact metrics tracked over time: electrode impedance, motion RMS, signal quality index",
+        "Multiple signal modalities simultaneously (ECG, PPG, BP if available)"
+      ],
+      "testable_prediction": "Coverage decreases monotonically with calibration window age (hours since calibration); linear decay slope significantly negative (p < 0.05). Decay slope steeper for PPG than ECG. Periodic recalibration (every 4h) restores coverage to nominal.",
+      "failure_condition": "In segments with artifact metrics below threshold (impedance stable, motion RMS low), coverage vs. hours-since-calibration slope is not significantly different from zero (p > 0.05).",
+      "statistical_test_plan": "1) Define calibration windows at t=0, 4, 8, ... hours. 2) Test coverage on subsequent segments at increasing ages. 3) Linear regression: coverage ~ hours_since_calibration + artifact_metrics. 4) Sliding-window KS test on non-conformity scores to detect distribution shift points. 5) Compute Wasserstein distance between consecutive calibration windows. 6) Compare modalities: PPG vs ECG vs BP decay slopes (ANCOVA). 7) Test periodic recalibration (every 4h) vs fixed calibration. 8) Exponential decay fit to coverage; compare AIC to linear model.",
+      "statistical_testability_notes": "Artifact metrics as covariates distinguish drift from sensor degradation. Multi-modality comparison tests modality-specific drift. Periodic recalibration tests adaptive solution."
+    },
+    {
+      "hypothesis_id": "H10",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Physiological oscillators (RSA ~0.25Hz, Mayer waves ~0.1Hz) modulate error variance; coverage oscillation amplitude depends on non-conformity measure sensitivity to phase-dependent variance. Effect small but detectable with phase-resolved analysis.",
+      "minimum_data_needed": [
+        "Concurrent recordings: target physiological signal + respiration (respiratory belt) + continuous BP (Finapres) + skin temperature",
+        "At least 2 hours continuous data per subject to capture multiple oscillator cycles",
+        "Instantaneous phase computation via Hilbert transform for each oscillator",
+        "Segments defined by external protocol (fixed windows) not physiological phase"
+      ],
+      "testable_prediction": "Coverage oscillates at confounder frequencies; significant circular correlation between segment boundary phase (from respiration/BP) and coverage (Rayleigh test p < 0.05). Coverage amplitude of oscillation (max-min across phases) > 2 percentage points. Phase-stratified conformal prediction stabilizes coverage.",
+      "failure_condition": "In clean segments (artifact metrics below threshold), circular correlation between segment boundary phase and coverage is non-significant (Rayleigh test p > 0.05), and coverage oscillation amplitude < 1 percentage point.",
+      "statistical_test_plan": "1) Record concurrent respiration, continuous BP, temperature. 2) Compute instantaneous phase via Hilbert transform for RSA (respiration), Mayer waves (BP 0.1Hz), thermoregulation (temperature). 3) Bin segments by phase (8 bins per cycle). 4) Compute coverage per phase bin. 5) Circular correlation (Rayleigh test) between segment start phase and coverage. 6) Spectral analysis of coverage time series; test for peaks at 0.1Hz and respiratory frequency. 7) Phase-stratified conformal prediction: separate calibration per phase bin. 8) Compare coverage stability (variance across phases) before/after stratification. 9) Test in artifact-free segments only.",
+      "statistical_testability_notes": "Rayleigh test for circular correlation. Spectral analysis detects oscillation frequencies. Phase-stratified conformal tests mechanism directly. Artifact-free subset controls artifact rival."
+    }
+  ]
+}

@@ -1,0 +1,253 @@
+{
+  "confounder_rival_builds": [
+    {
+      "hypothesis_id": "H1",
+      "possible_confounders": [
+        "Cardiovascular medication use (beta-blockers, anticholinergics)",
+        "Cardiorespiratory fitness level (VO2max)",
+        "Age and sex",
+        "Circadian timing of stressor exposure",
+        "Recent caffeine, alcohol, or nicotine use"
+      ],
+      "control_variables": [
+        "Medication status (exclusion or covariate)",
+        "VO2max or submaximal fitness estimate",
+        "Age, sex, BMI",
+        "Time of day / hours since wake",
+        "12-hour caffeine/alcohol/nicotine abstinence verification"
+      ],
+      "boring_rival_explanations": [
+        "Sensor noise floor differences across device units or placements unrelated to ANS",
+        "Stressor intensity variation across subjects (some subjects received weaker stressors)",
+        "Classifier decision threshold miscalibrated for population-level feature distributions"
+      ],
+      "rival_prediction": "If sensor noise floor is the primary driver, uncertainty will correlate with device-specific noise metrics (e.g., PPG SQI at rest) independent of ANS reactivity measures; subjects with matched ANS reactivity but different sensor noise floors will show divergent uncertainty.",
+      "distinguishing_condition": "In a subsample with matched resting RMSSD and phasic EDA reactivity but different wearable device models (or placements) yielding different noise floors, stress-detection uncertainty tracks the sensor noise floor, not the ANS measures.",
+      "confounder_rival_notes": "Must measure sensor noise floor per subject per session; consider multi-sensor fusion to isolate ANS vs. sensor contributions."
+    },
+    {
+      "hypothesis_id": "H2",
+      "possible_confounders": [
+        "Ambient light intensity and spectrum",
+        "Skin temperature and perfusion",
+        "Motion artifact magnitude (accelerometer variance)",
+        "Device fit/tightness",
+        "Socioeconomic status (correlates with both skin phenotype and stress exposure)"
+      ],
+      "control_variables": [
+        "Ambient light (controlled lab or wearable light sensor)",
+        "Skin temperature (infrared thermometry)",
+        "Motion (3-axis accelerometer)",
+        "Strap tension (pressure sensor or standardized protocol)",
+        "SES (education, income) as covariate"
+      ],
+      "boring_rival_explanations": [
+        "Demographic confounding: SES correlates with skin phenotype and chronic stress exposure, driving uncertainty via stressor differences not sensor physics",
+        "Differential stressor type/intensity across demographic groups",
+        "Algorithmic bias from training data imbalance across skin phenotypes"
+      ],
+      "rival_prediction": "If demographic confounding drives uncertainty, uncertainty will correlate with SES variables even after statistically controlling for melanin index and stratum corneum thickness; the skin phenotype effect will attenuate to non-significance when SES is included.",
+      "distinguishing_condition": "In a sample matched on skin phenotype quartiles but varying in SES, uncertainty does not vary with SES; conversely, in a sample matched on SES but diverse in skin phenotype, uncertainty still varies with melanin index and stratum corneum thickness.",
+      "confounder_rival_notes": "Require diverse recruitment across skin phenotype × SES cells; use multi-wavelength PPG to isolate melanin attenuation from perfusion changes."
+    },
+    {
+      "hypothesis_id": "H3",
+      "possible_confounders": [
+        "Prior sleep duration and quality (actigraphy)",
+        "Light exposure history (wearable light sensor)",
+        "Caffeine intake timing and dose",
+        "Menstrual cycle phase (for female subjects)",
+        "Shift work history or recent transmeridian travel"
+      ],
+      "control_variables": [
+        "Actigraphy-derived sleep metrics (TST, efficiency)",
+        "Light exposure lux-hours in prior 24h",
+        "Caffeine log (timestamp, dose)",
+        "Menstrual phase (self-report + luteinizing hormone test)",
+        "Exclusion of shift workers and recent travelers"
+      ],
+      "boring_rival_explanations": [
+        "Time-of-day sensor drift (temperature-dependent PPG/EDA baseline shifts)",
+        "Diurnal variation in stressor type/intensity (e.g., work stress morning, social stress evening)",
+        "Fatigue effects on physiology unrelated to circadian phase"
+      ],
+      "rival_prediction": "If sensor drift causes uncertainty, uncertainty will correlate with device temperature or uptime, not with circadian phase × chronotype interaction; controlling for device temperature will eliminate the time-of-day effect.",
+      "distinguishing_condition": "In a temperature-controlled lab environment (constant ambient and device temperature), the circadian phase × chronotype interaction on uncertainty persists, while device temperature shows no correlation with uncertainty.",
+      "confounder_rival_notes": "Direct circadian phase measurement (DLMO) essential; consider adding time-of-day as explicit classifier feature to test if interaction disappears."
+    },
+    {
+      "hypothesis_id": "H4",
+      "possible_confounders": [
+        "Baseline anxiety (GAD-7) and depression (PHQ-9)",
+        "Alexithymia (TAS-20)",
+        "Stressor controllability and type",
+        "Social desirability bias in self-report",
+        "Interoceptive awareness (MAIA)"
+      ],
+      "control_variables": [
+        "GAD-7, PHQ-9, TAS-20 scores as covariates",
+        "Standardized stressor (TSST) with matched controllability",
+        "Marlowe-Crowne social desirability scale",
+        "MAIA score as covariate or stratification variable"
+      ],
+      "boring_rival_explanations": [
+        "High regulators have inherently more variable peripheral physiology (trait variability)",
+        "Regulation strategy correlates with interoceptive awareness, which affects self-report accuracy not physiology",
+        "Classifier feature set lacks regulation-specific physiological markers (e.g., facial EMG for suppression)"
+      ],
+      "rival_prediction": "If high regulators have inherently more variable physiology, their feature variability (within-subject variance) will be elevated during non-stress baseline periods as well as stress periods, not selectively during stress.",
+      "distinguishing_condition": "During non-stress baseline epochs, high suppressors show comparable HRV/EDA within-subject variance to low suppressors; uncertainty elevation only appears during stress epochs where regulation is engaged.",
+      "confounder_rival_notes": "Need state regulation assessment during each stressor; consider multi-modal features (cardiac, EDA, respiration) to capture regulation-specific signatures."
+    },
+    {
+      "hypothesis_id": "H5",
+      "possible_confounders": [
+        "Device charging routine (e.g., nightly vs. opportunistic)",
+        "Skin irritation or allergy to device materials",
+        "Occupational constraints (e.g., mandatory removal at work)",
+        "Forgetfulness / compliance trait",
+        "Battery life degradation over study period"
+      ],
+      "control_variables": [
+        "Charging log (timestamp, duration)",
+        "Skin irritation survey (weekly)",
+        "Job type and workplace wearable policy",
+        "Compliance questionnaire (e.g., Morisky scale)",
+        "Battery health metric (capacity estimate)"
+      ],
+      "boring_rival_explanations": [
+        "Non-wear is random but high-stress subjects have more missing data by chance (sampling variability)",
+        "Non-wear correlates with high physical activity, not stress per se",
+        "Imputation method (mean, LOCF) introduces systematic bias unrelated to missingness mechanism"
+      ],
+      "rival_prediction": "If non-wear is random with respect to stress, the distribution of observed stress levels during wear periods will not differ between high and low non-wear subjects; retrospective stress recall during non-wear will show no association with non-wear timing.",
+      "distinguishing_condition": "Subjects with high stress-correlated non-wear show similar observed stress levels during wear as low non-wear subjects, but retrospective EMA reveals significantly higher stress during non-wear epochs; pattern-mixture models confirm informative missingness.",
+      "confounder_rival_notes": "Requires retrospective stress recall for non-wear periods; use accelerometer to distinguish non-wear from sedentary wear."
+    },
+    {
+      "hypothesis_id": "H6",
+      "possible_confounders": [
+        "Respiratory pathology (asthma, COPD)",
+        "Cardiorespiratory fitness (affects resting breathing pattern)",
+        "Meditation or breathwork practice",
+        "Posture (supine vs. seated vs. standing)",
+        "Speaking or eating during recording"
+      ],
+      "control_variables": [
+        "Respiratory health screen (spirometry, symptom questionnaire)",
+        "VO2max or resting respiratory rate as fitness proxy",
+        "Meditation experience (hours/week, years)",
+        "Posture classification from accelerometer",
+        "Speech detection from audio or accelerometer"
+      ],
+      "boring_rival_explanations": [
+        "HRV features are inherently noisy for all subjects regardless of RSA coupling",
+        "Classifier uses suboptimal HRV metrics (e.g., time-domain only) that are insensitive to vagal withdrawal",
+        "Stressor does not elicit consistent vagal withdrawal across subjects"
+      ],
+      "rival_prediction": "If HRV features are generally noisy, uncertainty will be uniformly high across all subjects regardless of RSA coupling strength; the correlation between RSA coupling and uncertainty will be near zero.",
+      "distinguishing_condition": "Subjects with strong RSA coupling (high HF-HRV per unit respiratory depth) show low classifier uncertainty (tight predictive intervals, low entropy) during stress, while weak couplers show high uncertainty, despite identical stressor, sensor, and classifier.",
+      "confounder_rival_notes": "Must measure respiration concurrently (thoracic impedance or accelerometry); paced breathing protocol to quantify coupling; test respiration-augmented classifier."
+    },
+    {
+      "hypothesis_id": "H7",
+      "possible_confounders": [
+        "Wrist circumference and bone prominence (ultrasound)",
+        "Device model and strap material",
+        "Activity type and intensity (accelerometer)",
+        "Sweat level (EDA baseline conductance)",
+        "Vascular pathology (peripheral artery disease)"
+      ],
+      "control_variables": [
+        "Wrist circumference (tape measure) and bone prominence (ultrasound)",
+        "Fixed device model and strap across study",
+        "Activity classification from accelerometer",
+        "EDA baseline as sweat proxy",
+        "Exclusion of vascular pathology"
+      ],
+      "boring_rival_explanations": [
+        "Signal quality differences due to device manufacturing variance across units",
+        "Algorithmic sensitivity to motion artifact varies by subject movement patterns",
+        "Skin perfusion physiology varies independently of placement tightness"
+      ],
+      "rival_prediction": "If manufacturing variance drives uncertainty, the same subject wearing different units of the same model at identical tightness will show different uncertainty levels; uncertainty will track device unit, not tightness.",
+      "distinguishing_condition": "Same subject, same tightness (measured via strap tension sensor), different device units: uncertainty varies significantly across units. Same device unit, varying tightness: uncertainty follows U-shaped curve with minimum at optimal tightness.",
+      "confounder_rival_notes": "Need objective tightness measurement (strap tension sensor); test multiple device units per subject; consider dynamic tightness changes during activity."
+    },
+    {
+      "hypothesis_id": "H8",
+      "possible_confounders": [
+        "Age",
+        "Medication affecting ANS (beta-blockers, SSRIs)",
+        "Chronic illness comorbidity count",
+        "Current acute stressor exposure (life events)",
+        "Socioeconomic status and health behaviors"
+      ],
+      "control_variables": [
+        "Age as continuous covariate",
+        "Medication inventory (exclude or covary)",
+        "Charlson comorbidity index",
+        "Recent life events checklist (LEC)",
+        "SES (education, income), smoking, alcohol, exercise"
+      ],
+      "boring_rival_explanations": [
+        "High allostatic load subjects have more comorbidities affecting sensor contact (edema, skin changes)",
+        "They experience qualitatively different stressors (chronic vs. acute) not captured by classifier",
+        "Classifier trained on healthier population lacks representation of high-load physiology"
+      ],
+      "rival_prediction": "If comorbidities affect sensor contact, signal quality metrics (PPG SQI, EDA impedance) will correlate with allostatic load index; controlling for signal quality will eliminate the allostatic load–uncertainty association.",
+      "distinguishing_condition": "Signal quality metrics (PPG SQI, EDA impedance) show no correlation with allostatic load index, but feature dynamic range (stress vs. baseline HRV/EDA change) and class separation (Mahalanobis distance) still decline monotonically with allostatic load.",
+      "confounder_rival_notes": "Allostatic load composite requires ≥6 biomarkers; longitudinal design needed for causal inference; test if personalized baselines reduce uncertainty."
+    },
+    {
+      "hypothesis_id": "H9",
+      "possible_confounders": [
+        "EMA prompt timing relative to stressor onset",
+        "Prompt content (stress vs. neutral vs. positive)",
+        "Subject burden / EMA frequency",
+        "Reactivity to wearable device itself (novelty effect)",
+        "Baseline interoceptive accuracy (heartbeat counting)"
+      ],
+      "control_variables": [
+        "Randomized prompt timing relative to stressors",
+        "Standardized prompt content across conditions",
+        "Fixed EMA frequency (e.g., 6x/day)",
+        "Habituation period (≥7 days) before data collection",
+        "Heartbeat counting task accuracy as interoceptive accuracy measure"
+      ],
+      "boring_rival_explanations": [
+        "High interoceptive awareness improves self-report accuracy (labels more valid), not contaminates them",
+        "EMA reactivity is uniform across subjects but awareness affects baseline physiology",
+        "High awareness subjects have more stable physiology, making classification easier"
+      ],
+      "rival_prediction": "If awareness improves label accuracy, high awareness subjects will show better calibration (lower expected calibration error, ECE) for post-EMA epochs, not just lower uncertainty; their predictive intervals will have nominal coverage.",
+      "distinguishing_condition": "High awareness subjects show lower ECE (better calibration) for post-EMA epochs compared to pre-EMA epochs; low awareness subjects show no ECE change. If contamination, high awareness shows overconfidence (low uncertainty but high ECE) post-EMA.",
+      "confounder_rival_notes": "Include control (non-stress) EMA prompts to isolate attention effect; measure physiological response to prompt itself (pre-post window)."
+    },
+    {
+      "hypothesis_id": "H10",
+      "possible_confounders": [
+        "Number of observed epochs per subject",
+        "Stressor diversity within subject",
+        "Feature set richness (univariate vs. multivariate)",
+        "Classifier type (linear vs. nonlinear)",
+        "Non-stationarity of stress response over study period"
+      ],
+      "control_variables": [
+        "Minimum epochs per subject (e.g., >50 stress + >50 non-stress)",
+        "Stressor type balanced within subject",
+        "Fixed feature set across models",
+        "Compare flat vs. hierarchical versions of same classifier family",
+        "Time-in-study as covariate or random slope"
+      ],
+      "boring_rival_explanations": [
+        "Miscalibration due to small sample size per subject (estimation error)",
+        "Non-stationarity: stress response dynamics change over time (habituation, sensitization)",
+        "Feature drift: sensor calibration or physiology changes over weeks"
+      ],
+      "rival_prediction": "If small sample size causes miscalibration, flat model calibration error will decrease monotonically with increasing epochs per subject for high-variability subjects, eventually achieving nominal coverage.",
+      "distinguishing_condition": "With increasing epochs per subject (via subsampling analysis), flat model prediction interval coverage for high-variability subjects remains below nominal (e.g., <90% for 95% intervals) even at large N, while hierarchical model achieves nominal coverage at moderate N; flat model never fully corrects anti-conservatism.",
+      "confounder_rival_notes": "Requires multilevel modeling framework (Bayesian or frequentist); use cross-validation with subject-level folds; test random intercepts, slopes, and AR1 structures."
+    }
+  ]
+}

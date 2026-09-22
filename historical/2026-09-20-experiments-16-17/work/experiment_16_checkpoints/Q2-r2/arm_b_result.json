@@ -1,0 +1,635 @@
+{
+  "samples": [
+    {
+      "sample_index": 1,
+      "valid": true,
+      "error": null,
+      "total_tokens": 6219,
+      "completion_tokens": 5672
+    },
+    {
+      "sample_index": 2,
+      "valid": true,
+      "error": null,
+      "total_tokens": 8888,
+      "completion_tokens": 8341
+    },
+    {
+      "sample_index": 3,
+      "valid": true,
+      "error": null,
+      "total_tokens": 8570,
+      "completion_tokens": 8023
+    },
+    {
+      "sample_index": 4,
+      "valid": true,
+      "error": null,
+      "total_tokens": 7066,
+      "completion_tokens": 6519
+    },
+    {
+      "sample_index": 5,
+      "valid": true,
+      "error": null,
+      "total_tokens": 8575,
+      "completion_tokens": 8028
+    },
+    {
+      "sample_index": 6,
+      "valid": true,
+      "error": null,
+      "total_tokens": 7851,
+      "completion_tokens": 7304
+    },
+    {
+      "sample_index": 7,
+      "valid": true,
+      "error": null,
+      "total_tokens": 7099,
+      "completion_tokens": 6552
+    }
+  ],
+  "k_samples": 7,
+  "k_cap": 14,
+  "pool_size": 70,
+  "selected": [
+    "S1-H1",
+    "S1-H2",
+    "S1-H3",
+    "S1-H4",
+    "S1-H5",
+    "S1-H6",
+    "S1-H7",
+    "S1-H8",
+    "S1-H9",
+    "S1-H10"
+  ],
+  "audits": [
+    {
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass: variables are measurable (LF/HF ratio, SDNN, conformity scores), causal chain from autonomic tone to HRV dispersion to conformity scores to coverage is logically coherent, confounders (age, medication, recording duration, time of day) are identified and controlled, data requirements are explicit, mechanism is domain-specific (autonomic physiology), and testable prediction with failure condition is provided.",
+      "salvage_note": "",
+      "hypothesis_id": "S1-H1"
+    },
+    {
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass: impedance, R-peak F1, RR error, conformity scores, and coverage are measurable; causal chain from impedance drift to R-peak detection degradation to conformity score inflation to coverage change is plausible; confounders (skin prep, temperature, movement, gel drying) are identified; data needs are clear; mechanism is specific to electrode-skin interface; testable prediction with impedance threshold and failure condition given.",
+      "salvage_note": "",
+      "hypothesis_id": "S1-H2"
+    },
+    {
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass: circadian phase, HF power, sample entropy, conformity scores, and coverage are measurable; causal chain from circadian phase to autonomic balance to HRV entropy to conformity scores to coverage is coherent; confounders (sleep stage, light, meals, shift work) are identified; data requirements include 24h ECG, actigraphy, circadian markers; mechanism is specific to circadian HRV modulation; testable prediction with night vs day coverage difference and failure condition provided.",
+      "salvage_note": "",
+      "hypothesis_id": "S1-H3"
+    },
+    {
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass: ST deviation, beat template PCA, nonconformity scores, and coverage are measurable; causal chain from ischemia severity to morphology features to nonconformity scores to coverage is plausible; confounders (heart rate, motion, medication, reperfusion) are identified; data needs include continuous ECG with expert ST annotations; mechanism is specific to ischemic morphology drift; testable prediction with ST deviation threshold and failure condition given.",
+      "salvage_note": "",
+      "hypothesis_id": "S1-H4"
+    },
+    {
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass: inter-rater kappa, label error rate, conformity score bias, and stage coverage are measurable; causal chain from annotation disagreement to label noise to conformity score contamination to calibration bias to coverage is logical; confounders (rater experience, guidelines, signal quality, epoch length) are identified; data needs include multi-rater annotations and consensus labels; mechanism is specific to sleep staging label noise; testable prediction with consensus-only calibration and failure condition provided.",
+      "salvage_note": "",
+      "hypothesis_id": "S1-H5"
+    },
+    {
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass: arrhythmia burden, calibration set counts, conformity score quantile error, and coverage are measurable; causal chain from state prevalence to calibration representation to quantile estimation error to conditional coverage gap is coherent; confounders (recording duration, clustering, heart rate, medication) are identified; data needs include long recordings with annotated rare states; mechanism is specific to stratification and rare states; testable prediction with stratified vs random calibration and failure condition given.",
+      "salvage_note": "",
+      "hypothesis_id": "S1-H6"
+    },
+    {
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass: AR(1) coefficient, effective sample size, quantile CI width, and coverage variance are measurable; causal chain from autocorrelation to reduced effective sample size to increased quantile estimation variance to coverage variance is statistically sound; confounders (segment length, overlap, HRV, RSA) are identified; data needs include long conformity score sequences and block bootstrap; mechanism is specific to temporal dependence in conformity scores; testable prediction with variance inflation factor and failure condition provided.",
+      "salvage_note": "",
+      "hypothesis_id": "S1-H7"
+    },
+    {
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass: accelerometer VMU, EMG power, morphology feature MAE, nonconformity scores, and activity-stratified coverage are measurable; causal chain from activity to EMG contamination to morphology distortion to nonconformity inflation to coverage bias is physiologically grounded; confounders (electrode type, impedance, BMI, clothing) are identified; data needs include synchronized ECG and accelerometer with EMG estimates; mechanism is specific to motion artifact and EMG; testable prediction with activity thresholds and failure condition given.",
+      "salvage_note": "",
+      "hypothesis_id": "S1-H8"
+    },
+    {
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass: PVC count, conformity score percentile, normal and PVC segment coverage are measurable; causal chain from PVC contamination to conformity score inflation to global interval widening to differential coverage is plausible; confounders (PVC detection sensitivity, heart rate, electrolytes, ischemia) are identified; data needs include beat-level PVC annotations and calibration sets with/without PVCs; mechanism is specific to pathological beat contamination; testable prediction with coverage changes after PVC removal and failure condition provided.",
+      "salvage_note": "",
+      "hypothesis_id": "S1-H9"
+    },
+    {
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass: state label, residual covariance eigenvalues, Mahalanobis nonconformity scores, and state-conditional coverage are measurable; causal chain from physiological state to residual covariance to Mahalanobis score distribution to conditional coverage is coherent; confounders (age, apnea severity, medication, first night effect) are identified; data needs include PSG-confirmed sleep stages and residual covariance estimates; mechanism is specific to noise covariance structure across sleep states; testable prediction with state-specific covariance calibration and failure condition given.",
+      "salvage_note": "",
+      "hypothesis_id": "S1-H10"
+    }
+  ],
+  "selector_error": null,
+  "cards": [
+    {
+      "source_ref": "S1-H1",
+      "card": {
+        "hypothesis": "Inter-subject variability in autonomic nervous system baseline tone causes systematic shifts in prediction interval widths across subjects, violating the exchangeability assumption when calibration pools heterogeneous subjects.",
+        "proposed_mechanism": "Subjects with high sympathetic baseline tone exhibit higher heart rate variability (HRV) dispersion, leading to wider conformity scores during calibration; when applied to low-tone subjects, intervals become anti-conservative.",
+        "causal_path": "Baseline sympathetic tone (LF/HF ratio) -> HRV dispersion (SDNN) -> conformity score distribution quantiles -> prediction interval coverage",
+        "mechanism_variables": [
+          "LF_HF_ratio_baseline",
+          "SDNN_calibration_segment",
+          "conformity_score_90th_percentile",
+          "empirical_coverage_test_segment"
+        ],
+        "possible_confounders": [
+          "Age",
+          "Medication use (beta-blockers)",
+          "Recording duration",
+          "Time of day"
+        ],
+        "control_variables": [
+          "Stratify calibration by LF/HF ratio tertiles",
+          "Match age and medication status across folds",
+          "Fixed recording duration per segment"
+        ],
+        "rival_explanation": "Coverage instability is driven by sensor noise floor differences across recording devices rather than physiology.",
+        "rival_prediction": "Coverage deviation correlates with device model SNR specifications, not with LF/HF ratio.",
+        "distinguishing_test": "Within same device model, regress coverage error on LF/HF ratio controlling for SNR; significant physiology coefficient supports H1.",
+        "effect_size_expectation": "medium",
+        "effect_size_rationale": "Prior work shows LF/HF ratio explains ~15-25% of HRV variance; conformity score dispersion scales with HRV variance.",
+        "minimum_data_needed": [
+          "ECG recordings >=5 min per subject",
+          "Simultaneous respiration for LF/HF computation",
+          "Ground truth labels for target variable (e.g., arrhythmia events)",
+          "Device model metadata"
+        ],
+        "testable_prediction": "Subjects in highest LF/HF tertile show >10% coverage drop when calibrated on pooled data vs. stratified calibration.",
+        "failure_condition": "No significant correlation between LF/HF ratio and coverage error after device-stratified analysis (p>0.05).",
+        "statistical_test_plan": "Linear mixed model: coverage_error ~ LF_HF_tertile + (1|device) + age + medication; test fixed effect of tertile.",
+        "falsification_test": "Synthetic data where conformity scores are generated independent of LF/HF but with device-specific noise; H1 mechanism should not reproduce observed coverage pattern."
+      }
+    },
+    {
+      "source_ref": "S1-H2",
+      "card": {
+        "hypothesis": "Electrode-skin impedance drift during long recordings creates segment-dependent signal-to-noise ratio (SNR) degradation, altering conformity score distributions non-uniformly across time.",
+        "proposed_mechanism": "Impedance increases cause baseline wander and high-frequency attenuation, reducing R-peak detection accuracy in later segments; this inflates conformity scores for noise-contaminated segments, widening intervals spuriously.",
+        "causal_path": "Electrode impedance (kOhm) -> R-peak detection F1 score -> RR interval error distribution -> conformity score quantiles -> coverage",
+        "mechanism_variables": [
+          "electrode_impedance_kOhm",
+          "R_peak_F1_score",
+          "RR_interval_MAE",
+          "conformity_score_median",
+          "segment_coverage"
+        ],
+        "possible_confounders": [
+          "Skin preparation quality",
+          "Ambient temperature",
+          "Subject movement",
+          "Electrode gel drying rate"
+        ],
+        "control_variables": [
+          "Impedance check at segment boundaries",
+          "Exclude segments with impedance >20 kOhm",
+          "Constant room temperature",
+          "Movement artifact annotation"
+        ],
+        "rival_explanation": "Coverage drift is caused by physiological non-stationarity (e.g., circadian HRV changes), not sensor degradation.",
+        "rival_prediction": "Coverage error correlates with time-of-day features, not with measured impedance.",
+        "distinguishing_test": "Partial correlation of coverage error with impedance controlling for time-of-day; significant impedance partial correlation supports H2.",
+        "effect_size_expectation": "large",
+        "effect_size_rationale": "Impedance >10 kOhm can degrade R-peak F1 by >30% in ambulatory ECG; conformity scores directly use RR intervals.",
+        "minimum_data_needed": [
+          "Continuous impedance logs per electrode",
+          "R-peak annotations (ground truth)",
+          "Segment-level coverage measurements",
+          "Time-stamped movement labels"
+        ],
+        "testable_prediction": "Segments with impedance >15 kOhm show coverage exceeding nominal by >15% due to inflated conformity scores.",
+        "failure_condition": "Impedance and coverage error uncorrelated after controlling for movement artifacts (p>0.05).",
+        "statistical_test_plan": "Segment-level regression: coverage_deviation ~ impedance + movement_flag + time_of_day; test impedance coefficient.",
+        "falsification_test": "Inject synthetic impedance-correlated noise into clean data; if coverage pattern differs from real data, mechanism is insufficient."
+      }
+    },
+    {
+      "source_ref": "S1-H3",
+      "card": {
+        "hypothesis": "Circadian modulation of heart rate variability violates the i.i.d. assumption across day/night segments, causing conformal prediction calibrated on daytime data to under-cover at night.",
+        "proposed_mechanism": "Parasympathetic dominance at night increases HRV complexity (higher sample entropy), shifting conformity score distribution toward higher values; daytime-calibrated quantiles are too low for nighttime segments.",
+        "causal_path": "Circadian phase (core body temperature minimum) -> autonomic balance (HF power) -> HRV sample entropy -> conformity score distribution -> coverage",
+        "mechanism_variables": [
+          "circadian_phase_hours_from_CBTmin",
+          "HF_power_nu",
+          "sample_entropy_RR",
+          "conformity_score_95th_percentile",
+          "night_coverage"
+        ],
+        "possible_confounders": [
+          "Sleep stage distribution",
+          "Light exposure",
+          "Meal timing",
+          "Shift work history"
+        ],
+        "control_variables": [
+          "Align segments to individual CBTmin via actigraphy",
+          "Stratify by sleep stage (NREM/REM/wake)",
+          "Control light exposure protocol",
+          "Exclude shift workers"
+        ],
+        "rival_explanation": "Nighttime coverage drop is due to reduced movement artifact at night, not circadian physiology.",
+        "rival_prediction": "Coverage error correlates with actigraphy-measured movement, not circadian phase.",
+        "distinguishing_test": "Within NREM sleep (low movement), test if coverage error still correlates with circadian phase.",
+        "effect_size_expectation": "medium",
+        "effect_size_rationale": "HF power varies 2-3 fold day vs night; sample entropy changes ~0.2-0.3 units; conformity scores scale with entropy.",
+        "minimum_data_needed": [
+          "24+ hour ECG with actigraphy",
+          "Core body temperature or melatonin for circadian phase",
+          "Sleep staging (PSG or validated algorithm)",
+          "Segment-level conformity scores and coverage"
+        ],
+        "testable_prediction": "Night segments (0-4h post CBTmin) show >8% under-coverage when calibrated on day segments (8-12h post CBTmin).",
+        "failure_condition": "No coverage difference between circadian-matched and mismatched calibration after sleep-stage stratification.",
+        "statistical_test_plan": "Paired t-test: coverage_day_calibrated_on_day vs coverage_night_calibrated_on_day; mixed model with circadian phase as continuous predictor.",
+        "falsification_test": "Phase-randomized surrogate RR intervals preserving power spectrum but destroying circadian structure; if coverage pattern persists, circadian mechanism is falsified."
+      }
+    },
+    {
+      "source_ref": "S1-H4",
+      "card": {
+        "hypothesis": "Temporal concept drift in the target physiological state (e.g., progressive ischemia) causes the label-feature relationship to shift, making calibration conformity scores non-exchangeable with test segments.",
+        "proposed_mechanism": "Progressive ST-segment deviation alters the morphology features used for prediction; conformity scores computed on early stable segments underestimate dispersion in later ischemic segments.",
+        "causal_path": "Ischemia severity (ST deviation mm) -> morphology feature distribution (PCA of beat templates) -> nonconformity score (distance to class prototype) -> coverage",
+        "mechanism_variables": [
+          "ST_deviation_mm",
+          "beat_template_PC1",
+          "nonconformity_score",
+          "segment_coverage"
+        ],
+        "possible_confounders": [
+          "Heart rate changes",
+          "Electrode motion",
+          "Medication administration",
+          "Reperfusion events"
+        ],
+        "control_variables": [
+          "Heart rate binning",
+          "Motion artifact rejection",
+          "Time-locked to medication events",
+          "Exclude post-reperfusion segments"
+        ],
+        "rival_explanation": "Coverage instability stems from increasing noise during ischemic episodes, not label-feature drift.",
+        "rival_prediction": "Coverage error correlates with signal quality index, not ST deviation magnitude.",
+        "distinguishing_test": "In high-SQI segments only, test correlation between ST deviation and coverage error.",
+        "effect_size_expectation": "large",
+        "effect_size_rationale": "ST deviation >1mm changes QRS/T-wave morphology substantially; nonconformity scores based on morphology are highly sensitive.",
+        "minimum_data_needed": [
+          "Continuous ECG with expert ST annotations",
+          "Beat-level morphology features",
+          "Segment-level conformity scores",
+          "Signal quality indices"
+        ],
+        "testable_prediction": "Segments with ST deviation >2mm show coverage <80% when calibrated on <0.5mm segments (nominal 90%).",
+        "failure_condition": "Coverage stable across ST deviation strata after controlling for SQI.",
+        "statistical_test_plan": "Quantile regression of coverage on ST deviation controlling for SQI; test slope at 0.5 quantile.",
+        "falsification_test": "Permute ST deviation labels across segments; if coverage-ST relationship persists, mechanism is spurious."
+      }
+    },
+    {
+      "source_ref": "S1-H5",
+      "card": {
+        "hypothesis": "Inconsistent annotation of ground truth labels across physiological states (e.g., sleep stages) introduces label noise that differentially biases conformity scores by segment type.",
+        "proposed_mechanism": "Sleep stage scoring disagreement between raters is highest in N1/REM transitions; mislabeled segments receive incorrect conformity scores, distorting the calibration distribution for those stages.",
+        "causal_path": "Inter-rater agreement (Cohen's kappa per stage) -> label error rate -> conformity score contamination -> calibration quantile bias -> stage-specific coverage",
+        "mechanism_variables": [
+          "stage_kappa",
+          "label_error_rate_estimated",
+          "conformity_score_bias",
+          "stage_coverage"
+        ],
+        "possible_confounders": [
+          "Rater experience",
+          "Scoring guidelines version",
+          "Signal quality per stage",
+          "Epoch length"
+        ],
+        "control_variables": [
+          "Consensus labels from 3 raters",
+          "Fixed AASM guidelines version",
+          "SQI-matched epochs",
+          "Standard 30s epochs"
+        ],
+        "rival_explanation": "Stage-specific coverage differences reflect true physiological non-stationarity, not label noise.",
+        "rival_prediction": "Coverage error correlates with physiological variability metrics (e.g., HRV), not with kappa.",
+        "distinguishing_test": "Use only consensus-labeled epochs (kappa=1); if coverage differences persist, rival wins.",
+        "effect_size_expectation": "small",
+        "effect_size_rationale": "Typical sleep staging kappa 0.7-0.85; label error ~10-15% in transition epochs; conformity score bias scales with error rate.",
+        "minimum_data_needed": [
+          "Multi-rater sleep staging annotations",
+          "Consensus labels",
+          "Per-epoch conformity scores",
+          "Stage-specific coverage measurements"
+        ],
+        "testable_prediction": "N1 and REM stages show >5% coverage deviation from nominal when calibrated on all stages vs. consensus-only calibration.",
+        "failure_condition": "Coverage deviation unchanged when using consensus labels only.",
+        "statistical_test_plan": "Bootstrap coverage difference: all-labels calibration vs consensus-only calibration per stage; 95% CI excludes 0.",
+        "falsification_test": "Simulate label noise at observed kappa levels on clean data; if simulated coverage pattern doesn't match real data, label noise insufficient."
+      }
+    },
+    {
+      "source_ref": "S1-H6",
+      "card": {
+        "hypothesis": "Improper stratification by physiological state during calibration set construction leads to under-representation of rare but high-variability states (e.g., arrhythmia episodes), causing conditional coverage failure.",
+        "proposed_mechanism": "Random temporal splits place rare high-variability states predominantly in test set; calibration quantiles estimated from common low-variability states are too narrow for rare states.",
+        "causal_path": "State prevalence (arrhythmia burden %) -> calibration set state representation -> conformity score quantile estimation error -> conditional coverage gap",
+        "mechanism_variables": [
+          "arrhythmia_burden_percent",
+          "calibration_set_arrhythmia_count",
+          "conformity_score_90th_percentile_error",
+          "arrhythmia_segment_coverage"
+        ],
+        "possible_confounders": [
+          "Total recording duration",
+          "Arrhythmia clustering",
+          "Heart rate during arrhythmia",
+          "Medication effect"
+        ],
+        "control_variables": [
+          "Stratified sampling by state",
+          "Minimum 30 calibration samples per state",
+          "Matched heart rate distributions",
+          "Medication washout periods"
+        ],
+        "rival_explanation": "Conditional coverage failure is due to inherent unpredictability of arrhythmia, not calibration set composition.",
+        "rival_prediction": "Even with stratified calibration, arrhythmia segments show under-coverage due to fundamental noise.",
+        "distinguishing_test": "Compare coverage with stratified vs random calibration; stratified should close gap if H6 true.",
+        "effect_size_expectation": "large",
+        "effect_size_rationale": "Rare states (<5% prevalence) can have 2-3x conformity score dispersion; random splits often yield <10 calibration samples.",
+        "minimum_data_needed": [
+          "Long recordings with annotated rare states",
+          "State labels for all segments",
+          "Conformity scores per segment",
+          "Stratified and random split indices"
+        ],
+        "testable_prediction": "Stratified calibration reduces arrhythmia segment coverage gap from >15% to <3% vs random calibration.",
+        "failure_condition": "Stratified calibration does not significantly improve rare-state coverage (p>0.05).",
+        "statistical_test_plan": "McNemar test on coverage indicators (covered/not) for rare-state segments under two calibration schemes.",
+        "falsification_test": "Generate synthetic data where rare state has same conformity distribution as common state; stratified calibration should not help."
+      }
+    },
+    {
+      "source_ref": "S1-H7",
+      "card": {
+        "hypothesis": "Violation of exchangeability due to strong temporal autocorrelation in conformity scores causes the effective calibration sample size to be much smaller than nominal, inflating coverage variance across segments.",
+        "proposed_mechanism": "High autocorrelation (AR(1) coefficient >0.8) in conformity scores means adjacent segments provide little independent information; the effective degrees of freedom for quantile estimation is reduced, widening the quantile confidence interval.",
+        "causal_path": "Conformity score AR(1) coefficient -> effective sample size (n_eff) -> quantile estimation variance -> coverage variance across test segments",
+        "mechanism_variables": [
+          "conformity_AR1_coeff",
+          "effective_sample_size",
+          "quantile_CI_width",
+          "coverage_variance_across_segments"
+        ],
+        "possible_confounders": [
+          "Segment length",
+          "Overlap between segments",
+          "Heart rate variability",
+          "Respiratory sinus arrhythmia"
+        ],
+        "control_variables": [
+          "Non-overlapping segments",
+          "Fixed segment duration (5 min)",
+          "HRV-matched segment selection",
+          "Pre-whitening conformity scores"
+        ],
+        "rival_explanation": "Coverage variance is driven by true physiological non-stationarity, not statistical dependence.",
+        "rival_prediction": "Coverage variance persists after pre-whitening conformity scores.",
+        "distinguishing_test": "Apply block bootstrap vs i.i.d. bootstrap for quantile CI; if block bootstrap CI captures coverage variance better, H7 supported.",
+        "effect_size_expectation": "medium",
+        "effect_size_rationale": "AR(1)=0.85 reduces n_eff to ~15% of nominal; quantile CI width scales with 1/sqrt(n_eff).",
+        "minimum_data_needed": [
+          "Long continuous conformity score sequences",
+          "Segment-level coverage measurements",
+          "Autocorrelation function estimates",
+          "Block bootstrap implementation"
+        ],
+        "testable_prediction": "Coverage variance across segments exceeds i.i.d. binomial variance by factor >3 when AR(1)>0.8.",
+        "failure_condition": "Observed coverage variance matches i.i.d. binomial prediction after accounting for segment count.",
+        "statistical_test_plan": "Chi-square test: observed coverage variance vs expected under i.i.d. binomial; Levene's test for variance equality across AR(1) strata.",
+        "falsification_test": "Phase-randomized conformity scores (preserving spectrum, destroying temporal structure); if coverage variance drops to i.i.d. level, autocorrelation is causal."
+      }
+    },
+    {
+      "source_ref": "S1-H8",
+      "card": {
+        "hypothesis": "Segment-specific motion artifact distributions create heterogeneous noise floors that shift conformity score distributions in a state-dependent manner, unaccounted for by standard calibration.",
+        "proposed_mechanism": "Walking produces broadband EMG contamination increasing high-frequency power; this inflates morphology-based nonconformity scores during activity, but calibration on mixed states yields quantiles that are too wide for rest and too narrow for vigorous activity.",
+        "causal_path": "Activity level (accelerometer VMU) -> EMG contamination power (20-50 Hz) -> morphology feature distortion -> nonconformity score inflation -> activity-stratified coverage bias",
+        "mechanism_variables": [
+          "accelerometer_VMU",
+          "EMG_power_20_50Hz",
+          "morphology_feature_MAE",
+          "nonconformity_score",
+          "activity_stratum_coverage"
+        ],
+        "possible_confounders": [
+          "Electrode type",
+          "Skin impedance",
+          "Body mass index",
+          "Clothing friction"
+        ],
+        "control_variables": [
+          "Standardized electrode placement",
+          "Impedance <5 kOhm at start",
+          "BMI-matched cohorts",
+          "Tight-fitting garment"
+        ],
+        "rival_explanation": "Activity-related coverage changes reflect true physiological HRV changes with exercise, not artifact.",
+        "rival_prediction": "Coverage bias correlates with HRV metrics, not EMG power, after controlling for activity level.",
+        "distinguishing_test": "In matched HRV bins, test if residual coverage bias correlates with EMG power.",
+        "effect_size_expectation": "large",
+        "effect_size_rationale": "EMG can exceed ECG amplitude 5-10x during vigorous activity; morphology features highly sensitive to high-frequency contamination.",
+        "minimum_data_needed": [
+          "Synchronized ECG and 3-axis accelerometer",
+          "EMG power spectral estimates",
+          "Morphology features per beat",
+          "Activity-stratified conformity scores and coverage"
+        ],
+        "testable_prediction": "High-activity segments (VMU>100) show >20% over-coverage; low-activity (VMU<10) show >10% under-coverage with pooled calibration.",
+        "failure_condition": "Activity-stratified coverage bias <2% after EMG power regression.",
+        "statistical_test_plan": "Two-way ANOVA: coverage ~ activity_stratum * calibration_method (pooled vs stratified); interaction term test.",
+        "falsification_test": "Clean ECG + synthetic EMG at measured levels; if coverage pattern matches real data, artifact mechanism sufficient."
+      }
+    },
+    {
+      "source_ref": "S1-H9",
+      "card": {
+        "hypothesis": "Calibration set contamination by undetected pathological beats (e.g., PVCs) biases conformity score quantiles, causing systematic over-coverage in clean segments and under-coverage in PVC-rich segments.",
+        "proposed_mechanism": "Undetected PVCs in calibration set have extreme morphology, inflating the upper quantile of conformity scores; this widens intervals globally, wasting efficiency on normal segments while still under-covering true PVC segments due to distributional shift.",
+        "causal_path": "PVC prevalence in calibration -> conformity score 95th percentile inflation -> global interval widening -> normal segment over-coverage + PVC segment residual under-coverage",
+        "mechanism_variables": [
+          "PVC_count_calibration",
+          "conformity_score_95th_percentile",
+          "normal_segment_coverage",
+          "PVC_segment_coverage"
+        ],
+        "possible_confounders": [
+          "PVC detection sensitivity",
+          "Heart rate",
+          "Electrolyte levels",
+          "Ischemia"
+        ],
+        "control_variables": [
+          "Automated PVC detection with manual verification",
+          "Exclude segments with >5% PVCs from calibration",
+          "Heart rate matching",
+          "Electrolyte panel"
+        ],
+        "rival_explanation": "Coverage pattern reflects true heterogeneity in prediction difficulty, not calibration contamination.",
+        "rival_prediction": "Removing PVCs from calibration does not change coverage pattern; PVC segments remain hard to predict.",
+        "distinguishing_test": "Re-calibrate after PVC removal; if normal segment coverage drops toward nominal and PVC coverage improves, H9 supported.",
+        "effect_size_expectation": "medium",
+        "effect_size_rationale": "Single PVC can have conformity score >99th percentile of normal beats; 2% PVC contamination shifts 95th percentile substantially.",
+        "minimum_data_needed": [
+          "Beat-level PVC annotations",
+          "Calibration set with/without PVCs",
+          "Segment-level coverage for normal and PVC-rich segments",
+          "Conformity score distributions"
+        ],
+        "testable_prediction": "PVC-free calibration reduces normal segment coverage from 98% to 91% (nominal 90%) and improves PVC segment coverage from 70% to 85%.",
+        "failure_condition": "Coverage pattern unchanged after PVC removal from calibration set.",
+        "statistical_test_plan": "Paired comparison of coverage before/after PVC removal for normal and PVC segments; equivalence test for normal segments at 90%.",
+        "falsification_test": "Inject synthetic PVCs into clean calibration set at varying rates; if coverage pattern doesn't match observed, contamination not primary driver."
+      }
+    },
+    {
+      "source_ref": "S1-H10",
+      "card": {
+        "hypothesis": "Non-stationary noise covariance structure across physiological states (e.g., sleep vs wake) violates the conformal assumption of exchangeable residuals, causing state-conditional coverage failure even with marginally valid coverage.",
+        "proposed_mechanism": "During REM sleep, muscle atonia reduces EMG noise but increases respiratory sinus arrhythmia amplitude, changing the covariance of prediction residuals; conformity scores computed on wake residuals misestimate REM quantiles.",
+        "causal_path": "Physiological state (REM vs wake) -> residual covariance matrix (eigenvalues) -> Mahalanobis nonconformity score distribution -> state-conditional coverage",
+        "mechanism_variables": [
+          "state_label",
+          "residual_cov_eigenvalues",
+          "mahalanobis_nonconformity_score",
+          "state_conditional_coverage"
+        ],
+        "possible_confounders": [
+          "Age",
+          "Sleep apnea severity",
+          "Medication",
+          "Recording night (first night effect)"
+        ],
+        "control_variables": [
+          "Age-matched",
+          "AHI<5 exclusion",
+          "Medication washout",
+          "Adaptation night excluded"
+        ],
+        "rival_explanation": "State-conditional coverage failure is due to mean shift in residuals, not covariance change.",
+        "rival_prediction": "Centering residuals per state eliminates coverage gap; covariance weighting unnecessary.",
+        "distinguishing_test": "Compare coverage using state-specific covariance vs state-specific mean only; covariance method should close gap if H10 true.",
+        "effect_size_expectation": "medium",
+        "effect_size_rationale": "REM reduces EMG variance ~80% but increases RSA variance ~200%; Mahalanobis distance sensitive to eigenvalue ratios.",
+        "minimum_data_needed": [
+          "PSG-confirmed sleep stages",
+          "Prediction residuals per segment",
+          "Residual covariance estimates per state",
+          "State-conditional coverage measurements"
+        ],
+        "testable_prediction": "Wake-calibrated conformal predictor shows REM coverage <80% (nominal 90%); state-specific covariance calibration restores to 88-92%.",
+        "failure_condition": "State-specific mean adjustment alone achieves nominal REM coverage.",
+        "statistical_test_plan": "Likelihood ratio test: conformal model with state-specific covariance vs state-specific mean only; coverage binomial test per state.",
+        "falsification_test": "Generate residuals from state-specific Gaussian with matched means but pooled covariance; if coverage gap persists, covariance not the mechanism."
+      }
+    }
+  ]
+}

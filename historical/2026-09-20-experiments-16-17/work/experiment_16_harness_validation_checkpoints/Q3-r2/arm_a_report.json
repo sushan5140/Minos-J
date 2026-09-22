@@ -1,0 +1,819 @@
+{
+  "experiment_name": "Meno-J Experiment 7: v4 Architecture Upgrade and Ablation",
+  "version": "v4_mechanism_confounder_testability",
+  "research_question": "What mechanisms could explain subject-level variation in wearable stress-detection uncertainty?",
+  "model": "fake/deterministic-generator-v1",
+  "stage_4_hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Fake hypothesis 1 (n193) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 1 (n288) with a specific variable relation.",
+      "core_assumption": "Fake assumption 1 (n67) with a specific variable relation.",
+      "knowledge_gap_addressed": "Fake gap 1 (n55) with a specific variable relation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Fake hypothesis 2 (n123) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 2 (n110) with a specific variable relation.",
+      "core_assumption": "Fake assumption 2 (n885) with a specific variable relation.",
+      "knowledge_gap_addressed": "Fake gap 2 (n305) with a specific variable relation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Fake hypothesis 3 (n39) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 3 (n95) with a specific variable relation.",
+      "core_assumption": "Fake assumption 3 (n419) with a specific variable relation.",
+      "knowledge_gap_addressed": "Fake gap 3 (n424) with a specific variable relation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Fake hypothesis 4 (n806) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 4 (n423) with a specific variable relation.",
+      "core_assumption": "Fake assumption 4 (n198) with a specific variable relation.",
+      "knowledge_gap_addressed": "Fake gap 4 (n402) with a specific variable relation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Fake hypothesis 5 (n87) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 5 (n14) with a specific variable relation.",
+      "core_assumption": "Fake assumption 5 (n91) with a specific variable relation.",
+      "knowledge_gap_addressed": "Fake gap 5 (n897) with a specific variable relation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Fake hypothesis 6 (n635) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 6 (n718) with a specific variable relation.",
+      "core_assumption": "Fake assumption 6 (n97) with a specific variable relation.",
+      "knowledge_gap_addressed": "Fake gap 6 (n483) with a specific variable relation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Fake hypothesis 7 (n211) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 7 (n33) with a specific variable relation.",
+      "core_assumption": "Fake assumption 7 (n326) with a specific variable relation.",
+      "knowledge_gap_addressed": "Fake gap 7 (n810) with a specific variable relation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Fake hypothesis 8 (n498) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 8 (n132) with a specific variable relation.",
+      "core_assumption": "Fake assumption 8 (n549) with a specific variable relation.",
+      "knowledge_gap_addressed": "Fake gap 8 (n666) with a specific variable relation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Fake hypothesis 9 (n252) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 9 (n413) with a specific variable relation.",
+      "core_assumption": "Fake assumption 9 (n793) with a specific variable relation.",
+      "knowledge_gap_addressed": "Fake gap 9 (n394) with a specific variable relation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Fake hypothesis 10 (n262) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 10 (n587) with a specific variable relation.",
+      "core_assumption": "Fake assumption 10 (n458) with a specific variable relation.",
+      "knowledge_gap_addressed": "Fake gap 10 (n288) with a specific variable relation.",
+      "status": "SPECULATIVE"
+    }
+  ],
+  "stage_4_1_mechanism_builder": [
+    {
+      "hypothesis_id": "H1",
+      "mechanism_variables": [
+        "Fake var H1 (n595) with a specific variable relation."
+      ],
+      "causal_path": "Fake path H1 (n611) with a specific variable relation.",
+      "expected_direction": "increase",
+      "domain_specific_boundary_conditions": [
+        "Fake boundary H1 (n21) with a specific variable relation."
+      ],
+      "measurable_outcomes": [
+        "Fake outcome H1 (n120) with a specific variable relation."
+      ],
+      "mechanism_builder_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H2",
+      "mechanism_variables": [
+        "Fake var H2 (n958) with a specific variable relation."
+      ],
+      "causal_path": "Fake path H2 (n716) with a specific variable relation.",
+      "expected_direction": "increase",
+      "domain_specific_boundary_conditions": [
+        "Fake boundary H2 (n89) with a specific variable relation."
+      ],
+      "measurable_outcomes": [
+        "Fake outcome H2 (n136) with a specific variable relation."
+      ],
+      "mechanism_builder_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H3",
+      "mechanism_variables": [
+        "Fake var H3 (n405) with a specific variable relation."
+      ],
+      "causal_path": "Fake path H3 (n811) with a specific variable relation.",
+      "expected_direction": "increase",
+      "domain_specific_boundary_conditions": [
+        "Fake boundary H3 (n436) with a specific variable relation."
+      ],
+      "measurable_outcomes": [
+        "Fake outcome H3 (n335) with a specific variable relation."
+      ],
+      "mechanism_builder_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H4",
+      "mechanism_variables": [
+        "Fake var H4 (n372) with a specific variable relation."
+      ],
+      "causal_path": "Fake path H4 (n604) with a specific variable relation.",
+      "expected_direction": "increase",
+      "domain_specific_boundary_conditions": [
+        "Fake boundary H4 (n749) with a specific variable relation."
+      ],
+      "measurable_outcomes": [
+        "Fake outcome H4 (n894) with a specific variable relation."
+      ],
+      "mechanism_builder_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H5",
+      "mechanism_variables": [
+        "Fake var H5 (n58) with a specific variable relation."
+      ],
+      "causal_path": "Fake path H5 (n32) with a specific variable relation.",
+      "expected_direction": "increase",
+      "domain_specific_boundary_conditions": [
+        "Fake boundary H5 (n106) with a specific variable relation."
+      ],
+      "measurable_outcomes": [
+        "Fake outcome H5 (n624) with a specific variable relation."
+      ],
+      "mechanism_builder_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H6",
+      "mechanism_variables": [
+        "Fake var H6 (n429) with a specific variable relation."
+      ],
+      "causal_path": "Fake path H6 (n404) with a specific variable relation.",
+      "expected_direction": "increase",
+      "domain_specific_boundary_conditions": [
+        "Fake boundary H6 (n729) with a specific variable relation."
+      ],
+      "measurable_outcomes": [
+        "Fake outcome H6 (n852) with a specific variable relation."
+      ],
+      "mechanism_builder_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H7",
+      "mechanism_variables": [
+        "Fake var H7 (n319) with a specific variable relation."
+      ],
+      "causal_path": "Fake path H7 (n402) with a specific variable relation.",
+      "expected_direction": "increase",
+      "domain_specific_boundary_conditions": [
+        "Fake boundary H7 (n46) with a specific variable relation."
+      ],
+      "measurable_outcomes": [
+        "Fake outcome H7 (n954) with a specific variable relation."
+      ],
+      "mechanism_builder_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H8",
+      "mechanism_variables": [
+        "Fake var H8 (n484) with a specific variable relation."
+      ],
+      "causal_path": "Fake path H8 (n589) with a specific variable relation.",
+      "expected_direction": "increase",
+      "domain_specific_boundary_conditions": [
+        "Fake boundary H8 (n293) with a specific variable relation."
+      ],
+      "measurable_outcomes": [
+        "Fake outcome H8 (n332) with a specific variable relation."
+      ],
+      "mechanism_builder_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H9",
+      "mechanism_variables": [
+        "Fake var H9 (n65) with a specific variable relation."
+      ],
+      "causal_path": "Fake path H9 (n729) with a specific variable relation.",
+      "expected_direction": "increase",
+      "domain_specific_boundary_conditions": [
+        "Fake boundary H9 (n613) with a specific variable relation."
+      ],
+      "measurable_outcomes": [
+        "Fake outcome H9 (n405) with a specific variable relation."
+      ],
+      "mechanism_builder_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H10",
+      "mechanism_variables": [
+        "Fake var H10 (n803) with a specific variable relation."
+      ],
+      "causal_path": "Fake path H10 (n730) with a specific variable relation.",
+      "expected_direction": "increase",
+      "domain_specific_boundary_conditions": [
+        "Fake boundary H10 (n204) with a specific variable relation."
+      ],
+      "measurable_outcomes": [
+        "Fake outcome H10 (n286) with a specific variable relation."
+      ],
+      "mechanism_builder_notes": "fake"
+    }
+  ],
+  "stage_4_2_confounder_rival_builder": [
+    {
+      "hypothesis_id": "H1",
+      "possible_confounders": [
+        "Fake confounder H1 (n794) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H1 (n981) with a specific variable relation."
+      ],
+      "boring_rival_explanations": [
+        "Fake rival H1 (n310) with a specific variable relation."
+      ],
+      "rival_prediction": "Fake rival prediction H1 (n228) with a specific variable relation.",
+      "distinguishing_condition": "Fake distinguish H1 (n288) with a specific variable relation.",
+      "confounder_rival_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H2",
+      "possible_confounders": [
+        "Fake confounder H2 (n823) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H2 (n800) with a specific variable relation."
+      ],
+      "boring_rival_explanations": [
+        "Fake rival H2 (n389) with a specific variable relation."
+      ],
+      "rival_prediction": "Fake rival prediction H2 (n527) with a specific variable relation.",
+      "distinguishing_condition": "Fake distinguish H2 (n276) with a specific variable relation.",
+      "confounder_rival_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H3",
+      "possible_confounders": [
+        "Fake confounder H3 (n154) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H3 (n606) with a specific variable relation."
+      ],
+      "boring_rival_explanations": [
+        "Fake rival H3 (n28) with a specific variable relation."
+      ],
+      "rival_prediction": "Fake rival prediction H3 (n144) with a specific variable relation.",
+      "distinguishing_condition": "Fake distinguish H3 (n632) with a specific variable relation.",
+      "confounder_rival_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H4",
+      "possible_confounders": [
+        "Fake confounder H4 (n525) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H4 (n409) with a specific variable relation."
+      ],
+      "boring_rival_explanations": [
+        "Fake rival H4 (n975) with a specific variable relation."
+      ],
+      "rival_prediction": "Fake rival prediction H4 (n374) with a specific variable relation.",
+      "distinguishing_condition": "Fake distinguish H4 (n42) with a specific variable relation.",
+      "confounder_rival_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H5",
+      "possible_confounders": [
+        "Fake confounder H5 (n435) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H5 (n456) with a specific variable relation."
+      ],
+      "boring_rival_explanations": [
+        "Fake rival H5 (n985) with a specific variable relation."
+      ],
+      "rival_prediction": "Fake rival prediction H5 (n478) with a specific variable relation.",
+      "distinguishing_condition": "Fake distinguish H5 (n606) with a specific variable relation.",
+      "confounder_rival_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H6",
+      "possible_confounders": [
+        "Fake confounder H6 (n631) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H6 (n508) with a specific variable relation."
+      ],
+      "boring_rival_explanations": [
+        "Fake rival H6 (n959) with a specific variable relation."
+      ],
+      "rival_prediction": "Fake rival prediction H6 (n980) with a specific variable relation.",
+      "distinguishing_condition": "Fake distinguish H6 (n243) with a specific variable relation.",
+      "confounder_rival_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H7",
+      "possible_confounders": [
+        "Fake confounder H7 (n753) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H7 (n284) with a specific variable relation."
+      ],
+      "boring_rival_explanations": [
+        "Fake rival H7 (n705) with a specific variable relation."
+      ],
+      "rival_prediction": "Fake rival prediction H7 (n852) with a specific variable relation.",
+      "distinguishing_condition": "Fake distinguish H7 (n297) with a specific variable relation.",
+      "confounder_rival_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H8",
+      "possible_confounders": [
+        "Fake confounder H8 (n968) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H8 (n972) with a specific variable relation."
+      ],
+      "boring_rival_explanations": [
+        "Fake rival H8 (n493) with a specific variable relation."
+      ],
+      "rival_prediction": "Fake rival prediction H8 (n470) with a specific variable relation.",
+      "distinguishing_condition": "Fake distinguish H8 (n871) with a specific variable relation.",
+      "confounder_rival_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H9",
+      "possible_confounders": [
+        "Fake confounder H9 (n861) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H9 (n53) with a specific variable relation."
+      ],
+      "boring_rival_explanations": [
+        "Fake rival H9 (n290) with a specific variable relation."
+      ],
+      "rival_prediction": "Fake rival prediction H9 (n288) with a specific variable relation.",
+      "distinguishing_condition": "Fake distinguish H9 (n754) with a specific variable relation.",
+      "confounder_rival_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H10",
+      "possible_confounders": [
+        "Fake confounder H10 (n584) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H10 (n888) with a specific variable relation."
+      ],
+      "boring_rival_explanations": [
+        "Fake rival H10 (n665) with a specific variable relation."
+      ],
+      "rival_prediction": "Fake rival prediction H10 (n924) with a specific variable relation.",
+      "distinguishing_condition": "Fake distinguish H10 (n532) with a specific variable relation.",
+      "confounder_rival_notes": "fake"
+    }
+  ],
+  "stage_4_3_statistical_testability_builder": [
+    {
+      "hypothesis_id": "H1",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H1 (n379) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H1 (n577) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H1 (n163) with a specific variable relation.",
+      "failure_condition": "Fake failure H1 (n566) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H1 (n498) with a specific variable relation.",
+      "statistical_testability_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H2",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H2 (n234) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H2 (n885) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H2 (n989) with a specific variable relation.",
+      "failure_condition": "Fake failure H2 (n115) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H2 (n986) with a specific variable relation.",
+      "statistical_testability_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H3",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H3 (n614) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H3 (n283) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H3 (n297) with a specific variable relation.",
+      "failure_condition": "Fake failure H3 (n130) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H3 (n785) with a specific variable relation.",
+      "statistical_testability_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H4",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H4 (n33) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H4 (n762) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H4 (n18) with a specific variable relation.",
+      "failure_condition": "Fake failure H4 (n694) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H4 (n355) with a specific variable relation.",
+      "statistical_testability_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H5",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H5 (n381) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H5 (n888) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H5 (n429) with a specific variable relation.",
+      "failure_condition": "Fake failure H5 (n762) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H5 (n744) with a specific variable relation.",
+      "statistical_testability_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H6",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H6 (n312) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H6 (n474) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H6 (n649) with a specific variable relation.",
+      "failure_condition": "Fake failure H6 (n983) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H6 (n898) with a specific variable relation.",
+      "statistical_testability_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H7",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H7 (n642) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H7 (n180) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H7 (n36) with a specific variable relation.",
+      "failure_condition": "Fake failure H7 (n747) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H7 (n89) with a specific variable relation.",
+      "statistical_testability_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H8",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H8 (n892) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H8 (n822) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H8 (n29) with a specific variable relation.",
+      "failure_condition": "Fake failure H8 (n658) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H8 (n259) with a specific variable relation.",
+      "statistical_testability_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H9",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H9 (n266) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H9 (n594) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H9 (n629) with a specific variable relation.",
+      "failure_condition": "Fake failure H9 (n740) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H9 (n452) with a specific variable relation.",
+      "statistical_testability_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H10",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H10 (n100) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H10 (n150) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H10 (n622) with a specific variable relation.",
+      "failure_condition": "Fake failure H10 (n221) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H10 (n438) with a specific variable relation.",
+      "statistical_testability_notes": "fake"
+    }
+  ],
+  "stage_5_audits": [
+    {
+      "hypothesis_id": "H1",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "Fake audit reason for H1.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H2",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "Fake audit reason for H2.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H3",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "Fake audit reason for H3.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H4",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "Fake audit reason for H4.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H5",
+      "audit_decision": "REJECT",
+      "variables_measurable": false,
+      "causal_chain_valid": false,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "variables_measurable",
+        "causal_chain_valid",
+        "confounders_identified"
+      ],
+      "decision_reason": "Fake audit reason for H5.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H6",
+      "audit_decision": "SALVAGEABLE",
+      "variables_measurable": true,
+      "causal_chain_valid": false,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "causal_chain_valid"
+      ],
+      "decision_reason": "Fake audit reason for H6.",
+      "salvage_note": "Fake repair."
+    },
+    {
+      "hypothesis_id": "H7",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "Fake audit reason for H7.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H8",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "Fake audit reason for H8.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H9",
+      "audit_decision": "REJECT",
+      "variables_measurable": false,
+      "causal_chain_valid": false,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "variables_measurable",
+        "causal_chain_valid",
+        "confounders_identified"
+      ],
+      "decision_reason": "Fake audit reason for H9.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H10",
+      "audit_decision": "REJECT",
+      "variables_measurable": false,
+      "causal_chain_valid": false,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "variables_measurable",
+        "causal_chain_valid",
+        "confounders_identified"
+      ],
+      "decision_reason": "Fake audit reason for H10.",
+      "salvage_note": ""
+    }
+  ],
+  "diagnostics": {
+    "generated_count": 10,
+    "passed_count": 6,
+    "rejected_count": 3,
+    "salvageable_count": 1,
+    "pass_survival_rate": 0.6,
+    "salvageable_rate": 0.1,
+    "rejection_reason_diversity": 3,
+    "top_failed_checklist_fields": {
+      "causal_chain_valid": 4,
+      "confounders_identified": 3,
+      "variables_measurable": 3
+    },
+    "failure_points_consistency": true,
+    "rubber_stamp_red_flags": [
+      "generic boilerplate decision reasons"
+    ],
+    "mechanism_builder_count": 10,
+    "confounder_rival_builder_count": 10,
+    "statistical_testability_builder_count": 10,
+    "avg_mechanism_variables_per_hypothesis": 1.0,
+    "avg_confounders_per_hypothesis": 1.0,
+    "avg_rivals_per_hypothesis": 1.0,
+    "hypotheses_with_effect_size_expectation": 10,
+    "hypotheses_with_failure_condition": 10,
+    "hypotheses_with_testable_prediction": 10
+  },
+  "stage_6_rival_prediction_matrix": [
+    {
+      "hypothesis_id": "H1",
+      "meno_j_hypothesis": "Fake h H1 (n349) with a specific variable relation.",
+      "meno_j_prediction": "Fake p H1 (n688) with a specific variable relation.",
+      "rival_explanation": "Fake rival H1 (n495) with a specific variable relation.",
+      "rival_prediction": "Fake rp H1 (n518) with a specific variable relation.",
+      "distinguishing_test": "Fake dt H1 (n983) with a specific variable relation.",
+      "what_result_supports_meno_j": "Fake s H1 (n820) with a specific variable relation.",
+      "what_result_supports_rival": "Fake sr H1 (n760) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H2",
+      "meno_j_hypothesis": "Fake h H2 (n865) with a specific variable relation.",
+      "meno_j_prediction": "Fake p H2 (n293) with a specific variable relation.",
+      "rival_explanation": "Fake rival H2 (n318) with a specific variable relation.",
+      "rival_prediction": "Fake rp H2 (n31) with a specific variable relation.",
+      "distinguishing_test": "Fake dt H2 (n696) with a specific variable relation.",
+      "what_result_supports_meno_j": "Fake s H2 (n341) with a specific variable relation.",
+      "what_result_supports_rival": "Fake sr H2 (n79) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H3",
+      "meno_j_hypothesis": "Fake h H3 (n199) with a specific variable relation.",
+      "meno_j_prediction": "Fake p H3 (n891) with a specific variable relation.",
+      "rival_explanation": "Fake rival H3 (n800) with a specific variable relation.",
+      "rival_prediction": "Fake rp H3 (n542) with a specific variable relation.",
+      "distinguishing_test": "Fake dt H3 (n423) with a specific variable relation.",
+      "what_result_supports_meno_j": "Fake s H3 (n396) with a specific variable relation.",
+      "what_result_supports_rival": "Fake sr H3 (n25) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H4",
+      "meno_j_hypothesis": "Fake h H4 (n387) with a specific variable relation.",
+      "meno_j_prediction": "Fake p H4 (n213) with a specific variable relation.",
+      "rival_explanation": "Fake rival H4 (n330) with a specific variable relation.",
+      "rival_prediction": "Fake rp H4 (n886) with a specific variable relation.",
+      "distinguishing_test": "Fake dt H4 (n542) with a specific variable relation.",
+      "what_result_supports_meno_j": "Fake s H4 (n523) with a specific variable relation.",
+      "what_result_supports_rival": "Fake sr H4 (n651) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H7",
+      "meno_j_hypothesis": "Fake h H7 (n981) with a specific variable relation.",
+      "meno_j_prediction": "Fake p H7 (n420) with a specific variable relation.",
+      "rival_explanation": "Fake rival H7 (n78) with a specific variable relation.",
+      "rival_prediction": "Fake rp H7 (n249) with a specific variable relation.",
+      "distinguishing_test": "Fake dt H7 (n871) with a specific variable relation.",
+      "what_result_supports_meno_j": "Fake s H7 (n203) with a specific variable relation.",
+      "what_result_supports_rival": "Fake sr H7 (n704) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H8",
+      "meno_j_hypothesis": "Fake h H8 (n551) with a specific variable relation.",
+      "meno_j_prediction": "Fake p H8 (n897) with a specific variable relation.",
+      "rival_explanation": "Fake rival H8 (n441) with a specific variable relation.",
+      "rival_prediction": "Fake rp H8 (n814) with a specific variable relation.",
+      "distinguishing_test": "Fake dt H8 (n459) with a specific variable relation.",
+      "what_result_supports_meno_j": "Fake s H8 (n750) with a specific variable relation.",
+      "what_result_supports_rival": "Fake sr H8 (n238) with a specific variable relation."
+    }
+  ],
+  "stage_7_falsification_tests": [
+    {
+      "hypothesis_id": "H1",
+      "strongest_falsification_test": "Fake ft H1 (n774) with a specific variable relation.",
+      "failure_condition": "Fake fc H1 (n456) with a specific variable relation.",
+      "minimum_data_needed": "Fake md H1 (n805) with a specific variable relation.",
+      "most_likely_false_positive_risk": "Fake fp H1 (n204) with a specific variable relation.",
+      "most_likely_false_negative_risk": "Fake fn H1 (n677) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H2",
+      "strongest_falsification_test": "Fake ft H2 (n630) with a specific variable relation.",
+      "failure_condition": "Fake fc H2 (n45) with a specific variable relation.",
+      "minimum_data_needed": "Fake md H2 (n51) with a specific variable relation.",
+      "most_likely_false_positive_risk": "Fake fp H2 (n912) with a specific variable relation.",
+      "most_likely_false_negative_risk": "Fake fn H2 (n453) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H3",
+      "strongest_falsification_test": "Fake ft H3 (n247) with a specific variable relation.",
+      "failure_condition": "Fake fc H3 (n726) with a specific variable relation.",
+      "minimum_data_needed": "Fake md H3 (n797) with a specific variable relation.",
+      "most_likely_false_positive_risk": "Fake fp H3 (n648) with a specific variable relation.",
+      "most_likely_false_negative_risk": "Fake fn H3 (n648) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H4",
+      "strongest_falsification_test": "Fake ft H4 (n912) with a specific variable relation.",
+      "failure_condition": "Fake fc H4 (n161) with a specific variable relation.",
+      "minimum_data_needed": "Fake md H4 (n988) with a specific variable relation.",
+      "most_likely_false_positive_risk": "Fake fp H4 (n26) with a specific variable relation.",
+      "most_likely_false_negative_risk": "Fake fn H4 (n201) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H7",
+      "strongest_falsification_test": "Fake ft H7 (n963) with a specific variable relation.",
+      "failure_condition": "Fake fc H7 (n401) with a specific variable relation.",
+      "minimum_data_needed": "Fake md H7 (n693) with a specific variable relation.",
+      "most_likely_false_positive_risk": "Fake fp H7 (n585) with a specific variable relation.",
+      "most_likely_false_negative_risk": "Fake fn H7 (n5) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H8",
+      "strongest_falsification_test": "Fake ft H8 (n880) with a specific variable relation.",
+      "failure_condition": "Fake fc H8 (n336) with a specific variable relation.",
+      "minimum_data_needed": "Fake md H8 (n795) with a specific variable relation.",
+      "most_likely_false_positive_risk": "Fake fp H8 (n868) with a specific variable relation.",
+      "most_likely_false_negative_risk": "Fake fn H8 (n925) with a specific variable relation."
+    }
+  ]
+}

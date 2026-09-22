@@ -1,0 +1,307 @@
+{
+  "mechanism_builds": [
+    {
+      "hypothesis_id": "H1",
+      "mechanism_variables": [
+        "skin_hydration_corneometer_units",
+        "stratum_corneum_thickness_um",
+        "electrode_skin_impedance_ohm",
+        "eda_phasic_amplitude_usiemens",
+        "eda_noise_floor_usiemens",
+        "eda_signal_to_noise_ratio",
+        "sweat_gland_density_per_cm2"
+      ],
+      "causal_path": "skin_hydration ↑ & stratum_corneum_thickness ↓ → electrode_skin_impedance ↓ → eda_phasic_amplitude ↑ (less attenuation) → eda_signal_to_noise_ratio ↑ → stress_detection_uncertainty ↓",
+      "expected_direction": "Higher skin hydration and thinner stratum corneum reduce impedance, increase EDA SNR, and decrease subject-level stress detection uncertainty.",
+      "domain_specific_boundary_conditions": [
+        "ambient_humidity_30-70_percent",
+        "skin_temperature_30-35_celsius",
+        "electrode_material_Ag_AgCl",
+        "measurement_site_wrist_volar",
+        "no_dermatological_conditions",
+        "age_18-65_years"
+      ],
+      "measurable_outcomes": [
+        "within_subject_eda_snr_db",
+        "stress_classification_auc_per_subject",
+        "expected_calibration_error_ece",
+        "prediction_interval_coverage_probability",
+        "subject_specific_brier_score"
+      ],
+      "mechanism_builder_notes": "Mechanism can be tested by controlled hydration manipulation (occlusion vs. drying) and measuring impedance/EDA SNR changes; include skin conductance level (SCL) as covariate."
+    },
+    {
+      "hypothesis_id": "H2",
+      "mechanism_variables": [
+        "baseline_hrv_rmssd_ms",
+        "baseline_hrv_hf_power_ms2",
+        "stress_induced_delta_hrv_rmssd_ms",
+        "stress_induced_delta_hr_bpm",
+        "classifier_confidence_interval_width",
+        "predictive_entropy_bits",
+        "autonomic_phenotype_category"
+      ],
+      "causal_path": "low_baseline_hrv → reduced_parasympathetic_reserve → blunted_hrv_stress_response → smaller_feature_separation_stress_vs_rest → wider_classifier_confidence_intervals → higher_predictive_entropy → increased_stress_detection_uncertainty",
+      "expected_direction": "Lower baseline HRV (RMSSD, HF power) predicts higher subject-level stress detection uncertainty due to compressed physiological dynamic range.",
+      "domain_specific_boundary_conditions": [
+        "age_18-60_years",
+        "no_cardiovascular_medication",
+        "resting_state_5min_supine",
+        "standardized_mental_stressor",
+        "time_of_day_morning_9-11am",
+        "no_caffeine_4h_prior"
+      ],
+      "measurable_outcomes": [
+        "subject_level_auc_stress_detection",
+        "brier_score_decomposition",
+        "prediction_interval_coverage_per_subject",
+        "feature_effect_size_cohens_d_stress_rest",
+        "calibration_curve_slope_intercept"
+      ],
+      "mechanism_builder_notes": "Use latent profile analysis to define autonomic phenotypes; test interaction between phenotype and stressor intensity on uncertainty."
+    },
+    {
+      "hypothesis_id": "H3",
+      "mechanism_variables": [
+        "wrist_circumference_mm",
+        "device_strap_tension_newton",
+        "ppg_ac_dc_ratio",
+        "motion_artifact_spectral_power_0_5_3hz_g2",
+        "ppg_signal_quality_index_sqi",
+        "accelerometer_magnitude_rms_g",
+        "stress_classification_uncertainty_entropy"
+      ],
+      "causal_path": "wrist_circumference ↑ & strap_tension ↓ → optical_path_length_variability ↑ → ppg_ac_dc_ratio ↓ & motion_artifact_power ↑ → ppg_sqi ↓ → feature_extraction_degradation → stress_classification_uncertainty ↑",
+      "expected_direction": "Larger wrist circumference and looser device fit increase PPG signal degradation and motion artifacts, leading to higher stress detection uncertainty.",
+      "domain_specific_boundary_conditions": [
+        "device_model_apple_watch_series_8",
+        "green_led_ppg_530nm",
+        "activity_walking_3kmh_typing",
+        "fitzpatrick_skin_type_I_VI",
+        "ambient_light_indoor_300lux",
+        "strap_material_fluoroelastomer"
+      ],
+      "measurable_outcomes": [
+        "ppg_sqi_distribution_per_subject",
+        "motion_artifact_to_signal_ratio",
+        "subject_level_f1_score_stress",
+        "uncertainty_calibration_error_ece",
+        "feature_importance_shift_shap"
+      ],
+      "mechanism_builder_notes": "Instrument strap with force sensor; use controlled motion protocols; compare wrist vs. upper-arm placement as positive control."
+    },
+    {
+      "hypothesis_id": "H4",
+      "mechanism_variables": [
+        "circadian_phase_dlmo_hours",
+        "core_body_temperature_min_time",
+        "cortisol_awakening_response_nmol_l",
+        "baseline_hrv_rmssd_ms",
+        "stress_induced_delta_hrv_rmssd_ms",
+        "time_of_day_hour",
+        "prediction_error_variance"
+      ],
+      "causal_path": "circadian_phase_night → melatonin ↑ & core_temp ↓ → parasympathetic_tone ↑ → baseline_hrv ↑ → stress_response_gain ↓ → heteroscedastic_prediction_errors (larger at night) → time_of_day_dependent_uncertainty ↑",
+      "expected_direction": "Stress detection uncertainty peaks during biological night (high melatonin, low temperature) due to reduced stress response gain and heteroscedastic errors.",
+      "domain_specific_boundary_conditions": [
+        "chronotype_morning_evening_questionnaire",
+        "regular_sleep_schedule_7-9h",
+        "no_shift_work_3months",
+        "dim_light_conditions_dlmo",
+        "standardized_stressor_tsst",
+        "age_20-40_years"
+      ],
+      "measurable_outcomes": [
+        "time_of_day_stratified_prediction_interval_coverage",
+        "breusch_pagan_heteroscedasticity_p_value",
+        "subject_level_calibration_curve_per_circadian_bin",
+        "circadian_phase_uncertainty_amplitude",
+        "model_recalibration_improvement_auc"
+      ],
+      "mechanism_builder_notes": "Collect 7-day ambulatory data with hourly EMA; use cosinor modeling to quantify phase-dependent uncertainty rhythms."
+    },
+    {
+      "hypothesis_id": "H5",
+      "mechanism_variables": [
+        "neuroticism_score_bfi_1_5",
+        "recall_latency_minutes",
+        "label_noise_variance",
+        "physiological_stress_marker_zscore",
+        "self_report_stress_likert_1_7",
+        "predictive_entropy_bits",
+        "expected_calibration_error_ece"
+      ],
+      "causal_path": "neuroticism ↑ → negative_interpretation_bias ↑ & recall_latency ↑ → self_report_stress_overreporting & temporal_misalignment → label_noise_distribution_nonrandom_subject_specific → model_training_bias → predictive_entropy_miscalibration → subject_level_uncertainty_misestimation",
+      "expected_direction": "Higher neuroticism correlates with greater label noise variance and worse uncertainty calibration (higher ECE) for that subject.",
+      "domain_specific_boundary_conditions": [
+        "ema_frequency_6x_day",
+        "stressor_type_social_evaluative",
+        "cultural_background_western",
+        "current_mood_panas_score",
+        "cognitive_load_low",
+        "no_psychiatric_diagnosis"
+      ],
+      "measurable_outcomes": [
+        "subject_label_noise_estimate_latent_model",
+        "expected_calibration_error_ece_per_subject",
+        "brier_score_reliability_component",
+        "auc_stress_detection_per_subject",
+        "label_physiological_concordance_icc"
+      ],
+      "mechanism_builder_notes": "Use hierarchical Bayesian model to estimate subject-specific label noise; simulate mislabeling to quantify propagation to uncertainty."
+    },
+    {
+      "hypothesis_id": "H6",
+      "mechanism_variables": [
+        "vo2_max_ml_kg_min",
+        "resting_hr_bpm",
+        "baseline_hrv_rmssd_ms",
+        "stress_delta_hr_bpm",
+        "stress_delta_hrv_rmssd_ms",
+        "classifier_feature_weight_hr_vs_hrv",
+        "prediction_interval_width"
+      ],
+      "causal_path": "vo2_max ↑ → parasympathetic_tone ↑ → stress_delta_hr ↓ (blunted) & stress_delta_hrv ↑ (exaggerated withdrawal) → feature_distribution_shift_vs_low_fitness → mixed_population_classifier_misestimation → prediction_interval_width ↑ for_high_fitness",
+      "expected_direction": "High cardiorespiratory fitness (VO2 max) leads to blunted HR but exaggerated HRV stress responses, causing higher uncertainty in models trained on mixed-fitness populations.",
+      "domain_specific_boundary_conditions": [
+        "age_20-45_years",
+        "sex_balanced",
+        "endurance_trained_vs_sedentary",
+        "mental_arithmetic_stressor",
+        "no_beta_blockers",
+        "device_ppg_wrist_validated"
+      ],
+      "measurable_outcomes": [
+        "fitness_stratified_auc_stress_detection",
+        "calibration_curve_per_fitness_tertile",
+        "shap_feature_contribution_hr_vs_hrv",
+        "subject_level_prediction_interval_width",
+        "reclassification_improvement_stratified_model"
+      ],
+      "mechanism_builder_notes": "Include fitness as explicit feature or use mixture-of-experts; test if fitness-specific models reduce uncertainty."
+    },
+    {
+      "hypothesis_id": "H7",
+      "mechanism_variables": [
+        "stress_exposure_count",
+        "habituation_slope_response_magnitude_per_session",
+        "sensitization_index_response_increase",
+        "residual_autocorrelation_ar1",
+        "concept_drift_kl_divergence_features_weekly",
+        "weekly_ece_calibration_error",
+        "prediction_interval_coverage_weekly"
+      ],
+      "causal_path": "repeated_stress_exposure → habituation_or_sensitization → temporal_autocorrelation_features & concept_drift → iid_assumption_violation → static_model_uncertainty_miscalibration → subject_specific_coverage_deviation_over_time",
+      "expected_direction": "Subjects with stronger habituation/sensitization show time-varying miscalibration (ECE drift) and prediction interval coverage that deviates from nominal in a subject-specific pattern.",
+      "domain_specific_boundary_conditions": [
+        "longitudinal_4weeks_daily_monitoring",
+        "stressor_consistency_same_type",
+        "inter_exposure_interval_24h",
+        "baseline_trait_anxiety_stai",
+        "no_ptsd_diagnosis",
+        "model_static_no_updates"
+      ],
+      "measurable_outcomes": [
+        "weekly_ece_trajectory_per_subject",
+        "prediction_interval_coverage_time_series",
+        "autocorrelation_of_prediction_errors_lag1",
+        "concept_drift_detection_statistic_ks_test",
+        "habituation_slope_correlation_with_ece_change"
+      ],
+      "mechanism_builder_notes": "Compare static vs. online-updating models; use sliding window calibration to track uncertainty dynamics."
+    },
+    {
+      "hypothesis_id": "H8",
+      "mechanism_variables": [
+        "body_fat_percent_dexa",
+        "subcutaneous_adipose_thickness_wrist_mm_ultrasound",
+        "muscle_cross_sectional_area_wrist_mm2",
+        "ppg_ac_amplitude_during_motion",
+        "motion_artifact_spectral_centroid_hz",
+        "accelerometer_variance_during_activity_g2",
+        "stress_classification_uncertainty_entropy"
+      ],
+      "causal_path": "body_fat_percent ↑ & adipose_thickness ↑ → optical_scattering_absorption ↑ → ppg_ac_amplitude ↓ & mechanical_damping ↑ → motion_artifact_spectral_centroid ↓ (lower freq) → artifact_physiological_confusion ↑ → feature_degradation → stress_uncertainty ↑",
+      "expected_direction": "Higher body fat percentage and subcutaneous adipose thickness at the wrist reduce PPG SNR and shift motion artifacts to lower frequencies, increasing stress detection uncertainty especially during movement.",
+      "domain_specific_boundary_conditions": [
+        "device_wrist_ppg_green_led",
+        "activity_walking_4kmh_stairs",
+        "skin_temperature_32_celsius",
+        "fitzpatrick_skin_type_III_IV",
+        "age_25-55_years",
+        "no_edema_lymphedema"
+      ],
+      "measurable_outcomes": [
+        "ppg_snr_during_motion_per_subject",
+        "motion_artifact_classification_accuracy",
+        "subject_auc_stratified_by_body_fat_quartile",
+        "uncertainty_calibration_error_ece_per_bmi_group",
+        "feature_confusion_matrix_artifact_vs_stress"
+      ],
+      "mechanism_builder_notes": "Use multi-wavelength PPG to estimate tissue optical properties; include adipose thickness as covariate in uncertainty model."
+    },
+    {
+      "hypothesis_id": "H9",
+      "mechanism_variables": [
+        "menstrual_cycle_phase_follicular_luteal_menstrual",
+        "estradiol_pg_ml",
+        "progesterone_ng_ml",
+        "hormonal_contraceptive_type_none_combined_progestin_only",
+        "baseline_hrv_rmssd_ms",
+        "stress_delta_hrv_rmssd_ms",
+        "eda_reactivity_usiemens",
+        "prediction_uncertainty_entropy",
+        "calibration_error_per_phase"
+      ],
+      "causal_path": "luteal_phase (progesterone ↑ estradiol ↑) → sympathetic_tone ↑ & parasympathetic ↓ → baseline_hrv ↓ & stress_hrv_response_blunted → feature_distribution_shift → population_model_miscalibration_luteal → uncertainty_entropy ↑ luteal_vs_follicular; contraceptive_use → hormonal_fluctuations_dampened → phase_uncertainty_variance ↓",
+      "expected_direction": "Uncertainty is higher in luteal phase vs. follicular phase in naturally cycling females; hormonal contraceptive users show reduced phase-dependent uncertainty variation.",
+      "domain_specific_boundary_conditions": [
+        "regular_cycles_25_35_days",
+        "age_18_35_years",
+        "no_pcos_endometriosis",
+        "standardized_stressor_cold_pressor",
+        "time_of_day_follicular_luteal_matched",
+        "contraceptive_use_3months_stable"
+      ],
+      "measurable_outcomes": [
+        "phase_stratified_auc_stress_detection",
+        "calibration_error_ece_per_phase",
+        "prediction_interval_coverage_per_phase",
+        "within_subject_feature_variance_across_cycle",
+        "contraceptive_group_uncertainty_variance_ratio"
+      ],
+      "mechanism_builder_notes": "Confirm phase via serum hormones; include cycle day as continuous predictor; test cycle-aware model recalibration."
+    },
+    {
+      "hypothesis_id": "H10",
+      "mechanism_variables": [
+        "firmware_version_categorical",
+        "sampling_rate_hz",
+        "filter_cutoff_frequency_hz",
+        "calibration_coefficient_ppg_gain",
+        "pulse_waveform_dicrotic_notch_prominence",
+        "hrv_feature_rmssd_ms",
+        "pre_post_update_uncertainty_change",
+        "usage_pattern_wear_time_h_day"
+      ],
+      "causal_path": "firmware_update → sampling_rate ↓ & filter_cutoff ↓ → pulse_waveform_high_freq_attenuation → hrv_feature_bias (subject_dependent_on_notch_prominence) → feature_distribution_shift → subject_specific_bias_variance_tradeoff → uncertainty_change_heterogeneous_across_users",
+      "expected_direction": "Firmware updates that reduce sampling rate or alter filtering cause subject-dependent uncertainty shifts; users with prominent dicrotic notches experience larger HRV feature bias and increased uncertainty.",
+      "domain_specific_boundary_conditions": [
+        "device_fitbit_sense_2",
+        "update_type_major_vs_minor",
+        "user_compliance_immediate_update",
+        "activity_profile_sedentary_active",
+        "skin_perfusion_normal",
+        "no_arrhythmia"
+      ],
+      "measurable_outcomes": [
+        "subject_level_uncertainty_delta_pre_post_update",
+        "feature_distribution_shift_ks_statistic_per_subject",
+        "calibration_error_change_ece",
+        "auc_change_stress_detection",
+        "waveform_morphology_moderator_analysis"
+      ],
+      "mechanism_builder_notes": "Leverage staggered rollout design; collect pre-update baseline; simulate firmware changes on raw waveforms to isolate mechanism."
+    }
+  ]
+}

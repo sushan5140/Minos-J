@@ -1,0 +1,84 @@
+{
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Individual differences in autonomic nervous system (ANS) reactivity phenotypes cause systematic variation in wearable stress-detection uncertainty across subjects.",
+      "proposed_mechanism": "Subjects exhibit stable trait-like differences in sympathetic-parasympathetic balance and reactivity magnitude, such that identical stressors produce divergent physiological signal amplitudes (e.g., EDA, HRV) relative to sensor noise floors, altering signal-to-noise ratios in a subject-specific manner.",
+      "core_assumption": "ANS reactivity phenotype is a stable, measurable trait that modulates the amplitude of wearable-captured physiological stress signatures independent of stressor intensity.",
+      "knowledge_gap_addressed": "Current models treat inter-subject physiological variability as random noise rather than a structured, phenotype-driven determinant of detection uncertainty.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Subject-specific skin-sensor interface properties (hydration, thickness, hair density, microvasculature) introduce structured measurement error that varies systematically across individuals and body sites.",
+      "proposed_mechanism": "Variation in stratum corneum hydration, epidermal thickness, and subcutaneous fat alters optical path length for PPG and electrical contact impedance for EDA/ECG, creating subject-specific attenuation and distortion of physiological waveforms that mimics or masks stress signatures.",
+      "core_assumption": "Skin-sensor interface properties are stable enough within-subject to create consistent bias but variable enough across subjects to explain uncertainty heterogeneity.",
+      "knowledge_gap_addressed": "Wearable validation studies rarely quantify or model subject-specific skin-sensor interface effects as a source of structured uncertainty in stress detection.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Circadian phase misalignment between internal biological time and external clock time modulates baseline autonomic tone and stress reactivity, creating time-of-day-dependent detection uncertainty that varies by chronotype.",
+      "proposed_mechanism": "Subjects with extreme chronotypes or social jetlag experience shifted cortisol and melatonin rhythms, altering resting HRV, skin conductance levels, and stress responsiveness at fixed clock times, which confounds fixed-threshold detection algorithms.",
+      "core_assumption": "Circadian phase is a stronger determinant of wearable stress-signal baselines than clock time, and chronotype distribution in the population is wide enough to generate measurable uncertainty variation.",
+      "knowledge_gap_addressed": "Most wearable stress algorithms use clock-time normalization rather than circadian-phase alignment, leaving chronotype-driven baseline shifts unaccounted for in uncertainty estimates.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Repeated exposure to daily stressors induces subject-specific habituation or sensitization trajectories that non-stationarily alter physiological stress signatures over weeks, violating stationarity assumptions in uncertainty quantification.",
+      "proposed_mechanism": "Individuals differ in the rate and direction of physiological adaptation to recurring stressors (e.g., commuting, work deadlines), causing within-subject drift in EDA peak frequency, HRV suppression magnitude, and recovery kinetics that static models interpret as increased uncertainty.",
+      "core_assumption": "Habituation/sensitization trajectories are systematic within-subject but heterogeneous across subjects, and occur on timescales relevant to typical deployment durations (weeks to months).",
+      "knowledge_gap_addressed": "Longitudinal non-stationarity in stress physiology is rarely modeled as a structured source of uncertainty; most studies assume stationary signal distributions.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Variable compliance and reporting bias in ecological momentary assessment (EMA) self-reports create subject-specific label noise that masquerades as model uncertainty.",
+      "proposed_mechanism": "Subjects differ in EMA response latency, recall accuracy, and willingness to report negative affect, producing misaligned or missing ground-truth labels that correlate with subject traits (e.g., alexithymia, conscientiousness), inflating apparent detection uncertainty for specific subgroups.",
+      "core_assumption": "EMA label quality is not missing at random but systematically related to subject characteristics that also influence physiological stress expression.",
+      "knowledge_gap_addressed": "Stress detection uncertainty is typically attributed to sensor or model limitations, not to structured label noise from heterogeneous self-report compliance.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Unmeasured contextual moderators (social presence, physical posture, ambient temperature, cognitive load) interact with stress physiology in subject-specific ways, creating hidden stratification in detection performance.",
+      "proposed_mechanism": "The same stressor elicits different physiological patterns depending on context (e.g., social evaluation vs. physical threat), and subjects differ in their typical context exposure and context-physiology coupling, producing subgroups with distinct stress signatures that a single model fits poorly.",
+      "core_assumption": "Context-physiology interaction effects are large, subject-heterogeneous, and not captured by current wearable sensor suites (which lack continuous context annotation).",
+      "knowledge_gap_addressed": "Contextual moderation of wearable stress signals is acknowledged but rarely quantified as a structured source of inter-subject uncertainty variation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Subject-specific heteroscedasticity in physiological signal noise (e.g., motion artifact burstiness, EDA baseline drift volatility) violates homoscedastic error assumptions in uncertainty calibration.",
+      "proposed_mechanism": "Individuals differ in movement patterns, sweat gland distribution, and vascular tone stability, producing subject-specific noise distributions with heavy tails or time-varying variance that cause miscalibrated prediction intervals for stress probability estimates.",
+      "core_assumption": "Physiological noise structure is a stable individual difference (trait-like) rather than purely state-dependent, and standard uncertainty quantification methods assume homoscedasticity.",
+      "knowledge_gap_addressed": "Uncertainty calibration in wearable stress detection typically assumes uniform noise characteristics across subjects, ignoring trait-like heteroscedasticity.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Interoceptive awareness modulates the coupling between subjective stress experience and peripheral physiological expression, creating a subject-specific 'translation gain' that alters detection reliability.",
+      "proposed_mechanism": "High interoceptive accuracy individuals show tighter coupling between perceived stress and autonomic output (larger EDA/HRV changes per unit subjective stress), while low interoceptive accuracy individuals exhibit decoupling, making wearable signals less informative for the latter group.",
+      "core_assumption": "Interoceptive awareness is a measurable trait that systematically scales the peripheral physiological manifestation of central stress states.",
+      "knowledge_gap_addressed": "The role of interoceptive individual differences in shaping wearable stress-signal informativeness is unexplored; models assume uniform physiology-perception coupling.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Subject-specific delayed recovery kinetics after stressor offset (prolonged sympathetic activation, slow parasympathetic rebound) create temporal smearing that increases uncertainty in event-boundary detection.",
+      "proposed_mechanism": "Individuals vary in autonomic recovery half-life due to fitness, age, or genetic factors, causing stress signatures to persist into subsequent non-stress epochs and blur epoch-level classification boundaries in a subject-dependent manner.",
+      "core_assumption": "Recovery kinetics are a stable individual difference that determines the temporal autocorrelation structure of stress signatures, and current epoch-based labeling ignores this smearing.",
+      "knowledge_gap_addressed": "Temporal smearing from heterogeneous recovery dynamics is not modeled as a source of classification uncertainty; fixed epoch windows assume uniform recovery.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Genetic polymorphisms in adrenergic receptor sensitivity (e.g., ADRB1, ADRB2, COMT) create discrete subpopulations with qualitatively different wearable stress signatures, violating the assumption of a continuous, unimodal signal distribution.",
+      "proposed_mechanism": "Common functional variants alter catecholamine binding affinity and clearance, producing bimodal or multimodal distributions of HRV stress reactivity and EDA peak amplitude that single Gaussian-assumption models fit poorly, inflating uncertainty for minority subpopulations.",
+      "core_assumption": "Adrenergic genetic variants have effect sizes large enough to create detectable substructure in wearable stress signals at population scale, and allele frequencies differ across demographic groups.",
+      "knowledge_gap_addressed": "Genetic stratification of wearable stress phenotypes is virtually unexplored; all current models assume a single homogeneous population distribution.",
+      "status": "SPECULATIVE"
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "statistical_testability_builds": [
+    {
+      "hypothesis_id": "H1",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Prior work shows moderate influence of autonomic baseline on model calibration, suggesting a medium effect.",
+      "minimum_data_needed": [
+        "baseline HRV (RMSSD) per subject",
+        "empirical coverage rate per subject",
+        "average prediction interval width per subject",
+        "age",
+        "fitness level",
+        "baseline stress reactivity"
+      ],
+      "testable_prediction": "Higher baseline HRV is associated with lower empirical coverage (negative direction) after adjusting for age, fitness level, and baseline stress reactivity.",
+      "failure_condition": "If the adjusted association between baseline HRV and empirical coverage is not statistically significant (p >= 0.05) or the effect direction is positive or null.",
+      "statistical_test_plan": "Perform linear regression of empirical coverage on baseline HRV, controlling for age, fitness level, and baseline stress reactivity; test the coefficient for baseline HRV; significance threshold p < 0.05; report beta and confidence interval.",
+      "statistical_testability_notes": "Baseline HRV computed from first 5 min of ECG; coverage computed using Mondrian CP with calibration set from stress episodes; aim for at least 30 subjects to ensure adequate power."
+    },
+    {
+      "hypothesis_id": "H2",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size unknown until pilot data quantify the relationship between accelerometer high-frequency RMS and coverage decrement.",
+      "minimum_data_needed": [
+        "accelerometer high-frequency RMS per time window",
+        "local residual variance per window",
+        "empirical coverage per window",
+        "average prediction interval width per window"
+      ],
+      "testable_prediction": "Increase in accelerometer high-frequency RMS leads to decrease in empirical coverage (negative direction).",
+      "failure_condition": "If no significant negative correlation between accelerometer high-frequency RMS and empirical coverage after controlling for attachment quality, BMI, and activity type.",
+      "statistical_test_plan": "Compute Pearson correlation (or linear mixed-effects model with subject as random effect) between accelerometer high-frequency RMS and empirical coverage across windows; test significance p < 0.05; include attachment quality, BMI, activity type as covariates.",
+      "statistical_testability_notes": "Use window size e.g., 10s; ensure sufficient artifact variability; exclude periods with low signal quality."
+    },
+    {
+      "hypothesis_id": "H3",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Habituation effects in physiological responses are typically moderate, suggesting a medium effect size.",
+      "minimum_data_needed": [
+        "time since recording start (min) per segment",
+        "stress label probability per segment",
+        "empirical coverage per time bin",
+        "average prediction interval width per bin"
+      ],
+      "testable_prediction": "Later recording time (greater minutes since start) is associated with lower empirical coverage (negative direction).",
+      "failure_condition": "If the slope of coverage vs time is not significantly negative after controlling for time of day, fatigue score, and annotator experience.",
+      "statistical_test_plan": "Split recording into equal time bins (e.g., 5-min); compute coverage per bin; run linear regression of coverage on bin midpoint controlling for time of day, fatigue score, annotator experience; test coefficient for time.",
+      "statistical_testability_notes": "Ensure at least 6 bins per subject to capture trend; use mixed-effects model with subject random intercept."
+    },
+    {
+      "hypothesis_id": "H4",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Timestamp synchronization errors are expected to have a small but detectable impact on coverage.",
+      "minimum_data_needed": [
+        "timestamp offset between ECG and respiration (ms) per segment",
+        "empirical coverage per segment",
+        "average prediction interval width per segment",
+        "peak cross-correlation coefficient per segment"
+      ],
+      "testable_prediction": "Larger absolute timestamp offset leads to lower empirical coverage (negative direction).",
+      "failure_condition": "If no significant negative correlation between offset magnitude and coverage after controlling for hardware latency jitter, signal quality index, and movement artifact level.",
+      "statistical_test_plan": "Estimate offset per segment via mutual information maximization; compute coverage per segment; run linear regression of coverage on absolute offset controlling for latency jitter, SQI, movement artifact; test significance.",
+      "statistical_testability_notes": "Require at least 20 segments with both signals present; ensure sampling rates >=130 Hz ECG, >=70 Hz respiration."
+    },
+    {
+      "hypothesis_id": "H5",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size unknown until inter-annotator disagreement data are collected to quantify label noise impact.",
+      "minimum_data_needed": [
+        "label noise entropy (inter-annotator disagreement) per segment",
+        "empirical coverage per segment",
+        "average prediction interval width per segment",
+        "Cohen's kappa per segment"
+      ],
+      "testable_prediction": "Higher label noise entropy leads to lower empirical coverage (negative direction).",
+      "failure_condition": "If no significant negative correlation between label entropy and coverage after controlling for annotator expertise, stimulus ambiguity, and inter-annotator agreement variability.",
+      "statistical_test_plan": "Compute label entropy per segment from multiple annotators; compute coverage per segment; run linear regression of coverage on entropy controlling for expertise score, stimulus clarity rating, kappa; test significance.",
+      "statistical_testability_notes": "If multiple labels unavailable, simulate label noise by flipping a proportion of labels according to estimated error rate; need at least 30 segments with multiple annotations."
+    },
+    {
+      "hypothesis_id": "H6",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Baseline arousal shifts are expected to produce a moderate effect on coverage when stratification ignores subject-specific offsets.",
+      "minimum_data_needed": [
+        "subject baseline arousal (mean skin conductance level)",
+        "stress intensity stratum (low/medium/high)",
+        "empirical coverage per baseline group",
+        "average prediction interval width per group",
+        "baseline measurement duration",
+        "stress episode count per subject",
+        "baseline GSR variability"
+      ],
+      "testable_prediction": "Lower baseline arousal leads to lower empirical coverage (negative direction) when using high-intensity stratum.",
+      "failure_condition": "If after adjusting for baseline measurement duration, stress episode count, and baseline GSR variability, the association between baseline arousal and coverage is not significant.",
+      "statistical_test_plan": "Group subjects by baseline arousal (e.g., low vs high tertiles); compute coverage per group within each stress intensity stratum; run linear regression of coverage on baseline arousal controlling for baseline measurement duration, episode count, baseline GSR variability; test significance.",
+      "statistical_testability_notes": "Baseline measured during 5-min resting period before each stress episode; aim for at least 15 subjects per baseline group."
+    },
+    {
+      "hypothesis_id": "H7",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Small calibration sets are known to cause substantial quantile estimation error, suggesting a large effect on coverage.",
+      "minimum_data_needed": [
+        "number of calibration samples per subject",
+        "empirical coverage per subject",
+        "average prediction interval width per subject",
+        "quantile confidence interval width per subject",
+        "stress episode count per subject",
+        "labeling consistency (Cohen's kappa)",
+        "total recording duration per subject"
+      ],
+      "testable_prediction": "Fewer calibration samples lead to lower empirical coverage (negative direction).",
+      "failure_condition": "If after controlling for stress episode count, labeling consistency, and total recording duration, the association between calibration size and coverage is not significant.",
+      "statistical_test_plan": "Compute calibration size per subject; run linear regression of coverage on calibration size controlling for stress episode count, labeling consistency (kappa), total recording duration; test coefficient significance; additionally use bootstrap to estimate quantile variance.",
+      "statistical_testability_notes": "Minimum of 10 samples required for stable quantile; ensure at least 20 subjects spanning the calibration size spectrum."
+    },
+    {
+      "hypothesis_id": "H8",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size unknown until pilot data assess the impact of missing GSR-temperature interaction on coverage.",
+      "minimum_data_needed": [
+        "galvanic skin response (GSR) per time point",
+        "skin temperature per time point",
+        "interaction term (GSR * temperature) per time point",
+        "empirical coverage per subject",
+        "average prediction interval width per subject",
+        "overall GSR amplitude (std)",
+        "temperature range (max-min)",
+        "motion artifact level (accelerometer RMS)"
+      ],
+      "testable_prediction": "Stronger GSR-temperature interaction (higher product) leads to lower empirical coverage (negative direction).",
+      "failure_condition": "If after controlling for overall GSR amplitude, temperature range, and motion artifact level, the association between the interaction term and coverage is not significant.",
+      "statistical_test_plan": "Fit linear scoring function; compute residuals; compute empirical coverage per subject; test interaction term significance via hierarchical regression: add interaction term to model and evaluate change in coverage error using F-test; alternatively regress coverage on interaction term controlling for GSR amplitude, temperature range, artifact level.",
+      "statistical_testability_notes": "Require periods where both GSR and temperature vary (e.g., during stress); sampling rate >=4 Hz for each; aim for at least 25 subjects with sufficient variation."
+    },
+    {
+      "hypothesis_id": "H9",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Substance effects on physiological dynamics are expected to be modest, suggesting a small effect size.",
+      "minimum_data_needed": [
+        "caffeine dosage (mg) per subject",
+        "medication presence (binary) per subject",
+        "empirical coverage per substance group",
+        "average prediction interval width per group",
+        "time of day (circadian phase)",
+        "baseline stress (pre-task HRV)",
+        "age"
+      ],
+      "testable_prediction": "Presence of caffeine/medication leads to lower empirical coverage (negative direction).",
+      "failure_condition": "If after adjusting for time of day, baseline stress level, and age, the association between substance intake and coverage is not significant.",
+      "statistical_test_plan": "Divide subjects into substance users vs non-users; compute coverage per group; run linear regression of coverage on substance indicator controlling for time of day (circadian phase), baseline stress (pre-task HRV), age; test coefficient significance.",
+      "statistical_testability_notes": "Collect self-report within 2h before recording; if unavailable, use metabolite assays; ensure at least 10 users and 10 non-users."
+    },
+    {
+      "hypothesis_id": "H10",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Edge effects from fixed-window feature extraction are expected to produce a moderate impact on coverage for short bouts.",
+      "minimum_data_needed": [
+        "window length (s)",
+        "stress bout duration (s) per bout",
+        "empirical coverage for bouts < window length",
+        "empirical coverage for bouts >= window length",
+        "average prediction interval width per bout duration bin",
+        "label ambiguity score (inter-annotator disagreement)",
+        "bout duration variance",
+        "feature extraction method type"
+      ],
+      "testable_prediction": "Shorter bout length relative to window leads to lower empirical coverage (negative direction).",
+      "failure_condition": "If after controlling for label ambiguity, bout duration variance, and feature extraction method, the association between bout duration/window ratio and coverage is not significant.",
+      "statistical_test_plan": "Compute bout duration and window length; compute coverage per bout; run linear regression of coverage on bout duration/window ratio controlling for label ambiguity score, bout duration variance, feature method type; test significance; additionally compare coverage between short bouts (< window) and long bouts (>= window) using independent-samples t-test.",
+      "statistical_testability_notes": "Stress bouts defined by annotation epochs; fixed window length used for feature extraction (e.g., 10s); ensure sufficient number of short and long bouts (>15 each)."
+    }
+  ]
+}

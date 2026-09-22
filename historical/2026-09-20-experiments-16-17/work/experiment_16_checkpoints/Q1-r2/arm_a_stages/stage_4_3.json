@@ -1,0 +1,172 @@
+{
+  "statistical_testability_builds": [
+    {
+      "hypothesis_id": "H1",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the distribution of sympathetic reactivity indices in WESAD and the magnitude of coverage deficit for high-reactivity subjects. Need subject-level EDA peak amplitude normalized to baseline, HRV reactivity (RMSSD change), and per-subject empirical coverage at nominal 90% to compute correlation and estimate Cohen's d or Pearson's r.",
+      "minimum_data_needed": [
+        "Subject-level sympathetic reactivity index (EDA peak amplitude normalized to baseline per stressor) for all WESAD subjects",
+        "Subject-level HRV reactivity (RMSSD change from baseline to stressor peak)",
+        "Per-subject empirical coverage rate at nominal 90% for Mondrian conformal predictor with age×sex strata",
+        "Stratum assignment (age group × sex) for each subject",
+        "Calibration set conformity score distribution parameters (mean, variance, 5th percentile) per stratum"
+      ],
+      "testable_prediction": "Subjects with sympathetic reactivity index >2 SD above their stratum mean will show coverage deficit (nominal - empirical coverage) >10 percentage points, with a positive correlation (r > 0.4) between reactivity index and coverage deficit across all subjects.",
+      "failure_condition": "No significant correlation (p > 0.05) between reactivity index and coverage deficit after controlling for stratum, or high-reactivity subjects (>2 SD) show coverage deficit <5 percentage points.",
+      "statistical_test_plan": "1. Compute subject-level reactivity indices from WESAD baseline-corrected EDA/HRV during TSST and fun stressor. 2. Fit Mondrian conformal predictor with age×sex strata, compute per-subject empirical coverage at 90% nominal. 3. Regress coverage deficit on reactivity index (continuous) with stratum fixed effects. 4. Test correlation via Pearson's r and linear mixed model (reactivity as fixed, stratum as random). 5. Compare coverage for high-reactivity (>2 SD) vs. typical subjects using two-sample t-test. 6. Validate with KS test on p-value uniformity for high-reactivity subgroup.",
+      "statistical_testability_notes": "Use WESAD's multiple stress-rest cycles. Control for stressor type (TSST vs. fun) as covariate. If reactivity distribution is skewed, use rank correlation. Minimum 15 subjects per stratum for reliable quantile estimation."
+    },
+    {
+      "hypothesis_id": "H2",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on subject-specific motion-artifact coupling coefficients and their correlation with coverage deficit. Need per-subject ACC magnitude during stress, BVP/EDA signal quality indices, and coverage rates to estimate the slope of coverage deficit on coupling coefficient.",
+      "minimum_data_needed": [
+        "ACC vector magnitude (g) during stress periods for each subject",
+        "BVP signal quality index (SQI, 0-1) during stress and calibration periods",
+        "EDA-ACC cross-correlation at lag 0 during stress",
+        "Subject-specific motion-artifact coupling coefficient (slope of SQI on ACC during stress, from mixed model)",
+        "Per-subject empirical coverage at nominal 90%",
+        "Calibration period ACC magnitude (baseline) for each subject"
+      ],
+      "testable_prediction": "Subjects with motion-artifact coupling coefficient >0.5 (SQI drop per g ACC) will show coverage deficit >15 percentage points when test-period ACC magnitude exceeds 90th percentile of their baseline, while subjects with coupling <0.2 will show deficit <5 points under same ACC magnitude.",
+      "failure_condition": "Coverage deficit does not correlate with coupling coefficient (p > 0.05) after controlling for raw ACC magnitude, or high-coupling subjects maintain coverage >85% at high ACC.",
+      "statistical_test_plan": "1. Compute per-subject motion-artifact coupling coefficient via linear mixed model: SQI ~ ACC + (1|subject) during stress windows. 2. Bin subjects by coupling coefficient tertiles. 3. Within each tertile, regress coverage deficit on test-period ACC magnitude. 4. Test interaction between coupling tertile and ACC magnitude on coverage deficit via ANOVA. 5. Compare coverage for high-coupling vs. low-coupling subjects at matched high ACC levels using propensity score matching. 6. Validate with SHAP values on motion-contaminated channels.",
+      "statistical_testability_notes": "WESAD provides synchronized ACC, BVP, EDA at 32/64/4 Hz. Define stress windows from protocol timestamps. Use calibration period (rest) as low-motion reference. Minimum 20 subjects per coupling tertile for interaction test."
+    },
+    {
+      "hypothesis_id": "H3",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the distribution of physiological recovery time constants (tau_EDA, tau_HRV) and their impact on effective sample size (n_eff/n ratio). Need per-subject exponential recovery fits, conformity score autocorrelations, and coverage deficits to quantify the relationship.",
+      "minimum_data_needed": [
+        "EDA recovery time constant (tau_EDA, seconds) from exponential fit to post-stressor decay for each subject",
+        "HRV recovery time constant (tau_HRV, seconds) from RMSSD recovery curve",
+        "Conformity score autocorrelation at lags 1-10 for each subject",
+        "Effective sample size ratio (n_eff/n) computed from autocorrelation sum",
+        "Per-subject coverage deficit (nominal 90% - empirical coverage)",
+        "Inter-trial interval durations for each stress-rest cycle"
+      ],
+      "testable_prediction": "Subjects with tau_EDA >60 seconds will have n_eff/n ratio <0.3 and coverage deficit >12 percentage points, while subjects with tau_EDA <20 seconds will have n_eff/n >0.7 and deficit <3 points. Negative correlation between tau_EDA and n_eff/n (r < -0.5).",
+      "failure_condition": "No significant correlation between recovery time constant and n_eff/n ratio (p > 0.05), or block bootstrap calibration (block length = 2×tau) does not restore coverage for slow recoverers to within 3% of nominal.",
+      "statistical_test_plan": "1. Fit exponential recovery models to post-stressor EDA/HRV for each subject and stressor. 2. Compute conformity score autocorrelation function (lags 1-10) per subject. 3. Calculate n_eff = n / (1 + 2*sum_{k=1}^{10} rho_k). 4. Regress coverage deficit on tau_EDA and tau_HRV with stressor as random effect. 5. Compare standard Mondrian coverage vs. block bootstrap coverage (block length = 2×tau) for slow (tau>60s) vs. fast (tau<20s) recoverers using paired t-test. 6. Test if non-overlapping windows eliminate deficit for fast but not slow recoverers.",
+      "statistical_testability_notes": "WESAD has multiple stress-rest cycles with varying inter-trial intervals. Use only cycles with interval >5×tau for clean recovery measurement. Minimum 5 stress cycles per subject for reliable tau estimation."
+    },
+    {
+      "hypothesis_id": "H4",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the magnitude of label bias (self-report vs. physiological arousal) and its differential impact on coverage. Need per-subject VAS ratings, physiological arousal index, and coverage rates to estimate the coverage improvement after physiological relabeling.",
+      "minimum_data_needed": [
+        "Self-report VAS stress rating (0-10) after each condition for each subject",
+        "Physiological arousal index (first PC of standardized EDA peak, HRV drop, HR increase) per condition",
+        "Label bias score (VAS - predicted arousal from physiological index, standardized) per subject",
+        "Per-subject empirical coverage at nominal 90%",
+        "Conformity score distribution for 'stress' class per subject",
+        "Calibration set labels (original and physiologically relabeled)"
+      ],
+      "testable_prediction": "Strong under-reporters (label bias < -1 SD) will show coverage deficit >15 percentage points; after relabeling calibration samples using physiological arousal threshold (top 30% = stress), their coverage will increase by >15 points while accurate reporters (|bias| < 0.5 SD) change by <3 points.",
+      "failure_condition": "Physiological relabeling does not significantly improve coverage for under-reporters (paired t-test p > 0.05, mean improvement <5 points), or label bias does not correlate with coverage deficit (p > 0.05).",
+      "statistical_test_plan": "1. Compute physiological arousal index per condition from EDA/HRV/HR. 2. Calculate label bias = VAS - normalized arousal per subject. 3. Define physiological labels: arousal >75th percentile = stress. 4. Recalibrate Mondrian predictor with physiological labels. 5. Compare coverage before/after relabeling for under-reporters (bias < -1 SD), accurate reporters (|bias| < 0.5 SD), and over-reporters (bias > 1 SD) using paired t-tests. 6. Test correlation between label bias and coverage deficit via linear regression. 7. Validate with KS test on conformity score distributions for stress class between bias groups.",
+      "statistical_testability_notes": "WESAD includes VAS after each condition. Use resting baseline to normalize arousal. Control for stressor type. Minimum 10 subjects per bias tertile for group comparisons."
+    },
+    {
+      "hypothesis_id": "H5",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the variance of continuous physiological phenotypes (baseline HRV, BRS) within demographic strata and their relationship to coverage deficit. Need baseline HRV/BRS, demographic strata assignments, and coverage per phenotype quantile to estimate the U-shaped effect.",
+      "minimum_data_needed": [
+        "Baseline HRV (RMSSD, ms, 5-min resting) for each subject",
+        "Baroreflex sensitivity (BRS, ms/mmHg, sequence method) for each subject",
+        "Demographic stratum assignment (age group × sex) for each subject",
+        "Within-stratum conformity score variance for stress class",
+        "Per-subject empirical coverage at nominal 90%",
+        "Physiological phenotype cluster assignments (k-means on baseline features)"
+      ],
+      "testable_prediction": "Subjects >2 SD from their demographic stratum centroid on baseline HRV will show coverage deficit >10 percentage points, with a U-shaped relationship (quadratic term p < 0.01). Data-driven physiological clustering (k=4-6) will reduce coverage deficit for extreme phenotypes by >50% compared to demographic strata.",
+      "failure_condition": "No U-shaped relationship between baseline HRV and coverage deficit within strata (quadratic term p > 0.05), or physiological clustering does not improve coverage for extreme phenotypes (improvement <3 points).",
+      "statistical_test_plan": "1. Compute baseline HRV and BRS from WESAD resting period. 2. Assign demographic strata (age median split × sex). 3. Plot coverage vs. HRV quantile within each stratum; fit quadratic regression. 4. Perform k-means clustering (k=4-6) on [HRV, BRS, resting HR]. 5. Compute coverage per physiological cluster. 6. Compare coverage deficit for subjects >2 SD from demographic centroid: demographic strata vs. physiological clusters using paired t-test. 7. Calculate variance explained by phenotype vs. stratum via ANOVA.",
+      "statistical_testability_notes": "BRS estimation requires continuous BP; WESAD has only BVP. Use pulse transit time or HRV-based BRS proxy if BP unavailable. Minimum 15 subjects per physiological cluster for stable coverage estimates."
+    },
+    {
+      "hypothesis_id": "H6",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on SCL drift rates and their correlation with conformity score drift and coverage decline over time. Need per-subject SCL drift rates, conformity score time trends, and early vs. late coverage to estimate the effect.",
+      "minimum_data_needed": [
+        "Skin conductance level (SCL) drift rate (µS/min, linear slope over recording) per subject",
+        "Baseline SCL (µS, mean during first 5 min rest)",
+        "Conformity score drift (slope of conformity score vs. time during test phase) per subject",
+        "Coverage in early test period (first 30% of test windows) and late test period (last 30%) per subject",
+        "Mean ACC during recording (proxy for electrode movement)",
+        "Recording duration and timestamps for each subject"
+      ],
+      "testable_prediction": "Subjects with baseline SCL >0.5 µS will show >10% coverage drop from early to late test windows; detrending conformity scores (subtracting subject-specific linear time trend) will restore late-window coverage to within 3% of early-window coverage for these subjects.",
+      "failure_condition": "Early vs. late coverage gap for high-SCL subjects is <5%, or detrending does not improve late-window coverage by >5 points for high-SCL subjects.",
+      "statistical_test_plan": "1. Compute SCL per 1-min window from WESAD EDA (4 Hz). 2. Fit linear drift model per subject; extract slope (µS/min). 3. Split test windows into early (first 30%) and late (last 30%). 4. Compute coverage per period per subject. 5. Regress early-late coverage gap on baseline SCL and drift rate. 6. Fit conformity score ~ time per subject; subtract trend to detrend. 7. Recompute coverage with detrended scores; compare early vs. late for high-SCL (baseline >0.5 µS) vs. low-SCL subjects using mixed ANOVA. 8. Test if drift rate mediates coverage gap via mediation analysis.",
+      "statistical_testability_notes": "WESAD recording ~2 hours. Ensure calibration phase is early, test phase later. Control for movement via ACC. Minimum 30 test windows per subject for early/late split."
+    },
+    {
+      "hypothesis_id": "H7",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on feature space density of out-of-distribution subjects and their classifier calibration error (ECE). Need per-subject feature density, ECE, and coverage to estimate the correlation and the improvement from temperature scaling.",
+      "minimum_data_needed": [
+        "Feature space density (mean 5-NN distance in training feature space) per subject",
+        "Subject-level Expected Calibration Error (ECE) on calibration set",
+        "Conformity score (softmax margin) per test window",
+        "p-value for true stress label per test window",
+        "Per-subject empirical coverage at nominal 90%",
+        "Temperature scaling parameter (T) learned on calibration set"
+      ],
+      "testable_prediction": "Subjects with feature density <5th percentile will show coverage deficit >15 percentage points with raw softmax margin; temperature scaling will reduce their deficit to <2% while changing coverage for high-density subjects by <1%.",
+      "failure_condition": "Temperature scaling does not significantly improve coverage for low-density subjects (paired t-test p > 0.05, improvement <5 points), or low-density subjects do not have higher ECE than high-density subjects (p > 0.05).",
+      "statistical_test_plan": "1. Extract WESAD stress classifier features (time/frequency HRV, EDA, TEMP). 2. Compute 5-NN density in training feature space per subject. 3. Estimate per-subject ECE on calibration set. 4. Apply temperature scaling (single T learned on calibration). 5. Compare coverage per density quintile before/after scaling using paired t-tests. 6. Test correlation between feature density and coverage deficit (raw vs. scaled) via linear regression. 7. Plot p-value histograms for true label: low-density vs. high-density subjects; test uniformity with KS test.",
+      "statistical_testability_notes": "Use the same feature set as the original WESAD stress classifier. Ensure calibration set is independent of test set. Minimum 20 subjects in low-density quintile for reliable ECE estimation."
+    },
+    {
+      "hypothesis_id": "H8",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the amplitude of circadian modulation of stress reactivity and its confounding with Mondrian strata. Need recording start times, stress reactivity measures, and coverage per time-of-day bin to fit cosinor model and estimate the sinusoidal effect.",
+      "minimum_data_needed": [
+        "Recording start timestamp for each subject (to compute hours from 7 AM)",
+        "Time of stressor onset relative to recording start",
+        "Stress reactivity (EDA peak amplitude during TSST) per subject",
+        "Per-subject empirical coverage at nominal 90%",
+        "Conformity score distribution parameters per time-of-day bin (2-hour bins)",
+        "Chronotype score (MEQ) if available, or habitual wake time estimate"
+      ],
+      "testable_prediction": "Coverage will show a significant sinusoidal component (cosinor analysis p < 0.05) with nadir at ~16:00 after controlling for hours awake; adding circadian phase (estimated from temperature minimum) as a stratification covariate will improve coverage by >5 points for subjects tested at nadir phase.",
+      "failure_condition": "Cosinor model shows no significant circadian terms (p > 0.05) after controlling for hours awake, or adding time-of-day as a stratum covariate does not improve coverage for any time bin (improvement <2 points).",
+      "statistical_test_plan": "1. Extract recording start timestamps from WESAD; compute hours from 7 AM (typical wake). 2. Bin stressor times into 2-hour windows. 3. Compute coverage per time-of-day bin. 4. Fit cosinor model: coverage ~ cos(2π*t/24) + sin(2π*t/24) + hours_awake. 5. Test significance of circadian terms via F-test. 6. Add time-of-day as additional stratification covariate in Mondrian; compare coverage per bin before/after. 7. Correlate stress reactivity (EDA peak) with time-of-day. 8. If chronotype available, test interaction.",
+      "statistical_testability_notes": "WESAD recordings start at different times; some morning, some afternoon. Ensure sufficient spread across 24h. Minimum 5 subjects per 2-hour bin for coverage estimation."
+    },
+    {
+      "hypothesis_id": "H9",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on stratum sizes in WESAD demographic splits and the coverage deficit for physiologically distinctive subjects in small strata. Need stratum sizes, Mahalanobis distinctiveness, and coverage to estimate the minimum stratum size for target coverage.",
+      "minimum_data_needed": [
+        "Stratum size (n_calibration) for each demographic stratum (age group × sex)",
+        "Physiological distinctiveness (Mahalanobis distance to stratum centroid in feature space) per subject",
+        "Per-subject empirical coverage at nominal 90%",
+        "Effective calibration size (n_eff from autocorrelation correction, H3)",
+        "Stratum centroids and covariance matrices in feature space"
+      ],
+      "testable_prediction": "Strata with n < 20 will show mean coverage deficit >10 percentage points for subjects with distinctiveness >2 SD; pooling small strata (n<20) with nearest larger stratum will raise coverage for distinctive subjects from <80% to >88% (nominal 90%).",
+      "failure_condition": "No correlation between stratum size and coverage deficit for distinctive subjects (p > 0.05), or pooling does not improve coverage for distinctive subjects in small strata (improvement <5 points).",
+      "statistical_test_plan": "1. Compute stratum sizes from WESAD demographic splits. 2. Calculate Mahalanobis distance per subject using calibration feature covariance. 3. Bin subjects by stratum size (n<20, 20-50, >50) and distinctiveness (>2 SD vs. ≤2 SD). 4. Compare coverage across bins via two-way ANOVA. 5. Simulate pooling: merge strata with n<20 to nearest stratum by centroid distance. 6. Bootstrap coverage (1000 reps) for distinctive subjects pre/post pooling. 7. Estimate minimum stratum size achieving ≥85% empirical coverage at 90% nominal via logistic regression of coverage on n_stratum.",
+      "statistical_testability_notes": "WESAD has 15 subjects; demographic strata may be very small. Use leave-one-subject-out for calibration/test splits. Feature space: use same features as classifier. Minimum 5 distinctive subjects per stratum size bin for bootstrap."
+    },
+    {
+      "hypothesis_id": "H10",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the existence of distinct physiological modes within the 'stress' class and their association with coverage deficit. Since WESAD lacks ERQ coping data, we need physiological clustering on stress features to identify modes and test if mode membership predicts coverage deficit.",
+      "minimum_data_needed": [
+        "Stress-period physiological features (EDA peak, HRV drop, HR increase, SCL) per subject per stressor",
+        "Gaussian mixture model (GMM) cluster assignments (BIC-selected k) on stress features",
+        "Autonomic pathway index (cardiac: HR/HRV vs. vascular: EDA/SCL ratio) per subject",
+        "Per-subject empirical coverage at nominal 90%",
+        "Stratum assignment (age group × sex) for each subject",
+        "Silhouette scores for GMM clusters"
+      ],
+      "testable_prediction": "GMM on stress features will select k=2 components (BIC) with silhouette >0.5; subjects in the minority mode (n<30% of stratum) will show >15% coverage deficit vs. majority mode; mode membership will predict coverage deficit in held-out data (AUC >0.7).",
+      "failure_condition": "GMM selects k=1 (BIC), or minority mode subjects do not have significantly lower coverage (p > 0.05, deficit <5 points), or mode membership does not predict coverage deficit in cross-validation (AUC <0.55).",
+      "statistical_test_plan": "1. Extract stress-window features (standardized) for each subject and stressor. 2. Fit GMM with k=1-5; select k via BIC. 3. Compute silhouette score for selected k. 4. Assign mode membership per subject (majority mode across stressors). 5. Compare coverage between modes within each demographic stratum using t-test. 6. Test if mode membership predicts coverage deficit via logistic regression (deficit >10% vs. not). 7. Cross-validate: train mode-coverage model on 80% subjects, test on 20%. 8. If ERQ available in future, correlate mode with ERQ suppression score.",
+      "statistical_testability_notes": "WESAD lacks ERQ; physiological clustering is proxy. Control for stressor type (TSST vs. fun) by including as covariate or stratifying. Minimum 10 subjects per mode per stratum for comparison."
+    }
+  ]
+}

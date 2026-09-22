@@ -1,0 +1,60 @@
+{
+  "falsification_tests": [
+    {
+      "hypothesis_id": "H1",
+      "strongest_falsification_test": "Fake ft H1 (n323) with a specific variable relation.",
+      "failure_condition": "Fake fc H1 (n889) with a specific variable relation.",
+      "minimum_data_needed": "Fake md H1 (n195) with a specific variable relation.",
+      "most_likely_false_positive_risk": "Fake fp H1 (n991) with a specific variable relation.",
+      "most_likely_false_negative_risk": "Fake fn H1 (n400) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H2",
+      "strongest_falsification_test": "Fake ft H2 (n255) with a specific variable relation.",
+      "failure_condition": "Fake fc H2 (n456) with a specific variable relation.",
+      "minimum_data_needed": "Fake md H2 (n968) with a specific variable relation.",
+      "most_likely_false_positive_risk": "Fake fp H2 (n809) with a specific variable relation.",
+      "most_likely_false_negative_risk": "Fake fn H2 (n621) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H5",
+      "strongest_falsification_test": "Fake ft H5 (n433) with a specific variable relation.",
+      "failure_condition": "Fake fc H5 (n200) with a specific variable relation.",
+      "minimum_data_needed": "Fake md H5 (n869) with a specific variable relation.",
+      "most_likely_false_positive_risk": "Fake fp H5 (n450) with a specific variable relation.",
+      "most_likely_false_negative_risk": "Fake fn H5 (n620) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H6",
+      "strongest_falsification_test": "Fake ft H6 (n232) with a specific variable relation.",
+      "failure_condition": "Fake fc H6 (n268) with a specific variable relation.",
+      "minimum_data_needed": "Fake md H6 (n251) with a specific variable relation.",
+      "most_likely_false_positive_risk": "Fake fp H6 (n352) with a specific variable relation.",
+      "most_likely_false_negative_risk": "Fake fn H6 (n244) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H8",
+      "strongest_falsification_test": "Fake ft H8 (n51) with a specific variable relation.",
+      "failure_condition": "Fake fc H8 (n107) with a specific variable relation.",
+      "minimum_data_needed": "Fake md H8 (n982) with a specific variable relation.",
+      "most_likely_false_positive_risk": "Fake fp H8 (n531) with a specific variable relation.",
+      "most_likely_false_negative_risk": "Fake fn H8 (n66) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H9",
+      "strongest_falsification_test": "Fake ft H9 (n658) with a specific variable relation.",
+      "failure_condition": "Fake fc H9 (n920) with a specific variable relation.",
+      "minimum_data_needed": "Fake md H9 (n917) with a specific variable relation.",
+      "most_likely_false_positive_risk": "Fake fp H9 (n74) with a specific variable relation.",
+      "most_likely_false_negative_risk": "Fake fn H9 (n659) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H10",
+      "strongest_falsification_test": "Fake ft H10 (n257) with a specific variable relation.",
+      "failure_condition": "Fake fc H10 (n888) with a specific variable relation.",
+      "minimum_data_needed": "Fake md H10 (n707) with a specific variable relation.",
+      "most_likely_false_positive_risk": "Fake fp H10 (n455) with a specific variable relation.",
+      "most_likely_false_negative_risk": "Fake fn H10 (n651) with a specific variable relation."
+    }
+  ]
+}

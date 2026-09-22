@@ -1,0 +1,293 @@
+{
+  "mechanism_builds": [
+    {
+      "hypothesis_id": "H1",
+      "mechanism_variables": [
+        "baseline_RMSSD_ms",
+        "tonic_EDA_uS",
+        "stressor_evoked_HRV_suppression_pct",
+        "EDA_phasic_peak_amplitude_uS",
+        "sensor_noise_floor_HRV_ms",
+        "sensor_noise_floor_EDA_uS",
+        "ANS_reactivity_phenotype_score"
+      ],
+      "causal_path": "ANS_reactivity_phenotype -> physiological_signal_amplitude_relative_to_noise_floor -> signal_to_noise_ratio -> detection_uncertainty",
+      "expected_direction": "High sympathetic/low parasympathetic reactivity phenotype yields larger stress-evoked signal amplitudes relative to sensor noise floors, producing higher SNR and lower detection uncertainty; low reactivity phenotype yields smaller amplitudes, lower SNR, and higher uncertainty.",
+      "domain_specific_boundary_conditions": [
+        "Standardized laboratory stressor (e.g., TSST, cold pressor) with fixed intensity",
+        "Single wearable device model (e.g., Empatica E4) with known noise specifications",
+        "Age 18-65, no cardiovascular medications, no autonomic neuropathy",
+        "Controlled ambient temperature (22-24°C) and humidity (40-60%)",
+        "Minimum 5-min baseline and 5-min recovery recordings"
+      ],
+      "measurable_outcomes": [
+        "Within-subject SNR (dB) for HRV and EDA during stress vs. baseline",
+        "Per-subject classification AUC for stress vs. non-stress",
+        "Expected calibration error (ECE) per subject across probability bins",
+        "Correlation between ANS_reactivity_phenotype_score and per-subject ECE"
+      ],
+      "mechanism_builder_notes": "ANS reactivity phenotype operationalized as composite z-score of baseline RMSSD, stressor-evoked HRV suppression, and EDA phasic reactivity. SNR computed as 20*log10(signal_amplitude/noise_floor). Uncertainty quantified via prediction interval coverage probability and ECE."
+    },
+    {
+      "hypothesis_id": "H2",
+      "mechanism_variables": [
+        "stratum_corneum_hydration_AU",
+        "epidermal_thickness_mm",
+        "subcutaneous_fat_thickness_mm",
+        "hair_density_follicles_per_cm2",
+        "PPG_AC_DC_ratio",
+        "EDA_contact_impedance_kOhm",
+        "signal_quality_index_PPG",
+        "signal_quality_index_EDA"
+      ],
+      "causal_path": "skin_interface_properties -> optical_path_length_and_electrical_impedance -> waveform_attenuation_and_distortion -> feature_extraction_error -> detection_uncertainty",
+      "expected_direction": "Higher stratum corneum hydration reduces EDA contact impedance, improving signal fidelity and lowering uncertainty; greater epidermal thickness and subcutaneous fat reduce PPG AC/DC ratio, increasing feature extraction error and uncertainty; higher hair density increases PPG motion artifact susceptibility, raising uncertainty.",
+      "domain_specific_boundary_conditions": [
+        "Wrist-worn wearable (e.g., Empatica E4, Apple Watch) with standardized sensor placement",
+        "Controlled ambient temperature (22-24°C) and relative humidity (40-60%)",
+        "No dermatological conditions, tattoos, or excessive scarring at sensor site",
+        "Participants refrain from lotions/oils 12h prior; skin cleaned with alcohol wipe per protocol",
+        "Simultaneous reference-grade ECG and lab EDA for ground-truth comparison"
+      ],
+      "measurable_outcomes": [
+        "Correlation (Pearson/Spearman) between each skin property and PPG/EDA signal quality indices",
+        "Per-subject feature extraction RMSE (wearable vs. reference) for HRV and EDA peaks",
+        "Detection AUC stratified by skin property tertiles (low/medium/high)",
+        "Mediation analysis: skin property -> signal quality -> feature error -> AUC"
+      ],
+      "mechanism_builder_notes": "Skin properties measured via corneometer (hydration), 20MHz ultrasound (epidermal/fat thickness), and trichoscopy (hair density). Contact impedance measured at 10Hz via wearable's built-in impedance check. Signal quality indices computed per 1-min window using established algorithms (e.g., PPG SQI from Karlen et al., EDA SQI from Greco et al.)."
+    },
+    {
+      "hypothesis_id": "H3",
+      "mechanism_variables": [
+        "DLMO_time_hhmm",
+        "MEQ_chronotype_score",
+        "social_jetlag_hours",
+        "clock_time_of_measurement_hhmm",
+        "phase_angle_minutes",
+        "resting_RMSSD_ms",
+        "skin_conductance_level_uS",
+        "cortisol_awakening_response_nmol_L",
+        "stress_reactivity_HRV_suppression_pct",
+        "stress_reactivity_EDA_peak_uS"
+      ],
+      "causal_path": "chronotype_and_social_jetlag -> circadian_phase_at_fixed_clock_time -> baseline_autonomic_tone_and_stress_reactivity -> shift_in_stress_signature_distribution -> miscalibration_of_fixed_threshold_algorithms -> detection_uncertainty",
+      "expected_direction": "Greater circadian misalignment (later chronotype measured at early clock time, or larger social jetlag) associates with lower baseline HRV, higher SCL, and blunted stress reactivity at that clock time, compressing dynamic range and increasing false positive rates and uncertainty for fixed-threshold detectors.",
+      "domain_specific_boundary_conditions": [
+        "Laboratory-controlled light exposure (<50 lux evening, >500 lux morning) for 3 days prior",
+        "Fixed measurement schedule across participants (e.g., 08:00, 14:00, 20:00)",
+        "No shift work, transmeridian travel, or melatonin supplementation in prior 30 days",
+        "Age 18-50, regular sleep-wake schedules (actigraphy-verified ±1h)",
+        "Standardized stressor protocol at each measurement timepoint"
+      ],
+      "measurable_outcomes": [
+        "Phase angle (DLMO - measurement time) vs. baseline HRV/SCL linear mixed model slopes",
+        "Per-subject detection sensitivity/specificity at each circadian phase",
+        "Expected calibration error (ECE) as function of phase angle",
+        "Improvement in AUC and ECE when using circadian-phase-aligned vs. clock-time-aligned models"
+      ],
+      "mechanism_builder_notes": "DLMO assessed via hourly saliva sampling under dim light. Phase angle computed as minutes between DLMO and stressor onset. Circadian-phase-aligned models use phase angle as covariate or time-warping. Uncertainty assessed via prediction interval coverage at each phase."
+    },
+    {
+      "hypothesis_id": "H4",
+      "mechanism_variables": [
+        "stressor_exposure_frequency_per_day",
+        "EDA_peak_frequency_peaks_per_min",
+        "HRV_suppression_magnitude_pct",
+        "recovery_time_constant_tau_min",
+        "habituation_rate_slope_per_day",
+        "sensitization_rate_slope_per_day",
+        "deployment_day_index"
+      ],
+      "causal_path": "repeated_stressor_exposure -> individual_habituation_sensitization_trajectory -> nonstationary_drift_in_physiological_signatures -> violation_of_stationarity_assumption -> increasing_prediction_error_over_time -> detection_uncertainty",
+      "expected_direction": "Fast habituators show negative slopes for EDA peak frequency and HRV suppression magnitude over days, causing models trained on early data to overpredict stress later (rising uncertainty); sensitizers show positive slopes, causing underprediction. Both increase time-varying uncertainty.",
+      "domain_specific_boundary_conditions": [
+        "Naturalistic longitudinal study ≥28 days with ≥80% wearable wear time",
+        "Known recurring daily stressors (commuting, work deadlines) identified via EMA/context",
+        "No major life events, medication changes, or illness during deployment",
+        "Wearable: wrist PPG+EDA sampling ≥32Hz; EMA prompts 5x/day for stress labeling",
+        "Minimum 3 stressor exposures per week per participant"
+      ],
+      "measurable_outcomes": [
+        "Within-subject slope of stress-response magnitude (EDA peaks, HRV suppression) over deployment days",
+        "Time-varying AUC computed in 7-day sliding windows",
+        "Prediction interval coverage probability (PICP) over deployment duration",
+        "Comparison of stationary vs. time-varying (e.g., Kalman filter, RNN) model uncertainty calibration"
+      ],
+      "mechanism_builder_notes": "Habituation/sensitization rate estimated via linear mixed model with random slopes per subject. Non-stationarity quantified by Kolmogorov-Smirnov test on rolling feature distributions. Uncertainty tracked via conformal prediction intervals updated daily."
+    },
+    {
+      "hypothesis_id": "H5",
+      "mechanism_variables": [
+        "EMA_response_latency_min",
+        "EMA_response_rate_pct",
+        "TAS20_alexithymia_score",
+        "BFI2_conscientiousness_score",
+        "negative_affect_reporting_bias_score",
+        "label_physiology_alignment_cross_correlation",
+        "label_noise_estimate"
+      ],
+      "causal_path": "subject_traits -> EMA_compliance_and_bias -> label_noise_misaligned_missing -> inflated_residual_variance_in_supervised_learning -> apparent_detection_uncertainty",
+      "expected_direction": "Higher alexithymia (TAS-20) and lower conscientiousness (BFI-2) predict lower EMA response rates, longer latencies, and greater recall bias, producing higher label noise estimates. This inflates residual variance in stress classifiers, manifesting as lower AUC and higher expected calibration error (ECE) for those subgroups.",
+      "domain_specific_boundary_conditions": [
+        "EMA prompts 5x/day for ≥14 days, randomized within 2h windows",
+        "Wearable (PPG+EDA) synchronized with EMA timestamps",
+        "No monetary incentives tied to compliance; compensation fixed",
+        "Adult population (18-65), fluent in study language",
+        "Ground-truth stress labels also obtained via structured interview at study end for validation subset"
+      ],
+      "measurable_outcomes": [
+        "Per-subject label noise estimate via test-retest consistency (subset) or physiological consistency (cross-correlation with wearable features)",
+        "Correlation (Spearman) between trait scores (TAS-20, BFI-2) and label noise estimate",
+        "AUC and ECE before and after label-noise correction (e.g., EM algorithm, noise-robust loss)",
+        "Subgroup analysis: detection performance by alexithymia/conscientiousness tertiles"
+      ],
+      "mechanism_builder_notes": "Label noise estimated using a two-step approach: (1) train initial model on all data, (2) compute per-subject residual variance after accounting for physiological features; high residual variance indicates label noise. Alternatively, use a small clean validation set (structured interview) to estimate noise transition matrix."
+    },
+    {
+      "hypothesis_id": "H6",
+      "mechanism_variables": [
+        "social_presence_binary",
+        "posture_category",
+        "ambient_temperature_C",
+        "cognitive_load_nback_accuracy",
+        "context_specific_HRV_reactivity",
+        "context_specific_EDA_reactivity",
+        "context_exposure_proportion",
+        "context_physiology_coupling_strength"
+      ],
+      "causal_path": "context_exposure_distribution_and_context_physiology_coupling -> hidden_stratification_of_stress_signatures -> single_model_misfit_for_subgroups -> elevated_uncertainty_for_underrepresented_context_physiology_combinations",
+      "expected_direction": "Subjects with high exposure to contexts that elicit distinct physiological patterns (e.g., social evaluation -> high LF/HF HRV; physical threat -> high EDA) but low representation in training data will show higher detection uncertainty. Stronger context-physiology coupling amplifies this effect.",
+      "domain_specific_boundary_conditions": [
+        "Wearable with triaxial accelerometer (posture), temperature sensor, and GPS (social context proxy)",
+        "EMA prompts for context annotation ≥6x/day for ≥14 days",
+        "Minimum 3 distinct context categories with ≥5 stress episodes each per subject",
+        "Stressor types varied (social, cognitive, physical) across study design",
+        "Controlled lab validation session with known context manipulations"
+      ],
+      "measurable_outcomes": [
+        "Context-specific detection AUC (stress vs. non-stress within each context)",
+        "Variance in per-subject AUC explained by context exposure distribution (R^2 from regression)",
+        "Improvement in uncertainty calibration (ECE reduction) with context-conditional models vs. pooled model",
+        "Context-physiology coupling strength: interaction term significance in mixed model (context × stressor on physiology)"
+      ],
+      "mechanism_builder_notes": "Context-physiology coupling quantified as random slope of stressor effect on physiology by context in linear mixed model. Hidden stratification assessed via subgroup AUC disparity (max-min across contexts). Context-conditional models use context as explicit input or mixture-of-experts."
+    },
+    {
+      "hypothesis_id": "H7",
+      "mechanism_variables": [
+        "motion_artifact_burst_rate_per_hour",
+        "EDA_baseline_drift_volatility_SD_of_slope",
+        "HRV_noise_to_signal_ratio",
+        "noise_distribution_kurtosis",
+        "noise_autocorrelation_lag1",
+        "prediction_interval_coverage_probability",
+        "nominal_coverage_level"
+      ],
+      "causal_path": "individual_movement_sweat_vascular_traits -> subject_specific_noise_distribution_heavy_tailed_time_varying_variance -> violation_of_homoscedasticity_assumption -> miscalibrated_prediction_intervals -> uncertainty_quantification_error",
+      "expected_direction": "Higher motion artifact burst rate, greater EDA drift volatility, and heavier-tailed noise distributions (high kurtosis) associate with lower prediction interval coverage probability (e.g., nominal 95% intervals achieve only 80% coverage) and higher sharpness-coverage trade-off error, indicating miscalibrated uncertainty.",
+      "domain_specific_boundary_conditions": [
+        "Wrist-worn PPG+EDA device with fixed artifact detection algorithm",
+        "Controlled activity protocol: 10min sit, 5min walk, 5min run, 10min recovery (repeated 3x)",
+        "≥24h continuous recording in free-living conditions for naturalistic noise assessment",
+        "No sensor repositioning during recording; skin preparation standardized",
+        "Reference ECG and respiratory belt for ground-truth artifact labeling in lab session"
+      ],
+      "measurable_outcomes": [
+        "Per-subject noise distribution parameters: variance, kurtosis, lag-1 autocorrelation, burst rate",
+        "PICP vs. nominal coverage (reliability diagram) for stress probability predictions",
+        "Sharpness (mean prediction interval width) at fixed coverage level",
+        "Calibration improvement (ECE reduction) using heteroscedastic models (quantile regression, Gaussian process with input-dependent noise)"
+      ],
+      "mechanism_builder_notes": "Noise characterized on clean baseline segments (no stressor, minimal motion). Motion artifact bursts defined as >3SD acceleration magnitude for >2s. EDA drift volatility = SD of 5-min tonic slope estimates. Heteroscedastic models compared via proper scoring rules (CRPS, interval score)."
+    },
+    {
+      "hypothesis_id": "H8",
+      "mechanism_variables": [
+        "interoceptive_accuracy_heartbeat_counting_score",
+        "interoceptive_sensibility_MAIA_score",
+        "subjective_stress_EMA_VAS_0_100",
+        "EDA_phasic_peak_amplitude_per_VAS_unit_uS_per_VAS",
+        "HRV_reactivity_per_VAS_unit_pct_per_VAS",
+        "coupling_gain_slope",
+        "detection_AUC_for_subjective_stress"
+      ],
+      "causal_path": "interoceptive_awareness -> coupling_gain_between_central_perception_and_peripheral_autonomic_output -> wearable_signal_informativeness_per_unit_subjective_stress -> detection_reliability_for_subjective_stress",
+      "expected_direction": "Higher interoceptive accuracy (heartbeat counting) predicts steeper coupling gain (larger EDA/HRV change per unit subjective stress VAS), yielding higher signal informativeness and lower detection uncertainty for subjective stress. Low interoceptive accuracy shows decoupling (flat gain), higher uncertainty.",
+      "domain_specific_boundary_conditions": [
+        "Laboratory stressor (e.g., MAST, TSST) with concurrent EMA VAS ratings every 2min",
+        "Validated heartbeat counting task (Schandry) with ≥30 trials, no feedback",
+        "No prior interoceptive training (meditation, biofeedback) in past 6 months",
+        "Age 18-55, no cardiac arrhythmias, no beta-blockers",
+        "Wearable: clinical-grade ECG (for HRV) + wrist EDA, synchronized with EMA"
+      ],
+      "measurable_outcomes": [
+        "Coupling gain slope per subject: linear regression of physiology (EDA peak, HRV suppression) on subjective stress VAS",
+        "Correlation (Pearson) between interoceptive accuracy and coupling gain slope",
+        "AUC for predicting high vs. low subjective stress (median split) stratified by interoceptive accuracy tertile",
+        "Expected calibration error (ECE) for subjective stress probability predictions by interoceptive accuracy group"
+      ],
+      "mechanism_builder_notes": "Coupling gain estimated within-subject across multiple stressor intensities. Interoceptive accuracy = mean absolute error on heartbeat counting (lower = better). MAIA subscales (Noticing, Attention Regulation) analyzed separately. Uncertainty for subjective stress (not just physiological arousal) is the target."
+    },
+    {
+      "hypothesis_id": "H9",
+      "mechanism_variables": [
+        "HRV_recovery_half_life_tau_min",
+        "EDA_recovery_half_life_tau_min",
+        "VO2max_ml_kg_min",
+        "age_years",
+        "autonomic_genetic_risk_score",
+        "epoch_misclassification_rate_at_boundaries",
+        "stressor_offset_time",
+        "epoch_length_min"
+      ],
+      "causal_path": "recovery_kinetics -> temporal_autocorrelation_of_stress_signatures -> smearing_across_epoch_boundaries -> fixed_window_labeling_error -> elevated_boundary_detection_uncertainty",
+      "expected_direction": "Longer autonomic recovery half-life (slower HRV rebound, slower EDA decay) produces greater temporal smearing of stress signatures into post-stress epochs, increasing misclassification rate at stressor boundaries and elevating uncertainty for epoch-level classifiers. Shorter half-life yields sharper boundaries and lower uncertainty.",
+      "domain_specific_boundary_conditions": [
+        "Standardized laboratory stressor with clear, discrete offset (e.g., TSST ends, cold pressor hand removal)",
+        "Fixed epoch length (e.g., 1 min) for labeling and prediction",
+        "Recovery monitoring ≥30 min post-stressor offset",
+        "Controlled physical activity (seated) during recovery; no caffeine/nicotine 4h prior",
+        "Age 18-60, VO2max measured via submaximal test, genotyping for autonomic SNPs"
+      ],
+      "measurable_outcomes": [
+        "Recovery half-life per subject: exponential fit to HRV/EDA recovery curves post-stressor",
+        "Epoch-level confusion matrix at stress→non-stress transition (0-10 min post-offset)",
+        "Boundary detection F1 score vs. recovery half-life (correlation and regression)",
+        "Improvement in boundary F1 and uncertainty calibration using variable-length epochs or smearing-aware models (e.g., HMM with state duration)"
+      ],
+      "mechanism_builder_notes": "Half-life estimated via nonlinear least squares: signal(t) = baseline + amplitude * exp(-t/tau). Smearing quantified as proportion of post-stress epochs (within 2*tau) misclassified as stress. Genetic risk score from GWAS of HRV recovery (e.g., UK Biobank). Models compared: fixed-window CNN vs. semi-Markov CRF."
+    },
+    {
+      "hypothesis_id": "H10",
+      "mechanism_variables": [
+        "ADRB1_Arg389Gly_genotype",
+        "ADRB2_Arg16Gly_genotype",
+        "COMT_Val158Met_genotype",
+        "HRV_stress_reactivity_delta_RMSSD_ms",
+        "EDA_peak_amplitude_uS",
+        "population_allele_frequency",
+        "mixture_model_BIC",
+        "single_Gaussian_BIC",
+        "per_genotype_prediction_RMSE",
+        "per_genotype_ECE"
+      ],
+      "causal_path": "adrenergic_genetic_variant -> catecholamine_binding_affinity_and_clearance -> discrete_subpopulations_with_distinct_physiological_reactivity_distributions -> violation_of_unimodal_Gaussian_assumption -> poor_model_fit_for_minority_genotypes -> inflated_uncertainty_for_subgroups",
+      "expected_direction": "Minority homozygotes (ADRB1 Gly/Gly, ADRB2 Gly/Gly, COMT Met/Met) exhibit blunted or exaggerated HRV/EDA stress reactivity relative to majority homozygotes, creating bimodal/reactivity distributions. Single Gaussian-assumption models fit majority well but show higher prediction RMSE and expected calibration error (ECE) for minority genotypes.",
+      "domain_specific_boundary_conditions": [
+        "Genotyped cohort ≥500 participants of homogeneous ancestry (e.g., European) to avoid population stratification",
+        "Standardized laboratory stressor (TSST) with wearable PPG+EDA",
+        "No beta-blockers, alpha-agonists, or psychiatric medications affecting autonomic function",
+        "Age 18-55, balanced sex distribution",
+        "Hardy-Weinberg equilibrium verified for each SNP"
+      ],
+      "measurable_outcomes": [
+        "Mixture model (2-3 components) vs. single Gaussian BIC for HRV reactivity and EDA amplitude distributions",
+        "Per-genotype prediction RMSE and ECE from stress classifier trained on full cohort",
+        "Allele-frequency-weighted population uncertainty metric",
+        "Subgroup analysis: detection performance (AUC, ECE) by genotype group (homozygous major, heterozygous, homozygous minor)"
+      ],
+      "mechanism_builder_notes": "Genotypes determined via TaqMan assay or array. Reactivity phenotypes residualized for age, sex, BMI, fitness. Mixture models fitted via EM algorithm; component count selected by BIC. Uncertainty inflation for minority genotypes quantified as ratio of per-genotype ECE to overall ECE. Power analysis confirms detectable effect sizes (Cohen's d ≥0.5) at given allele frequencies."
+    }
+  ]
+}

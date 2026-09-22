@@ -1,0 +1,411 @@
+{
+  "sample_index": 6,
+  "valid": true,
+  "error": null,
+  "cards": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Subjects with high baseline heart rate variability (HRV) exhibit non-exchangeable residuals because their autonomic flexibility violates the i.i.d. assumption within Mondrian taxonomy bins defined by stress condition labels.",
+      "proposed_mechanism": "High baseline HRV subjects show greater within-condition physiological variability, causing residual distributions to have heavier tails than assumed by the conformal quantile estimator, leading to systematic undercoverage when taxonomy bins pool high- and low-HRV subjects together.",
+      "causal_path": "High baseline RMSSD → increased within-condition residual variance → heavier-tailed residual distribution in Mondrian bin → conformal quantile underestimates true quantile → undercoverage",
+      "mechanism_variables": [
+        "baseline_RMSSD_ms",
+        "within_condition_residual_variance",
+        "conformal_quantile_estimate",
+        "empirical_coverage"
+      ],
+      "possible_confounders": [
+        "age",
+        "fitness_level",
+        "medication_use",
+        "caffeine_intake"
+      ],
+      "control_variables": [
+        "stress_condition_label",
+        "sensor_placement",
+        "time_of_day",
+        "baseline_duration"
+      ],
+      "rival_explanation": "Undercoverage is caused by sensor noise artifacts that correlate with high HRV subjects due to movement during baseline recording.",
+      "rival_prediction": "If sensor noise is the cause, undercoverage should correlate with accelerometer variance during baseline, not with RMSSD itself.",
+      "distinguishing_test": "Regress per-subject coverage gap against baseline RMSSD while controlling for baseline accelerometer RMS; significant RMSSD coefficient after controlling for motion supports proposed mechanism.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Prior work shows HRV explains 15-25% of variance in stress response magnitude; expect similar magnitude for coverage gaps.",
+      "minimum_data_needed": [
+        "Per-subject baseline ECG for RMSSD computation",
+        "Per-subject conformal prediction intervals and true labels for each test point",
+        "Baseline accelerometer data for motion artifact control"
+      ],
+      "testable_prediction": "Subjects with baseline RMSSD > 50ms will show coverage at least 5 percentage points below nominal level, while subjects with RMSSD < 30ms will achieve nominal coverage.",
+      "failure_condition": "No significant correlation between baseline RMSSD and per-subject coverage gap after controlling for motion artifacts (p > 0.05).",
+      "statistical_test_plan": "Linear mixed-effects model: coverage_gap ~ baseline_RMSSD + baseline_accel_RMS + (1|subject), with Kenward-Roger df approximation; one-sided test for RMSSD coefficient < 0.",
+      "falsification_test": "Stratify Mondrian taxonomy by baseline HRV tertiles (low/medium/high) and recompute conformal intervals within each stratum; if undercoverage persists in high-HRV stratum, mechanism is falsified because exchangeability should hold within stratum."
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Chest-worn ECG electrode impedance drift during prolonged stress tasks causes non-stationary signal quality that systematically biases residual distributions for subjects with high sweat rates.",
+      "proposed_mechanism": "Sweat accumulation under chest electrodes reduces contact impedance non-linearly, causing progressive ECG signal degradation (increased R-peak detection errors) during stress condition, which inflates feature extraction errors and shifts residual distribution rightward for high-sweat subjects.",
+      "causal_path": "High sweat rate → electrode impedance drift → increased R-peak detection error → inflated HRV feature noise → right-shifted residual distribution → conformal intervals too narrow → undercoverage",
+      "mechanism_variables": [
+        "sweat_rate_estimate",
+        "electrode_impedance_trend",
+        "R_peak_detection_error_rate",
+        "HRV_feature_noise",
+        "residual_distribution_shift",
+        "coverage_gap"
+      ],
+      "possible_confounders": [
+        "ambient_temperature",
+        "humidity",
+        "chest_hair_density",
+        "electrode_gel_type"
+      ],
+      "control_variables": [
+        "stress_condition_duration",
+        "baseline_skin_preparation",
+        "electrode_brand",
+        "subject_BMI"
+      ],
+      "rival_explanation": "Undercoverage for high-sweat subjects is due to physiological non-stationarity (true HRV changes) not measurement artifact.",
+      "rival_prediction": "If physiological, wrist PPG (less affected by chest sweat) should show similar undercoverage pattern; if artifact, wrist PPG coverage should be nominal.",
+      "distinguishing_test": "Compare coverage gaps between chest-ECG-derived and wrist-PPG-derived features for same subjects; significant difference (chest worse than wrist) supports artifact mechanism.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Electrode impedance can change 2-5x during heavy sweating; R-peak detection error rates can exceed 10% in degraded signals, causing large feature distortions.",
+      "minimum_data_needed": [
+        "Chest ECG raw signal with impedance/timestamp annotations",
+        "Wrist PPG raw signal synchronized to same timeline",
+        "Per-subject sweat proxy (e.g., EDA tonic level or temperature rise)",
+        "R-peak annotations or automated detection confidence scores"
+      ],
+      "testable_prediction": "Subjects in top quartile of EDA tonic increase during stress will show chest-ECG coverage ≥10pp below nominal, while wrist-PPG coverage for same subjects remains within 2pp of nominal.",
+      "failure_condition": "Chest-ECG and wrist-PPG coverage gaps are statistically indistinguishable for high-sweat subjects (paired t-test p > 0.05).",
+      "statistical_test_plan": "Paired Wilcoxon signed-rank test comparing per-subject coverage gap (chest vs wrist) for high-sweat subgroup (top EDA quartile); Bonferroni-corrected alpha = 0.025.",
+      "falsification_test": "Re-run conformal prediction using only features from first 60 seconds of stress condition (before significant sweat accumulation); if undercoverage persists, sweat artifact mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "The Mondrian taxonomy based on discrete condition labels (baseline/stress/amusement) fails to capture continuous physiological arousal trajectories, causing undercoverage for subjects with delayed or prolonged stress recovery.",
+      "proposed_mechanism": "Subjects with slow cortisol-mediated recovery remain in elevated arousal state during post-stress baseline periods, but taxonomy assigns them to 'baseline' bin; their residuals follow stress-condition distribution while conformal quantile uses baseline-condition distribution, causing undercoverage.",
+      "causal_path": "Slow cortisol recovery → prolonged physiological arousal during nominal baseline → residual distribution matches stress condition → Mondrian bin (baseline label) uses wrong quantile → intervals too narrow → undercoverage",
+      "mechanism_variables": [
+        "cortisol_recovery_slope",
+        "post_stress_arousal_index",
+        "taxonomy_bin_label",
+        "residual_distribution_mismatch",
+        "conformal_quantile_error",
+        "coverage_gap"
+      ],
+      "possible_confounders": [
+        "time_since_stressor_offset",
+        "individual_cortisol_baseline",
+        "oral_contraceptive_use",
+        "chronic_stress_level"
+      ],
+      "control_variables": [
+        "stress_condition_intensity",
+        "baseline_duration",
+        "sampling_rate",
+        "feature_set"
+      ],
+      "rival_explanation": "Undercoverage is due to label noise in condition annotations (mislabeling of transition periods), not continuous arousal mismatch.",
+      "rival_prediction": "If label noise, coverage gaps should be symmetric around condition transitions; if continuous arousal, gaps should correlate with individual recovery metrics and be asymmetric (worse post-stress).",
+      "distinguishing_test": "Compute coverage gap separately for pre-stress baseline, stress, and post-stress baseline periods; test for interaction between period and individual recovery slope.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Cortisol recovery half-life varies 20-60 min across individuals; expect 5-15pp coverage gap for slow recoverers in post-stress baseline.",
+      "minimum_data_needed": [
+        "Continuous condition labels with precise transition timestamps",
+        "Per-subject cortisol or salivary alpha-amylase recovery measurements",
+        "Per-timepoint conformal intervals and true labels",
+        "Physiological features at high temporal resolution (≤1Hz)"
+      ],
+      "testable_prediction": "Subjects with cortisol recovery half-life > 40 min will show ≥8pp undercoverage in post-stress baseline period but nominal coverage in pre-stress baseline.",
+      "failure_condition": "No significant difference in coverage gap between pre-stress and post-stress baseline periods for slow recoverers (paired test p > 0.05).",
+      "statistical_test_plan": "Linear mixed model: coverage_gap ~ period * cortisol_recovery_half_life + (1|subject); test interaction term significance.",
+      "falsification_test": "Replace discrete taxonomy with continuous arousal index (e.g., EDA tonic level) as Mondrian binning variable; if undercoverage disappears for slow recoverers, original taxonomy mechanism is confirmed; if undercoverage persists, mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Subjects with high respiratory sinus arrhythmia (RSA) amplitude exhibit phase-dependent HRV feature extraction errors that correlate with respiration rate, violating exchangeability within Mondrian bins stratified only by condition.",
+      "proposed_mechanism": "High RSA amplitude causes R-R interval modulation at respiration frequency; when respiration rate varies within a condition, time-domain HRV features (e.g., SDNN) computed over fixed windows have respiration-rate-dependent bias, creating heterogeneous residual distributions within the same taxonomy bin.",
+      "causal_path": "High RSA amplitude → respiration-rate-dependent HRV feature bias → within-bin residual heterogeneity → conformal quantile averages over heterogeneous distribution → intervals miscalibrated for extreme respiration rates → undercoverage",
+      "mechanism_variables": [
+        "RSA_amplitude_ms",
+        "respiration_rate_bpm",
+        "HRV_feature_bias",
+        "within_bin_residual_variance",
+        "conformal_quantile_bias",
+        "coverage_gap"
+      ],
+      "possible_confounders": [
+        "breathing_pattern_irregularity",
+        "lung_capacity",
+        "posture",
+        "speech_during_task"
+      ],
+      "control_variables": [
+        "condition_label",
+        "window_length",
+        "feature_type",
+        "ECG_sampling_rate"
+      ],
+      "rival_explanation": "Undercoverage is due to general non-stationarity of HRV during stress, not specifically RSA-respiration interaction.",
+      "rival_prediction": "If general non-stationarity, coverage gap should correlate with overall HRV variance; if RSA-specific, gap should correlate with RSA amplitude * respiration rate variability interaction.",
+      "distinguishing_test": "Fit model: coverage_gap ~ RSA_amplitude * respiration_rate_CV + total_HRV_variance; significant interaction term with non-significant main effect of total_HRV_variance supports RSA mechanism.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "RSA amplitude typically 20-100ms; respiration rate CV ~10-30%; expected feature bias ~2-5ms SDNN, translating to ~3-5pp coverage gap.",
+      "minimum_data_needed": [
+        "ECG and respiration signals synchronized",
+        "Per-window RSA amplitude estimate (e.g., peak-valley method)",
+        "Per-window respiration rate and its coefficient of variation",
+        "Per-subject per-window conformal intervals and coverage outcomes"
+      ],
+      "testable_prediction": "Subjects with RSA amplitude > 60ms and respiration rate CV > 0.25 will show coverage ≥4pp below nominal; subjects with low RSA or stable respiration will achieve nominal coverage.",
+      "failure_condition": "RSA amplitude × respiration rate CV interaction term not significant (p > 0.05) in predicting coverage gap.",
+      "statistical_test_plan": "Beta regression for coverage proportion (bounded 0-1) with predictors: RSA_amplitude, respiration_rate_CV, interaction, total_HRV_variance; robust SEs clustered by subject.",
+      "falsification_test": "Recompute HRV features using respiration-gated averaging (features computed per respiratory cycle then averaged); if undercoverage disappears for high-RSA subjects, mechanism confirmed; if persists, mechanism falsified."
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "The WESAD ground truth labels for stress condition contain systematic mislabeling for subjects who self-report low stress despite physiological arousal (dissociative responders), causing conformal prediction to learn incorrect residual distributions.",
+      "proposed_mechanism": "Dissociative responders show high physiological arousal (high EDA, low HRV) but self-report low stress; WESAD labels use condition protocol (stress task = stress label) not self-report; model learns residuals from 'stress' label but true state is 'high arousal low appraisal', creating distribution shift at test time for these subjects.",
+      "causal_path": "Dissociative response pattern → protocol label (stress) ≠ true psychological state → training residuals reflect mixed states → conformal quantile estimates wrong conditional distribution → undercoverage for dissociative subjects at test time",
+      "mechanism_variables": [
+        "self_report_stress_score",
+        "physiological_arousal_index",
+        "label_state_mismatch",
+        "training_residual_distribution",
+        "test_residual_distribution",
+        "coverage_gap"
+      ],
+      "possible_confounders": [
+        "alexithymia_score",
+        "trauma_history",
+        "meditation_experience",
+        "demand_characteristics"
+      ],
+      "control_variables": [
+        "stress_protocol_condition",
+        "physiological_feature_set",
+        "model_architecture",
+        "calibration_set_size"
+      ],
+      "rival_explanation": "Undercoverage for these subjects is due to their physiological responses being genuinely atypical (outliers), not label mismatch.",
+      "rival_prediction": "If outliers, their residuals should be extreme in both training and test; if label mismatch, their training residuals should appear normal (since label matches protocol) but test residuals shift when true state differs.",
+      "distinguishing_test": "Compare training vs test residual distributions for dissociative vs non-dissociative subjects; label mismatch predicts training residuals normal but test residuals shifted for dissociative group only.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Dissociative responders ~15-20% of population; label mismatch could cause 10-20pp coverage gap if physiological state differs substantially from protocol label.",
+      "minimum_data_needed": [
+        "Per-subject self-report stress ratings (VAS or SAM) for each condition",
+        "Protocol condition labels",
+        "Per-subject per-timepoint residuals from trained model",
+        "Physiological arousal composite (EDA + HRV) per timepoint"
+      ],
+      "testable_prediction": "Subjects with physiological arousal > 75th percentile but self-report stress < 25th percentile during stress condition will show test coverage ≥10pp below nominal, while training coverage appears nominal.",
+      "failure_condition": "No significant difference in test coverage between dissociative and non-dissociative groups (p > 0.05).",
+      "statistical_test_plan": "Define dissociative group: physiological_arousal > Q3 AND self_report < Q1 during stress condition. Two-sample Kolmogorov-Smirnov test comparing test residual distributions between groups; also compare coverage proportions via Fisher's exact test.",
+      "falsification_test": "Retrain model using self-report labels instead of protocol labels for calibration set; if undercoverage disappears for dissociative subjects, label mismatch mechanism confirmed; if persists, mechanism falsified."
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Mondrian taxonomy bins defined by condition labels have highly imbalanced calibration sample sizes across subjects, causing high-variance quantile estimates for underrepresented subjects that systematically undercover due to finite-sample bias.",
+      "proposed_mechanism": "Some subjects contribute few calibration points to their condition-specific Mondrian bins (due to short condition duration or data quality exclusions); the conformal quantile estimator (empirical quantile) has upward bias in small samples, but the bias correction is not applied, leading to intervals that are too narrow on average for these subjects.",
+      "causal_path": "Low calibration sample size per subject per bin → finite-sample bias in empirical quantile estimator → conformal quantile systematically underestimated → prediction intervals too narrow → undercoverage",
+      "mechanism_variables": [
+        "calibration_sample_size_per_subject_per_bin",
+        "empirical_quantile_bias",
+        "conformal_interval_width",
+        "empirical_coverage"
+      ],
+      "possible_confounders": [
+        "subject_dropout",
+        "signal_quality_exclusions",
+        "condition_duration_variability",
+        "sensor_failure"
+      ],
+      "control_variables": [
+        "nominal_coverage_level",
+        "quantile_estimator_type",
+        "feature_dimension",
+        "model_complexity"
+      ],
+      "rival_explanation": "Undercoverage for low-sample subjects is due to their physiological uniqueness (true distribution shift), not estimation bias.",
+      "rival_prediction": "If estimation bias, coverage gap should correlate with calibration sample size and disappear with bias-corrected quantile estimator; if true shift, coverage gap persists regardless of sample size or estimator.",
+      "distinguishing_test": "Recompute conformal intervals using bias-corrected quantile estimator (e.g., bootstrap bias correction or analytical correction); compare coverage gaps before/after for low-sample subjects.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Finite-sample bias for empirical quantile at 90% level with n=20 is ~2-3pp; with n=10 can be 5-8pp. WESAD calibration sets per subject per condition ~50-200 points.",
+      "minimum_data_needed": [
+        "Per-subject per-condition calibration sample sizes",
+        "Per-subject coverage at nominal level",
+        "Raw conformity scores for each calibration point",
+        "Ability to recompute quantiles with alternative estimators"
+      ],
+      "testable_prediction": "Subjects with calibration sample size < 30 per condition will show coverage gap negatively correlated with sample size (r < -0.4); bias-corrected estimator will reduce gap by ≥50%.",
+      "failure_condition": "Bias-corrected quantile estimator does not significantly improve coverage for low-sample subjects (paired test p > 0.05).",
+      "statistical_test_plan": "Spearman correlation between per-subject calibration sample size and coverage gap; linear regression: coverage_gap ~ 1/sqrt(n_calibration) + subject_random_effect; test slope < 0.",
+      "falsification_test": "Pool calibration data across all subjects (ignoring Mondrian taxonomy) to maximize sample size; if undercoverage persists for same subjects, finite-sample bias mechanism is falsified (problem is not sample size but distribution shift)."
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Wrist-worn accelerometer data reveals that subjects with high non-specific movement during stress condition (fidgeting, posture changes) have contaminated PPG/EDA signals that increase feature noise heterogeneously, violating exchangeability within condition bins.",
+      "proposed_mechanism": "Movement artifacts affect PPG (motion artifacts) and EDA (motion-induced sweat spread) differently across subjects; high-movement subjects have inflated feature variance that is not captured by condition-label taxonomy, causing residual distribution heterogeneity within bins and undercoverage for high-movement subjects.",
+      "causal_path": "High movement intensity → PPG motion artifacts + EDA artifact spread → increased feature extraction noise → inflated residual variance within condition bin → conformal quantile underestimates true variability → undercoverage",
+      "mechanism_variables": [
+        "wrist_accel_magnitude_RMS",
+        "PPG_signal_quality_index",
+        "EDA_artifact_rate",
+        "feature_noise_variance",
+        "residual_variance",
+        "coverage_gap"
+      ],
+      "possible_confounders": [
+        "wrist_circumference",
+        "device_fit_tightness",
+        "skin_tone",
+        "ambient_light"
+      ],
+      "control_variables": [
+        "condition_label",
+        "sensor_sampling_rate",
+        "feature_extraction_pipeline",
+        "model_type"
+      ],
+      "rival_explanation": "Undercoverage is due to movement being a genuine stress response (psychomotor agitation), not measurement artifact.",
+      "rival_prediction": "If genuine response, movement should correlate with self-report stress and physiological arousal; if artifact, movement should correlate with signal quality indices but not necessarily with self-report.",
+      "distinguishing_test": "Test whether movement predicts coverage gap after controlling for self-report stress and physiological arousal; significant movement effect after controls supports artifact mechanism.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Movement artifacts can increase HRV feature error by 2-5x; expect 5-15pp coverage gap for high-movement subjects.",
+      "minimum_data_needed": [
+        "Wrist accelerometer data (3-axis) synchronized with PPG/EDA",
+        "Signal quality indices for PPG (e.g., SQI) and EDA (e.g., tonic slope artifacts)",
+        "Per-subject self-report stress ratings",
+        "Per-subject per-timepoint conformal intervals and coverage"
+      ],
+      "testable_prediction": "Subjects with wrist accelerometer RMS > 75th percentile during stress will show coverage ≥6pp below nominal; this effect remains significant after controlling for self-report stress and EDA/HRV arousal indices.",
+      "failure_condition": "Movement intensity not a significant predictor of coverage gap after controlling for self-report and physiological arousal (p > 0.05).",
+      "statistical_test_plan": "Hierarchical linear model: coverage_gap ~ accel_RMS + self_report_stress + EDA_tonic + HRV_RMSSD + (1|subject); test accel_RMS coefficient < 0.",
+      "falsification_test": "Apply motion artifact correction to PPG/EDA (e.g., adaptive filtering using accelerometer reference); recompute features and conformal intervals; if undercoverage disappears for high-movement subjects, artifact mechanism confirmed; if persists, mechanism falsified."
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "The conformal prediction's exchangeability assumption is violated by temporal autocorrelation in residuals that differs across subjects, causing undercoverage for subjects with high residual autocorrelation because effective calibration sample size is lower than nominal.",
+      "proposed_mechanism": "Physiological time series residuals exhibit AR(1) structure; subjects with high autocorrelation have fewer effective independent samples in calibration set; Mondrian conformal prediction assumes exchangeability (independence), so quantile estimation uses nominal n instead of effective n, producing intervals that are too narrow.",
+      "causal_path": "High residual autocorrelation (AR1 coefficient) → low effective sample size (n_eff = n * (1-rho)/(1+rho)) → conformal quantile uses nominal n → quantile underestimated → intervals too narrow → undercoverage",
+      "mechanism_variables": [
+        "residual_AR1_coefficient",
+        "effective_sample_size",
+        "nominal_sample_size",
+        "conformal_quantile_bias",
+        "coverage_gap"
+      ],
+      "possible_confounders": [
+        "condition_duration",
+        "sampling_rate",
+        "feature_smoothing_window",
+        "model_temporal_architecture"
+      ],
+      "control_variables": [
+        "condition_label",
+        "calibration_set_size",
+        "nominal_coverage",
+        "feature_set"
+      ],
+      "rival_explanation": "Undercoverage for high-autocorrelation subjects is due to non-stationarity (trending residuals), not autocorrelation per se.",
+      "rival_prediction": "If non-stationarity, residuals should show trend (Mann-Kendall test significant); if pure autocorrelation, residuals stationary but correlated. Coverage gap should correlate with AR1 coefficient but not with trend statistic.",
+      "distinguishing_test": "Compute per-subject residual AR1 coefficient and Mann-Kendall trend statistic; regress coverage gap on both; significant AR1 coefficient with non-significant trend supports autocorrelation mechanism.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "AR1 coefficients of 0.3-0.7 common in physiological residuals; n_eff reduction 30-70%; expected coverage gap 5-15pp for high-autocorrelation subjects.",
+      "minimum_data_needed": [
+        "Per-subject residual time series from calibration set",
+        "Per-subject conformal intervals and coverage on test set",
+        "Sufficient calibration points per subject (>50) for reliable AR1 estimation"
+      ],
+      "testable_prediction": "Subjects with residual AR1 coefficient > 0.5 will show coverage ≥7pp below nominal; coverage gap will correlate with AR1 coefficient (r > 0.5).",
+      "failure_condition": "No significant correlation between residual AR1 coefficient and coverage gap (p > 0.05).",
+      "statistical_test_plan": "Per-subject AR1 estimation via Yule-Walker on calibration residuals; Spearman correlation between AR1 and coverage gap; permutation test for significance (10,000 permutations).",
+      "falsification_test": "Apply block conformal prediction (block length = 1/autocorrelation_time) or use effective sample size correction; if undercoverage disappears for high-autocorrelation subjects, mechanism confirmed; if persists, mechanism falsified."
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Subjects with high baseline skin temperature (>34°C) exhibit altered EDA signal physiology (reduced dynamic range, changed sweat gland responsiveness) that shifts the feature-residual relationship, causing distribution shift between calibration and test for these subjects.",
+      "proposed_mechanism": "High baseline skin temperature indicates high peripheral blood flow and sweat gland hydration; this changes EDA phasic driver amplitude and tonic level dynamics, making EDA features extracted during stress condition have different statistical properties than during calibration (which may include cooler baseline periods), violating exchangeability.",
+      "causal_path": "High baseline skin temperature → altered sweat gland physiology → changed EDA feature distribution during stress → residual distribution shift between calibration and test → conformal intervals miscalibrated → undercoverage",
+      "mechanism_variables": [
+        "baseline_skin_temperature_C",
+        "EDA_phasic_amplitude",
+        "EDA_tonic_level",
+        "feature_distribution_shift",
+        "residual_distribution_shift",
+        "coverage_gap"
+      ],
+      "possible_confounders": [
+        "ambient_temperature",
+        "BMI",
+        "fitness_level",
+        "hydration_status",
+        "menstrual_cycle_phase"
+      ],
+      "control_variables": [
+        "condition_label",
+        "sensor_location",
+        "EDA_sampling_rate",
+        "feature_extraction_method"
+      ],
+      "rival_explanation": "Undercoverage is due to temperature-induced sensor noise (thermistor drift), not physiological change in EDA generation.",
+      "rival_prediction": "If sensor noise, raw EDA signal should show increased high-frequency noise at high temperature; if physiological, raw EDA morphology changes (driver amplitude) but noise floor stable.",
+      "distinguishing_test": "Analyze raw EDA signal noise floor (high-frequency variance) vs. phasic driver amplitude (via CVX-EDA decomposition) as function of skin temperature; physiological mechanism predicts driver amplitude change without noise floor change.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Skin temperature range in WESAD ~30-36°C; EDA driver amplitude can vary 2-3x across this range; expected coverage gap 3-8pp for high-temp subjects.",
+      "minimum_data_needed": [
+        "Wrist skin temperature time series",
+        "Raw EDA signal at high sampling rate (≥32Hz)",
+        "Per-subject conformal intervals and coverage",
+        "CVX-EDA or similar decomposition capability"
+      ],
+      "testable_prediction": "Subjects with baseline wrist temperature > 34°C will show coverage ≥4pp below nominal; their EDA phasic driver amplitude during stress will be significantly lower than low-temp subjects (p < 0.01).",
+      "failure_condition": "No significant difference in coverage between high-temp (>34°C) and low-temp (<32°C) groups (p > 0.05).",
+      "statistical_test_plan": "Two-sample t-test comparing coverage between high-temp and low-temp groups; mediation analysis: temp_group → EDA_driver_amplitude → coverage_gap.",
+      "falsification_test": "Recalibrate conformal prediction using only calibration points from same temperature range as test (stratify calibration by skin temperature); if undercoverage disappears, distribution shift mechanism confirmed; if persists, mechanism falsified."
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "The Mondrian taxonomy's discrete binning by condition label ignores inter-subject variability in stress response magnitude, causing undercoverage for 'low responders' whose residuals are pooled with 'high responders' in the same bin, diluting the quantile estimate.",
+      "proposed_mechanism": "Stress response magnitude (e.g., EDA reactivity) varies 10-fold across subjects; Mondrian bins pool all 'stress' condition residuals together; low responders have small residuals but conformal quantile is driven by high responders' large residuals, creating intervals that are too wide for high responders (overcoverage) and too narrow for low responders (undercoverage) due to heterogeneous variance.",
+      "causal_path": "High inter-subject stress response variability → heterogeneous residual variance within condition bin → conformal quantile reflects mixture distribution → low responders' true quantile < mixture quantile → intervals too narrow for low responders → undercoverage",
+      "mechanism_variables": [
+        "stress_reactivity_EDA",
+        "within_bin_residual_variance_heterogeneity",
+        "mixture_quantile_vs_conditional_quantile",
+        "coverage_gap_by_reactivity"
+      ],
+      "possible_confounders": [
+        "baseline_EDA_level",
+        "age",
+        "gender",
+        "habituation",
+        "time_of_day"
+      ],
+      "control_variables": [
+        "condition_label",
+        "stress_protocol",
+        "feature_set",
+        "model_architecture"
+      ],
+      "rival_explanation": "Undercoverage for low responders is due to floor effects in EDA measurement (signal near zero), not variance heterogeneity.",
+      "rival_prediction": "If floor effect, low responders' residuals should be truncated at zero; if variance heterogeneity, residuals should be symmetric but with smaller variance.",
+      "distinguishing_test": "Examine residual distribution shape for low vs high responders; test for truncation (excess mass at zero) vs. variance difference (Levene's test).",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "EDA reactivity range 0.1-10 μS; variance ratio >100x; mixture quantile can be 2-3x low-responder quantile; expect 15-30pp undercoverage for bottom quartile responders.",
+      "minimum_data_needed": [
+        "Per-subject stress reactivity metric (stress EDA - baseline EDA)",
+        "Per-subject per-timepoint residuals and coverage outcomes",
+        "Sufficient subjects (>30) to estimate reactivity distribution"
+      ],
+      "testable_prediction": "Subjects in bottom quartile of EDA stress reactivity will show coverage ≥15pp below nominal; subjects in top quartile will show overcoverage ≥10pp above nominal.",
+      "failure_condition": "No significant quadratic relationship between stress reactivity and coverage gap (p > 0.05 for reactivity^2 term).",
+      "statistical_test_plan": "Quantile regression of coverage on stress reactivity (linear + quadratic terms); test quadratic coefficient < 0 (inverted U shape). Also: Levene's test for residual variance homogeneity across reactivity quartiles.",
+      "falsification_test": "Replace Mondrian taxonomy with subject-specific calibration (each subject own bin); if undercoverage for low responders disappears, pooling mechanism confirmed; if persists, mechanism falsified."
+    }
+  ],
+  "total_tokens": 7775,
+  "completion_tokens": 7223
+}

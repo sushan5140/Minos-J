@@ -1,0 +1,254 @@
+{
+  "mechanism_builds": [
+    {
+      "hypothesis_id": "H1",
+      "mechanism_variables": [
+        "Sympathetic reactivity index (EDA peak amplitude normalized to baseline per stressor)",
+        "HRV reactivity (RMSSD change from baseline to stressor peak)",
+        "Conformity score for true stress label (softmax margin)",
+        "Stratum assignment (age group × sex)",
+        "Calibration set conformity score distribution parameters (mean, variance, 5th percentile)"
+      ],
+      "causal_path": "High autonomic reactivity → extreme EDA/HRV trajectories during stress → conformity scores fall below calibration distribution support → systematically low p-values for true stress label → empirical coverage < nominal coverage",
+      "expected_direction": "Positive correlation between sympathetic reactivity index and coverage deficit (higher reactivity → larger undercoverage)",
+      "domain_specific_boundary_conditions": [
+        "Subjects with reactivity >2 SD above stratum mean on EDA peak amplitude",
+        "Stressor intensity sufficient to elicit near-maximal sympathetic response (TSST or equivalent)",
+        "Calibration set size ≥30 per stratum",
+        "Mondrian stratification uses only age group and sex"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per reactivity quantile (decile bins)",
+        "p-value distribution for true stress label (uniformity test via KS statistic)",
+        "Conformity score distribution shift (Wasserstein distance between high-reactivity and stratum-typical subjects)",
+        "Proportion of high-reactivity subjects with p-value < 0.05 for true label"
+      ],
+      "mechanism_builder_notes": "Test by computing subject-level reactivity indices from baseline-corrected EDA/HRV, then regressing coverage deficit on reactivity while controlling for stratum. Use WESAD's TSST and fun stressor conditions."
+    },
+    {
+      "hypothesis_id": "H2",
+      "mechanism_variables": [
+        "ACC magnitude during stress periods (vector magnitude, g)",
+        "BVP signal quality index (SQI, 0-1)",
+        "EDA motion artifact probability (from ACC-EDA cross-correlation)",
+        "Subject-specific motion-artifact coupling coefficient (regression slope of SQI on ACC during stress)",
+        "Conformity score distribution shift (Wasserstein distance between calibration and test conformity scores)"
+      ],
+      "causal_path": "Stress induction → subject-specific fidgeting/gesturing → increased ACC magnitude → motion artifacts in BVP/EDA → feature extractor misinterprets non-stationary noise as physiological pattern → conformity score distribution shifts between calibration (low motion) and test (high motion) → covariate shift → undercoverage",
+      "expected_direction": "Positive correlation between motion-artifact coupling coefficient and coverage deficit; coverage decreases as test-period ACC magnitude increases",
+      "domain_specific_boundary_conditions": [
+        "Stress periods with ACC magnitude >90th percentile of subject's baseline",
+        "Subjects with motion-artifact coupling coefficient >0.5 (SQI drop per g ACC)",
+        "Calibration period relatively motion-free (ACC < 25th percentile)",
+        "Feature extractor uses raw BVP/EDA without explicit motion artifact removal"
+      ],
+      "measurable_outcomes": [
+        "Coverage vs. test-period ACC magnitude (binned)",
+        "Conformity score distribution shift magnitude (Wasserstein distance) vs. motion-artifact coupling",
+        "Feature importance weights for motion-contaminated channels (SHAP values)",
+        "SQI during stress vs. coverage deficit per subject"
+      ],
+      "mechanism_builder_notes": "Compute motion-artifact coupling per subject using linear mixed model: SQI ~ ACC + (1|subject) during stress. Compare coverage for high vs. low coupling subjects. WESAD provides synchronized ACC, BVP, EDA."
+    },
+    {
+      "hypothesis_id": "H3",
+      "mechanism_variables": [
+        "EDA recovery time constant (tau_EDA, seconds, from exponential fit to post-stressor decay)",
+        "HRV recovery time constant (tau_HRV, seconds, from RMSSD recovery curve)",
+        "Conformity score autocorrelation at lag 1 (rho_1)",
+        "Effective sample size (n_eff = n / (1 + 2*sum_{k=1}^{∞} rho_k))",
+        "Coverage deficit (nominal - empirical coverage)"
+      ],
+      "causal_path": "Slow physiological recovery kinetics (large tau) → long-range dependence in conformity scores → effective calibration set size overestimated (n_eff << n) → nominal coverage guarantee assumes n_eff = n → empirical coverage < nominal coverage",
+      "expected_direction": "Negative correlation between recovery time constant and n_eff/n ratio; positive correlation between recovery time constant and coverage deficit",
+      "domain_specific_boundary_conditions": [
+        "Recovery time constant >60 seconds (slow recoverers)",
+        "Stressor inter-trial interval <5 × tau (incomplete recovery between trials)",
+        "Calibration set size <100 (finite-sample regime)",
+        "Conformity scores computed per sliding window (overlapping windows induce additional dependence)"
+      ],
+      "measurable_outcomes": [
+        "Coverage vs. tau_EDA and tau_HRV (binned)",
+        "n_eff/n ratio vs. recovery time constant",
+        "Conformity score autocorrelation function (lag 1-10)",
+        "Coverage under block bootstrap (accounting for dependence) vs. standard Mondrian"
+      ],
+      "mechanism_builder_notes": "Fit exponential recovery models to post-stressor EDA/HRV. Compute n_eff via autocorrelation sum. Compare Mondrian coverage with and without block-calibration. WESAD has multiple stress-rest cycles."
+    },
+    {
+      "hypothesis_id": "H4",
+      "mechanism_variables": [
+        "Subjective stress rating (0-10 VAS scale per condition)",
+        "Physiological arousal index (first PC of standardized EDA peak, HRV drop, HR increase)",
+        "Label bias (subjective rating - predicted arousal from physiological index, standardized)",
+        "Conformity score for 'stress' class (softmax probability)",
+        "Coverage rate per subject"
+      ],
+      "causal_path": "High resilience / minimization tendency → under-reporting of subjective stress (low VAS despite high physiological arousal) → mislabeled calibration samples (labeled 'non-stress' but physiologically 'stress') → conformity score distribution for 'stress' class biased toward non-stress patterns → p-values for true stress inflated → undercoverage for under-reporters",
+      "expected_direction": "Negative correlation between label bias (more negative = under-reporting) and coverage; under-reporters show lower coverage than accurate reporters",
+      "domain_specific_boundary_conditions": [
+        "Subjects with label bias >1 SD below mean (strong under-reporters)",
+        "Physiological arousal during stress >75th percentile (objective stress present)",
+        "Calibration set includes mislabeled samples (no label cleaning)",
+        "Mondrian stratification does not include resilience or reporting style"
+      ],
+      "measurable_outcomes": [
+        "Coverage vs. label bias (continuous)",
+        "Conformity score distribution for 'stress' class: under-reporters vs. accurate reporters (KS test)",
+        "Estimated mislabeling rate via physiological clustering (GMM on arousal index)",
+        "Coverage after relabeling using physiological arousal threshold"
+      ],
+      "mechanism_builder_notes": "WESAD includes self-report VAS after each condition. Compute physiological arousal index from EDA/HRV/HR. Label bias = VAS - normalized arousal. Test coverage stratified by bias tertiles."
+    },
+    {
+      "hypothesis_id": "H5",
+      "mechanism_variables": [
+        "Baseline HRV (RMSSD, ms, 5-min resting)",
+        "Baroreflex sensitivity (BRS, ms/mmHg, sequence method)",
+        "Stratum assignment (age group × sex)",
+        "Within-stratum conformity score variance (for stress class)",
+        "Coverage rate per physiological phenotype quantile"
+      ],
+      "causal_path": "Extreme continuous physiological phenotype (e.g., very high baseline HRV) → assigned to stratum defined by coarse covariates (sex/age) where majority has typical phenotype → conformity scores non-exchangeable with stratum majority → systematic undercoverage for phenotype extremes",
+      "expected_direction": "U-shaped relationship between baseline HRV (and BRS) and coverage deficit: worst coverage at low and high extremes, best near stratum median",
+      "domain_specific_boundary_conditions": [
+        "Phenotype >2 SD from stratum mean on baseline HRV or BRS",
+        "Stratum size ≥20 (to estimate within-stratum distribution)",
+        "Phenotype not strongly correlated with stratification covariates (age/sex)",
+        "Mondrian uses only binary sex and age group (e.g., median split)"
+      ],
+      "measurable_outcomes": [
+        "Coverage vs. baseline HRV quantile (within each stratum)",
+        "Within-stratum conformity score variance vs. phenotype distance from stratum centroid",
+        "Optimal stratification: coverage using data-driven physiological clusters vs. demographic strata",
+        "Proportion of variance in conformity scores explained by phenotype vs. stratum"
+      ],
+      "mechanism_builder_notes": "Compute baseline HRV/BRS from WESAD resting baseline. Assign subjects to demographic strata. Plot coverage vs. phenotype. Test k-means clustering on physiological features for alternative stratification."
+    },
+    {
+      "hypothesis_id": "H6",
+      "mechanism_variables": [
+        "EDA electrode impedance (kOhm, tracked via injected current if available, or SCL drift proxy)",
+        "Skin conductance level (SCL) drift rate (µS/min, linear slope over recording)",
+        "Sweat rate proxy (mean SCL during rest, µS)",
+        "Conformity score drift (slope of conformity score vs. time during test phase)",
+        "Coverage in early (first 30%) vs. late (last 30%) test periods"
+      ],
+      "causal_path": "Oily skin / high sweat rate → faster EDA electrode degradation (impedance change, SCL drift) → conformity scores drift during test phase relative to calibration phase → calibration-test exchangeability violated → undercoverage increases over time for high-sweat subjects",
+      "expected_direction": "Positive correlation between sweat rate proxy and conformity score drift magnitude; coverage decreases from early to late test periods for high-sweat subjects",
+      "domain_specific_boundary_conditions": [
+        "Recording duration >60 minutes (WESAD ~2 hours)",
+        "Sweat rate proxy >0.5 µS (high baseline SCL)",
+        "Impedance change >20% from baseline (if measurable) or SCL drift >0.1 µS/min",
+        "Calibration phase occurs early in recording, test phase later"
+      ],
+      "measurable_outcomes": [
+        "Coverage early vs. late test period per subject",
+        "Conformity score trend slope vs. baseline SCL",
+        "SCL drift rate vs. coverage deficit",
+        "Coverage after detrending conformity scores vs. raw"
+      ],
+      "mechanism_builder_notes": "WESAD EDA recorded at 4 Hz. Compute SCL drift via linear regression on 1-min windows. Split test windows into early/late. Test if detrending (subtracting time trend) restores coverage for high-drift subjects."
+    },
+    {
+      "hypothesis_id": "H7",
+      "mechanism_variables": [
+        "Feature space density (mean k-NN distance in physiological feature space, k=5)",
+        "Classifier calibration error (Expected Calibration Error, ECE, per subject)",
+        "Conformity score (softmax margin: max_prob - second_max_prob)",
+        "p-value for true stress label",
+        "Coverage per subject"
+      ],
+      "causal_path": "Rare physiological profile (e.g., arrhythmia, beta-blocker medication) → low feature space density (out-of-distribution) → classifier miscalibration (overconfident predictions) → anti-conservative conformity scores (too high margin) → p-values for true label too small → undercoverage",
+      "expected_direction": "Negative correlation between feature space density and coverage; positive correlation between subject-level ECE and coverage deficit",
+      "domain_specific_boundary_conditions": [
+        "Feature density <5th percentile of population (rare profiles)",
+        "Subject-level ECE >0.1 (miscalibrated)",
+        "Conformity score function = softmax margin (not temperature-scaled)",
+        "Classifier trained on population data without subject-specific adaptation"
+      ],
+      "measurable_outcomes": [
+        "Coverage vs. feature density (binned)",
+        "Subject-level ECE vs. coverage deficit",
+        "p-value histogram for true label: low-density vs. high-density subjects",
+        "Coverage with temperature-scaled conformity score vs. raw softmax margin"
+      ],
+      "mechanism_builder_notes": "Extract features used in WESAD stress classifier (time/frequency domain HRV, EDA, TEMP). Compute k-NN density in training feature space. Estimate per-subject ECE on calibration set. Test if temperature scaling (learned on calibration) fixes coverage for outliers."
+    },
+    {
+      "hypothesis_id": "H8",
+      "mechanism_variables": [
+        "Time of day (hours from habitual wake time, from WESAD timestamps)",
+        "Circadian phase proxy (core body temperature minimum estimate, or cortisol if available)",
+        "Stress reactivity (EDA peak amplitude during TSST)",
+        "Conformity score distribution parameters (mean, variance per time-of-day bin)",
+        "Coverage per time-of-day bin (2-hour bins)"
+      ],
+      "causal_path": "Circadian phase (time of day) → modulates autonomic stress reactivity (e.g., higher cortisol awakening response amplifies reactivity) → conformity score distribution varies systematically with time-of-day within each Mondrian stratum → exchangeability violated across time-of-day → undercoverage at phases with highest reactivity variability",
+      "expected_direction": "Coverage varies sinusoidally with time-of-day; worst coverage at phases with highest reactivity variance (typically late afternoon/evening for cortisol-driven effects)",
+      "domain_specific_boundary_conditions": [
+        "Recording spans >4 hours with stressor at varying times (WESAD: some subjects morning, some afternoon)",
+        "Time-of-day not balanced across strata (confounded with subject ID)",
+        "Reactivity range >2x across circadian phases",
+        "Mondrian stratification does not include time-of-day"
+      ],
+      "measurable_outcomes": [
+        "Coverage vs. time-of-day (binned)",
+        "Stress reactivity (EDA peak) vs. time-of-day",
+        "Conformity score distribution shift across time-of-day bins (KS distance)",
+        "Coverage after adding time-of-day as stratification covariate"
+      ],
+      "mechanism_builder_notes": "WESAD recordings start at different times. Extract start timestamp, compute hours from 7 AM (typical wake). Bin into 2-hour windows. Test coverage per bin. Add time-of-day to Mondrian strata and compare."
+    },
+    {
+      "hypothesis_id": "H9",
+      "mechanism_variables": [
+        "Stratum size (n_stratum, number of calibration samples in subject's stratum)",
+        "Physiological distinctiveness (Mahalanobis distance to stratum centroid in feature space)",
+        "Coverage deficit (nominal 90% - empirical coverage)",
+        "Effective calibration size (n_eff accounting for dependence, from H3)",
+        "Minimum stratum size for target coverage"
+      ],
+      "causal_path": "Rare physiological phenotype → small stratum (few similar subjects) → discretization error (1/(n+1) granularity) + estimation error (high variance in quantile estimation) → systematic undercoverage for distinctive subjects in small strata",
+      "expected_direction": "Negative correlation between stratum size and coverage deficit; positive correlation between distinctiveness and coverage deficit for strata with n < 30",
+      "domain_specific_boundary_conditions": [
+        "Stratum size <30 (small strata)",
+        "Physiological distinctiveness >2 SD from stratum centroid",
+        "Nominal coverage 90% (α=0.1)",
+        "Mondrian stratification yields some strata with n < 20"
+      ],
+      "measurable_outcomes": [
+        "Coverage vs. stratum size (binned)",
+        "Coverage deficit vs. distinctiveness for small vs. large strata",
+        "Minimum stratum size achieving ≥85% empirical coverage at 90% nominal",
+        "Coverage with pooled calibration (ignoring strata) vs. Mondrian for small strata"
+      ],
+      "mechanism_builder_notes": "Compute stratum sizes from WESAD demographic splits. Calculate Mahalanobis distance using calibration feature covariance. Simulate coverage deficit via bootstrap for varying n. Test if pooling small strata with nearest neighbor stratum improves coverage."
+    },
+    {
+      "hypothesis_id": "H10",
+      "mechanism_variables": [
+        "Coping strategy score (ERQ: cognitive reappraisal vs. expressive suppression subscales)",
+        "Autonomic pathway activation index (cardiac sympathetic: HR/HRV vs. vascular sympathetic: EDA/SCL ratio)",
+        "Conformity score for stress class",
+        "Number of physiological modes (Gaussian mixture components on stress-period features, BIC-selected)",
+        "Coverage per coping strategy group (high reappraisal vs. high suppression)"
+      ],
+      "causal_path": "Different emotion regulation strategies → distinct autonomic pathway activation (reappraisal: cardiac-dominant; suppression: vascular-dominant) → multiple physiological 'stress' modes within same label → conformity score function cannot simultaneously calibrate all modes → undercoverage for minority mode within stratum",
+      "expected_direction": "Lower coverage for subjects using minority coping strategy within stratum; multimodal conformity score distribution (Hartigan's dip test p < 0.05) for stress class",
+      "domain_specific_boundary_conditions": [
+        "At least 2 distinct coping groups per stratum (n ≥ 10 each)",
+        "Coping strategy not correlated with stratification covariates (age/sex)",
+        "Physiological modes separable (silhouette score >0.5 on stress features)",
+        "Stress label aggregates all coping responses (no strategy-specific labels)"
+      ],
+      "measurable_outcomes": [
+        "Coverage per coping strategy group (median split on ERQ subscales)",
+        "Conformity score modality test (Hartigan's dip) for stress class",
+        "Autonomic pathway index (cardiac/vascular ratio) vs. coping strategy",
+        "Coverage after stratifying by coping strategy (if measured) vs. demographic only"
+      ],
+      "mechanism_builder_notes": "WESAD does not include ERQ. Mechanism builder notes: This hypothesis requires external coping data. If unavailable, use physiological clustering (GMM on stress features) to identify modes, then test if mode membership predicts coverage deficit. Modes may correspond to coping styles."
+    }
+  ]
+}

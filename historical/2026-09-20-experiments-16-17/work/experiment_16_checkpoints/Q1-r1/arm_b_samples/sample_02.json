@@ -1,0 +1,407 @@
+{
+  "sample_index": 2,
+  "valid": true,
+  "error": null,
+  "cards": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Subjects with blunted cortisol reactivity exhibit systematically lower EDA phasic amplitude during stress, causing Mondrian's EDA-based taxonomy bins to misclassify their stress windows as baseline-like, yielding prediction intervals that are too narrow.",
+      "proposed_mechanism": "Blunted HPA-axis reactivity -> reduced sudomotor activation -> lower EDA phasic driver amplitude -> assignment to low-arousal Mondrian bin -> conformal quantile calibrated on predominantly baseline-like windows -> undercoverage for true stress windows.",
+      "causal_path": "cortisol_reactivity (AUCg) -> EDA_phasic_amplitude (cvxEDA driver) -> mondrian_bin_assignment -> conformal_quantile_width -> coverage_indicator",
+      "mechanism_variables": [
+        "cortisol_reactivity_AUCg",
+        "EDA_phasic_driver_amplitude",
+        "mondrian_bin_index",
+        "conformal_quantile_90",
+        "empirical_coverage_90"
+      ],
+      "possible_confounders": [
+        "baseline_EDA_tonic_level",
+        "age",
+        "sex",
+        "BMI",
+        "medication_use",
+        "time_of_day"
+      ],
+      "control_variables": [
+        "stratify by cortisol_reactivity_tertile; include baseline_EDA_tonic as covariate in quantile regression; restrict to medication-free subjects"
+      ],
+      "rival_explanation": "Undercoverage stems from random label noise in stress condition annotations, not physiological phenotype.",
+      "rival_prediction": "Undercoverage correlates with annotation disagreement metrics but not with cortisol_reactivity_AUCg.",
+      "distinguishing_test": "Fit logistic regression: undercoverage_indicator ~ cortisol_reactivity_AUCg + annotation_disagreement_score. H1 predicts significant cortisol coefficient (p<0.05) after controlling for annotation_disagreement; rival predicts only annotation_disagreement significant.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Prior WESAD analyses show cortisol_reactivity explains ~15% variance in EDA stress response; Mondrian bin misassignment amplifies this to coverage deficits.",
+      "minimum_data_needed": [
+        "subject-level cortisol AUCg from saliva samples",
+        "continuous EDA at 700Hz from chest sensor",
+        "Mondrian taxonomy bin assignments per window",
+        "conformal prediction intervals per window",
+        "ground-truth stress labels per window"
+      ],
+      "testable_prediction": "Subjects in lowest cortisol_reactivity tertile show empirical coverage at least 10 percentage points below nominal 90% level, while highest tertile achieves nominal coverage.",
+      "failure_condition": "No significant difference in empirical coverage across cortisol_reactivity tertiles (ANOVA p>0.05) after controlling for baseline_EDA_tonic.",
+      "statistical_test_plan": "Two-way ANOVA: empirical_coverage ~ cortisol_tertile * mondrian_bin, with baseline_EDA_tonic as covariate. Post-hoc Tukey HSD for tertile contrasts. Alpha=0.05.",
+      "falsification_test": "Re-run Mondrian with cortisol_reactivity as explicit taxonomy feature. If undercoverage persists for low-cortisol subjects despite correct bin assignment, H1 mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Wrist-worn ACC magnitude exceeds 0.5g for >30% of stress windows in specific subjects due to idiosyncratic motor behaviors (e.g., fidgeting, gesturing), inducing motion artifacts in wrist EDA/TEMP that distort Mondrian's wrist-sensor taxonomy bins.",
+      "proposed_mechanism": "Idiosyncratic motor behavior -> high wrist ACC magnitude -> motion artifact contamination of wrist EDA/TEMP -> shifted feature distribution in wrist-sensor Mondrian bins -> conformal quantiles calibrated on artifact-contaminated windows -> undercoverage for clean stress windows.",
+      "causal_path": "wrist_ACC_magnitude_95th -> wrist_EDA_artifact_index -> mondrian_wrist_bin_assignment -> conformal_quantile_width -> coverage_indicator",
+      "mechanism_variables": [
+        "wrist_ACC_magnitude_95th_percentile",
+        "wrist_EDA_artifact_index",
+        "mondrian_wrist_bin_index",
+        "conformal_quantile_90",
+        "empirical_coverage_90"
+      ],
+      "possible_confounders": [
+        "chest_ACC_magnitude",
+        "stress_condition_intensity",
+        "hand_dominance",
+        "sensor_tightness"
+      ],
+      "control_variables": [
+        "include chest_ACC_magnitude as covariate; restrict analysis to non-dominant wrist; normalize by subject-specific ACC baseline"
+      ],
+      "rival_explanation": "Undercoverage arises from chest sensor signal quality differences, not wrist motion artifacts.",
+      "rival_prediction": "Undercoverage correlates with chest_EDA_noise_index but not with wrist_ACC_magnitude_95th.",
+      "distinguishing_test": "Compute partial correlation: coverage ~ wrist_ACC_magnitude_95th | chest_EDA_noise_index. H1 predicts significant negative partial correlation (p<0.05); rival predicts non-significant.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Motion artifacts can shift EDA features by >2 SD; Mondrian bins are sensitive to feature distribution shifts; prior work shows >20% coverage drop under artifact contamination.",
+      "minimum_data_needed": [
+        "wrist ACC at 32Hz",
+        "wrist EDA at 4Hz",
+        "wrist TEMP at 4Hz",
+        "chest ACC at 700Hz",
+        "chest EDA at 700Hz",
+        "Mondrian wrist-sensor bin assignments",
+        "conformal intervals",
+        "ground-truth labels"
+      ],
+      "testable_prediction": "Subjects with wrist_ACC_magnitude_95th > 0.5g show empirical coverage <80% at nominal 90%; subjects below threshold achieve >88% coverage.",
+      "failure_condition": "No significant coverage difference between high-ACC and low-ACC subjects (t-test p>0.05) after controlling for chest_ACC_magnitude.",
+      "statistical_test_plan": "Linear mixed model: empirical_coverage ~ wrist_ACC_magnitude_95th + chest_ACC_magnitude + (1|subject). Test wrist_ACC coefficient <0 at alpha=0.05.",
+      "falsification_test": "Apply artifact removal (wavelet denoising + ACC regression) to wrist EDA/TEMP before Mondrian binning. If undercoverage persists for high-ACC subjects, H2 is falsified."
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Non-stationary EDA phasic response dynamics within the stress condition (habituation/sensitization) cause early stress windows to populate different Mondrian bins than late windows, but conformal calibration pools them, yielding miscalibrated quantiles for late windows in sensitizing subjects.",
+      "proposed_mechanism": "Within-stress temporal dynamics -> EDA_phasic_amplitude trend (habituation/sensitization) -> time-dependent Mondrian bin assignment -> pooled conformal calibration ignores temporal structure -> quantiles miscalibrated for late windows in sensitizing subjects -> undercoverage.",
+      "causal_path": "stress_window_index -> EDA_phasic_amplitude_slope -> mondrian_bin_transition_pattern -> pooled_conformal_quantile -> coverage_by_window_index",
+      "mechanism_variables": [
+        "stress_window_sequence_index",
+        "EDA_phasic_amplitude_per_window",
+        "mondrian_bin_per_window",
+        "pooled_conformal_quantile_90",
+        "empirical_coverage_per_window"
+      ],
+      "possible_confounders": [
+        "overall_stress_intensity",
+        "baseline_EDA",
+        "subject_age",
+        "condition_order"
+      ],
+      "control_variables": [
+        "include baseline_EDA as covariate; counterbalance condition order; restrict to first stress exposure per subject"
+      ],
+      "rival_explanation": "Undercoverage is constant across stress windows; temporal dynamics are irrelevant.",
+      "rival_prediction": "Empirical coverage does not vary significantly with stress_window_index (slope ~0).",
+      "distinguishing_test": "Fit linear model: coverage_indicator ~ stress_window_index * sensitization_group (slope>0 vs slope<0). H1 predicts significant interaction (p<0.05); rival predicts no interaction.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "EDA habituation slopes of -0.1 to -0.3 µS/window documented in WESAD; Mondrian bin transitions amplify this to ~5-15% coverage drift across 10 windows.",
+      "minimum_data_needed": [
+        "windowed EDA phasic amplitude (per 10s window)",
+        "Mondrian bin assignment per window",
+        "conformal prediction interval per window",
+        "ground-truth label per window",
+        "stress condition window sequence index"
+      ],
+      "testable_prediction": "For sensitizing subjects (positive EDA slope), coverage in last 3 stress windows is >15pp lower than in first 3 windows; for habituating subjects, coverage is stable or higher in late windows.",
+      "failure_condition": "No significant coverage difference between early and late stress windows for any sensitization group (paired t-test p>0.05).",
+      "statistical_test_plan": "Mixed-effects logistic regression: coverage_binary ~ window_index * sensitization_group + (1|subject). Test interaction term at alpha=0.05.",
+      "falsification_test": "Re-calibrate conformal predictors separately for early (windows 1-3) and late (windows 8-10) stress windows. If late-window calibration achieves nominal coverage for sensitizing subjects, H3 mechanism (pooled calibration) is falsified."
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Self-reported stress labels (VAS) for certain subjects show high intra-subject variability (CV>0.4) during the stress condition, indicating ambiguous labeling that contaminates Mondrian's label-conditional calibration sets.",
+      "proposed_mechanism": "Ambiguous self-report -> high VAS variability within stress condition -> label noise in calibration set -> Mondrian's label-conditional conformal quantiles inflated by mislabeled baseline-like windows -> undercoverage for truly stressed windows.",
+      "causal_path": "VAS_stress_CV -> label_noise_proportion -> mondrian_label_conditional_quantile -> coverage_for_true_stress",
+      "mechanism_variables": [
+        "VAS_stress_CV",
+        "label_noise_estimate",
+        "mondrian_stress_bin_quantile_90",
+        "empirical_coverage_true_stress"
+      ],
+      "possible_confounders": [
+        "VAS_compliance",
+        "language_proficiency",
+        "alexithymia_score",
+        "baseline_anxiety"
+      ],
+      "control_variables": [
+        "exclude subjects with VAS_compliance<80%; include alexithymia_score as covariate; use only chest-sensor features for binning to avoid label leakage"
+      ],
+      "rival_explanation": "Undercoverage stems from physiological non-response, not label noise.",
+      "rival_prediction": "Undercoverage correlates with physiological non-response markers (e.g., low EDA reactivity) but not with VAS_stress_CV.",
+      "distinguishing_test": "Structural equation model: coverage ~ VAS_stress_CV + EDA_reactivity. H1 predicts direct effect of VAS_CV on coverage (p<0.05) controlling for EDA_reactivity; rival predicts only EDA_reactivity significant.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Label noise typically causes modest coverage deficits (3-8pp) unless noise >30%; WESAD VAS CV>0.4 occurs in ~20% of subjects.",
+      "minimum_data_needed": [
+        "VAS stress ratings per trial",
+        "ground-truth condition labels",
+        "Mondrian label-conditional quantiles",
+        "conformal intervals",
+        "chest EDA/ECG features",
+        "alexithymia questionnaire scores"
+      ],
+      "testable_prediction": "Subjects with VAS_stress_CV > 0.4 show empirical coverage 5-10pp below nominal; subjects with CV < 0.2 achieve nominal coverage.",
+      "failure_condition": "No significant correlation between VAS_stress_CV and empirical coverage (Spearman rho p>0.05) after controlling for EDA_reactivity.",
+      "statistical_test_plan": "Partial Spearman correlation: coverage vs VAS_CV controlling for EDA_reactivity. Bootstrap 95% CI for partial rho. Reject if CI excludes 0.",
+      "falsification_test": "Replace VAS labels with physiological stress labels (unsupervised clustering of chest EDA/ECG/RESP). If undercoverage persists for high-VAS-CV subjects under physiological labels, H4 is falsified."
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Mondrian's fixed taxonomy (based on marginal feature quantiles) creates bins with highly imbalanced subject representation; rare-subject bins have <20 calibration points, yielding unstable conformal quantiles that undercover for those subjects.",
+      "proposed_mechanism": "Inter-subject feature variability -> skewed Mondrian bin population -> sparse calibration sets for rare-subject bins -> high variance in conformal quantile estimation -> systematic undercoverage for subjects in sparse bins.",
+      "causal_path": "subject_feature_vector -> mondrian_bin_assignment -> bin_calibration_size -> conformal_quantile_variance -> empirical_coverage",
+      "mechanism_variables": [
+        "subject_mean_feature_vector",
+        "mondrian_bin_index",
+        "bin_calibration_count",
+        "conformal_quantile_90_std",
+        "empirical_coverage_90"
+      ],
+      "possible_confounders": [
+        "overall_sample_size",
+        "feature_correlation_structure",
+        "stress_condition_balance"
+      ],
+      "control_variables": [
+        "use subject-stratified binning; minimum bin size threshold; adaptive taxonomy depth"
+      ],
+      "rival_explanation": "Undercoverage is due to feature distribution shift between calibration and test, not bin sparsity.",
+      "rival_prediction": "Undercoverage correlates with calibration-test distribution distance (e.g., MMD) but not with bin_calibration_count.",
+      "distinguishing_test": "Regression: coverage ~ bin_calibration_count + MMD_calibration_test. H1 predicts significant bin_count coefficient (p<0.05) controlling for MMD; rival predicts only MMD significant.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Conformal theory: quantile variance ~ 1/(n+1); bins with n<20 have >15% quantile CV; WESAD has 15 subjects, 10 bins -> several bins inevitably sparse.",
+      "minimum_data_needed": [
+        "Mondrian bin assignments for all calibration windows",
+        "bin calibration counts per subject",
+        "conformal quantiles per bin",
+        "empirical coverage per subject",
+        "feature vectors for MMD computation"
+      ],
+      "testable_prediction": "Subjects whose stress windows fall in bins with calibration_count < 20 show coverage <80%; subjects in bins with count > 50 achieve >88% coverage.",
+      "failure_condition": "No significant coverage difference between sparse-bin and dense-bin subjects (t-test p>0.05) after controlling for MMD.",
+      "statistical_test_plan": "Weighted least squares: empirical_coverage ~ bin_calibration_count + MMD, weights = bin_count. Test bin_count coefficient >0 at alpha=0.05.",
+      "falsification_test": "Re-run Mondrian with minimum bin size = 30 (merging sparse bins). If undercoverage disappears for previously sparse-bin subjects, H5 is confirmed; if it persists, H5 is falsified."
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Chest RESP signal exhibits subject-specific baseline wander (0.05-0.15 Hz) during stress due to sighing/deep breathing, distorting RESP-derived features (rate, variability) used in Mondrian taxonomy, causing systematic bin misassignment for sigh-prone subjects.",
+      "proposed_mechanism": "Sighing behavior -> RESP baseline wander -> corrupted RESP_rate and RESP_RV features -> incorrect Mondrian bin assignment -> conformal quantiles from wrong physiological regime -> undercoverage.",
+      "causal_path": "sigh_rate_per_minute -> RESP_baseline_wander_amplitude -> RESP_feature_distortion -> mondrian_bin_misassignment -> conformal_quantile_error -> coverage_deficit",
+      "mechanism_variables": [
+        "sigh_rate",
+        "RESP_baseline_wander_RMS_0.05_0.15Hz",
+        "RESP_rate_error",
+        "mondrian_bin_assignment",
+        "conformal_quantile_90",
+        "empirical_coverage_90"
+      ],
+      "possible_confounders": [
+        "overall_respiratory_rate",
+        "stress_intensity",
+        "posture",
+        "chest_strap_tightness"
+      ],
+      "control_variables": [
+        "include overall_respiratory_rate as covariate; use chest_strap_tightness_log; restrict to seated posture"
+      ],
+      "rival_explanation": "Undercoverage for these subjects is due to ECG-derived HRV artifacts from respiration, not RESP feature distortion.",
+      "rival_prediction": "Undercoverage correlates with HRV_artifact_index but not with RESP_baseline_wander_RMS.",
+      "distinguishing_test": "Compare two Mondrian models: (A) with RESP features, (B) without RESP features. H1 predicts coverage improves for high-sigh subjects in model B; rival predicts no change.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "RESP baseline wander can shift rate estimates by 3-5 breaths/min; Mondrian bins on rate quantiles; misassignment rate ~30% for high-sigh subjects -> 10-15pp coverage drop.",
+      "minimum_data_needed": [
+        "chest RESP at 700Hz",
+        "sigh annotations or automated sigh detection",
+        "Mondrian bin assignments with/without RESP features",
+        "conformal intervals",
+        "ground-truth labels",
+        "ECG for HRV artifact index"
+      ],
+      "testable_prediction": "Subjects with sigh_rate > 3/min show >10pp coverage improvement when RESP features excluded from Mondrian taxonomy; low-sigh subjects show <2pp change.",
+      "failure_condition": "No significant coverage difference between RESP-included and RESP-excluded models for high-sigh subjects (paired t-test p>0.05).",
+      "statistical_test_plan": "Paired t-test: coverage_with_RESP vs coverage_without_RESP for high-sigh subjects. Alpha=0.05. Effect size: Cohen's d.",
+      "falsification_test": "Apply high-pass filter (0.15Hz) to RESP before feature extraction. If undercoverage persists for high-sigh subjects, H6 is falsified."
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Sensor calibration drift in wrist TEMP (thermistor) over the 60-minute protocol causes systematic temperature underestimation in later conditions, shifting late-stress windows into cooler Mondrian bins with narrower conformal quantiles.",
+      "proposed_mechanism": "Thermistor self-heating / ambient drift -> wrist_TEMP_bias increasing over time -> late stress windows assigned to low-TEMP Mondrian bins -> conformal quantiles calibrated on cooler (baseline/amusement) windows -> undercoverage for late stress.",
+      "causal_path": "protocol_elapsed_time -> wrist_TEMP_bias -> mondrian_TEMP_bin_assignment -> conformal_quantile_width -> coverage_by_time",
+      "mechanism_variables": [
+        "elapsed_minutes",
+        "wrist_TEMP_bias_estimate",
+        "mondrian_TEMP_bin_index",
+        "conformal_quantile_90",
+        "empirical_coverage_90"
+      ],
+      "possible_confounders": [
+        "ambient_temperature_change",
+        "skin_perfusion_changes",
+        "sensor_contact_pressure",
+        "condition_order"
+      ],
+      "control_variables": [
+        "monitor ambient temperature; include condition_order as factor; use chest TEMP as reference"
+      ],
+      "rival_explanation": "Temporal coverage drop is due to physiological habituation, not sensor drift.",
+      "rival_prediction": "Coverage drops similarly for chest TEMP (which has no drift) if habituation is the cause.",
+      "distinguishing_test": "Compare coverage drift for wrist TEMP vs chest TEMP across protocol time. H1 predicts wrist-specific drift; rival predicts parallel drift.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Thermistor drift ~0.1-0.3°C over 60min; Mondrian TEMP bins ~0.5°C wide; ~20% of late windows misbinned -> 3-6pp coverage drop.",
+      "minimum_data_needed": [
+        "wrist TEMP at 4Hz",
+        "chest TEMP at 700Hz",
+        "ambient temperature log",
+        "protocol timestamps",
+        "Mondrian bin assignments",
+        "conformal intervals",
+        "ground-truth labels"
+      ],
+      "testable_prediction": "Wrist TEMP shows negative bias trend >0.15°C over protocol; coverage for stress condition drops >5pp from first to last stress block; chest TEMP shows no bias trend and no coverage drop.",
+      "failure_condition": "No significant wrist TEMP bias trend (linear regression slope p>0.05) OR coverage drop not wrist-specific (chest TEMP shows similar drop).",
+      "statistical_test_plan": "Linear regression: wrist_TEMP_bias ~ elapsed_time. Mixed model: coverage ~ elapsed_time * sensor_location (wrist/chest) + (1|subject). Test interaction at alpha=0.05.",
+      "falsification_test": "Apply post-hoc drift correction to wrist TEMP (linear detrending per subject). If coverage drop persists after correction, H7 is falsified."
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Residual physiological arousal from the preceding amusement condition contaminates the stress baseline for subjects with slow EDA recovery (tau>30s), causing their early stress windows to be binned as high-arousal but conformal quantiles reflect true stress distribution, yielding overcoverage early and undercoverage late.",
+      "proposed_mechanism": "Slow EDA recovery from amusement -> elevated tonic EDA at stress onset -> early stress windows assigned to high-arousal Mondrian bins -> conformal quantiles too wide for early windows -> quantiles too narrow for late windows after recovery -> undercoverage in late stress.",
+      "causal_path": "EDA_recovery_tau_amusement -> tonic_EDA_at_stress_onset -> early_window_mondrian_bin -> conformal_quantile_width_early_vs_late -> coverage_by_window_index",
+      "mechanism_variables": [
+        "EDA_recovery_tau_amusement",
+        "tonic_EDA_stress_window_1",
+        "mondrian_bin_window_1",
+        "mondrian_bin_window_10",
+        "conformal_quantile_window_1",
+        "conformal_quantile_window_10",
+        "coverage_window_1",
+        "coverage_window_10"
+      ],
+      "possible_confounders": [
+        "amusement_intensity",
+        "inter_condition_interval",
+        "baseline_EDA",
+        "age"
+      ],
+      "control_variables": [
+        "standardize inter_condition_interval; include amusement_intensity rating; control for baseline_EDA"
+      ],
+      "rival_explanation": "Coverage variation across stress windows is due to within-stress habituation (H3), not prior-condition contamination.",
+      "rival_prediction": "Coverage pattern correlates with within-stress EDA slope, not with amusement_recovery_tau.",
+      "distinguishing_test": "Multiple regression: coverage_window_10 ~ within_stress_EDA_slope + amusement_recovery_tau. H1 predicts significant amusement_recovery_tau coefficient (p<0.05) controlling for within_stress_slope; rival predicts only within_stress_slope significant.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Slow recovery (tau>30s) affects ~25% of subjects; can elevate tonic EDA by 0.5-1µS at stress onset; Mondrian bins shift by 1-2 levels -> 10-15pp coverage swing across stress windows.",
+      "minimum_data_needed": [
+        "EDA during amusement and transition",
+        "EDA_recovery_tau estimate per subject",
+        "Mondrian bin per stress window",
+        "conformal quantile per window",
+        "coverage per window",
+        "amusement condition intensity"
+      ],
+      "testable_prediction": "Subjects with amusement_recovery_tau > 30s show coverage_window_1 > 95% and coverage_window_10 < 80%; fast-recovery subjects show stable coverage ~90%.",
+      "failure_condition": "No significant correlation between amusement_recovery_tau and (coverage_window_1 - coverage_window_10) (Spearman p>0.05).",
+      "statistical_test_plan": "Spearman correlation: amusement_recovery_tau vs coverage_drop (window_1 - window_10). Bootstrap 95% CI. Alpha=0.05.",
+      "falsification_test": "Insert 5-min rest between amusement and stress. If coverage pattern disappears, H8 confirmed; if persists, H8 falsified (supports H3)."
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Subjects with high resting heart rate variability (RMSSD>50ms) exhibit paradoxical HRV increase during stress (vagal withdrawal failure), causing their stress windows to fall into Mondrian bins dominated by baseline/amusement windows, yielding over-wide conformal quantiles that nevertheless undercover due to bimodal score distribution.",
+      "proposed_mechanism": "High baseline RMSSD -> blunted HRV stress response (or paradoxical increase) -> stress HRV features overlap baseline distribution -> Mondrian bin mixes stress and baseline -> conformal scores bimodal -> quantile covers modes but misses anti-modes -> undercoverage.",
+      "causal_path": "baseline_RMSSD -> stress_HRV_response_direction -> mondrian_bin_purity -> conformal_score_bimodality -> quantile_coverage_gap",
+      "mechanism_variables": [
+        "baseline_RMSSD",
+        "stress_HRV_change_RMSSD",
+        "mondrian_bin_stress_purity",
+        "conformal_score_distribution",
+        "empirical_coverage_90"
+      ],
+      "possible_confounders": [
+        "age",
+        "fitness_level",
+        "medication",
+        "breathing_rate",
+        "baseline_HR"
+      ],
+      "control_variables": [
+        "restrict to medication-free; control breathing_rate via RESP; include fitness_proxy (resting_HR)"
+      ],
+      "rival_explanation": "Undercoverage for high-RMSSD subjects is due to EDA non-response, not HRV paradoxical response.",
+      "rival_prediction": "Undercoverage correlates with EDA_reactivity but not with stress_HRV_change_RMSSD.",
+      "distinguishing_test": "Stratify by baseline_RMSSD tertile. Within high-RMSSD tertile, compare coverage for paradoxical-HRV (stress_RMSSD > baseline) vs normal-HRV responders. H1 predicts lower coverage for paradoxical subgroup; rival predicts no difference.",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Paradoxical HRV response prevalence unknown in WESAD; need to estimate proportion with stress_RMSSD > baseline_RMSSD and their coverage deficit. Pilot analysis of 5 subjects would estimate effect size.",
+      "minimum_data_needed": [
+        "ECG at 700Hz for HRV",
+        "baseline and stress RMSSD per subject",
+        "Mondrian bin assignments",
+        "conformal scores per window",
+        "ground-truth labels",
+        "RESP for breathing_rate control"
+      ],
+      "testable_prediction": "High-RMSSD subjects with paradoxical HRV response show coverage <80%; high-RMSSD normal responders show coverage >88%.",
+      "failure_condition": "No coverage difference between paradoxical and normal HRV responders within high-RMSSD tertile (t-test p>0.05).",
+      "statistical_test_plan": "Within high-RMSSD tertile: t-test coverage_paradoxical vs coverage_normal. Alpha=0.05. Report Cohen's d.",
+      "falsification_test": "Re-run Mondrian with HRV features excluded. If undercoverage persists for paradoxical-HRV subjects, H9 is falsified."
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Mondrian's exchangeability assumption is violated for subjects with circadian-phase-dependent stress reactivity (e.g., evening types tested in morning), causing systematic conformal score distribution shift between calibration (mixed chronotypes) and test (specific chronotype) that manifests as undercoverage.",
+      "proposed_mechanism": "Chronotype x time-of-day interaction -> stress_reactivity_phenotype -> feature_distribution_shift -> conformal_score_distribution_shift -> quantile_miscalibration -> undercoverage for misaligned chronotypes.",
+      "causal_path": "chronotype_score * test_time_of_day -> stress_EDA_ECG_feature_vector -> mondrian_bin_assignment -> conformal_score_cdf -> coverage_indicator",
+      "mechanism_variables": [
+        "chronotype_MEQ_score",
+        "test_time_of_day",
+        "stress_feature_vector",
+        "mondrian_bin_index",
+        "conformal_score",
+        "empirical_coverage_90"
+      ],
+      "possible_confounders": [
+        "sleep_duration",
+        "caffeine_intake",
+        "baseline_stress",
+        "age",
+        "sex"
+      ],
+      "control_variables": [
+        "include sleep_duration and caffeine as covariates; restrict to regular sleepers; balance time-of-day across chronotypes in calibration"
+      ],
+      "rival_explanation": "Undercoverage is due to general inter-subject variability, not chronotype-time interaction.",
+      "rival_prediction": "Coverage correlates with overall feature distance to calibration mean, not with chronotype*time interaction.",
+      "distinguishing_test": "Fit model: coverage ~ chronotype*time_of_day + feature_distance_to_calibration_mean. H1 predicts significant interaction (p<0.05) controlling for feature_distance; rival predicts only feature_distance significant.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Circadian effects on stress reactivity ~5-10% variance; Mondrian bins may partially absorb; expected coverage deficit 3-8pp for misaligned subjects.",
+      "minimum_data_needed": [
+        "MEQ chronotype questionnaire",
+        "test session timestamp",
+        "stress condition feature vectors",
+        "Mondrian bin assignments",
+        "conformal scores",
+        "empirical coverage",
+        "sleep/caffeine logs"
+      ],
+      "testable_prediction": "Evening types tested before 10am show coverage <85%; morning types tested before 10am show coverage >88%. Evening types tested after 2pm show coverage >88%.",
+      "failure_condition": "No significant chronotype*time_of_day interaction on coverage (linear model p>0.05) after controlling for feature_distance.",
+      "statistical_test_plan": "Linear model: coverage ~ chronotype * time_of_day_block + feature_distance + sleep_duration + caffeine. Test interaction at alpha=0.05.",
+      "falsification_test": "Re-calibrate Mondrian separately for each chronotype*time_of_day block. If undercoverage disappears, H10 confirmed; if persists, H10 falsified (shift not captured by taxonomy)."
+    }
+  ],
+  "total_tokens": 8022,
+  "completion_tokens": 7470
+}

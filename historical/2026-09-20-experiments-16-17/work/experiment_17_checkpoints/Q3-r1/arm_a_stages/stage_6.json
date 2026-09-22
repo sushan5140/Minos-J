@@ -1,0 +1,104 @@
+{
+  "rival_prediction_matrix": [
+    {
+      "rival_explanation": "random fluctuation in model entropy due to stochastic training",
+      "hypothesis_id": "H1",
+      "meno_j_prediction": "Higher resting RMSSD will be associated with higher model prediction entropy (positive association).",
+      "what_result_supports_rival": "The association between resting RMSSD and uncertainty becomes non-significant or negative after controlling for fitness and caffeine intake.",
+      "meno_j_hypothesis": "Subject-level variation in wearable stress-detection uncertainty stems from individual differences in baseline autonomic tone, such as resting heart-rate variability, which alters the mapping between physiological signals and stress labels.",
+      "what_result_supports_meno_j": "A significant positive association between resting RMSSD and model uncertainty persists after controlling for fitness and caffeine intake.",
+      "distinguishing_test": "After controlling for fitness level and caffeine intake, the sign of the association between resting RMSSD and uncertainty reverses or becomes non‑significant.",
+      "rival_prediction": "Higher resting RMSSD is associated with lower model uncertainty (i.e., better signal quality reduces uncertainty)."
+    },
+    {
+      "rival_explanation": "electrode degradation over time causing impedance changes unrelated to baseline skin properties",
+      "hypothesis_id": "H2",
+      "meno_j_prediction": "Higher skin impedance will be associated with higher model prediction entropy.",
+      "what_result_supports_rival": "The association between skin impedance and uncertainty becomes non-significant or negative after controlling for skin hydration and sweat rate.",
+      "meno_j_hypothesis": "Variability in skin impedance and epidermal properties across participants leads to heterogeneous PPG signal quality, thereby influencing uncertainty estimates.",
+      "what_result_supports_meno_j": "A significant positive association between skin impedance and model uncertainty remains after controlling for skin hydration and sweat rate.",
+      "distinguishing_test": "When skin hydration and sweat rate are statistically controlled, the positive relationship between impedance and uncertainty disappears or reverses.",
+      "rival_prediction": "Higher skin impedance is associated with lower model uncertainty because it reflects better epidermal barrier reducing motion artifact."
+    },
+    {
+      "rival_explanation": "time‑of‑day variation in ambient temperature affecting sensor readings",
+      "hypothesis_id": "H3",
+      "meno_j_prediction": "Larger absolute circadian phase difference will be associated with higher model prediction entropy.",
+      "what_result_supports_rival": "The association between circadian phase difference and uncertainty becomes non-significant or negative after adjusting for sleep deprivation and caffeine.",
+      "meno_j_hypothesis": "Circadian phase differences cause time-of-day-dependent modulation of stress-related physiology, producing subject-specific uncertainty when models ignore temporal context.",
+      "what_result_supports_meno_j": "A significant positive association between absolute circadian phase difference and model uncertainty persists after adjusting for sleep deprivation and caffeine.",
+      "distinguishing_test": "After adjusting for sleep deprivation and caffeine, the direction of the association between phase difference and uncertainty flips or becomes null.",
+      "rival_prediction": "Larger circadian phase difference is associated with lower model uncertainty because stress‑evoked responses are amplified at certain internal phases."
+    },
+    {
+      "rival_explanation": "random inattention leading to occasional missed EMA prompts",
+      "hypothesis_id": "H4",
+      "meno_j_prediction": "Higher self-report bias score will be associated with higher model prediction entropy.",
+      "what_result_supports_rival": "The association between self-report bias and uncertainty becomes non-significant or negative after controlling for neuroticism and momentary affect.",
+      "meno_j_hypothesis": "Inconsistent self-report labeling of stress across participants introduces label noise that propagates to higher model uncertainty for certain subjects.",
+      "what_result_supports_meno_j": "A significant positive association between self-report bias score and model uncertainty remains after controlling for neuroticism and momentary affect.",
+      "distinguishing_test": "When neuroticism and momentary affect are included as covariates, the bias‑uncertainty relationship loses significance or reverses.",
+      "rival_prediction": "Higher self‑report bias is associated with lower model uncertainty because biased labels produce a more consistent (though inaccurate) pattern that the model can learn confidently."
+    },
+    {
+      "rival_explanation": "strap loosening due to material creep rather than initial tightness",
+      "hypothesis_id": "H5",
+      "meno_j_prediction": "Lower strap tightness will be associated with higher model prediction entropy (inverse relationship).",
+      "what_result_supports_rival": "The association between strap tightness and uncertainty becomes non-significant or positive after controlling for arm circumference and movement intensity.",
+      "meno_j_hypothesis": "Variability in sensor placement tightness and orientation across individuals creates differential motion artifact susceptibility, affecting uncertainty.",
+      "what_result_supports_meno_j": "A significant negative association between strap tightness and model uncertainty (lower tightness → higher uncertainty) persists after controlling for arm circumference and movement intensity.",
+      "distinguishing_test": "After controlling for arm circumference and movement intensity, the inverse relationship between tightness and uncertainty disappears or changes sign.",
+      "rival_prediction": "Looser strap coupling is associated with lower model uncertainty because increased motion averages out noise, leading to more stable features."
+    },
+    {
+      "rival_explanation": "random genotyping error causing misclassification of COMT status",
+      "hypothesis_id": "H6",
+      "meno_j_prediction": "Each additional Val allele will be associated with higher model prediction entropy (positive dose‑response).",
+      "what_result_supports_rival": "The association between Val allele count and uncertainty becomes non-significant or negative after adjusting for baseline dopamine and recent stress exposure.",
+      "meno_j_hypothesis": "Genetic polymorphisms in catecholamine metabolism (e.g., COMT Val158Met) modulate the magnitude of physiological stress responses, leading to subject-level uncertainty differences.",
+      "what_result_supports_meno_j": "A significant positive association between number of Val alleles and model uncertainty persists after adjusting for baseline dopamine and recent stress exposure.",
+      "distinguishing_test": "After adjusting for baseline dopamine and recent stress exposure, the Val‑allele effect on uncertainty becomes non‑significant or reverses.",
+      "rival_prediction": "Carrying more Val alleles is associated with lower model uncertainty because faster catecholamine clearance yields a more stable baseline, reducing variability in stress‑evoked signals."
+    },
+    {
+      "rival_explanation": "software bugs causing drift in model parameters unrelated to physiology",
+      "hypothesis_id": "H7",
+      "meno_j_prediction": "Greater absolute change in stress‑response slope across sessions will be associated with higher model prediction entropy.",
+      "what_result_supports_rival": "The association between stress‑response slope change and uncertainty becomes non-significant or negative after adjusting for life events and medication changes.",
+      "meno_j_hypothesis": "Within-subject temporal non-stationarity (habituation or sensitization to stressors) over weeks causes drift in the stress-signal relationship, raising uncertainty for later measurements.",
+      "what_result_supports_meno_j": "A significant positive association between absolute change in stress‑response slope and model uncertainty remains after adjusting for life events and medication changes.",
+      "distinguishing_test": "When life‑event and medication change covariates are included, the association between slope change and uncertainty loses significance or flips direction.",
+      "rival_prediction": "Greater within‑subject change in stress‑response slope across sessions is associated with lower model uncertainty because the model adapts to the new relationship over time."
+    },
+    {
+      "rival_explanation": "sensor drift or battery voltage changes during prolonged activity affecting signal quality",
+      "hypothesis_id": "H8",
+      "meno_j_prediction": "Higher average daily activity intensity will be associated with higher model prediction entropy.",
+      "what_result_supports_rival": "The association between activity intensity and uncertainty becomes non-significant or negative after adjusting for fitness and exercise stress reactivity.",
+      "meno_j_hypothesis": "Failure to stratify by activity context (e.g., exercise vs. sedentary) yields context-dependent uncertainty that varies across subjects based on their typical activity patterns.",
+      "what_result_supports_meno_j": "A significant positive association between average daily activity intensity and model uncertainty persists after adjusting for fitness and exercise stress reactivity.",
+      "distinguishing_test": "After adjusting for fitness and exercise stress reactivity, the positive relationship between activity intensity and uncertainty becomes non‑significant or reverses.",
+      "rival_prediction": "Higher average daily activity intensity is associated with lower model uncertainty because activity‑induced physiological changes provide a stronger, more distinguishable signal for the model."
+    },
+    {
+      "rival_explanation": "unequal class distribution causing higher uncertainty for minority class regardless of sample size",
+      "hypothesis_id": "H9",
+      "meno_j_prediction": "Fewer labeled samples per subject will be associated with higher model prediction uncertainty (inverse relationship).",
+      "what_result_supports_rival": "The association between sample size and uncertainty becomes non-significant or positive after controlling for label variance and regularization.",
+      "meno_j_hypothesis": "Low per-subject sample size leads to high variance in estimated model parameters (e.g., weights in a personalized classifier), directly increasing uncertainty estimates for those individuals.",
+      "what_result_supports_meno_j": "A significant negative association between number of labeled samples per subject and model uncertainty persists after controlling for label variance and regularization strength.",
+      "distinguishing_test": "When label variance and regularization are controlled for, the inverse relationship between sample size and uncertainty disappears or changes sign.",
+      "rival_prediction": "Fewer labeled samples per subject are associated with lower model uncertainty because less data reduces overfitting, yielding more conservative predictions."
+    },
+    {
+      "rival_explanation": "random jitter introduced by software interpolation algorithms",
+      "hypothesis_id": "H10",
+      "meno_j_prediction": "Higher sampling rate jitter or greater synchronization offset will be associated with higher model prediction entropy.",
+      "what_result_supports_rival": "The association between jitter/offset and uncertainty becomes non-significant or negative after controlling for ambient temperature and battery voltage.",
+      "meno_j_hypothesis": "Differences in sensor sampling rates and synchronization errors across devices introduce temporal misalignment that affects feature extraction, leading to subject-specific uncertainty.",
+      "what_result_supports_meno_j": "A significant positive association between sampling rate jitter/synchronization offset and model uncertainty persists after controlling for ambient temperature and battery voltage.",
+      "distinguishing_test": "After controlling for temperature and battery voltage, the relationship between jitter/offset and uncertainty loses significance or reverses.",
+      "rival_prediction": "Greater sampling‑rate jitter and synchronization offset are associated with lower model uncertainty because the introduced temporal dispersion acts as a regularizing noise term."
+    }
+  ]
+}

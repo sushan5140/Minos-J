@@ -1,0 +1,234 @@
+{
+  "mechanism_builds": [
+    {
+      "hypothesis_id": "H1",
+      "mechanism_variables": [
+        "subject_autonomic_tone_LF_HF_ratio",
+        "subject_vascular_compliance_pwv_m_s",
+        "subject_electrode_skin_impedance_ohm",
+        "nonconformity_score_distribution_KS_distance",
+        "coverage_gap_within_vs_cross_subject"
+      ],
+      "causal_path": "Subject-specific autonomic tone, vascular compliance, and electrode-skin impedance create distinct marginal distributions of non-conformity scores → pooling calibration and test segments across subjects violates exchangeability → conditional coverage guarantee degrades",
+      "expected_direction": "Cross-subject calibration yields lower empirical coverage than within-subject calibration; coverage gap increases with KS distance between subject non-conformity score distributions",
+      "domain_specific_boundary_conditions": [
+        "Multi-subject physiological monitoring with no subject-level covariates in predictor",
+        "Calibration set drawn from different subjects than test segments",
+        "Signal modalities: ECG, PPG, or BP with subject-specific morphology"
+      ],
+      "measurable_outcomes": [
+        "Empirical coverage difference: within-subject vs cross-subject calibration (percentage points)",
+        "KS distance between non-conformity score CDFs across subjects",
+        "Coverage gap vs. subject physiological distance (e.g., PWV difference) correlation coefficient"
+      ],
+      "mechanism_builder_notes": "Test by constructing calibration sets from single vs. multiple subjects; measure non-conformity score distribution shift using Wasserstein distance; quantify coverage degradation as function of subject heterogeneity."
+    },
+    {
+      "hypothesis_id": "H2",
+      "mechanism_variables": [
+        "segment_motion_artifact_rms_g",
+        "segment_electrode_pop_rate_per_min",
+        "segment_baseline_wander_amplitude_uv",
+        "nonconformity_score_wasserstein_distance_clean_vs_artifact",
+        "coverage_vs_artifact_level_slope"
+      ],
+      "causal_path": "Segment-dependent motion artifacts, electrode pops, and baseline wander alter residual distribution shape → non-conformity score distribution shifts between clean and artifact segments → identical distribution assumption violated → coverage drops in high-artifact segments when calibrated on clean data",
+      "expected_direction": "Coverage decreases monotonically with increasing artifact amplitude/rate; negative slope of coverage vs. artifact level when calibration from low-artifact segments",
+      "domain_specific_boundary_conditions": [
+        "Artifact labels unavailable for stratification",
+        "Segments defined by external protocol (e.g., fixed windows) not artifact state",
+        "Signal types: wearable PPG, ambulatory ECG, EEG with motion corruption"
+      ],
+      "measurable_outcomes": [
+        "Spearman correlation between segment artifact RMS and empirical coverage",
+        "Wasserstein distance between non-conformity score distributions in clean vs. artifact segments",
+        "Coverage deficit in top artifact quartile vs. bottom quartile (percentage points)"
+      ],
+      "mechanism_builder_notes": "Induce controlled artifacts via motion protocols; measure non-conformity score distribution shift using sliced Wasserstein distance; test if artifact-aware non-conformity measures (e.g., residual/SNR) stabilize coverage."
+    },
+    {
+      "hypothesis_id": "H3",
+      "mechanism_variables": [
+        "autonomic_shift_magnitude_rmssd_change_ms",
+        "transition_detection_latency_sec",
+        "calibration_window_length_sec",
+        "proportion_transition_spanning_windows",
+        "coverage_pre_vs_post_transition"
+      ],
+      "causal_path": "Abrupt autonomic shifts (sleep-stage, orthostasis) alter signal morphology faster than calibration window adapts → calibration windows spanning transitions mix pre- and post-transition non-conformity scores → exchangeability violated within window → coverage degrades near transitions",
+      "expected_direction": "Coverage lowest for segments centered on transitions; coverage decreases as proportion of transition-spanning calibration windows increases; pre-transition and post-transition coverage differ significantly",
+      "domain_specific_boundary_conditions": [
+        "State changes at timescales shorter than calibration window (e.g., < 5 min for sleep stages)",
+        "Non-conformity measure sensitive to state-dependent features (HRV, PPG morphology)",
+        "Continuous monitoring with unobserved state transitions"
+      ],
+      "measurable_outcomes": [
+        "Empirical coverage in 30-sec bins relative to annotated transition time",
+        "Coverage difference between pure pre-transition and pure post-transition segments",
+        "Coverage vs. calibration window length for fixed transition rate"
+      ],
+      "mechanism_builder_notes": "Use polysomnography-annotated sleep stages or tilt-table orthostatic transitions; vary calibration window length; measure non-conformity score bimodality index (Hartigan's dip test) in transition-spanning windows."
+    },
+    {
+      "hypothesis_id": "H4",
+      "mechanism_variables": [
+        "nonconformity_score_ar1_coefficient",
+        "effective_sample_size_n_eff",
+        "segment_length_samples",
+        "coverage_deviation_from_nominal",
+        "coefficient_of_variation_coverage_across_segments"
+      ],
+      "causal_path": "Serial dependence in residuals induces clustering of non-conformity scores → effective sample size n_eff = n * (1-rho)/(1+rho) < nominal n → finite-sample coverage guarantee weakens → coverage fluctuates with segment-specific autocorrelation strength",
+      "expected_direction": "Coverage deviation magnitude increases as AR(1) coefficient increases; coverage variance across segments positively correlated with segment autocorrelation; nominal coverage achieved only when n_eff > threshold (e.g., 30)",
+      "domain_specific_boundary_conditions": [
+        "Segment length insufficient for mixing (e.g., < 10x autocorrelation decay time)",
+        "Non-conformity scores not decorrelated (e.g., absolute residuals of ARMA process)",
+        "Physiological signals: ECG R-R intervals, PPG pulse rate, continuous BP"
+      ],
+      "measurable_outcomes": [
+        "Regression slope of |coverage - nominal| vs. segment AR(1) coefficient",
+        "Effective sample size n_eff at which coverage enters nominal 95% CI",
+        "Coverage coefficient of variation across segments vs. mean segment autocorrelation"
+      ],
+      "mechanism_builder_notes": "Simulate AR(1) non-conformity scores with known rho; compute n_eff via batch means; test block conformal or thinning to restore exchangeability; measure coverage stability vs. block size."
+    },
+    {
+      "hypothesis_id": "H5",
+      "mechanism_variables": [
+        "annotation_error_bias_ms",
+        "annotation_error_variance_ms2",
+        "segment_snr_db",
+        "nonconformity_score_shift_median",
+        "coverage_vs_annotation_error_variance"
+      ],
+      "causal_path": "Segment-varying annotation errors (R-peak jitter, sleep-stage disagreement) create heteroscedastic label noise → non-conformity scores biased proportionally to error variance → score distribution shifts differently per segment → coverage destabilizes",
+      "expected_direction": "Coverage deviates from nominal in segments with high annotation error variance; direction of deviation follows annotation bias sign; coverage variance across segments correlates with annotation error variance",
+      "domain_specific_boundary_conditions": [
+        "Label noise characteristics differ across segments due to signal quality or annotator fatigue",
+        "Noise heteroscedasticity unmodeled in conformal procedure",
+        "Ground truth: manual R-peak annotation, sleep staging, BP cuff synchronization"
+      ],
+      "measurable_outcomes": [
+        "Correlation between segment annotation error variance (from replicate annotations) and coverage deviation",
+        "Median non-conformity score shift vs. induced annotation bias in controlled experiment",
+        "Coverage in high-SNR vs. low-SNR segments (using SNR as proxy for annotation quality)"
+      ],
+      "mechanism_builder_notes": "Inject synthetic annotation jitter with known variance; compare coverage using clean vs. noisy labels; measure non-conformity score distribution shift via KL divergence; test noise-robust non-conformity measures (e.g., quantile regression residuals)."
+    },
+    {
+      "hypothesis_id": "H6",
+      "mechanism_variables": [
+        "medication_status_binary",
+        "hydration_usg",
+        "circadian_phase_hours_from_dlmo",
+        "covariate_shift_mmd",
+        "coverage_stratified_by_latent_covariate"
+      ],
+      "causal_path": "Unmeasured covariates (medication, hydration, circadian phase) shift signal distribution and optimal prediction interval width → single non-conformity measure applied across all segments → miscalibration where covariate composition differs from calibration set → coverage varies with latent covariate distribution",
+      "expected_direction": "Coverage deviates in segments with different latent covariate distributions vs. calibration; coverage gap correlates with MMD between segment and calibration covariate distributions; stratified coverage reveals systematic under/over-coverage in specific covariate strata",
+      "domain_specific_boundary_conditions": [
+        "Latent covariates unrecorded but vary systematically across recording sessions/segments",
+        "Covariates modulate signal predictability (e.g., beta-blockers reduce HRV, dehydration increases BP variability)",
+        "No randomization possible in observational physiological monitoring"
+      ],
+      "measurable_outcomes": [
+        "Coverage difference between medication-on vs. medication-off segments (post-hoc stratification)",
+        "Maximum mean discrepancy (MMD) between segment and calibration covariate distributions vs. coverage gap",
+        "Calibration of adaptive conformal prediction with estimated propensity scores for latent covariates"
+      ],
+      "mechanism_builder_notes": "Collect latent covariates in sub-study; use MMD to quantify covariate shift; test weighted conformal prediction with importance weights; measure coverage improvement when stratifying by observed proxies (time-of-day, medication logs)."
+    },
+    {
+      "hypothesis_id": "H7",
+      "mechanism_variables": [
+        "effective_calibration_size_n_cal",
+        "segment_artifact_rejection_rate_pct",
+        "segment_length_min",
+        "coverage_variance_vs_n_cal",
+        "mean_coverage_vs_n_cal"
+      ],
+      "causal_path": "Variable artifact rejection/missing data causes effective calibration size n_cal to vary across segments → smaller n_cal yields wider prediction sets and higher coverage variance (finite-sample effect) → when n_cal correlates with segment characteristics (e.g., activity level), coverage appears unstable but reflects sample-size artifacts",
+      "expected_direction": "Coverage variance inversely proportional to n_cal; mean coverage conservative (over-coverage) for small n_cal due to quantile inflation; apparent instability correlates with artifact rejection rate",
+      "domain_specific_boundary_conditions": [
+        "Calibration size varies systematically with segment characteristics (e.g., more artifacts during exercise)",
+        "Adaptive windowing or artifact rejection creates heterogeneous n_cal",
+        "Nominal coverage target: 90% or 95%"
+      ],
+      "measurable_outcomes": [
+        "Empirical coverage variance across segments vs. theoretical finite-sample variance (1/(n_cal+1))",
+        "Regression of segment coverage on n_cal controlling for segment type",
+        "Coverage stability after subsampling all segments to equal n_cal"
+      ],
+      "mechanism_builder_notes": "Subsample calibration sets to fixed n_cal to isolate distribution shift from sample size effects; compare observed coverage variance to binomial variance; test if coverage instability persists after equalizing n_cal across segments."
+    },
+    {
+      "hypothesis_id": "H8",
+      "mechanism_variables": [
+        "segment_residual_kurtosis",
+        "segment_residual_skewness",
+        "segment_heteroscedasticity_index",
+        "segment_morphological_complexity_sampen",
+        "coverage_vs_complexity_slope"
+      ],
+      "causal_path": "Segments with complex morphologies (arrhythmia, motion-corrupted PPG) exhibit heavy-tailed, heteroscedastic residuals; clean segments have near-Gaussian errors → fixed non-conformity measure (absolute residual) cannot normalize shape variation → over-coverage in simple segments, under-coverage in complex segments",
+      "expected_direction": "Coverage negatively correlated with morphological complexity (sample entropy) and residual kurtosis; under-coverage in high-complexity segments, over-coverage in low-complexity segments",
+      "domain_specific_boundary_conditions": [
+        "Conditional error distribution varies in shape (kurtosis, skewness) not just scale across segments",
+        "Non-conformity measure fixed (e.g., |y - y_hat|) without local scaling",
+        "Signal types: ECG with arrhythmia, PPG with motion, EEG with seizures"
+      ],
+      "measurable_outcomes": [
+        "Spearman correlation between segment sample entropy and empirical coverage",
+        "Coverage in high-kurtosis (top quartile) vs. low-kurtosis (bottom quartile) segments",
+        "Coverage improvement using adaptive non-conformity: |residual| / local_MAD vs. fixed"
+      ],
+      "mechanism_builder_notes": "Compute local scale estimates (MAD, quantile regression) per segment; test locally adaptive non-conformity measures; measure coverage uniformity across complexity strata using chi-squared goodness-of-fit."
+    },
+    {
+      "hypothesis_id": "H9",
+      "mechanism_variables": [
+        "drift_rate_mean_shift_per_hour",
+        "calibration_window_age_hours",
+        "signal_modality",
+        "coverage_decay_slope_per_hour",
+        "drift_rate_modality_comparison"
+      ],
+      "causal_path": "Gradual shifts in mean signal level, variability, or feature relationships (circadian, disease progression, sensor degradation) alter non-conformity score distribution over hours-days → calibration distribution becomes stale → coverage decays proportionally to drift magnitude and time since calibration; drift rate differs by modality",
+      "expected_direction": "Coverage decreases monotonically with calibration window age; decay slope steeper for faster-drifting modalities (e.g., PPG > ECG); coverage restored by recalibration",
+      "domain_specific_boundary_conditions": [
+        "Drift timescale longer than calibration window (hours) but shorter than recording (days)",
+        "Drift rates differ across signal modalities (PPG more susceptible to sensor degradation)",
+        "No adaptive recalibration in baseline conformal procedure"
+      ],
+      "measurable_outcomes": [
+        "Coverage vs. hours since calibration (linear decay slope with 95% CI)",
+        "Drift rate estimation via sliding-window KS test on non-conformity scores",
+        "Modality-specific drift rates: PPG vs. ECG vs. BP coverage decay comparison"
+      ],
+      "mechanism_builder_notes": "Track non-conformity score distribution over 24-72h recordings; fit exponential decay to coverage; test periodic recalibration (e.g., every 4h) vs. adaptive windowing; quantify drift via Wasserstein distance between consecutive calibration windows."
+    },
+    {
+      "hypothesis_id": "H10",
+      "mechanism_variables": [
+        "respiratory_rate_bpm",
+        "mayer_wave_power_01_hz",
+        "thermoregulatory_cycle_period_hours",
+        "segment_boundary_phase_rad",
+        "coverage_circular_correlation_with_phase"
+      ],
+      "causal_path": "Physiological oscillators (RSA ~0.2-0.3 Hz, Mayer waves ~0.1 Hz, thermoregulation ~24h) periodically modulate prediction error variance → non-conformity score distribution varies with oscillator phase → segments captured at different phases have systematically different score distributions → coverage oscillates with segment timing relative to hidden phases",
+      "expected_direction": "Coverage oscillates at confounder frequencies; lowest coverage at high-error-variance phases (e.g., inspiration for RSA, vasoconstriction for Mayer waves); circular correlation between segment boundary phase and coverage significant",
+      "domain_specific_boundary_conditions": [
+        "Multiple overlapping physiological rhythms modulate predictability",
+        "Segment boundaries determined by external protocol (fixed windows) not physiological phase",
+        "Non-conformity measure sensitive to phase-dependent error variance"
+      ],
+      "measurable_outcomes": [
+        "Circular correlation coefficient between segment start phase (from concurrent respiration/BP) and coverage",
+        "Spectral peak in coverage time series at Mayer wave frequency (0.1 Hz) or respiratory frequency",
+        "Coverage amplitude of oscillation (max-min coverage across phases)"
+      ],
+      "mechanism_builder_notes": "Record concurrent respiration, continuous BP, temperature; compute instantaneous phase via Hilbert transform; bin segments by phase; test if phase-stratified conformal prediction stabilizes coverage; measure coverage oscillation amplitude via Rayleigh test."
+    }
+  ]
+}

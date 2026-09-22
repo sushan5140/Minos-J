@@ -1,0 +1,10 @@
+unit_id,question_id,replicate,status,budget_matched,token_ratio_B_over_A,A_reported_survivors,A_judge_validated,A_precision,A_mean_checklist_fraction,A_near_duplicate_rate,A_mean_card_chars,B_reported_survivors,B_judge_validated,B_precision,B_mean_checklist_fraction,B_near_duplicate_rate,B_mean_card_chars,difference_A_minus_B
+Q1-r1,Q1,1,JUDGE_FAILED,True,1.0410215252540738,,,,,,,,,,,,,
+Q2-r1,Q2,1,ARM_A_FAILED,,,,,,,,,,,,,,,
+Q3-r1,Q3,1,ARM_A_FAILED,,,,,,,,,,,,,,,
+Q1-r2,Q1,2,ARM_A_FAILED,,,,,,,,,,,,,,,
+Q2-r2,Q2,2,JUDGE_FAILED,True,0.9697295210600961,,,,,,,,,,,,,
+Q3-r2,Q3,2,ARM_A_FAILED,,,,,,,,,,,,,,,
+Q1-r3,Q1,3,ARM_B_FAILED,False,1.6399775711053965,,,,,,,,,,,,,
+Q2-r3,Q2,3,JUDGE_FAILED,True,1.0543448989044844,,,,,,,,,,,,,
+Q3-r3,Q3,3,ARM_A_FAILED,,,,,,,,,,,,,,,

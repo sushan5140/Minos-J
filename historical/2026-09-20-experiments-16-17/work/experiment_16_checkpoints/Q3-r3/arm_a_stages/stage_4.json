@@ -1,0 +1,84 @@
+{
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Inter-individual variation in skin hydration and stratum corneum thickness alters the electrical contact impedance of wearable electrodes, leading to subject-specific signal-to-noise ratios in electrodermal activity measurements.",
+      "proposed_mechanism": "Skin surface properties modulate the effective electrode-skin interface, causing differential attenuation of phasic sweat gland responses that are the primary stress biomarker.",
+      "core_assumption": "Skin hydration and thickness vary systematically across individuals and remain relatively stable over the measurement period.",
+      "knowledge_gap_addressed": "Quantitative link between dermatological parameters and wearable stress-detection uncertainty at the subject level.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Baseline autonomic tone and reactivity phenotypes (e.g., high vs. low heart rate variability responders) create divergent dynamic ranges for stress-induced physiological changes, affecting classifier confidence intervals.",
+      "proposed_mechanism": "Subjects with inherently low HRV exhibit compressed physiological response amplitudes, reducing the separability of stress and non-stress states in feature space.",
+      "core_assumption": "Autonomic phenotype is a stable trait that determines the magnitude of stress-evoked cardiovascular fluctuations.",
+      "knowledge_gap_addressed": "How trait-level autonomic characteristics propagate into subject-specific uncertainty estimates for wearable stress models.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Habitual sensor placement offsets (e.g., wrist circumference, device tightness) introduce systematic geometric distortions in photoplethysmography and accelerometer signals that differ across users.",
+      "proposed_mechanism": "Mechanical coupling between device and tissue varies with anatomy and wearing habits, altering optical path length and motion artifact spectra in a subject-dependent manner.",
+      "core_assumption": "Users consistently wear devices in idiosyncratic positions that are not captured by standard calibration protocols.",
+      "knowledge_gap_addressed": "The contribution of unmeasured placement variability to inter-subject differences in stress-detection reliability.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Circadian phase at time of measurement interacts with stress reactivity, causing time-of-day-dependent shifts in baseline physiology that are not fully accounted for in population-level models.",
+      "proposed_mechanism": "Endogenous rhythms in cortisol, body temperature, and autonomic balance modulate the gain of stress response systems, leading to heteroscedastic prediction errors across the 24-hour cycle.",
+      "core_assumption": "Circadian modulation of stress physiology is sufficiently large and variable across individuals to degrade fixed-threshold classifiers.",
+      "knowledge_gap_addressed": "Subject-specific circadian alignment as a source of structured uncertainty in continuous stress monitoring.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Self-reported stress labels suffer from recall latency and interpretation bias that correlate with personality traits (e.g., neuroticism), producing subject-specific label noise distributions.",
+      "proposed_mechanism": "Individuals differ in the mapping from internal state to categorical report, creating non-random mislabeling that propagates into model uncertainty estimates.",
+      "core_assumption": "Labeling error is not independent of subject characteristics but systematically related to stable psychological attributes.",
+      "knowledge_gap_addressed": "The impact of trait-dependent reporting bias on the calibration of subject-level predictive uncertainty.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Cardiorespiratory fitness level stratifies the physiological expression of stress, such that high-fitness individuals show blunted heart rate responses but exaggerated heart rate variability shifts, confounding models trained on mixed populations.",
+      "proposed_mechanism": "Fitness-induced autonomic remodeling changes the relative contribution of sympathetic and parasympathetic pathways to the wearable signal signature of stress.",
+      "core_assumption": "Fitness categories define distinct stress-response phenotypes that are not linearly separable in standard feature spaces.",
+      "knowledge_gap_addressed": "How fitness-based physiological stratification generates subject-clustered uncertainty patterns in wearable stress detection.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Non-stationary temporal dynamics in individual stress physiology (e.g., habituation, sensitization) violate the independent and identically distributed assumption of standard uncertainty quantification methods.",
+      "proposed_mechanism": "Within-subject autocorrelation and concept drift cause predictive confidence intervals to be miscalibrated in a subject-specific manner depending on exposure history.",
+      "core_assumption": "Stress response dynamics evolve over days to weeks in a way that differs across individuals and is not captured by static models.",
+      "knowledge_gap_addressed": "Subject-level temporal non-stationarity as a source of miscalibrated uncertainty in longitudinal wearable stress inference.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Body composition (adipose tissue distribution, muscle mass) differentially filters mechanical and optical signals, creating subject-specific motion artifact profiles that mimic or mask stress signatures.",
+      "proposed_mechanism": "Tissue optical properties and mechanical damping vary with body composition, altering the propagation of both physiological pulsations and movement artifacts to the sensor.",
+      "core_assumption": "Body composition indices predict the spectral characteristics of motion-contaminated wearable signals during daily activities.",
+      "knowledge_gap_addressed": "The role of anthropometric variation in generating subject-heterogeneous artifact distributions that degrade stress-detection certainty.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Menstrual cycle phase and hormonal contraceptive use modulate cardiovascular and electrodermal stress reactivity in females, introducing cyclical uncertainty patterns absent in males.",
+      "proposed_mechanism": "Fluctuating estrogen and progesterone levels alter autonomic balance, vascular tone, and sweat gland sensitivity, shifting the physiological baseline and stress response gain.",
+      "core_assumption": "Hormonal status creates within-subject periodic variability in stress biomarker expression that exceeds between-subject variation in some features.",
+      "knowledge_gap_addressed": "Quantification of cycle-phase-dependent uncertainty in wearable stress models for female users.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Over-the-air firmware updates modify sensor sampling rates, filtering algorithms, or calibration coefficients, inducing abrupt distributional shifts that affect subjects differently based on their usage patterns.",
+      "proposed_mechanism": "Software changes alter the measurement function in ways that interact with individual-specific signal characteristics (e.g., pulse waveform morphology), producing subject-dependent bias-variance trade-offs.",
+      "core_assumption": "Firmware updates are not uniformly benign; their impact on stress-detection uncertainty varies with user physiology and behavior.",
+      "knowledge_gap_addressed": "Longitudinal subject-level uncertainty drift caused by uncontrolled device software evolution in deployed wearables.",
+      "status": "SPECULATIVE"
+    }
+  ]
+}

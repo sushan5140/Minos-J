@@ -1,0 +1,84 @@
+{
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Inter-subject physiological heterogeneity violates the exchangeability assumption required for marginal coverage guarantees.",
+      "proposed_mechanism": "Conformal prediction assumes data points are exchangeable, but physiological signals exhibit subject-specific autonomic tone, vascular compliance, and electrode-skin impedance that create non-identical conditional distributions across individuals, causing coverage to degrade when calibration and test subjects differ.",
+      "core_assumption": "Subject-level covariates (age, BMI, medication, pathology) induce distributional shifts large enough to break finite-sample exchangeability between calibration and deployment populations.",
+      "knowledge_gap_addressed": "Quantifying the minimum calibration set size per subject stratum needed to recover nominal coverage under realistic physiological heterogeneity.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Non-stationary sensor noise and motion artifacts create time-varying conditional coverage that marginal conformal methods cannot capture.",
+      "proposed_mechanism": "Wearable sensors exhibit state-dependent noise (e.g., motion artifacts during activity, electrode detachment during sleep) that correlates with the physiological state being predicted, inducing heteroscedastic prediction errors that violate the homoscedasticity implicit in standard conformal scores.",
+      "core_assumption": "Artifact magnitude and spectral characteristics are predictable from auxiliary sensor streams (accelerometry, impedance) but are ignored by the conformal score function.",
+      "knowledge_gap_addressed": "Whether adaptive conformal scores conditioned on real-time signal quality indices can restore conditional coverage without excessive interval inflation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Circadian and ultradian rhythms induce periodic non-stationarity in physiological signal distributions that violates the i.i.d. assumption across temporal segments.",
+      "proposed_mechanism": "Autonomic regulation follows ~24-hour circadian and ~90-minute ultradian cycles, causing systematic shifts in heart rate variability, blood pressure, and respiratory sinus arrhythmia that make morning calibration sets non-exchangeable with nocturnal test segments.",
+      "core_assumption": "Phase of circadian/ultradian cycle is a latent variable that modulates both the signal distribution and the prediction error distribution, but is unobserved in standard conformal calibration.",
+      "knowledge_gap_addressed": "Whether time-stratified or phase-aware conformal calibration can maintain coverage across sleep-wake transitions without requiring impractical per-phase calibration data.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Ground truth label noise from intermittent reference measurements creates miscalibrated nonconformity scores that propagate coverage failures.",
+      "proposed_mechanism": "Reference standards (e.g., cuff BP, arterial line) are sampled sparsely and asynchronously relative to continuous wearable signals, introducing label noise that correlates with physiological state (e.g., cuff measurements triggered by clinical concern), biasing the empirical quantile estimation in conformal prediction.",
+      "core_assumption": "Label noise is heteroscedastic and state-dependent rather than homoscedastic and independent, violating the assumption that nonconformity scores reflect only model error.",
+      "knowledge_gap_addressed": "Characterizing the bias-variance tradeoff in conformal quantile estimation under asynchronous, state-dependent label noise typical of physiological monitoring.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Pathological subpopulations (e.g., heart failure, sepsis, atrial fibrillation) exhibit fundamentally different error distributions that are masked by marginal coverage averaging.",
+      "proposed_mechanism": "Conformal prediction's marginal coverage guarantee averages over all subpopulations, but pathological states may have systematically higher prediction errors due to altered physiology (e.g., reduced HRV in heart failure), causing dangerous under-coverage precisely for high-risk patients.",
+      "core_assumption": "Disease state is a strong effect modifier of the prediction error distribution, but disease labels are unavailable or unreliable at deployment time for stratification.",
+      "knowledge_gap_addressed": "Whether latent subpopulation discovery via clustering of residuals can enable group-conditional conformal prediction without explicit clinical labels.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Temporal autocorrelation in physiological signals induces effective sample size reduction that invalidates finite-sample coverage guarantees.",
+      "proposed_mechanism": "Physiological time series exhibit strong autocorrelation (e.g., HRV AR(1) coefficients >0.8), meaning calibration sets of nominal size n have effective sample size n_eff << n, causing the empirical quantile to have higher variance than assumed by conformal theory.",
+      "core_assumption": "Standard conformal prediction's finite-sample coverage bound assumes exchangeability, which implies no temporal structure, but physiological signals violate this even after differencing or detrending.",
+      "knowledge_gap_addressed": "Deriving corrected conformal quantile estimators that account for known autocorrelation structure in physiological time series.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Concept drift in the signal-to-label mapping occurs due to physiological adaptation (e.g., vascular remodeling, medication titration) that is not captured by static model retraining schedules.",
+      "proposed_mechanism": "The conditional distribution P(Y|X) shifts gradually as patients' physiology adapts (e.g., beta-blocker up-titration reduces HR, vascular stiffening alters pulse wave velocity), but conformal calibration sets are typically fixed or updated on rigid schedules, creating a growing mismatch between calibration and deployment distributions.",
+      "core_assumption": "The rate of physiological concept drift exceeds the recalibration frequency, and drift magnitude correlates with clinical trajectory (worsening patients drift faster).",
+      "knowledge_gap_addressed": "Designing drift-aware conformal prediction that triggers recalibration based on detected distributional shifts in residuals rather than fixed time intervals.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Multimodal sensor fusion creates hidden stratification where coverage fails for specific sensor modality combinations.",
+      "proposed_mechanism": "When PPG, ECG, and accelerometry are fused, certain modality dropouts (e.g., PPG loss during vasoconstriction, ECG noise during electrosurgery) create distinct error regimes. Marginal conformal prediction averages over these regimes, yielding nominal overall coverage but near-zero coverage during critical modality-loss events.",
+      "core_assumption": "Sensor availability patterns are non-random and clinically meaningful (e.g., PPG failure indicates peripheral hypoperfusion), but the conformal score function does not condition on modality presence/absence.",
+      "knowledge_gap_addressed": "Developing modality-aware conformal scores that maintain conditional coverage given the active sensor subset at prediction time.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "The choice of nonconformity score function interacts with physiological signal skewness to produce asymmetric coverage errors across signal segments.",
+      "proposed_mechanism": "Physiological signals (e.g., BP, ICP) often have skewed, heavy-tailed distributions. Standard absolute residual scores |y - ŷ| produce intervals that are too narrow in the heavy tail and too wide in the bulk, causing segment-dependent under/over-coverage that correlates with physiological state (e.g., hypertensive crisis vs. normotension).",
+      "core_assumption": "The optimal nonconformity score for physiological data should be distribution-aware (e.g., quantile-based, normalized by local scale), but current practice uses generic scores developed for symmetric errors.",
+      "knowledge_gap_addressed": "Whether learned or adaptive nonconformity scores (e.g., via quantile regression forests) can achieve uniform conditional coverage across physiological regimes without overfitting.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Stratification by clinical context (ICU vs. ward vs. home) creates distribution shifts that marginal conformal prediction cannot resolve without context labels.",
+      "proposed_mechanism": "The same physiological signal pattern may map to different clinical outcomes depending on context (e.g., tachycardia in sepsis vs. post-operative pain vs. exercise), but context labels are often missing or coarse-grained at deployment, causing the conformal predictor to average over fundamentally different conditional distributions.",
+      "core_assumption": "Clinical context is a strong confounder of the X→Y relationship that is systematically unobserved or mislabeled in real-world deployment, violating the assumption that calibration and test data share the same conditional distribution.",
+      "knowledge_gap_addressed": "Whether context-invariant representation learning combined with conformal prediction can recover stable coverage across care settings without explicit context labels.",
+      "status": "SPECULATIVE"
+    }
+  ]
+}

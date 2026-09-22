@@ -1,0 +1,386 @@
+{
+  "sample_index": 7,
+  "valid": true,
+  "error": null,
+  "cards": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Subject-specific autonomic rigidity reduces nonconformity score variability, causing Mondrian bins to underestimate tail quantiles for low-variability individuals",
+      "proposed_mechanism": "Low inter-beat interval variability (SDNN < 20ms) during baseline compresses the distribution of nonconformity scores within a Mondrian stratum, leading to underestimated 95th percentile thresholds that fail to cover held-out stress epochs",
+      "causal_path": "Low baseline HRV (SDNN) -> reduced nonconformity score dispersion in calibration set -> underestimated conditional quantile -> undercoverage on test stress epochs",
+      "mechanism_variables": [
+        "baseline_SDNN_ms",
+        "nonconformity_score_IQR_calibration",
+        "conditional_95th_percentile",
+        "test_coverage_indicator"
+      ],
+      "possible_confounders": [
+        "age",
+        "beta_blocker_use",
+        "fitness_level_VO2max",
+        "circadian_phase"
+      ],
+      "control_variables": [
+        "stratify by SDNN tertiles; include age and medication as covariates in quantile regression; match calibration/test epoch durations"
+      ],
+      "rival_explanation": "Undercoverage stems from label noise in stress annotations rather than physiological variability",
+      "rival_prediction": "Undercoverage correlates with annotation disagreement metrics, not with baseline SDNN",
+      "distinguishing_test": "Compute Spearman correlation between baseline SDNN and per-subject coverage deficit; compare to correlation with inter-annotator agreement kappa",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Prior WESAD analyses show SDNN ranges 15-80ms across subjects; pilot data suggests coverage deficit of 0.15-0.25 for lowest SDNN tertile vs highest",
+      "minimum_data_needed": [
+        "per-subject baseline ECG (5 min) for SDNN",
+        "Mondrian calibration nonconformity scores per subject",
+        "test epoch coverage indicators (binary per epoch)",
+        "stress/non-stress labels with annotator IDs"
+      ],
+      "testable_prediction": "Subjects with baseline SDNN < 25ms will show coverage deficit > 0.15 relative to nominal 0.95, while subjects with SDNN > 50ms will show deficit < 0.05",
+      "failure_condition": "No significant correlation (p > 0.05) between baseline SDNN and per-subject coverage deficit after controlling for age and medication",
+      "statistical_test_plan": "Quantile regression of per-subject coverage on baseline SDNN with age and beta-blocker status as covariates; bootstrap 95% CI for slope",
+      "falsification_test": "Artificially inflate nonconformity score dispersion in low-SDNN subjects by adding calibrated noise; if coverage normalizes without changing labels, mechanism confirmed; if not, mechanism falsified"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Wrist-worn EDA sensor contact loss during high-movement stress epochs creates systematic nonconformity score inflation that Mondrian stratification fails to isolate",
+      "proposed_mechanism": "Motion-induced EDA artifacts (sudden drops > 0.5 µS within 2s) increase nonconformity scores for stress epochs in calibration, but Mondrian bins by coarse activity level (sedentary/active) rather than artifact presence, causing miscalibrated quantiles",
+      "causal_path": "High ACC magnitude -> EDA contact loss -> artifactual EDA drops -> inflated nonconformity scores in calibration -> overestimated quantile -> conservative intervals -> apparent undercoverage when artifacts absent in test",
+      "mechanism_variables": [
+        "ACC_magnitude_g",
+        "EDA_drop_rate_per_min",
+        "nonconformity_score_stress_calibration",
+        "conditional_quantile",
+        "test_coverage"
+      ],
+      "possible_confounders": [
+        "wrist_circumference",
+        "sensor_brand",
+        "ambient_temperature",
+        "skin_hydration"
+      ],
+      "control_variables": [
+        "bin Mondrian strata by EDA artifact flag (yes/no) instead of activity level; include wrist circumference as covariate; exclude epochs with ACC > 2g"
+      ],
+      "rival_explanation": "Undercoverage reflects true physiological heterogeneity in stress response magnitude, not sensor artifacts",
+      "rival_prediction": "Coverage deficit correlates with physiological stress reactivity (cortisol AUC), not with EDA artifact rate",
+      "distinguishing_test": "Compare coverage deficit in epochs with vs without EDA artifacts (matched on ACC magnitude); test interaction between artifact presence and Mondrian bin",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "WESAD EDA artifact rates reach 40% in high-movement conditions; pilot shows 0.3 coverage gap between artifact-contaminated and clean calibration sets",
+      "minimum_data_needed": [
+        "triaxial ACC at 700Hz",
+        "EDA at 4Hz with artifact annotations",
+        "Mondrian bin assignments per epoch",
+        "per-epoch coverage indicators",
+        "cortisol AUC per subject (if available)"
+      ],
+      "testable_prediction": "Strata with EDA artifact rate > 20% in calibration will show test coverage < 0.85; strata with artifact rate < 5% will show coverage > 0.92",
+      "failure_condition": "No significant difference in coverage between high-artifact and low-artifact strata after matching on ACC magnitude (p > 0.05, paired test)",
+      "statistical_test_plan": "McNemar test comparing coverage in matched high-artifact vs low-artifact epochs within same Mondrian bin; logistic regression of coverage on artifact rate with ACC as covariate",
+      "falsification_test": "Re-run Mondrian with artifact-aware stratification (separate bins for artifact-contaminated epochs); if undercoverage persists in clean strata, sensor artifact mechanism falsified"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Delayed physiological recovery after stressor offset causes label leakage where non-stress calibration epochs contain residual stress physiology, biasing nonconformity distributions",
+      "proposed_mechanism": "Slow EDA/HR recovery (tau > 120s) means epochs labeled 'non-stress' within 3 min post-stressor retain elevated sympathetic tone, inflating nonconformity scores for the non-stress class and shifting Mondrian quantiles",
+      "causal_path": "Slow recovery time constant -> residual stress physiology in non-stress labels -> inflated nonconformity scores for non-stress class -> shifted conditional quantiles -> undercoverage for true non-stress test epochs",
+      "mechanism_variables": [
+        "EDA_recovery_tau_s",
+        "HR_recovery_tau_s",
+        "nonconformity_score_nonstress_calibration",
+        "time_since_stressor_offset_s",
+        "test_coverage_nonstress"
+      ],
+      "possible_confounders": [
+        "stressor_intensity",
+        "baseline_fitness",
+        "age",
+        "caffeine_intake"
+      ],
+      "control_variables": [
+        "exclude calibration epochs within 5 min of stressor offset; model recovery tau as covariate; use only epochs > 10 min post-stressor for non-stress calibration"
+      ],
+      "rival_explanation": "Undercoverage reflects inherent non-stationarity of physiological signals across days, not label timing",
+      "rival_prediction": "Coverage deficit correlates with day-to-day signal drift metrics, not with recovery tau or time-since-stressor",
+      "distinguishing_test": "Plot coverage deficit vs time-since-stressor for non-stress test epochs; fit exponential decay; compare to day-to-day drift correlation",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Literature shows EDA recovery tau 60-300s; WESAD protocol has 3-min breaks; pilot suggests 0.1 coverage gap between <3min and >10min post-stressor epochs",
+      "minimum_data_needed": [
+        "continuous EDA/HR during recovery periods",
+        "precise stressor onset/offset timestamps",
+        "Mondrian calibration set composition with timestamps",
+        "per-epoch coverage indicators",
+        "multi-day recordings for drift assessment"
+      ],
+      "testable_prediction": "Non-stress test epochs within 3 min of stressor offset will show coverage < 0.85; epochs > 10 min post-offset will show coverage > 0.93",
+      "failure_condition": "No significant coverage gradient across time-since-stressor bins (p > 0.05, trend test)",
+      "statistical_test_plan": "Cochran-Armitage trend test for coverage across ordered time-since-stressor bins; exponential decay model fit to coverage vs time",
+      "falsification_test": "Re-calibrate Mondrian using only non-stress epochs > 15 min post-stressor; if undercoverage persists for early-recovery test epochs, label leakage mechanism falsified"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Mondrian taxonomy based on coarse activity labels (sitting/standing/walking) fails to capture fine-grained postural transitions that modulate cardiovascular stress responses",
+      "proposed_mechanism": "Rapid sit-stand transitions within 'sitting' epochs cause transient blood pressure drops and compensatory tachycardia that elevate nonconformity scores, but taxonomy assigns them to 'sitting' bin, diluting quantile estimation for true stationary sitting",
+      "causal_path": "Unannotated postural transitions -> transient cardiovascular perturbations -> elevated nonconformity scores in 'sitting' bin -> inflated conditional quantile -> undercoverage for stationary sitting test epochs",
+      "mechanism_variables": [
+        "postural_transition_rate_per_min",
+        "nonconformity_score_sitting_bin",
+        "conditional_quantile_sitting",
+        "test_coverage_stationary_sitting"
+      ],
+      "possible_confounders": [
+        "orthostatic_intolerance",
+        "hydration_status",
+        "time_of_day",
+        "compression_garments"
+      ],
+      "control_variables": [
+        "use ACC-derived posture transition detection to refine taxonomy; include transition rate as stratification variable; exclude epochs with transitions"
+      ],
+      "rival_explanation": "Undercoverage in sitting reflects true inter-subject variability in resting physiology, not unannotated transitions",
+      "rival_prediction": "Coverage deficit correlates with baseline HRV, not with postural transition rate",
+      "distinguishing_test": "Compare coverage in sitting epochs with high vs low ACC-derived transition rates (matched on subject and time-of-day)",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Postural transitions occur ~2-5/min in office settings; pilot data suggests 0.05-0.08 coverage difference between high/low transition sitting epochs",
+      "minimum_data_needed": [
+        "ACC at 700Hz for transition detection",
+        "Mondrian taxonomy labels per epoch",
+        "per-epoch coverage indicators",
+        "ECG for HRV validation",
+        "orthostatic intolerance screening data"
+      ],
+      "testable_prediction": "Sitting epochs with >3 transitions/min will show coverage < 0.90; epochs with 0 transitions/min will show coverage > 0.95",
+      "failure_condition": "No significant coverage difference between high-transition and zero-transition sitting epochs (p > 0.05)",
+      "statistical_test_plan": "Paired Wilcoxon test comparing coverage in high-transition vs zero-transition sitting epochs within subjects; logistic regression with transition rate as predictor",
+      "falsification_test": "Re-define Mondrian taxonomy using ACC-derived posture states (stationary sitting, transition, standing); if undercoverage persists in stationary sitting bin, postural transition mechanism falsified"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Subject-specific circadian phase misalignment between calibration (morning) and test (afternoon) sessions shifts physiological baselines, violating Mondrian exchangeability assumption",
+      "proposed_mechanism": "Cortisol awakening response and circadian HRV rhythms cause systematic baseline shifts; calibration nonconformity scores reflect morning physiology while test epochs reflect afternoon physiology, causing quantile miscalibration",
+      "causal_path": "Circadian phase difference (calibration vs test) -> baseline physiology shift -> nonconformity score distribution shift -> quantile miscalibration -> undercoverage",
+      "mechanism_variables": [
+        "time_of_day_calibration",
+        "time_of_day_test",
+        "morning_evening_HRV_ratio",
+        "nonconformity_score_shift",
+        "coverage_deficit"
+      ],
+      "possible_confounders": [
+        "sleep_duration",
+        "shift_work_history",
+        "light_exposure",
+        "meal_timing"
+      ],
+      "control_variables": [
+        "match calibration/test time-of-day; include circadian phase (melatonin onset) as covariate; restrict to subjects with <2h session time difference"
+      ],
+      "rival_explanation": "Undercoverage reflects day-to-day physiological variability unrelated to circadian phase",
+      "rival_prediction": "Coverage deficit correlates with day-to-day HRV variability, not with calibration-test time difference",
+      "distinguishing_test": "Plot coverage deficit vs absolute time-of-day difference between calibration and test sessions; compare to deficit vs day-to-day HRV variability",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Circadian HRV amplitude ~20-30% of mean; WESAD sessions span 9am-5pm; pilot suggests 0.1 coverage drop per 3h phase difference",
+      "minimum_data_needed": [
+        "session timestamps for calibration and test",
+        "continuous HRV across day",
+        "melatonin/cortisol samples (if available)",
+        "per-subject coverage indicators",
+        "sleep logs"
+      ],
+      "testable_prediction": "Subjects with >4h calibration-test time difference will show coverage deficit > 0.12; subjects with <1h difference will show deficit < 0.04",
+      "failure_condition": "No significant correlation between calibration-test time difference and coverage deficit (p > 0.05)",
+      "statistical_test_plan": "Linear mixed model: coverage deficit ~ time_difference + (1|subject) + sleep_duration; test slope significance",
+      "falsification_test": "Re-calibrate Mondrian using only calibration epochs matched to test time-of-day (±30min); if undercoverage persists, circadian mechanism falsified"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Inter-annotator disagreement on stress labels for ambiguous epochs creates label noise that disproportionately affects Mondrian calibration for specific subjects",
+      "proposed_mechanism": "Epochs with low inter-annotator agreement (Fleiss' kappa < 0.4) receive noisy labels; when these epochs fall in calibration, they distort nonconformity score distributions for their Mondrian bin, causing miscalibrated quantiles",
+      "causal_path": "Low label agreement -> noisy stress/non-stress labels in calibration -> contaminated nonconformity distributions -> biased conditional quantiles -> undercoverage for test epochs in affected bins",
+      "mechanism_variables": [
+        "fleiss_kappa_per_epoch",
+        "label_noise_indicator",
+        "nonconformity_score_variance_calibration",
+        "conditional_quantile_bias",
+        "test_coverage"
+      ],
+      "possible_confounders": [
+        "epoch_difficulty",
+        "annotator_experience",
+        "signal_quality",
+        "subject_expressiveness"
+      ],
+      "control_variables": [
+        "exclude calibration epochs with kappa < 0.6; weight calibration epochs by agreement; use probabilistic labels"
+      ],
+      "rival_explanation": "Undercoverage reflects true physiological ambiguity, not label noise",
+      "rival_prediction": "Coverage deficit correlates with physiological ambiguity metrics (e.g., EDA-HR dissociation), not with annotator disagreement",
+      "distinguishing_test": "Compare coverage for test epochs in bins with high vs low calibration label agreement (matched on physiological features)",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "WESAD has 3 annotators; ~15% epochs have kappa < 0.4; pilot shows 0.15 coverage gap between high/low agreement bins",
+      "minimum_data_needed": [
+        "per-epoch annotations from all 3 annotators",
+        "Mondrian bin assignments",
+        "per-epoch coverage indicators",
+        "physiological features for matching"
+      ],
+      "testable_prediction": "Bins where calibration set has mean kappa < 0.5 will show test coverage < 0.85; bins with mean kappa > 0.8 will show coverage > 0.93",
+      "failure_condition": "No significant coverage difference between high-agreement and low-agreement bins after matching on physiological features (p > 0.05)",
+      "statistical_test_plan": "Permutation test: shuffle kappa labels across bins, recompute coverage difference; compare observed to null distribution",
+      "falsification_test": "Re-calibrate Mondrian using only epochs with kappa > 0.8; if undercoverage persists in low-agreement test epochs, label noise mechanism falsified"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Temperature sensor drift during long recordings creates spurious nonconformity score trends that Mondrian's static taxonomy cannot adapt to",
+      "proposed_mechanism": "Skin temperature sensor baseline drifts upward (>0.5°C/hour) due to sensor warming; this creates artificial trend in temperature-derived features, inflating nonconformity scores for later calibration epochs and biasing quantiles for test epochs",
+      "causal_path": "Sensor thermal drift -> artificial temperature trend -> inflated nonconformity scores in late calibration epochs -> overestimated quantile -> undercoverage for early test epochs (distribution shift)",
+      "mechanism_variables": [
+        "temperature_drift_rate_C_per_hr",
+        "nonconformity_score_trend_calibration",
+        "quantile_bias",
+        "test_coverage_early_vs_late"
+      ],
+      "possible_confounders": [
+        "ambient_temperature_change",
+        "vasodilation",
+        "clothing_changes",
+        "sensor_placement_pressure"
+      ],
+      "control_variables": [
+        "detrend temperature features per session; include drift rate as covariate; use only first 30min of calibration"
+      ],
+      "rival_explanation": "Undercoverage reflects true thermal physiology changes during stress, not sensor drift",
+      "rival_prediction": "Coverage deficit correlates with actual core temperature change (if measured), not with sensor drift rate",
+      "distinguishing_test": "Compare coverage for early vs late test epochs relative to calibration drift direction; test correlation between drift rate and coverage deficit",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "WESAD temperature drift ~0.2-0.8°C/hr; pilot suggests 0.03-0.07 coverage difference per 0.5°C/hr drift",
+      "minimum_data_needed": [
+        "continuous temperature at 4Hz",
+        "session timestamps",
+        "Mondrian calibration/test split timestamps",
+        "per-epoch coverage indicators",
+        "ambient temperature log (if available)"
+      ],
+      "testable_prediction": "Sessions with temperature drift > 0.5°C/hr will show coverage deficit > 0.08 for early test epochs; sessions with drift < 0.1°C/hr will show deficit < 0.02",
+      "failure_condition": "No significant correlation between temperature drift rate and early-test-epoch coverage deficit (p > 0.05)",
+      "statistical_test_plan": "Linear regression: early_epoch_coverage_deficit ~ drift_rate + ambient_temp_change + session_duration",
+      "falsification_test": "Apply high-pass filter (cutoff 0.001 Hz) to temperature before feature extraction; re-run Mondrian; if undercoverage pattern unchanged, drift mechanism falsified"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Mondrian's fixed stratification taxonomy ignores subject-specific stress response phenotypes (e.g., cardiac vs vascular reactors), causing bin heterogeneity that violates exchangeability",
+      "proposed_mechanism": "Subjects cluster into distinct stress response phenotypes (cardiac reactors: high HR reactivity; vascular reactors: high TPR reactivity); Mondrian bins by activity only, mixing phenotypes within bins and widening nonconformity distributions, leading to overconservative quantiles that undercover for extreme reactors",
+      "causal_path": "Unmodeled phenotype heterogeneity -> widened nonconformity distribution within bin -> inflated conditional quantile -> undercoverage for extreme phenotype test epochs",
+      "mechanism_variables": [
+        "stress_phenotype_cluster",
+        "HR_reactivity_bpm",
+        "TPR_reactivity_mmHg",
+        "nonconformity_score_IQR_bin",
+        "conditional_quantile",
+        "test_coverage_by_phenotype"
+      ],
+      "possible_confounders": [
+        "age",
+        "sex",
+        "fitness",
+        "hypertension_status",
+        "medication"
+      ],
+      "control_variables": [
+        "pre-cluster subjects by stress reactivity profile; use phenotype-aware taxonomy; include reactivity scores as covariates"
+      ],
+      "rival_explanation": "Undercoverage reflects within-subject temporal variability, not between-subject phenotype differences",
+      "rival_prediction": "Coverage deficit correlates with within-subject nonconformity score variance, not with phenotype cluster membership",
+      "distinguishing_test": "Cluster subjects by HR/TPR reactivity; compare coverage deficit across clusters; test if cluster explains variance beyond within-subject metrics",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Literature shows cardiac/vascular reactor split ~50/50; reactivity differences 2-3x; pilot suggests 0.2 coverage gap between extreme reactors and mixed bins",
+      "minimum_data_needed": [
+        "continuous ECG and impedance cardiography (or BP) during stress",
+        "stress task timestamps",
+        "Mondrian bin assignments",
+        "per-epoch coverage indicators",
+        "subject metadata (age, sex, meds)"
+      ],
+      "testable_prediction": "Extreme cardiac reactors (HR reactivity > 20 bpm) in mixed bins will show coverage < 0.80; phenotype-homogeneous bins will show coverage > 0.92",
+      "failure_condition": "No significant coverage difference between phenotype clusters after controlling for within-subject nonconformity variance (p > 0.05)",
+      "statistical_test_plan": "MANOVA: coverage deficit ~ phenotype_cluster + within_subject_IQR + covariates; follow-up pairwise comparisons with Bonferroni",
+      "falsification_test": "Re-define Mondrian taxonomy using phenotype clusters as primary stratification; if undercoverage persists within phenotype-homogeneous bins, phenotype mechanism falsified"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Non-stationary noise in EMG sensor (electrode impedance drift) creates time-varying nonconformity score distributions that violate Mondrian's i.i.d. assumption within bins",
+      "proposed_mechanism": "EMG electrode impedance increases over recording session (>5 kOhm/hour) due to gel drying, reducing signal amplitude and increasing noise floor; this systematically shifts nonconformity scores for later calibration epochs, biasing quantiles",
+      "causal_path": "Electrode impedance drift -> EMG amplitude decay -> feature distribution shift -> nonconformity score trend in calibration -> quantile bias -> undercoverage for test epochs at different session positions",
+      "mechanism_variables": [
+        "impedance_drift_kOhm_per_hr",
+        "EMG_amplitude_trend",
+        "nonconformity_score_trend_calibration",
+        "quantile_bias",
+        "test_coverage_by_session_position"
+      ],
+      "possible_confounders": [
+        "skin_preparation_quality",
+        "sweat_rate",
+        "movement_artifact",
+        "electrode_type"
+      ],
+      "control_variables": [
+        "monitor impedance in real-time; detrend EMG features; restrict calibration to first 20min; include impedance as covariate"
+      ],
+      "rival_explanation": "Undercoverage reflects true fatigue-related EMG changes, not sensor degradation",
+      "rival_prediction": "Coverage deficit correlates with self-reported fatigue, not with impedance drift rate",
+      "distinguishing_test": "Compare coverage for test epochs at matched session positions but different impedance drift rates (across subjects/sessions)",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Typical EMG impedance drift 2-10 kOhm/hr; amplitude decay 10-40%; pilot suggests 0.1 coverage difference between low/high drift sessions",
+      "minimum_data_needed": [
+        "EMG electrode impedance logs (if available) or proxy via signal variance",
+        "continuous EMG at 700Hz",
+        "session timestamps",
+        "Mondrian calibration/test split",
+        "per-epoch coverage indicators",
+        "fatigue ratings"
+      ],
+      "testable_prediction": "Sessions with impedance drift > 5 kOhm/hr will show coverage deficit > 0.1 for late test epochs; sessions with drift < 1 kOhm/hr will show deficit < 0.03",
+      "failure_condition": "No significant correlation between impedance drift proxy and coverage deficit by session position (p > 0.05)",
+      "statistical_test_plan": "Mixed-effects model: coverage ~ session_position * drift_rate + (1|subject) + fatigue_rating",
+      "falsification_test": "Re-calibrate using only first 15min of each session (minimal drift); test on held-out late epochs; if undercoverage persists, EMG drift mechanism falsified"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Finite calibration set size per Mondrian bin interacts with heavy-tailed nonconformity distributions to produce systematically underestimated quantiles for small bins",
+      "proposed_mechanism": "Subjects with rare activity-stress combinations (e.g., stress while walking) have small calibration bins (n < 30); heavy-tailed nonconformity distributions (kurtosis > 10) cause sample 95th percentile to underestimate true quantile with high probability, leading to undercoverage",
+      "causal_path": "Rare stratum -> small calibration n -> heavy-tailed nonconformity distribution -> downward-biased sample quantile -> undercoverage",
+      "mechanism_variables": [
+        "bin_calibration_size_n",
+        "nonconformity_kurtosis",
+        "sample_95th_percentile",
+        "true_95th_percentile_estimate",
+        "coverage_deficit"
+      ],
+      "possible_confounders": [
+        "stratum_rarity",
+        "subject_compliance",
+        "sensor_dropout",
+        "label_balance"
+      ],
+      "control_variables": [
+        "minimum bin size threshold (n >= 50); merge rare bins; use parametric tail extrapolation (GPD); bootstrap bias correction"
+      ],
+      "rival_explanation": "Undercoverage in rare bins reflects true distribution shift between calibration and test, not finite-sample bias",
+      "rival_prediction": "Coverage deficit correlates with calibration-test distribution distance (KS statistic), not with bin size or kurtosis",
+      "distinguishing_test": "Plot coverage deficit vs bin size and vs kurtosis; fit bias model; compare to KS-distance model",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Requires estimating true quantile bias via bootstrap or parametric tail fit on held-out data; pilot data insufficient to quantify",
+      "minimum_data_needed": [
+        "per-bin calibration set sizes",
+        "nonconformity scores per bin",
+        "test coverage per bin",
+        "sufficient test epochs per bin for KS test (n > 100)"
+      ],
+      "testable_prediction": "Bins with n < 30 and kurtosis > 10 will show coverage deficit > 0.15; bins with n > 100 will show deficit < 0.03 regardless of kurtosis",
+      "failure_condition": "No significant interaction between bin size and kurtosis in predicting coverage deficit (p > 0.05)",
+      "statistical_test_plan": "Beta regression: coverage ~ bin_size * kurtosis + KS_distance + (1|subject); test interaction term",
+      "falsification_test": "Apply parametric tail extrapolation (Generalized Pareto Distribution) to estimate 95th percentile for small bins; if coverage normalizes, finite-sample bias confirmed; if not, mechanism falsified"
+    }
+  ],
+  "total_tokens": 7080,
+  "completion_tokens": 6528
+}

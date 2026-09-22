@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "unit_id": "Q2-r1",
+  "input_fingerprint": "591315c80f2862d40d4e1cdd33cbb4976b1eaa5ddfdcd2bd7c6af9e020b3b824",
+  "terminal": false,
+  "batches": [
+    {
+      "batch": 0,
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "COMPLETED",
+          "ok": false,
+          "error_type": "ValueError",
+          "error": "OpenRouter assistant content was not a string."
+        },
+        {
+          "attempt": 2,
+          "status": "STARTED",
+          "ok": null
+        }
+      ],
+      "status": "PENDING"
+    }
+  ]
+}

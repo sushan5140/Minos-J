@@ -1,0 +1,154 @@
+{
+  "confounder_rival_builds": [
+    {
+      "hypothesis_id": "H1",
+      "possible_confounders": [
+        "Fake confounder H1 (n424) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H1 (n528) with a specific variable relation."
+      ],
+      "boring_rival_explanations": [
+        "Fake rival H1 (n462) with a specific variable relation."
+      ],
+      "rival_prediction": "Fake rival prediction H1 (n685) with a specific variable relation.",
+      "distinguishing_condition": "Fake distinguish H1 (n860) with a specific variable relation.",
+      "confounder_rival_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H2",
+      "possible_confounders": [
+        "Fake confounder H2 (n525) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H2 (n737) with a specific variable relation."
+      ],
+      "boring_rival_explanations": [
+        "Fake rival H2 (n275) with a specific variable relation."
+      ],
+      "rival_prediction": "Fake rival prediction H2 (n852) with a specific variable relation.",
+      "distinguishing_condition": "Fake distinguish H2 (n854) with a specific variable relation.",
+      "confounder_rival_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H3",
+      "possible_confounders": [
+        "Fake confounder H3 (n692) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H3 (n68) with a specific variable relation."
+      ],
+      "boring_rival_explanations": [
+        "Fake rival H3 (n42) with a specific variable relation."
+      ],
+      "rival_prediction": "Fake rival prediction H3 (n140) with a specific variable relation.",
+      "distinguishing_condition": "Fake distinguish H3 (n109) with a specific variable relation.",
+      "confounder_rival_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H4",
+      "possible_confounders": [
+        "Fake confounder H4 (n480) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H4 (n80) with a specific variable relation."
+      ],
+      "boring_rival_explanations": [
+        "Fake rival H4 (n512) with a specific variable relation."
+      ],
+      "rival_prediction": "Fake rival prediction H4 (n697) with a specific variable relation.",
+      "distinguishing_condition": "Fake distinguish H4 (n939) with a specific variable relation.",
+      "confounder_rival_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H5",
+      "possible_confounders": [
+        "Fake confounder H5 (n987) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H5 (n334) with a specific variable relation."
+      ],
+      "boring_rival_explanations": [
+        "Fake rival H5 (n499) with a specific variable relation."
+      ],
+      "rival_prediction": "Fake rival prediction H5 (n803) with a specific variable relation.",
+      "distinguishing_condition": "Fake distinguish H5 (n316) with a specific variable relation.",
+      "confounder_rival_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H6",
+      "possible_confounders": [
+        "Fake confounder H6 (n877) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H6 (n328) with a specific variable relation."
+      ],
+      "boring_rival_explanations": [
+        "Fake rival H6 (n773) with a specific variable relation."
+      ],
+      "rival_prediction": "Fake rival prediction H6 (n246) with a specific variable relation.",
+      "distinguishing_condition": "Fake distinguish H6 (n788) with a specific variable relation.",
+      "confounder_rival_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H7",
+      "possible_confounders": [
+        "Fake confounder H7 (n315) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H7 (n708) with a specific variable relation."
+      ],
+      "boring_rival_explanations": [
+        "Fake rival H7 (n700) with a specific variable relation."
+      ],
+      "rival_prediction": "Fake rival prediction H7 (n264) with a specific variable relation.",
+      "distinguishing_condition": "Fake distinguish H7 (n43) with a specific variable relation.",
+      "confounder_rival_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H8",
+      "possible_confounders": [
+        "Fake confounder H8 (n382) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H8 (n265) with a specific variable relation."
+      ],
+      "boring_rival_explanations": [
+        "Fake rival H8 (n527) with a specific variable relation."
+      ],
+      "rival_prediction": "Fake rival prediction H8 (n673) with a specific variable relation.",
+      "distinguishing_condition": "Fake distinguish H8 (n286) with a specific variable relation.",
+      "confounder_rival_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H9",
+      "possible_confounders": [
+        "Fake confounder H9 (n462) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H9 (n976) with a specific variable relation."
+      ],
+      "boring_rival_explanations": [
+        "Fake rival H9 (n83) with a specific variable relation."
+      ],
+      "rival_prediction": "Fake rival prediction H9 (n384) with a specific variable relation.",
+      "distinguishing_condition": "Fake distinguish H9 (n800) with a specific variable relation.",
+      "confounder_rival_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H10",
+      "possible_confounders": [
+        "Fake confounder H10 (n479) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H10 (n917) with a specific variable relation."
+      ],
+      "boring_rival_explanations": [
+        "Fake rival H10 (n381) with a specific variable relation."
+      ],
+      "rival_prediction": "Fake rival prediction H10 (n653) with a specific variable relation.",
+      "distinguishing_condition": "Fake distinguish H10 (n321) with a specific variable relation.",
+      "confounder_rival_notes": "fake"
+    }
+  ]
+}

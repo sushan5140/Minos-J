@@ -1,0 +1,84 @@
+{
+  "artifact": "Experiment 17-C harness validation (fake CLI; not a scientific result)",
+  "status": "PASSED",
+  "passed": 19,
+  "total": 19,
+  "checks": {
+    "e17_base_protocol_unchanged": {
+      "passed": true,
+      "detail": "76ae7d0ae043fab1e0a34f0f34ed0380473d725cad689260d15b0f44125d5b8b"
+    },
+    "scientific_fields_identical_to_e17": {
+      "passed": true,
+      "detail": "[]"
+    },
+    "substitutions_recorded": {
+      "passed": true,
+      "detail": "{'generator': 'claude-sonnet-5', 'blinded_judge': 'claude-opus-5-5', 'separation_rule': 'Generator and judge are different exact model IDs, frozen before execution. Both are Anthropic Claude models, so the Experiment 17 different-family requirement cannot be met (see deviations).', 'transport': \"Claude Code CLI headless mode (`claude -p`), authenticated by the operator's Claude subscription (OAuth, authMethod=claude.ai)\", 'structured_output': '`--json-schema` with the identical strict stage-spec"
+    },
+    "historical_output_guard": {
+      "passed": true,
+      "detail": "17 and earlier protected; 17c writable"
+    },
+    "checkpoints_separate_from_e17": {
+      "passed": true,
+      "detail": "C:\\Users\\DELL\\Documents\\Codex\\2026-08-04\\we-are-starting-a-fresh-implementation\\work\\experiment_17c_checkpoints"
+    },
+    "child_env_strips_api_and_host_auth": {
+      "passed": true,
+      "detail": "['CLAUDE_CODE_MAX_OUTPUT_TOKENS', 'PATH']"
+    },
+    "argv_subscription_mode": {
+      "passed": true,
+      "detail": "['-p', '--model', 'claude-sonnet-5', '--effort', 'medium', '--output-format', 'json', '--tools', '', '--strict-mcp-config', '--setting-sources']"
+    },
+    "message_serialization": {
+      "passed": true,
+      "detail": "('S', '<<<ORIGINAL REQUEST>>>\\nU\\n<<<END ORIGINAL REQUEST>>>\\n\\n<<<YOUR PREVIOUS RESPONSE>>>\\nA\\n<<<END YOUR PREVIOUS RESPONSE>>>\\n\\nFIX')"
+    },
+    "usage_mapping_includes_cache_tokens": {
+      "passed": true,
+      "detail": "{'arm': 'B', 'completion_tokens': 3624, 'cost': None, 'event': 'request', 'http_attempts': 1, 'incomplete_read_retries': 0, 'invalid_response_json_retries': 0, 'invalid_response_shape_retries': 0, 'is_json_repair': False, 'latency_s': 0.003, 'model_requested': 'claude-sonnet-5', 'model_returned': 'claude-sonnet-5', 'network_retries': 0, 'prompt_sha256': '29bcbb37cc690547cd42fffd138679bdc9e0fbb12bae01a990f707dad604a15a', 'prompt_tokens': 619, 'resume_session_id': '02288becd60140c0b9894b4ec8a8070a"
+    },
+    "usage_limit_halts_without_invalid_sample": {
+      "passed": true,
+      "detail": "True"
+    },
+    "usage_limit_is_base_exception": {
+      "passed": true,
+      "detail": ""
+    },
+    "oauth_refresh_retries_then_halts": {
+      "passed": true,
+      "detail": "('halted', 5)"
+    },
+    "transient_error_retried": {
+      "passed": true,
+      "detail": "{'logical_stage_calls': 1, 'http_attempts': 2, 'timeout_retries': 0, 'network_retries': 0, 'incomplete_read_retries': 0, 'transient_http_retries': 1, 'invalid_response_json_retries': 0, 'invalid_response_shape_retries': 0, 'invalid_json_repair_attempts': 0}"
+    },
+    "timeout_retried": {
+      "passed": true,
+      "detail": "{'logical_stage_calls': 1, 'http_attempts': 2, 'timeout_retries': 1, 'network_retries': 0, 'incomplete_read_retries': 0, 'transient_http_retries': 0, 'invalid_response_json_retries': 0, 'invalid_response_shape_retries': 0, 'invalid_json_repair_attempts': 0}"
+    },
+    "schema_failure_single_shape_retry": {
+      "passed": true,
+      "detail": "ValueError"
+    },
+    "json_repair_single_request": {
+      "passed": true,
+      "detail": "2"
+    },
+    "end_to_end_fake_units": {
+      "passed": true,
+      "detail": "[('Q1-r1', 'COMPLETE', 0.9924514619111976), ('Q2-r1', 'COMPLETE', 1.1341310654008439)]"
+    },
+    "historical_files_untouched_by_validation": {
+      "passed": true,
+      "detail": "[]"
+    },
+    "historical_files_match_baseline": {
+      "passed": true,
+      "detail": "[]"
+    }
+  }
+}

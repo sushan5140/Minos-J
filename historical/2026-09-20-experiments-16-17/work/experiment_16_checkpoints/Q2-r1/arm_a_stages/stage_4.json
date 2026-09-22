@@ -1,0 +1,84 @@
+{
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Inter-subject physiological heterogeneity causes the conditional coverage guarantee of conformal prediction to degrade when calibration and test segments originate from different individuals.",
+      "proposed_mechanism": "Subject-specific autonomic tone, vascular compliance, and electrode-skin impedance create distinct marginal distributions of non-conformity scores, violating the exchangeability assumption when pooling across subjects.",
+      "core_assumption": "Physiological signal distributions differ systematically across individuals in ways that affect non-conformity score distributions but are not captured by available covariates.",
+      "knowledge_gap_addressed": "Quantifying how much subject-level random effects shift non-conformity score distributions relative to the calibration set in multi-subject physiological monitoring.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Sensor-specific artifact profiles that vary across recording segments induce distribution shifts in non-conformity scores that conformal prediction cannot correct without explicit artifact modeling.",
+      "proposed_mechanism": "Motion artifacts, electrode pop, and baseline wander produce segment-dependent noise distributions that alter the shape of prediction residuals, breaking the identical distribution assumption for non-conformity scores.",
+      "core_assumption": "Artifact characteristics are not stationary across segments and correlate with segment boundaries (e.g., movement epochs), creating covariate shift in the non-conformity score distribution.",
+      "knowledge_gap_addressed": "The extent to which segment-specific artifact morphologies distort conformal prediction sets when artifact labels are unavailable for stratification.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Abrupt physiological state transitions (e.g., sleep-stage changes, orthostatic stress) create non-stationarities that violate the exchangeability assumption within segments spanning state boundaries.",
+      "proposed_mechanism": "Autonomic shifts alter signal morphology (e.g., HRV spectral content, PPG pulse shape) faster than the calibration window adapts, causing non-conformity scores from pre-transition and post-transition periods to follow different distributions.",
+      "core_assumption": "Physiological state changes occur at timescales shorter than the calibration segment length, and the non-conformity measure is sensitive to state-dependent signal features.",
+      "knowledge_gap_addressed": "How rapidly conformal coverage degrades when calibration segments straddle unobserved physiological state transitions in continuous monitoring.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Strong temporal autocorrelation in physiological signals violates the exchangeability assumption required for finite-sample coverage guarantees, causing coverage instability across segments with different autocorrelation structures.",
+      "proposed_mechanism": "Serial dependence in residuals induces clustering of non-conformity scores, making the effective sample size of the calibration set smaller than its nominal size and causing coverage to fluctuate with segment-specific autocorrelation strength.",
+      "core_assumption": "The non-conformity scores exhibit segment-varying autocorrelation that is not accounted for by the conformal procedure, and segment length is insufficient for mixing.",
+      "knowledge_gap_addressed": "The relationship between segment-level autocorrelation decay rates and the magnitude of coverage deviation from nominal levels in time-series conformal prediction.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Systematic label noise or temporal misalignment in ground-truth annotations across segments introduces bias in non-conformity scores that varies by segment, destabilizing coverage.",
+      "proposed_mechanism": "Annotation errors (e.g., R-peak detection jitter, sleep-stage scoring disagreement) create segment-dependent label noise distributions, shifting the non-conformity score distribution differently in each segment.",
+      "core_assumption": "Label noise characteristics (bias, variance) differ across segments due to signal quality changes or annotator fatigue, and this heterogeneity is not modeled.",
+      "knowledge_gap_addressed": "How segment-varying annotation quality propagates through conformal prediction to produce coverage instability, particularly when noise is heteroscedastic.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Inadequate stratification by latent physiological covariates (e.g., medication status, hydration, circadian phase) leaves residual confounding that causes coverage to vary across segments with different covariate compositions.",
+      "proposed_mechanism": "Unmeasured covariates shift both the signal distribution and the optimal prediction interval width, but conformal prediction uses a single non-conformity measure across all segments, producing miscalibration where covariate distributions differ.",
+      "core_assumption": "There exist unrecorded physiological or contextual variables that modulate signal predictability and vary systematically across recording segments.",
+      "knowledge_gap_addressed": "The sensitivity of conformal coverage to unstratified latent covariates in physiological time series where randomization is impossible.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Variable calibration set sizes across segments—due to artifact rejection, missing data, or adaptive windowing—create finite-sample coverage fluctuations that mimic instability.",
+      "proposed_mechanism": "Segments with fewer calibration points have wider conformal prediction sets and higher coverage variance; when segment lengths differ systematically (e.g., more artifacts in active periods), coverage appears unstable but reflects sample-size effects.",
+      "core_assumption": "Effective calibration sample size varies across segments and correlates with segment characteristics that also affect signal predictability.",
+      "knowledge_gap_addressed": "Disentangling true distribution-shift-induced coverage instability from finite-sample artifacts in segments with heterogeneous data quality.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "A single non-conformity measure (e.g., absolute residual) is mismatched to the heterogeneous error distributions across physiological signal segments with different morphological complexity.",
+      "proposed_mechanism": "Segments with complex morphologies (e.g., arrhythmic ECG, motion-corrupted PPG) exhibit heteroscedastic, heavy-tailed residuals, while clean segments have near-Gaussian errors; a fixed non-conformity measure cannot adapt, causing over-coverage in simple segments and under-coverage in complex ones.",
+      "core_assumption": "The conditional error distribution varies across segments in shape (not just scale), and the chosen non-conformity measure does not normalize this variation.",
+      "knowledge_gap_addressed": "Designing adaptive non-conformity measures that maintain stable coverage across segments with fundamentally different signal-to-noise and morphological characteristics.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Slow concept drift in physiological baselines (e.g., circadian trends, disease progression, sensor degradation) causes the calibration distribution to become stale relative to test segments, with drift rate varying across signal types.",
+      "proposed_mechanism": "Gradual shifts in mean signal level, variability, or feature relationships alter the non-conformity score distribution over hours to days; segments far from the calibration window experience coverage decay proportional to drift magnitude.",
+      "core_assumption": "Physiological signals exhibit non-stationary drift on timescales longer than typical calibration windows but shorter than the full recording, and drift rates differ across signal modalities.",
+      "knowledge_gap_addressed": "Quantifying the timescale of conformal coverage decay under realistic physiological concept drift and whether adaptive recalibration can stabilize it.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Hidden periodic confounders (e.g., respiratory sinus arrhythmia, Mayer waves, thermoregulatory cycles) induce structured non-conformity score dependencies that violate exchangeability when segment boundaries align with confounder phases.",
+      "proposed_mechanism": "Physiological oscillators create periodic modulation of prediction error variance; segments captured at different phases of these cycles have systematically different non-conformity score distributions, causing coverage to oscillate with segment timing.",
+      "core_assumption": "Multiple overlapping physiological rhythms modulate signal predictability at different frequencies, and segment boundaries are not randomized relative to these rhythms.",
+      "knowledge_gap_addressed": "The impact of unobserved physiological periodicities on conformal coverage stability when segment boundaries are determined by external protocols rather than physiological phase.",
+      "status": "SPECULATIVE"
+    }
+  ]
+}

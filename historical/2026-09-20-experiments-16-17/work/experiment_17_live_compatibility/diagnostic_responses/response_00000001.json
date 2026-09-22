@@ -1,0 +1,15 @@
+{
+  "archive_sequence": 1,
+  "classification": "http_error",
+  "captured_at_utc": "2026-09-20T12:23:59Z",
+  "metadata": {
+    "model": "nvidia/nemotron-3-super-120b-a12b:free",
+    "schema_name": "stage_5_audits",
+    "http_attempt": 1,
+    "status": 401
+  },
+  "body_sha256": "6faf1b143addca514302d08060df34ba407457f06d73add7ca78af04a158c8f9",
+  "body_bytes": 50,
+  "body_encoding": "utf-8",
+  "body": "{\"error\":{\"message\":\"User not found.\",\"code\":401}}"
+}

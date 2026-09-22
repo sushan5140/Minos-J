@@ -1,0 +1,84 @@
+{
+  "statistical_testability_builds": [
+    {
+      "hypothesis_id": "H6",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the variance in context exposure distribution and context-physiology coupling strength across subjects. Need pilot data quantifying the distribution of context-specific physiological reactivity (e.g., HRV, EDA) across at least 3 context categories with ≥5 stress episodes each per subject, and the resulting subgroup AUC disparities.",
+      "minimum_data_needed": [
+        "Wearable with triaxial accelerometer, temperature sensor, and GPS for ≥14 days continuous recording",
+        "EMA prompts ≥6x/day for ≥14 days annotating social presence, posture, ambient temperature, cognitive load",
+        "Minimum 3 distinct context categories with ≥5 stress episodes each per subject",
+        "Controlled lab validation session with orthogonally manipulated context (social vs. non-social) and stressor intensity (low vs. high)",
+        "Stressor intensity VAS, duration, predictability, coping strategy checklist, baseline RMSSD pre-stressor"
+      ],
+      "testable_prediction": "Subjects with high exposure to contexts that elicit distinct physiological patterns (e.g., social evaluation -> high LF/HF HRV; physical threat -> high EDA) but low representation in training data will show higher detection uncertainty. Stronger context-physiology coupling amplifies this effect.",
+      "failure_condition": "In a lab study with orthogonally manipulated context (social vs. non-social) and stressor intensity (low vs. high), the context × intensity interaction on HRV_reactivity is non-significant (p > 0.1), while intensity main effect is significant (p < 0.001). Context-conditional models show no improvement over intensity-only models (ΔECE < 0.005).",
+      "statistical_test_plan": "1) Fit linear mixed model: physiology ~ stressor_intensity * context + (1|subject) to test context × intensity interaction on HRV/EDA reactivity. 2) Compute per-subject context-specific detection AUC (stress vs. non-stress within each context). 3) Regress per-subject AUC variance on context exposure distribution (proportion of time in each context) and context-physiology coupling strength (random slope of stressor effect by context). 4) Compare pooled model vs. context-conditional models (mixture-of-experts) using expected calibration error (ECE) and AUC. 5) Use variance components analysis to quantify proportion of AUC variance explained by context exposure vs. coupling strength.",
+      "statistical_testability_notes": "Context-physiology coupling quantified as random slope of stressor effect on physiology by context in linear mixed model. Hidden stratification assessed via subgroup AUC disparity (max-min across contexts). Control for stressor intensity, duration, predictability, coping, baseline physiology. Power analysis for interaction effect requires N≥100 subjects with ≥5 episodes per context."
+    },
+    {
+      "hypothesis_id": "H7",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Prior work on physiological noise shows substantial inter-individual differences in motion artifact burst rates (ICC ~0.4-0.6) and EDA drift volatility. Expect medium effect (Cohen's f² ~0.15) of noise distribution parameters on prediction interval coverage probability based on heteroscedasticity literature in wearable PPG/EDA.",
+      "minimum_data_needed": [
+        "Wrist-worn PPG+EDA device with fixed artifact detection algorithm",
+        "Controlled activity protocol: 10min sit, 5min walk, 5min run, 10min recovery repeated 3x in lab",
+        "≥24h continuous free-living recording for naturalistic noise assessment",
+        "Reference ECG and respiratory belt for ground-truth artifact labeling in lab session",
+        "Continuous ambient temperature, humidity, EMI index, device temperature, battery voltage, skin temperature"
+      ],
+      "testable_prediction": "Higher motion artifact burst rate, greater EDA drift volatility, and heavier-tailed noise distributions (high kurtosis) associate with lower prediction interval coverage probability (e.g., nominal 95% intervals achieve only 80% coverage) and higher sharpness-coverage trade-off error, indicating miscalibrated uncertainty.",
+      "failure_condition": "A variance components analysis (random effects model) shows environment (session-level) explains >50% of variance in motion_artifact_burst_rate and EDA_baseline_drift_volatility, while subject ID explains <20%. ICC for subject < 0.3.",
+      "statistical_test_plan": "1) Characterize per-subject noise distribution parameters (variance, kurtosis, lag-1 autocorrelation, burst rate) on clean baseline segments. 2) Compute prediction interval coverage probability (PICP) vs. nominal coverage (reliability diagram) for stress probability predictions. 3) Fit heteroscedastic models (quantile regression, Gaussian process with input-dependent noise) and compare calibration improvement (ECE reduction) via proper scoring rules (CRPS, interval score). 4) Run variance components analysis: noise_parameter ~ (1|subject) + (1|session) + environmental_covariates to test trait-like vs. state-like noise. 5) Correlate subject-level noise parameters with PICP deviation from nominal coverage.",
+      "statistical_testability_notes": "Motion artifact bursts defined as >3SD acceleration magnitude for >2s. EDA drift volatility = SD of 5-min tonic slope estimates. Noise characterized on segments with no stressor and minimal motion. Control for ambient temperature, humidity, EMI, device temp, battery, skin temp. ICC computed across multiple days/environments. Heteroscedastic models compared via cross-validated CRPS."
+    },
+    {
+      "hypothesis_id": "H8",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Interoceptive accuracy (heartbeat counting) explains ~10-20% of variance in autonomic reactivity in prior studies (Cohen's d ~0.5-0.7 for high vs. low IA groups). Expect medium effect size for coupling gain slope (physiology per VAS unit) and detection AUC differences across IA tertiles.",
+      "minimum_data_needed": [
+        "Laboratory stressor (MAST or TSST) with concurrent EMA VAS ratings every 2min",
+        "Validated heartbeat counting task (Schandry) with ≥30 trials, no feedback",
+        "MAIA questionnaire for interoceptive sensibility subscales",
+        "Clinical-grade ECG (for HRV) + wrist EDA synchronized with EMA",
+        "No prior interoceptive training in past 6 months, age 18-55, no cardiac arrhythmias, no beta-blockers"
+      ],
+      "testable_prediction": "Higher interoceptive accuracy (heartbeat counting) predicts steeper coupling gain (larger EDA/HRV change per unit subjective stress VAS), yielding higher signal informativeness and lower detection uncertainty for subjective stress. Low interoceptive accuracy shows decoupling (flat gain), higher uncertainty.",
+      "failure_condition": "In a within-subject design with counterbalanced interoceptive (cold pressor, CO2) and exteroceptive (TSST, mental arithmetic) stressors, the correlation between interoceptive_accuracy and coupling_gain_slope is significant (p < 0.01) for interoceptive stressors but not for exteroceptive stressors (p > 0.2), tested via Fisher's z-test for dependent correlations.",
+      "statistical_test_plan": "1) Estimate coupling gain slope per subject: linear regression of physiology (EDA peak, HRV suppression) on subjective stress VAS across multiple stressor intensities. 2) Correlate (Pearson) interoceptive accuracy (heartbeat counting error) with coupling gain slope. 3) Compute AUC for predicting high vs. low subjective stress (median split) stratified by interoceptive accuracy tertile. 4) Compare expected calibration error (ECE) for subjective stress probability predictions by IA group. 5) Test stressor modality interaction: fit mixed model coupling_gain ~ IA * stressor_modality + (1|subject) and compare correlations between IA and coupling gain for interoceptive vs. exteroceptive stressors using Fisher's z-test.",
+      "statistical_testability_notes": "Coupling gain estimated within-subject across multiple stressor intensities. Interoceptive accuracy = mean absolute error on heartbeat counting (lower = better). MAIA subscales (Noticing, Attention Regulation) analyzed separately. Control respiration (paced breathing) to isolate autonomic effects. Measure anxiety sensitivity (ASI-3) as covariate. Target uncertainty for subjective stress (not just physiological arousal)."
+    },
+    {
+      "hypothesis_id": "H9",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Autonomic recovery half-life varies substantially across individuals (SD ~2-3 min for HRV recovery) and correlates with fitness (VO2max) and age. Prior work shows boundary misclassification rates of 15-30% for fixed epochs; expect medium effect (Cohen's f² ~0.10-0.15) of recovery half-life on boundary misclassification rate and uncertainty calibration.",
+      "minimum_data_needed": [
+        "Standardized laboratory stressor with clear discrete offset (TSST or cold pressor)",
+        "Fixed epoch length (e.g., 1 min) for labeling and prediction",
+        "Recovery monitoring ≥30 min post-stressor offset with controlled physical activity (seated)",
+        "VO2max measured via submaximal test, age, genotyping for autonomic SNPs",
+        "No caffeine/nicotine 4h prior, controlled post-stressor activity"
+      ],
+      "testable_prediction": "Longer autonomic recovery half-life (slower HRV rebound, slower EDA decay) produces greater temporal smearing of stress signatures into post-stress epochs, increasing misclassification rate at stressor boundaries and elevating uncertainty for epoch-level classifiers. Shorter half-life yields sharper boundaries and lower uncertainty.",
+      "failure_condition": "Compute boundary misclassification rate using fixed 1-min epochs and using personalized epochs (length = 2 × subject's HRV_recovery_half_life). The correlation between HRV_recovery_half_life and misclassification rate is significant (p < 0.01) for fixed epochs but non-significant (p > 0.2) for personalized epochs.",
+      "statistical_test_plan": "1) Estimate recovery half-life per subject: exponential fit to HRV/EDA recovery curves post-stressor (signal(t) = baseline + amplitude * exp(-t/tau)). 2) Compute epoch-level confusion matrix at stress→non-stress transition (0-10 min post-offset) for fixed 1-min epochs. 3) Correlate (Pearson) recovery half-life with boundary misclassification rate and boundary detection F1 score. 4) Fit regression: misclassification_rate ~ HRV_recovery_half_life + EDA_recovery_half_life + VO2max + age + genetic_risk_score. 5) Compare fixed-window CNN vs. semi-Markov CRF with learned state durations on boundary F1 and uncertainty calibration (ECE). 6) Test adaptive epoch lengths: recompute misclassification rate using personalized epoch length = 2 × subject's half-life; test if correlation disappears.",
+      "statistical_testability_notes": "Half-life estimated via nonlinear least squares. Smearing quantified as proportion of post-stress epochs (within 2*tau) misclassified as stress. Genetic risk score from GWAS of HRV recovery (e.g., UK Biobank). Control post-stressor activity strictly (seated). Exclude caffeine/nicotine. Test multiple epoch lengths. Models compared: fixed-window CNN vs. semi-Markov CRF."
+    },
+    {
+      "hypothesis_id": "H10",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Genetic effect sizes for adrenergic SNPs on autonomic reactivity are typically small (Cohen's d ~0.2-0.4 per allele). Minority homozygote frequencies are low (e.g., ADRB1 Gly/Gly ~10%, COMT Met/Met ~25% in Europeans). Expect small effect on population-level uncertainty inflation but potentially medium effect within minority subgroups. Power analysis confirms detectable effect sizes (Cohen's d ≥0.5) at given allele frequencies with N≥500.",
+      "minimum_data_needed": [
+        "Genotyped cohort ≥500 participants of homogeneous ancestry (European via PCs)",
+        "Standardized laboratory stressor (TSST) with wearable PPG+EDA",
+        "No beta-blockers, alpha-agonists, or psychiatric medications affecting autonomic function",
+        "Age 18-55, balanced sex distribution",
+        "Hardy-Weinberg equilibrium verified for each SNP (ADRB1 Arg389Gly, ADRB2 Arg16Gly, COMT Val158Met)"
+      ],
+      "testable_prediction": "Minority homozygotes (ADRB1 Gly/Gly, ADRB2 Gly/Gly, COMT Met/Met) exhibit blunted or exaggerated HRV/EDA stress reactivity relative to majority homozygotes, creating bimodal/reactivity distributions. Single Gaussian-assumption models fit majority well but show higher prediction RMSE and expected calibration error (ECE) for minority genotypes.",
+      "failure_condition": "In a linear mixed model predicting HRV_stress_reactivity with genotype as fixed effect and ancestry PCs as covariates, the genotype effect is non-significant (p > 0.05) while PCs are significant (p < 0.01). Mixture model BIC improvement over single Gaussian drops from >10 to <2 when analyzed within a single ancestry cluster (e.g., European PC1/PC2 cluster).",
+      "statistical_test_plan": "1) Genotype via TaqMan assay or array; residualize reactivity phenotypes for age, sex, BMI, fitness. 2) Fit mixture models (2-3 components) vs. single Gaussian to HRV reactivity and EDA amplitude distributions; compare BIC. 3) Train stress classifier on full cohort; compute per-genotype prediction RMSE and ECE. 4) Subgroup analysis: detection performance (AUC, ECE) by genotype group (homozygous major, heterozygous, homozygous minor). 5) Test population stratification: linear mixed model HRV_reactivity ~ genotype + PC1-10 + (1|batch); check genotype significance. 6) Compute allele-frequency-weighted population uncertainty metric. 7) Test G×E: add stress_exposure × genotype interaction.",
+      "statistical_testability_notes": "Mixture models fitted via EM algorithm; component count selected by BIC. Uncertainty inflation for minority genotypes quantified as ratio of per-genotype ECE to overall ECE. Power analysis confirms detectable effect sizes (Cohen's d ≥0.5) at given allele frequencies. Control for ancestry PCs, medication, stress exposure. Exclude medicated participants. Check LD structure between SNPs."
+    }
+  ]
+}

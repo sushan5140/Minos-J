@@ -1,0 +1,217 @@
+{
+  "mechanism_builds": [
+    {
+      "hypothesis_id": "H1",
+      "mechanism_variables": [
+        "baseline heart rate (bpm)",
+        "respiration rate (breaths/min)",
+        "morphology feature (e.g., QRS amplitude)"
+      ],
+      "causal_path": "Subject-specific baseline physiological variability alters the distribution of extracted features between calibration and test segments, causing conformity scores to be misaligned with the true error distribution.",
+      "expected_direction": "Increased baseline variability leads to decreased coverage (under-coverage) relative to the nominal level.",
+      "domain_specific_boundary_conditions": [
+        "Physiological signals recorded from healthy adults at rest",
+        "Segment length ≥ 30 seconds",
+        "Sampling rate ≥ 250 Hz"
+      ],
+      "measurable_outcomes": [
+        "Empirical coverage rate of conformal intervals",
+        "Kolmogorov‑Smirnov distance between calibration and test feature distributions"
+      ],
+      "mechanism_builder_notes": "Can be tested by stratifying calibration data by subject‑specific baselines and measuring coverage drift across held‑out segments."
+    },
+    {
+      "hypothesis_id": "H2",
+      "mechanism_variables": [
+        "electrode impedance (kΩ)",
+        "amplifier gain (dB)",
+        "environmental interference power (µV²)",
+        "noise variance estimate"
+      ],
+      "causal_path": "Changes in sensor characteristics (impedance, gain, interference) alter the observed signal statistics, shifting the feature distribution and biasing conformity scores, which leads to coverage drift.",
+      "expected_direction": "Higher impedance or noise variance reduces coverage (under‑coverage) because intervals become too narrow.",
+      "domain_specific_boundary_conditions": [
+        "Wearable ECG patches",
+        "Sampling rate 500 Hz",
+        "Recording duration > 1 hour",
+        "Ambient temperature stable"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate over time",
+        "Mean absolute error of conformity scores",
+        "Impedance trajectory"
+      ],
+      "mechanism_builder_notes": "Can be tested by injecting known impedance changes (e.g., via saline) and monitoring coverage."
+    },
+    {
+      "hypothesis_id": "H3",
+      "mechanism_variables": [
+        "physiological state label (sleep/wake, rest/exercise)",
+        "heart‑rate variability index",
+        "movement count",
+        "metabolic equivalent (MET)"
+      ],
+      "causal_path": "Physiological state transitions change the underlying generative process of the signal, altering the relationship between features and labels, which miscalibrates conformity scores and destabilizes coverage.",
+      "expected_direction": "Transition to higher arousal states (e.g., exercise) increases prediction error variance, leading to under‑coverage if not accounted for.",
+      "domain_specific_boundary_conditions": [
+        "Laboratory polysomnography or controlled exercise protocol",
+        "Segment length ≥ 1 minute",
+        "Stable ambient conditions"
+      ],
+      "measurable_outcomes": [
+        "Coverage per state",
+        "Calibration error (difference between nominal and empirical coverage)",
+        "State transition detection accuracy"
+      ],
+      "mechanism_builder_notes": "Can be evaluated by constructing state‑stratified calibration sets and testing on held‑out state‑specific segments."
+    },
+    {
+      "hypothesis_id": "H4",
+      "mechanism_variables": [
+        "lag‑1 autocorrelation coefficient (ρ)",
+        "effective sample size (n_eff)",
+        "conformity score variance"
+      ],
+      "causal_path": "Positive temporal autocorrelation reduces the effective independence of observations, causing the empirical quantile of conformity scores to be underestimated, which yields prediction intervals that are too narrow and under‑cover.",
+      "expected_direction": "Higher ρ leads to lower coverage (under‑coverage).",
+      "domain_specific_boundary_conditions": [
+        "Signals with sampling ≥250 Hz",
+        "Segment length ≥10 s",
+        "Known physiological autocorrelation (EEG, ECG)"
+      ],
+      "measurable_outcomes": [
+        "Empirical coverage",
+        "Estimated n_eff",
+        "Ratio of nominal to empirical interval width"
+      ],
+      "mechanism_builder_notes": "Can be assessed using block bootstrap or subsampling to adjust for dependence."
+    },
+    {
+      "hypothesis_id": "H5",
+      "mechanism_variables": [
+        "label error rate (%)",
+        "residual magnitude for mislabeled samples",
+        "skew of conformity score distribution"
+      ],
+      "causal_path": "Mislabelled events produce anomalously large or small residuals, which shift the empirical quantile used to construct conformal intervals, biasing the intervals and causing coverage drift.",
+      "expected_direction": "Higher label error rate reduces coverage (under‑coverage) when errors increase residuals; direction depends on bias sign.",
+      "domain_specific_boundary_conditions": [
+        "Expert‑annotated arrhythmia datasets",
+        "Inter‑annotator agreement <0.8",
+        "Segments containing ≥1 annotated event"
+      ],
+      "measurable_outcomes": [
+        "Coverage",
+        "Calibration slope",
+        "Brier score for label correctness"
+      ],
+      "mechanism_builder_notes": "Can be tested by synthetically corrupting a known fraction of labels and measuring resulting coverage."
+    },
+    {
+      "hypothesis_id": "H6",
+      "mechanism_variables": [
+        "prevalence of rare event class (p_rare)",
+        "number of rare samples in calibration (n_rare)",
+        "conformity score quantile for rare class"
+      ],
+      "causal_path": "When rare physiological events are under‑represented in the calibration set, the conformity score quantile is dominated by common classes, producing intervals that are too narrow for rare segments and thus under‑covering them.",
+      "expected_direction": "Lower p_rare leads to lower coverage for rare‑event segments (under‑coverage).",
+      "domain_specific_boundary_conditions": [
+        "Physiological seizure or rare arrhythmia detection",
+        "Rare event prevalence <1%",
+        "Calibration set size ≥5000 samples"
+      ],
+      "measurable_outcomes": [
+        "Coverage per class",
+        "Recall for rare class",
+        "Interval width per class"
+      ],
+      "mechanism_builder_notes": "Can be evaluated by applying importance‑weighted or stratified conformal methods and comparing coverage."
+    },
+    {
+      "hypothesis_id": "H7",
+      "mechanism_variables": [
+        "signal amplitude (RMS)",
+        "residual variance as a function of amplitude",
+        "heteroscedasticity coefficient (slope of variance vs amplitude)"
+      ],
+      "causal_path": "Larger signal excursions produce proportionally larger prediction errors, causing error variance to change with amplitude; this violates the constant‑variance assumption of conformity scores, leading to miscalibrated intervals.",
+      "expected_direction": "Higher amplitude leads to decreased coverage (under‑coverage) if variance increases with amplitude.",
+      "domain_specific_boundary_conditions": [
+        "ECG amplitude range 0.1–5 mV",
+        "Segments with varying activity levels",
+        "Sampling rate ≥250 Hz"
+      ],
+      "measurable_outcomes": [
+        "Coverage versus amplitude bins",
+        "Calibration curve",
+        "Breusch‑Pagan test for heteroscedasticity"
+      ],
+      "mechanism_builder_notes": "Can be tested by modeling variance locally (e.g., using quantile regression) and checking whether coverage improves."
+    },
+    {
+      "hypothesis_id": "H8",
+      "mechanism_variables": [
+        "artifact amplitude (peak‑to‑peak)",
+        "artifact occurrence rate per minute",
+        "proportion of residual outliers"
+      ],
+      "causal_path": "Motion or muscle artifacts generate extreme residuals (spikes) that shift the empirical quantile of conformity scores; this can inflate intervals (over‑coverage) for clean segments and produce unstable coverage across artifact‑contaminated segments.",
+      "expected_direction": "Higher artifact rate increases interval width, causing overall over‑coverage but segment‑wise instability.",
+      "domain_specific_boundary_conditions": [
+        "Ambulatory recordings with mild exercise",
+        "Artifact detection threshold >3 SD",
+        "Segment length ≥5 s"
+      ],
+      "measurable_outcomes": [
+        "Coverage stability across artifact‑free vs artifact‑contaminated segments",
+        "Mean interval width",
+        "Artifact detection rate"
+      ],
+      "mechanism_builder_notes": "Can be evaluated by adding synthetic motion artifacts at known amplitudes and measuring resulting coverage changes."
+    },
+    {
+      "hypothesis_id": "H9",
+      "mechanism_variables": [
+        "sampling rate (Hz)",
+        "filter cutoff frequency (Hz)",
+        "segmentation window length (s)",
+        "feature set dimensionality"
+      ],
+      "causal_path": "Different preprocessing (sampling rate, filtering, segmentation) alters the distribution of extracted features, creating a mismatch between calibration and test segments that biases conformity scores and leads to coverage drift.",
+      "expected_direction": "Lower sampling rate or stronger low‑pass filtering reduces high‑frequency information, increasing prediction error and decreasing coverage (under‑coverage) if not corrected.",
+      "domain_specific_boundary_conditions": [
+        "Multi‑site study with varying devices",
+        "Documented protocol changes",
+        "Segment length ≥5 s"
+      ],
+      "measurable_outcomes": [
+        "Coverage per protocol",
+        "Wasserstein distance between feature distributions across protocols",
+        "Recalibration error"
+      ],
+      "mechanism_builder_notes": "Can be assessed by harmonizing data (e.g., resampling to a common rate) and comparing coverage before and after harmonization."
+    },
+    {
+      "hypothesis_id": "H10",
+      "mechanism_variables": [
+        "model prediction influence gain (adaptive filter coefficient)",
+        "post‑processing signal noise level",
+        "mutual information between predictions and subsequent signal"
+      ],
+      "causal_path": "The model’s output alters the signal (e.g., via adaptive noise cancellation), changing the distribution of future segments relative to the calibration set; conformity scores computed from outdated statistics become miscalibrated, causing coverage drift.",
+      "expected_direction": "Stronger feedback influence (higher gain) produces larger distribution shifts, leading to lower coverage (under‑coverage).",
+      "domain_specific_boundary_conditions": [
+        "Closed‑loop neurostimulation or adaptive filtering system",
+        "Real‑time processing latency <50 ms",
+        "Calibration set collected before feedback activation"
+      ],
+      "measurable_outcomes": [
+        "Coverage over time",
+        "KL divergence between calibration and post‑feedback feature distributions",
+        "Adaptive filter coefficient trajectory"
+      ],
+      "mechanism_builder_notes": "Can be tested by disabling the feedback loop and comparing coverage with and without the loop."
+    }
+  ]
+}

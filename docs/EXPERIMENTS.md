@@ -128,6 +128,26 @@ The next stage was designed to produce exactly 10 testability objects, each cont
 
 ---
 
+## Experiments 16–17 — matched-compute architecture falsification
+
+These experiments test a central question: *if the multi-stage pipeline beats a simpler baseline, does the architecture deserve the credit once inference budget, sampling, retries and evaluator passes are controlled?* Arm A is the v4 pipeline. Arm B is matched-budget sampling plus one selector, with the budget matched within ±15% and equal evaluator calls. A blinded judge evaluates both.
+
+### Experiment 16
+
+**Verdict: `INCONCLUSIVE_INSUFFICIENT_MATCHED_UNITS`** (0 of 9 units analysable: 5 Arm A failures, 1 Arm B failure, 3 judge failures).
+
+The recovery audit traced the failures to engineering causes rather than scientific ones: no structured output on the free endpoints, truncation at the output limit, audit-rule violations, and judge unreliability. No architectural conclusion follows.
+
+### Experiment 17 (interrupted)
+
+This was a repaired re-preregistration: strict JSON schemas, retry and resume fixes, and durable judge state. It stopped when the OpenRouter free-tier daily quota ran out, with **0 of 9 units evaluated**, so it has no result. The last valid checkpoint and the unit-by-unit state are in the [Experiment 16–17 recovery report](../historical/2026-09-20-experiments-16-17/RECOVERY_REPORT.md).
+
+### Experiment 17-C (Claude-based replication; in progress)
+
+This re-runs the complete Experiment 17 design with `claude-sonnet-5` as generator and `claude-opus-5-5` as blinded judge, through the Claude Code CLI on a Claude subscription. It has a separately frozen protocol with every substitution and deviation declared, and it is never pooled with Experiment 17. See [`experiments/experiment_17c/`](../experiments/experiment_17c/).
+
+---
+
 ## Reproducibility / refactor verification
 
 During architecture refactoring:

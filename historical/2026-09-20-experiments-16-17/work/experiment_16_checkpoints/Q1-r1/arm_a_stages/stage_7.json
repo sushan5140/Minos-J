@@ -1,0 +1,68 @@
+{
+  "falsification_tests": [
+    {
+      "hypothesis_id": "H1",
+      "strongest_falsification_test": "Downsample calibration windows to equal size across SRI tertiles; compute stress-class coverage on held-out test windows; test if Spearman correlation between SRI and undercoverage (1 - coverage) remains significant (p < 0.05) via permutation test (10,000 permutations). If correlation vanishes (p > 0.2), the mechanism is falsified.",
+      "failure_condition": "Spearman correlation between SRI and undercoverage magnitude becomes non-significant (p > 0.2) after calibration set size equalization across SRI tertiles.",
+      "minimum_data_needed": "Per-subject SRI computed from calibration-phase EDA phasic driver amplitude (cvxEDA) and HRV reactivity (log RMSSD ratio); per-subject stress-class coverage rate on held-out 30% test windows; calibration and test conformity scores for stress class per subject; subject-level covariates (age, BMI, fitness, medication, caffeine/nicotine, recording start time).",
+      "most_likely_false_positive_risk": "Residual confounding by unmeasured fitness or medication effects that correlate with SRI and independently affect coverage, creating a spurious SRI-undercoverage correlation that survives downsampling.",
+      "most_likely_false_negative_risk": "Insufficient statistical power due to small sample size (15 subjects) to detect a true SRI-undercoverage correlation after downsampling reduces effective calibration size, leading to Type II error."
+    },
+    {
+      "hypothesis_id": "H2",
+      "strongest_falsification_test": "Fit multiple regression of stress-class coverage on MAI and SQI simultaneously with covariates (wrist circumference, skin type, ambient temperature, strap tightness, baseline EDA tonic). If MAI coefficient is non-significant (p > 0.2) while SQI coefficient is significant (p < 0.05), the mechanism is falsified.",
+      "failure_condition": "MAI coefficient non-significant (p > 0.2) in multiple regression controlling for SQI and physical confounders, while SQI coefficient remains significant (p < 0.05).",
+      "minimum_data_needed": "Per-subject MAI (median ACC magnitude during TSST); per-subject SQI (proportion of 10s windows with kurtosis in [1,5] and spectral entropy > 0.7); per-subject stress-class coverage rate; calibration and test feature distributions for 26 features (12 EDA, 8 HRV, 6 RESP); wrist circumference, skin type, hair density, ambient temperature/humidity, strap tightness, baseline EDA tonic level.",
+      "most_likely_false_positive_risk": "Collinearity between MAI and SQI inflates standard errors, causing MAI to appear non-significant even if it has a true effect, or conversely, an unmeasured confounder (e.g., sensor fit) drives both MAI and coverage.",
+      "most_likely_false_negative_risk": "Measurement error in MAI (ACC magnitude may not capture sensor-skin gap dynamics) attenuates the MAI coefficient, failing to detect a true causal effect."
+    },
+    {
+      "hypothesis_id": "H4",
+      "strongest_falsification_test": "Simulate mislabeling by flipping labels for windows where |self-report - PSI| > threshold; measure coverage drop per subject. Compare to coverage drop from uniform random mislabeling at same global rate. Fit mixed-effects model: coverage_drop ~ discrepancy + (1|subject) vs coverage_drop ~ random_noise_rate. If discrepancy coefficient non-significant (p > 0.2) and random noise model explains >80% variance (R² > 0.8), the mechanism is falsified.",
+      "failure_condition": "Synthetic random label noise at observed global discrepancy rate explains >80% of coverage variance (R² > 0.8) and individual label-physiology discrepancy adds no significant predictive power (p > 0.2).",
+      "minimum_data_needed": "Per-subject PSI (first PC of z-scored EDA_phasic_rate, HR, -logRMSSD, RESP_rate) during each condition; self-report stress questionnaire ratings per condition (0-10); per-subject label-physiology discrepancy: |questionnaire_stress - PSI| normalized; per-subject stress-class coverage rate; simulated mislabeling coverage drop per subject at varying discrepancy thresholds; covariates: education, language proficiency, time to questionnaire, social desirability, alexithymia proxy.",
+      "most_likely_false_positive_risk": "PSI-proxy discrepancy correlates with an unmeasured variable (e.g., alexithymia) that independently affects both self-report accuracy and physiological reactivity, creating a spurious association.",
+      "most_likely_false_negative_risk": "Low inter-subject variability in label-physiology discrepancy within WESAD's small cohort (n=15) limits power to detect a true effect; simulation-based mislabeling may not reflect true mislabeling process."
+    },
+    {
+      "hypothesis_id": "H5",
+      "strongest_falsification_test": "Compare stress-class coverage under three stratification schemes: (1) protocol label only (Mondrian), (2) WSI tertile × protocol label, (3) random continuous variable tertile × protocol label. Use paired bootstrap (10,000 resamples) to test if scheme (2) improves coverage significantly more than scheme (3). If improvement difference is non-significant (p > 0.2), the mechanism is falsified.",
+      "failure_condition": "WSI-based stratification (scheme 2) and random-variable stratification (scheme 3) yield equivalent coverage improvement (paired bootstrap p > 0.2).",
+      "minimum_data_needed": "Per-subject WSI (mean PSI during TSST); STAI-T scores for all 15 subjects; per-subject stress-class conformity score shift: median(test_scores) - median(calibration_scores); per-subject stress-class coverage rate; coverage under three stratification schemes: (1) protocol label only, (2) WSI tertile × protocol label, (3) random noise tertile × protocol label; covariates: prior TSST exposure, neuroticism, extraversion, social support, life events, recording time.",
+      "most_likely_false_positive_risk": "WSI and random variable accidentally correlate due to small sample size, making WSI appear superior by chance; or WSI captures a confound (e.g., time of day) that also affects coverage.",
+      "most_likely_false_negative_risk": "WSI tertile stratification reduces calibration samples per stratum too much, increasing quantile variance and masking true coverage improvement; limited subjects (15) reduce power to detect difference between stratification schemes."
+    },
+    {
+      "hypothesis_id": "H6",
+      "strongest_falsification_test": "Regress stress-class coverage on recording time (continuous) and session duration (minutes from start to TSST) simultaneously. If recording time coefficient is non-significant (p > 0.2) while session duration coefficient is significant (p < 0.05), the mechanism is falsified. Additionally, compare morning (before 12:00) vs evening (after 14:00) coverage via t-test; if non-significant (p > 0.2) after controlling for duration, falsified.",
+      "failure_condition": "Recording time coefficient non-significant (p > 0.2) in multiple regression controlling for session duration, and morning/evening coverage difference non-significant (p > 0.2) after adjusting for duration.",
+      "minimum_data_needed": "Recording start time (clock time) from WESAD metadata; baseline sympathetic tone: mean EDA tonic (cvxEDA) + mean HR over 5-min pre-TSST baseline; per-subject stress-class coverage rate; session duration from recording start to TSST onset; covariates: sleep duration, sleep quality, chronotype, caffeine intake, ambient light, session order.",
+      "most_likely_false_positive_risk": "Recording time correlates with an unmeasured confound (e.g., chronotype distribution across recruitment times) that drives coverage differences; session duration may not fully capture fatigue if fatigue is non-linear.",
+      "most_likely_false_negative_risk": "Small range of recording times (09:00-17:00) limits variability; circadian effect may be non-linear (e.g., U-shaped) and missed by linear term; session duration and recording time highly collinear, reducing power to separate effects."
+    },
+    {
+      "hypothesis_id": "H7",
+      "strongest_falsification_test": "Compare stress-class coverage under three conformity score constructions: (1) original 26 features, (2) PCA-3D features, (3) interaction-aware stratification (k-means on interaction features, k=4). Use paired bootstrap (10,000 resamples) to test if scheme (3) outperforms scheme (2). If difference non-significant (p > 0.2), the mechanism is falsified. Also test if interaction weight magnitude correlates with KL divergence (Spearman p < 0.05).",
+      "failure_condition": "PCA-3D and interaction-aware stratification yield equivalent coverage (paired bootstrap p > 0.2), and interaction weight magnitude does not significantly correlate with KL divergence (Spearman p > 0.2).",
+      "minimum_data_needed": "Per-subject interaction weight (logistic regression coefficient for 3-way interaction term EDA_phasic × logRMSSD × RESP_rate); KL divergence between calibration and test conformity score distributions within stress stratum per subject; per-subject stress-class coverage rate; coverage under three conformity score constructions: (1) original 26 features, (2) PCA-3D features, (3) interaction-aware stratification (k-means on interaction features, k=4); covariates: feature selection method, window length, preprocessing, base classifier architecture.",
+      "most_likely_false_positive_risk": "Interaction-aware stratification overfits due to small sample size (15 subjects, few windows per cluster), appearing to improve coverage by chance; PCA may inadvertently capture interaction structure.",
+      "most_likely_false_negative_risk": "k-means on interaction features fails to recover true interaction states due to noise; KL divergence estimation via k-NN is unreliable with small calibration sets; base classifier (RF) may not exploit interactions, making conformity scores insensitive to them."
+    },
+    {
+      "hypothesis_id": "H8",
+      "strongest_falsification_test": "Cluster subjects using GMM (k=4) on [mean_PSI_TSST, EDA_phasic/HRV_ratio, HRV_recovery_slope]. Compute effective calibration size per cluster. Match rare-phenotype subjects to common-phenotype subjects with closest effective size (subsample common calibration windows). Compare coverage between matched groups via permutation test. If coverage equalizes (p > 0.2), the mechanism is falsified. Also test if rare phenotypes (frequency < 15%) show larger bootstrap quantile bias (permutation test p < 0.05).",
+      "failure_condition": "After matching on effective calibration size, rare and common phenotype subjects show equivalent coverage (permutation test p > 0.2), and rare phenotypes do not exhibit significantly larger bootstrap quantile bias (p > 0.2).",
+      "minimum_data_needed": "Physiological phenotype clusters (GMM k=4) on subject-level features [mean_PSI_TSST, EDA_phasic/HRV_ratio, HRV_recovery_slope]; effective calibration size per phenotype: sum of calibration windows from subjects in same cluster; bootstrap quantile bias: mean(empirical_q90 - true_q90) per phenotype (true_q90 from pooled bootstrap); per-subject stress-class coverage rate; coverage under phenotype-stratified Mondrian vs standard; covariates: clustering method, number of clusters, clustering features, calibration split seed, base classifier seed.",
+      "most_likely_false_positive_risk": "Phenotype clustering is unstable (small n=15), creating spurious rare clusters; matching on effective size may not account for within-cluster heterogeneity in conformity score distributions.",
+      "most_likely_false_negative_risk": "Bootstrap quantile bias estimation is noisy with small calibration sets; rare phenotypes may have too few subjects (1-2) to reliably estimate bias or coverage difference after matching."
+    },
+    {
+      "hypothesis_id": "H9",
+      "strongest_falsification_test": "Regress ΔEDA_tonic on ΔT and session duration simultaneously. If ΔT coefficient non-significant (p > 0.2) while session duration coefficient significant (p < 0.05), the mechanism is falsified. Apply temperature correction (k=0.07/°C) and session-time detrending; compare coverage improvement via paired bootstrap. If temperature correction does not improve coverage beyond detrending (p > 0.2), falsified.",
+      "failure_condition": "Session duration fully mediates ΔT-ΔEDA_tonic relationship (ΔT coefficient p > 0.2 when duration included), and temperature correction does not improve coverage beyond session-time detrending (paired bootstrap p > 0.2).",
+      "minimum_data_needed": "Per-subject ΔT = median(T_last_5min_TSST) - median(T_last_5min_baseline) from E4 thermistor; per-subject ΔEDA_tonic = tonic_stress - tonic_baseline (cvxEDA); per-subject ΔEDA_phasic_per_stimulus = (phasic_rate_stress/SCR_count_stress) - (phasic_rate_baseline/SCR_count_baseline); per-subject stress-class coverage rate; session duration from baseline to TSST end; sensor age/battery level, ambient temperature, clothing, strap tightness, baseline skin hydration.",
+      "most_likely_false_positive_risk": "ΔT and session duration are highly collinear (later recordings have longer duration), making it impossible to separate effects; temperature correction coefficient (k=0.07) may be inaccurate for wrist-worn sensor.",
+      "most_likely_false_negative_risk": "Skin temperature change ΔT is small relative to thermistor resolution (0.1°C), leading to measurement error that attenuates ΔT coefficient; EDA temperature coefficient varies across individuals, making fixed correction suboptimal."
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "artifact": "Experiment 17-C live structured-output smoke test (not a scientific result)",
+  "date": "2026-09-23",
+  "cli": "Claude Code 2.1.280, claude -p, authMethod=claude.ai, subscriptionType=pro",
+  "prompt": "Return an object with key \"answer\" set to 2+2.",
+  "schema": {"type": "object", "properties": {"answer": {"type": "integer"}}, "required": ["answer"], "additionalProperties": false},
+  "results": {
+    "claude-sonnet-5": {"is_error": false, "structured_output": {"answer": 4}, "num_turns": 2, "input_tokens": 2, "cache_creation_input_tokens": 1052, "cache_read_input_tokens": 0, "output_tokens": 52, "model_usage_keys": ["claude-sonnet-5"]},
+    "claude-opus-5-5": {"is_error": false, "structured_output": {"answer": 4}, "num_turns": 2, "input_tokens": 2, "cache_creation_input_tokens": 1014, "cache_read_input_tokens": 0, "output_tokens": 52, "model_usage_keys": ["claude-opus-5-5"]}
+  },
+  "environment_note": "Initial attempts failed with 'Failed to refresh OAuth token' because of a stale ~/.claude.lock directory (mtime 2055-08-05) and a leftover ~/.claude/.oauth_refresh.lock; both empty lock directories were removed with operator approval. No credential file was modified by the harness."
+}

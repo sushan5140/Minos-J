@@ -1,0 +1,14 @@
+{
+  "archive_sequence": 13,
+  "classification": "invalid_response_shape",
+  "captured_at_utc": "2026-09-20T12:47:45Z",
+  "metadata": {
+    "model": "nvidia/nemotron-3-super-120b-a12b:free",
+    "schema_name": "stage_4_hypotheses",
+    "shape_attempt": 1
+  },
+  "body_sha256": "87fb9d0eec8dda318b6d6ee679d8f8457c0d0e0ed161f2d8f0d8d67dd3c44abd",
+  "body_bytes": 193,
+  "body_encoding": "utf-8",
+  "body": "{'id': 'gen-1789908465-pm651qUuHPyhLj3m9JbB', 'error': {'message': 'Upstream error from Nvidia: Service temporarily overloaded', 'code': 503, 'metadata': {'error_type': 'provider_overloaded'}}}"
+}

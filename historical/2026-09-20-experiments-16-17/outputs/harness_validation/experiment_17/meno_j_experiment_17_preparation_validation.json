@@ -1,0 +1,80 @@
+{
+  "artifact": "Meno-J Experiment 17 preparation validation",
+  "banner": "ENGINEERING VALIDATION ONLY — deterministic synthetic responses; no scientific conclusions.",
+  "scientific_results": false,
+  "checks_passed": 14,
+  "checks_total": 14,
+  "all_passed": true,
+  "checks": [
+    {
+      "name": "contradictory_decision_handling",
+      "passed": true,
+      "detail": "rejected as PipelineValidationError"
+    },
+    {
+      "name": "incomplete_output_rejected",
+      "passed": true,
+      "detail": "rejected as PipelineValidationError"
+    },
+    {
+      "name": "wrong_audit_count_rejected",
+      "passed": true,
+      "detail": "rejected as PipelineValidationError"
+    },
+    {
+      "name": "invalid_json_fails_and_body_is_retained_safely",
+      "passed": true,
+      "detail": "4 diagnostic records retained and redacted"
+    },
+    {
+      "name": "json_repair_and_structured_request_contract",
+      "passed": true,
+      "detail": "one schema-constrained repair succeeded"
+    },
+    {
+      "name": "incomplete_read_retry",
+      "passed": true,
+      "detail": "partial body archived; second transport attempt succeeded"
+    },
+    {
+      "name": "resume_ledger_uniqueness_and_token_accounting",
+      "passed": true,
+      "detail": "unique sequences [1, 2, 3]; token total recomputed as 16"
+    },
+    {
+      "name": "judge_attempt_limit_persists_across_resume",
+      "passed": true,
+      "detail": "two-attempt limit survived both terminal resume and an interrupted in-flight attempt"
+    },
+    {
+      "name": "standards_compliant_json_serialization",
+      "passed": true,
+      "detail": "non-finite values serialized as JSON null with allow_nan=false"
+    },
+    {
+      "name": "scientific_protocol_core_preserved",
+      "passed": true,
+      "detail": "questions, arms, tolerance, outcomes, and decision rules unchanged"
+    },
+    {
+      "name": "model_and_endpoint_capability_metadata",
+      "passed": true,
+      "detail": "verified model and endpoint metadata for nvidia/nemotron-3-super-120b-a12b:free and nex-agi/nex-n2.5-pro:free"
+    },
+    {
+      "name": "stage_specific_schema_dispatch",
+      "passed": true,
+      "detail": "schemas resolved for stage_4_hypotheses, stage_4_1_mechanism_builds, stage_4_2_confounder_rival_builds, stage_4_3_statistical_testability, stage_5_audits, stage_6_rival_matrix, stage_7_falsification, baseline_sample, selector_audits, blinded_judgments"
+    },
+    {
+      "name": "credential_scan",
+      "passed": true,
+      "detail": "no OpenRouter credential-like values in Experiment 17 code or artifacts"
+    },
+    {
+      "name": "experiment_16_artifacts_unchanged",
+      "passed": true,
+      "detail": "244 Experiment 16 files unchanged during validation"
+    }
+  ]
+}

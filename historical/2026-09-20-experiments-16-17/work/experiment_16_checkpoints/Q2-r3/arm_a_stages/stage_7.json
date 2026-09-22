@@ -1,0 +1,68 @@
+{
+  "falsification_tests": [
+    {
+      "hypothesis_id": "H1",
+      "strongest_falsification_test": "Perform leave-one-subject-out conformal prediction on a multi-subject dataset with simultaneous ECG/PPG and cuff BP, while measuring per-subject autonomic parameters (RMSSD, LF/HF, BRS) per segment. Regress absolute coverage deviation on subject-level coefficient of variation of autonomic parameters. If the slope is not significantly different from zero (p>0.05) and the mean absolute coverage deviation for high-variability subjects (top quartile CV) is ≤2%, the mechanism is falsified.",
+      "failure_condition": "Correlation between subject autonomic parameter distance and coverage deviation is not statistically significant (p>0.05) OR mean absolute coverage deviation for high-variability subjects (top quartile CV) is ≤2%.",
+      "minimum_data_needed": "Multi-subject physiological dataset with ≥50 subjects, each with ≥10 segments of ≥5 min continuous ECG/PPG, simultaneous cuff BP reference, and per-segment HRV metrics (RMSSD, LF/HF) and baroreflex sensitivity estimates.",
+      "most_likely_false_positive_risk": "Uncontrolled confounders such as sensor placement variability or medication effects correlate with both autonomic parameters and coverage deviation, creating a spurious association.",
+      "most_likely_false_negative_risk": "Insufficient inter-subject autonomic variability in the dataset (e.g., homogeneous cohort) or inadequate segment length for reliable HRV/BRS estimation, masking a true effect."
+    },
+    {
+      "hypothesis_id": "H2",
+      "strongest_falsification_test": "In a controlled protocol with simultaneous wearable PPG/ECG, electrode impedance tracking, triaxial accelerometer, and reference-grade signals, induce graded impedance drift (gel drying) and standardized motion artifacts. Stratify segments by impedance drift and accelerometer variance quartiles. Compute conformal coverage at nominal 90% using calibration on bottom-quartile segments. If coverage in top-quartile artifact segments exceeds 85% or the correlation between artifact metrics and coverage deviation is non-significant (p>0.05) after controlling for physiological state (HRV), the mechanism is falsified.",
+      "failure_condition": "Coverage in top-quartile artifact segments >85% at nominal 90% OR correlation between artifact metrics and coverage deviation not statistically significant (p>0.05) after controlling for physiological state.",
+      "minimum_data_needed": "Wearable sensor dataset with simultaneous electrode impedance tracking, triaxial accelerometer, ≥100 segments spanning wide motion/impedance conditions, and reference signal quality metrics per segment.",
+      "most_likely_false_positive_risk": "Physiological state changes co-occurring with motion (e.g., stress) drive coverage drops, but are not fully captured by HRV covariates, leading to attribution to sensor noise.",
+      "most_likely_false_negative_risk": "Controlled protocol fails to induce sufficient artifact severity range, or reference-grade signals are not truly artifact-free, obscuring the sensor noise effect."
+    },
+    {
+      "hypothesis_id": "H3",
+      "strongest_falsification_test": "Using PSG-annotated sleep data with continuous physiological signals, align all autonomic state transitions (NREM→REM, sleep→wake) to t=0. Compute conformal coverage in 30-second bins from -10 to +10 minutes relative to transition using sliding-window calibration (window sizes: 1, 5, 15, 30 min). If coverage drop post-transition is <5% at nominal 90%, or coverage recovers before the calibration window contains predominantly new-state samples (recovery time < 0.5 × window size), the mechanism is falsified.",
+      "failure_condition": "Coverage drop post-transition <5% at nominal 90% OR coverage recovery time < 0.5 × calibration window size.",
+      "minimum_data_needed": "Physiological dataset with gold-standard state annotations (PSG sleep stages), ≥50 state transitions across subjects, continuous signals with ≥30 min pre/post-transition per transition, and sliding-window conformal prediction implementation with variable window sizes.",
+      "most_likely_false_positive_risk": "Movement artifacts coinciding with state transitions (e.g., body movements during arousals) cause coverage drops, but are not fully controlled by accelerometer stratification.",
+      "most_likely_false_negative_risk": "State transitions in the dataset are slower than the calibration window, or autonomic shift magnitude is insufficient to alter residual variance by ≥2×, making the effect undetectable."
+    },
+    {
+      "hypothesis_id": "H4",
+      "strongest_falsification_test": "In a constant routine protocol (≥40h) with continuous physiological monitoring and core body temperature (CBT) rhythm, bin segments by circadian phase relative to CBT minimum. Compute conformal coverage per bin at nominal 90% using fixed calibration window shorter than 24h. Fit cosinor model to coverage time-course. If cosinor amplitude <1.5% (p>0.05) or phase-stratified calibration does not reduce coverage oscillation amplitude by at least 30%, the mechanism is falsified.",
+      "failure_condition": "Cosinor amplitude <1.5% (p>0.05) OR phase-stratified calibration fails to reduce coverage oscillation amplitude by ≥30%.",
+      "minimum_data_needed": "Continuous physiological monitoring ≥48 hours per subject (≥20 subjects) with circadian phase markers (DLMO or CBT rhythm), segments binned into ≥6 circadian phase bins (4-hour width), and conformal prediction with fixed calibration window shorter than 24h.",
+      "most_likely_false_positive_risk": "Behavioral/environmental cycles (activity, temperature, meals) drive coverage oscillations that persist in constant routine but with altered phase, mimicking endogenous circadian effects.",
+      "most_likely_false_negative_risk": "Observational data lacks precise circadian phase markers, or calibration window inadvertently spans multiple circadian phases, diluting the oscillation signal."
+    },
+    {
+      "hypothesis_id": "H5",
+      "strongest_falsification_test": "Using a multi-rater annotated dataset (≥3 raters, ≥100 segments) with adjudicated consensus labels, compute per-segment inter-rater kappa and SQI. Run conformal prediction at nominal 90% using single-rater labels and adjudicated labels separately. If coverage deviation in low-agreement segments (kappa<0.7) is <4% with single-rater labels, or adjudicated-label calibration does not reduce deviation by ≥50%, the mechanism is falsified.",
+      "failure_condition": "Coverage deviation in low-agreement segments (kappa<0.7) <4% with single-rater labels OR adjudicated-label calibration reduces deviation by <50%.",
+      "minimum_data_needed": "Multi-rater annotated physiological dataset (≥3 raters, ≥100 segments) with adjudicated consensus labels, per-segment signal quality indices (SQI), and rater identity/experience metadata.",
+      "most_likely_false_positive_risk": "True physiological ambiguity in transitional states causes both low rater agreement and genuine prediction uncertainty, making coverage appear off due to undefined ground truth rather than label noise.",
+      "most_likely_false_negative_risk": "Rater bias patterns are symmetric or cancel out, or SQI is not sufficiently correlated with label noise, masking the effect of heteroscedastic label noise."
+    },
+    {
+      "hypothesis_id": "H6",
+      "strongest_falsification_test": "In a free-living dataset with synchronized accelerometer and physiological signals, classify segments by activity intensity (METs bins). Compute coverage per stratum using unstratified calibration (all data). If unstratified coverage during vigorous activity (METs>6) is >85% at nominal 90%, or activity-stratified calibration (minimum 4 strata) fails to bring all strata within 5% of nominal coverage, the mechanism is falsified.",
+      "failure_condition": "Unstratified coverage during vigorous activity >85% at nominal 90% OR activity-stratified calibration fails to bring all strata within 5% of nominal coverage.",
+      "minimum_data_needed": "Free-living dataset with synchronized accelerometer and physiological signals (PPG/ECG), activity classification with METs estimates, ≥100 segments per activity intensity stratum, and reference target measurements (e.g., cuff BP) during activities.",
+      "most_likely_false_positive_risk": "Motion artifacts during exercise corrupt sensor signals and cause undercoverage, but are not fully separated from cardiovascular dynamics by available motion metrics.",
+      "most_likely_false_negative_risk": "Residual variance during exercise is not sufficiently larger than rest (e.g., <3×), or activity classification is too coarse to capture distinct residual regimes."
+    },
+    {
+      "hypothesis_id": "H8",
+      "strongest_falsification_test": "Using a wearable dataset with simultaneous wired reference and wireless transmission, classify native missingness mechanism per segment (Little's test). Artificially impose MCAR, MAR, MNAR missingness at 10-40% on complete segments. For each mechanism/rate, compute coverage across 100 imputation replicates. If MCAR missingness at 30% causes coverage deviation >5%, or native MNAR missingness at 20% yields coverage deviation <5%, or mechanism-specific differences are not significant (p>0.01), the mechanism is falsified.",
+      "failure_condition": "MCAR missingness at 30% causes coverage deviation >5% OR native MNAR missingness at 20% yields coverage deviation <5% OR mechanism-specific differences not statistically significant (p>0.01).",
+      "minimum_data_needed": "Wearable dataset with wireless transmission and simultaneous wired reference, native missing data patterns with mechanism classification, ability to artificially impose controlled missingness (MCAR/MAR/MNAR) at 10-50% rates, and multiple imputation methods.",
+      "most_likely_false_positive_risk": "Physiological events (e.g., arrhythmia) cause both missingness and signal changes; native MNAR missingness correlates with these events, but the missingness mechanism itself is not the cause of coverage failure.",
+      "most_likely_false_negative_risk": "Imputation methods are robust to MNAR missingness, or the dataset has insufficient MNAR missingness severity to induce detectable coverage degradation."
+    },
+    {
+      "hypothesis_id": "H10",
+      "strongest_falsification_test": "In a cuffless BP dataset with simultaneous PPG and reference tonometry, extract morphology features per segment (AIx, PWV, peak ratio, entropy). Compute Wasserstein distance between calibration and test morphology distributions. Bin test segments by shift magnitude. If coverage deviation is <4% for Wasserstein distance >0.5, or morphology-stratified conformal fails to bring coverage within 5% of nominal for out-of-hull segments, the mechanism is falsified.",
+      "failure_condition": "Coverage deviation <4% for Wasserstein distance >0.5 OR morphology-stratified conformal fails to bring coverage within 5% of nominal for out-of-hull segments.",
+      "minimum_data_needed": "Cuffless BP dataset with simultaneous PPG and reference tonometry/arterial line, pulse wave morphology features per beat, controlled morphology shifts via vascular interventions (cold pressor, nitroglycerin, tilt table), and ≥50 segments spanning wide morphology distribution.",
+      "most_likely_false_positive_risk": "Covariate shift (morphology distribution shift) drives coverage failure, but model error is independent of morphology; importance-weighted conformal would restore coverage without morphology stratification, making the mechanism appear true when it is not.",
+      "most_likely_false_negative_risk": "Morphology features are not sufficiently discriminative of model error, or vascular interventions do not induce large enough morphology shifts to exceed the calibration convex hull."
+    }
+  ]
+}

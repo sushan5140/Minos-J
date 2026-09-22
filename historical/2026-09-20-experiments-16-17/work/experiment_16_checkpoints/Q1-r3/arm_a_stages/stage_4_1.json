@@ -1,0 +1,254 @@
+{
+  "mechanism_builds": [
+    {
+      "hypothesis_id": "H1",
+      "mechanism_variables": [
+        "EDA phasic peak amplitude (µS)",
+        "HR acceleration (bpm/s) during TSST onset",
+        "Sympathetic reactivity index (composite z-score of EDA/HR features)",
+        "Calibration set feature density (k-NN distance in feature space)",
+        "Nonconformity score (1 - predicted probability of true class)"
+      ],
+      "causal_path": "High sympathetic reactivity index → feature vectors land in low-density regions of calibration feature space (k-NN distance > 90th percentile) → nonconformity scores inflated relative to typical responders in same Mondrian bin → empirical (1-α) quantile underestimates true nonconformity for high-reactivity subjects → prediction intervals undercover",
+      "expected_direction": "Positive correlation between sympathetic reactivity index and undercoverage magnitude (coverage rate decreases as reactivity increases)",
+      "domain_specific_boundary_conditions": [
+        "Calibration set size n=15 (WESAD subjects)",
+        "Mondrian taxonomy: binary predicted class (stress/non-stress)",
+        "Reactivity threshold: top 20% of sympathetic reactivity index",
+        "Feature space: 34-dimensional physiological features (EDA, HR, TEMP, ACC)"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per reactivity quantile (decile bins)",
+        "Nonconformity score distribution shift (KS statistic) between high-reactivity and typical subjects within same Mondrian bin",
+        "Calibration set feature density (mean k-NN distance) for high-reactivity vs typical subjects",
+        "Interval width vs actual error for high-reactivity subjects"
+      ],
+      "mechanism_builder_notes": "Test by stratifying WESAD subjects by sympathetic reactivity index computed from TSST response; compute per-subject coverage and correlate with reactivity."
+    },
+    {
+      "hypothesis_id": "H2",
+      "mechanism_variables": [
+        "ACC vector magnitude (g) during TSST",
+        "BVP signal quality index (SQI, 0-1)",
+        "Gesture frequency (peaks/min in ACC > 0.5g)",
+        "Watch fit tightness (subject-reported 1-5 scale)",
+        "Nonconformity score (1 - predicted probability)"
+      ],
+      "causal_path": "High gesture frequency + loose watch fit (≤3/5) → correlated motion artifacts in BVP (SQI < 0.7) and ACC → artifact pattern mimics stress signature (elevated HR, reduced HRV) → model assigns high confidence to incorrect stress prediction → Mondrian bin (predicted stress) pools clean and artifact-contaminated samples → empirical quantile inflated by clean samples → intervals undercover for artifact-contaminated subjects",
+      "expected_direction": "Positive correlation between gesture frequency × (6 - watch fit) interaction term and undercoverage; coverage lowest for high-gesture/loose-fit subgroup",
+      "domain_specific_boundary_conditions": [
+        "TSST task only (social stress with speaking/gesturing)",
+        "Empatica E4 sampling rates: BVP 64Hz, ACC 32Hz",
+        "Artifact threshold: BVP SQI < 0.7 or ACC magnitude > 1.5g",
+        "Mondrian taxonomy: binary predicted class"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per artifact severity quartile (gesture frequency × fit interaction)",
+        "Nonconformity score correlation with ACC magnitude within predicted-stress bin",
+        "Misclassification rate for high-artifact vs low-artifact subjects",
+        "BVP SQI distribution per Mondrian bin"
+      ],
+      "mechanism_builder_notes": "Use existing WESAD ACC/BVP data; compute gesture frequency from ACC peaks during TSST; watch fit not in WESAD but can proxy via baseline ACC variance."
+    },
+    {
+      "hypothesis_id": "H3",
+      "mechanism_variables": [
+        "HRV recovery slope (RMSSD change per minute post-TSST)",
+        "Cortisol recovery half-life (min, from saliva samples)",
+        "Calibration sample temporal index (early vs late in calibration window)",
+        "Feature distribution drift (Wasserstein distance between early/late calibration features)",
+        "Nonconformity score"
+      ],
+      "causal_path": "Slow recovery phenotype (HRV recovery slope < median, cortisol half-life > 60min) → physiological feature distribution drifts across calibration window (Wasserstein distance > 0.5) → Mondrian bin pools early (near-stress) and late (recovery) calibration samples → empirical (1-α) quantile reflects mixed distribution → prediction intervals too narrow for late-phase feature distribution → undercoverage for slow recoverers in late calibration period",
+      "expected_direction": "Negative correlation between recovery speed (HRV slope) and coverage; coverage decreases for later calibration samples within slow-recovery subjects",
+      "domain_specific_boundary_conditions": [
+        "WESAD protocol: baseline, TSST, recovery (~20min), meditation",
+        "Calibration window: all non-stress + stress samples pooled",
+        "Recovery phenotype: bottom 30% HRV recovery slope",
+        "Mondrian taxonomy: binary predicted class"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per recovery phenotype (fast vs slow) and calibration temporal half (early vs late)",
+        "Nonconformity score drift over calibration time (slope of score vs sample index)",
+        "Wasserstein distance between early/late calibration feature distributions per subject",
+        "Interval width vs actual error for late calibration samples of slow recoverers"
+      ],
+      "mechanism_builder_notes": "Requires temporal ordering of calibration samples; WESAD has sequential protocol so calibration samples have implicit time order."
+    },
+    {
+      "hypothesis_id": "H4",
+      "mechanism_variables": [
+        "VAS stress rating (0-100)",
+        "Interoceptive accuracy score (heartbeat counting task, 0-1)",
+        "Alexithymia score (TAS-20, 20-100)",
+        "Physiological arousal index (EDA tonic + HR z-score)",
+        "Label-physiology mismatch (|VAS - physiological arousal index|)"
+      ],
+      "causal_path": "Low interoceptive accuracy (≤0.6) or high alexithymia (≥60) → VAS ratings mismatch physiological arousal (mismatch > 30 percentile) → Mondrian bin (predicted class) mixes truly stressed (high physiology, high VAS) and mislabeled calm (high physiology, low VAS) → true nonconformity distribution widens beyond calibrated quantile → intervals undercover for high-mismatch subjects",
+      "expected_direction": "Negative correlation between interoceptive accuracy and coverage; positive correlation between label-physiology mismatch and undercoverage",
+      "domain_specific_boundary_conditions": [
+        "VAS collected post-TSST and post-meditation in WESAD",
+        "Interoceptive accuracy/alexithymia not in WESAD (requires external measurement)",
+        "Mondrian taxonomy: binary predicted class",
+        "Mismatch threshold: top 30% of |VAS - physiology| distribution"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per interoceptive accuracy tertile (if available) or mismatch tertile",
+        "Nonconformity score distribution width (IQR) per Mondrian bin for high vs low mismatch",
+        "Label-physiology mismatch magnitude vs nonconformity score correlation",
+        "Proportion of mislabeled samples (high physiology, low VAS) per bin"
+      ],
+      "mechanism_builder_notes": "WESAD lacks interoceptive measures; mechanism testable via simulation injecting label noise correlated with physiology, or on datasets with interoceptive data."
+    },
+    {
+      "hypothesis_id": "H5",
+      "mechanism_variables": [
+        "Predicted probability of stress class (0-1)",
+        "EDA tonic level during TSST (µS)",
+        "HR max during TSST (bpm)",
+        "Stress intensity latent variable (PC1 of physiological features)",
+        "Nonconformity score (1 - predicted probability for true class)"
+      ],
+      "causal_path": "Binary Mondrian taxonomy (predicted stress/non-stress) pools mild (predicted prob 0.5-0.7) and severe (predicted prob >0.9) stress → extreme responders (top 10% EDA tonic/HR max) have systematically higher nonconformity scores than bin quantile → rarity (n<2 per bin) prevents quantile adaptation → empirical quantile reflects mild stress majority → intervals undercover for extreme intensity",
+      "expected_direction": "Coverage decreases monotonically with predicted probability within predicted-stress bin; coverage gap between mild (0.5-0.7) and severe (>0.9) > 15 percentage points",
+      "domain_specific_boundary_conditions": [
+        "Mondrian taxonomy: binary predicted class only",
+        "Calibration set: 15 subjects × ~200 samples each",
+        "Extreme intensity: top decile of stress intensity latent variable",
+        "Nonconformity score: 1 - predicted probability of true class"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per predicted probability decile within each Mondrian bin",
+        "Nonconformity score vs stress intensity (PC1) correlation within bin",
+        "Coverage difference between mild (prob 0.5-0.7) and severe (prob >0.9) stress",
+        "Empirical quantile vs true nonconformity quantile per intensity decile"
+      ],
+      "mechanism_builder_notes": "Directly testable on WESAD by binning calibration samples by predicted probability and computing per-bin coverage."
+    },
+    {
+      "hypothesis_id": "H6",
+      "mechanism_variables": [
+        "EDA tonic level (µS)",
+        "EDA phasic driver amplitude (µS)",
+        "Skin impedance estimate (kΩ, from EDA tonic + phasic ratio)",
+        "Skin condition category (dry/normal/sweaty, from tonic level thresholds)",
+        "Signal quality flag (WESAD provided)"
+      ],
+      "causal_path": "Extreme skin condition (tonic < 0.1µS dry or > 20µS sweaty) → EDA features shifted on manifold independent of sympathetic activity → Mondrian bin (predicted class) groups disparate skin conditions → nonconformity score distribution becomes bimodal within bin → empirical quantile falls between modes → intervals undercover for both extreme conditions",
+      "expected_direction": "U-shaped coverage vs EDA tonic level: lowest coverage for very dry (<0.5µS) and very sweaty (>15µS) skin; highest for normal (1-10µS)",
+      "domain_specific_boundary_conditions": [
+        "Empatica E4 EDA sensor (dry electrode)",
+        "WESAD signal quality flags (may not capture impedance)",
+        "Mondrian taxonomy: binary predicted class",
+        "Skin condition thresholds: dry <0.5µS, sweaty >15µS tonic"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per skin condition category (dry/normal/sweaty)",
+        "EDA feature manifold position (t-SNE/UMAP) colored by skin condition",
+        "Nonconformity score distribution modality (Hartigan's dip test) per bin",
+        "Correlation between EDA tonic level and nonconformity score residual"
+      ],
+      "mechanism_builder_notes": "WESAD provides EDA tonic/phasic; skin impedance not directly measured but inferable from tonic/phasic ratio."
+    },
+    {
+      "hypothesis_id": "H7",
+      "mechanism_variables": [
+        "Time of TSST start (hours since midnight)",
+        "Baseline cortisol (nmol/L, first saliva sample)",
+        "Baseline HRV (RMSSD, ms)",
+        "Cortisol awakening response (CAR) magnitude",
+        "Nonconformity score"
+      ],
+      "causal_path": "Morning TSST (8-11am) vs afternoon (1-4pm) → higher baseline cortisol + lower HRV in morning → model trained on pooled data learns decision boundary biased toward afternoon distribution → morning subjects miscalibrated (overconfident non-stress) → Mondrian bin by predicted class fails to separate circadian groups (both classes contain mixed times) → undercoverage for morning-tested subjects",
+      "expected_direction": "Coverage lower for morning-tested subjects (8-11am) vs afternoon (1-4pm) by >10 percentage points; direction depends on which group is underrepresented in calibration",
+      "domain_specific_boundary_conditions": [
+        "WESAD data collection times vary across subjects (not standardized)",
+        "Cortisol samples at baseline, +20, +40, +60min post-TSST",
+        "Mondrian taxonomy: binary predicted class",
+        "Circadian effect size: baseline cortisol difference > 2 nmol/L between morning/afternoon"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per time-of-day bin (morning vs afternoon)",
+        "Baseline feature shift magnitude (Mahalanobis distance) between morning/afternoon",
+        "Nonconformity score distribution per circadian phase per Mondrian bin",
+        "Model calibration error (ECE) per time-of-day group"
+      ],
+      "mechanism_builder_notes": "WESAD has timestamps; cortisol data available for subset. Test by splitting subjects by median TSST start time."
+    },
+    {
+      "hypothesis_id": "H8",
+      "mechanism_variables": [
+        "Feature covariance Mahalanobis distance from training population mean",
+        "Predicted probability calibration error (ECE per subject)",
+        "Subject phenotype (athlete: resting HR <50bpm; comorbid: self-report)",
+        "Nonconformity score (1 - predicted probability)",
+        "True error indicator (0/1)"
+      ],
+      "causal_path": "Atypical feature covariance (Mahalanobis distance > 95th percentile) → model's inductive bias violated → predicted probabilities overconfident (ECE > 0.15) for these subjects → nonconformity score (1-p) too small → Mondrian binning by class does not correct feature-conditional miscalibration → intervals undercover for atypical covariance subjects",
+      "expected_direction": "Negative correlation between Mahalanobis distance and coverage; coverage < 80% for distance > 95th percentile",
+      "domain_specific_boundary_conditions": [
+        "Model: gradient boosting or neural net trained on WESAD",
+        "Training population: 15 subjects leave-one-out",
+        "Nonconformity score: 1 - predicted probability of true class",
+        "Atypical phenotype: athletes (n≈2 in WESAD) or high HRV outliers"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per Mahalanobis distance quintile",
+        "Subject-level ECE vs coverage correlation",
+        "Nonconformity score vs true error calibration curve per phenotype",
+        "Feature covariance matrix distance distribution per subject"
+      ],
+      "mechanism_builder_notes": "Compute Mahalanobis distance using training set covariance; test on left-out subject in LOOCV."
+    },
+    {
+      "hypothesis_id": "H9",
+      "mechanism_variables": [
+        "Phenotype frequency in calibration set (count)",
+        "Empirical (1-α) quantile estimate",
+        "Quantile estimate bootstrap variance",
+        "Effective bin size per phenotype (n_bin)",
+        "Coverage rate per phenotype"
+      ],
+      "causal_path": "Rare phenotype (e.g., non-responders: n=2 in calibration) → few samples in Mondrian bin (n_bin < 5) → empirical (1-α) quantile upwardly biased (order statistic variance ∝ 1/n_bin) → quantile too small → prediction intervals systematically too narrow → undercoverage in expectation for that phenotype",
+      "expected_direction": "Inverse relationship: coverage ≈ 1-α - O(1/√n_bin); phenotypes with n_bin < 10 show coverage < 85% at α=0.1",
+      "domain_specific_boundary_conditions": [
+        "WESAD calibration set: 14 subjects (LOOCV)",
+        "Mondrian taxonomy: binary predicted class (2 bins)",
+        "Rare phenotype definition: non-responders (EDA peak < 0.1µS), paradoxical responders (HR deceleration)",
+        "α = 0.1 (90% target coverage)"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per phenotype (frequency-stratified)",
+        "Bootstrap variance of empirical quantile vs phenotype frequency",
+        "Worst-case coverage across all phenotypes",
+        "Quantile bias (empirical - true) estimated via simulation"
+      ],
+      "mechanism_builder_notes": "Simulate by subsampling calibration set to vary phenotype frequency; compute coverage vs n_bin."
+    },
+    {
+      "hypothesis_id": "H10",
+      "mechanism_variables": [
+        "Trait anxiety score (STAI-T, 20-80)",
+        "Baseline EDA tonic (µS) during pre-TSST rest",
+        "Baseline HR (bpm) during pre-TSST rest",
+        "Nonconformity score gap: median(non-stress) - median(stress)",
+        "Coverage rate per class per anxiety group"
+      ],
+      "causal_path": "High trait anxiety (STAI-T > 50) → elevated baseline EDA/HR during pre-TSST (tonic > 2µS, HR > 80bpm) → non-stress calibration samples contaminated with stress-like physiology → nonconformity distribution for non-stress shifts upward → quantile threshold for non-stress bin too low → intervals undercover for true non-stress; simultaneously, stress bin quantile too high → undercoverage for stress → both classes undercover for high-anxiety subjects",
+      "expected_direction": "Negative correlation between trait anxiety and coverage for both stress and non-stress classes; nonconformity gap between classes shrinks as anxiety increases",
+      "domain_specific_boundary_conditions": [
+        "Pre-TSST baseline: ~5min rest in WESAD",
+        "Trait anxiety not measured in WESAD (requires external data)",
+        "Mondrian taxonomy: binary predicted class",
+        "Anxiety threshold: STAI-T > 50 (clinical cutoff)"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per trait anxiety tertile (low/medium/high) per class",
+        "Baseline EDA/HR elevation magnitude vs anxiety score",
+        "Nonconformity score gap between classes vs anxiety",
+        "Proportion of baseline samples exceeding stress-threshold physiology per anxiety group"
+      ],
+      "mechanism_builder_notes": "Testable via simulation injecting anticipatory anxiety into baseline; or on datasets with STAI-T (e.g., WESAD+)."
+    }
+  ]
+}

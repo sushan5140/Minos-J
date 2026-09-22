@@ -1,0 +1,258 @@
+{
+  "mechanism_builds": [
+    {
+      "hypothesis_id": "H1",
+      "mechanism_variables": [
+        "Resting tonic vagal tone (RMSSD, HF-HRV power)",
+        "Phasic sympathetic reactivity (EDA peak amplitude, SCR frequency during standardized stressor)",
+        "Sensor noise floor (PPG signal quality index, EDA baseline noise variance)",
+        "Stress detection uncertainty (classifier predictive entropy, false negative rate per subject)"
+      ],
+      "causal_path": "Low tonic vagal tone → reduced HRV amplitude during stress → HRV features fall below sensor noise floor → feature extraction yields low signal-to-noise ratio → classifier misclassifies stress as non-stress → increased false negative rate and predictive entropy for that subject",
+      "expected_direction": "Negative correlation between baseline ANS reactivity (tonic vagal tone, phasic sympathetic reactivity) and stress-detection uncertainty (higher uncertainty for blunted responders)",
+      "domain_specific_boundary_conditions": [
+        "Wearable sensor type (PPG/EDA) with known noise floors",
+        "Stressor intensity sufficient to elicit ANS response in typical individuals",
+        "Resting baseline measured under controlled conditions (supine, 5-min)",
+        "Exclusion of cardiovascular/respiratory medication users"
+      ],
+      "measurable_outcomes": [
+        "Subject-level false negative rate (FNR) for stress epochs",
+        "Predictive entropy of stress classifier per subject",
+        "Correlation between resting RMSSD and FNR",
+        "Signal-to-noise ratio of HRV/EDA features during stress vs. non-stress"
+      ],
+      "mechanism_builder_notes": "Need to quantify sensor-specific noise floors and define 'blunted' reactivity thresholds using population percentiles; consider multi-sensor fusion to mitigate single-channel noise."
+    },
+    {
+      "hypothesis_id": "H2",
+      "mechanism_variables": [
+        "Skin melanin index (spectrophotometry at 650nm)",
+        "Stratum corneum thickness (confocal microscopy)",
+        "Skin hydration (corneometry)",
+        "Hair density (trichoscopy)",
+        "PPG signal quality index (SQI) during rest and stress",
+        "EDA contact impedance (kΩ)",
+        "Stress classifier uncertainty (predictive entropy, confidence interval width)"
+      ],
+      "causal_path": "Higher melanin index → reduced PPG light penetration → lower PPG perfusion signal amplitude → increased motion artifact susceptibility → classifier interprets noise as physiological variability → inflated predictive entropy for high-melanin subjects",
+      "expected_direction": "Positive correlation between melanin index/stratum corneum thickness and stress-detection uncertainty (higher uncertainty for darker/thicker skin)",
+      "domain_specific_boundary_conditions": [
+        "Green-light PPG wavelength (e.g., 530nm) and EDA electrode material (Ag/AgCl)",
+        "Controlled ambient light and temperature",
+        "Standardized sensor placement (wrist, dorsal)",
+        "Exclusion of skin pathologies (eczema, psoriasis)"
+      ],
+      "measurable_outcomes": [
+        "Subject-level PPG SQI and EDA impedance",
+        "Classifier predictive entropy per subject",
+        "Correlation between melanin index and predictive entropy",
+        "False positive/negative rates stratified by skin phenotype quartiles"
+      ],
+      "mechanism_builder_notes": "Need to disentangle skin phenotype effects from motion artifact; consider multi-wavelength PPG (green + infrared) to isolate melanin attenuation."
+    },
+    {
+      "hypothesis_id": "H3",
+      "mechanism_variables": [
+        "Chronotype (MEQ score, dim light melatonin onset - DLMO)",
+        "Circadian phase at stressor (hours since DLMO, or clock time)",
+        "Salivary cortisol awakening response (CAR) magnitude",
+        "HRV/EDA reactivity to standardized stressor at different times",
+        "Classifier stress probability output",
+        "Prediction error (difference between classifier probability and ground truth)"
+      ],
+      "causal_path": "Morning chronotype + morning stressor → amplified sympathetic reactivity → larger HRV/EDA feature changes → classifier correctly detects stress (low uncertainty). Morning chronotype + evening stressor → blunted reactivity → smaller feature changes → classifier misclassifies (high uncertainty). Reverse for evening types.",
+      "expected_direction": "Interaction effect: uncertainty highest when chronotype and stressor timing are misaligned (e.g., morning type in evening, evening type in morning)",
+      "domain_specific_boundary_conditions": [
+        "Free-living vs. lab stressors",
+        "Controlled light exposure prior to measurement",
+        "Exclusion of shift workers, recent transmeridian travel",
+        "Classifier trained on pooled time-of-day data without circadian features"
+      ],
+      "measurable_outcomes": [
+        "Subject-level calibration error (ECE) as function of circadian phase × chronotype",
+        "AUC-ROC per subject per time-of-day bin",
+        "Correlation between MEQ score and time-of-day uncertainty slope"
+      ],
+      "mechanism_builder_notes": "Need to measure circadian phase directly (DLMO) rather than rely on clock time; consider adding time-of-day as explicit feature in classifier."
+    },
+    {
+      "hypothesis_id": "H4",
+      "mechanism_variables": [
+        "Emotion regulation strategy use (ERQ suppression/reappraisal subscales, state ERQ)",
+        "Subjective stress rating (EMA, 0-100 VAS)",
+        "HRV (RMSSD, LF/HF), EDA (SCR rate, amplitude), cardiovascular (HR, BP) during stress",
+        "Classifier predicted stress probability",
+        "Label-physiology discrepancy (residual between predicted and reported stress)"
+      ],
+      "causal_path": "High suppression → amplified cardiovascular reactivity + dampened EDA → wearable features (HRV, EDA) show mixed pattern → classifier trained on typical stress physiology (high HR, low HRV, high EDA) yields uncertain prediction → high predictive entropy for high suppressors",
+      "expected_direction": "Positive correlation between suppression tendency and stress-detection uncertainty (predictive entropy); negative correlation for reappraisal",
+      "domain_specific_boundary_conditions": [
+        "Standardized stress induction (e.g., TSST, cognitive load)",
+        "Concurrent EMA and wearable recording",
+        "Control for baseline affect (PANAS)",
+        "Classifier features include both cardiovascular and EDA modalities"
+      ],
+      "measurable_outcomes": [
+        "Subject-level predictive entropy",
+        "Correlation between ERQ suppression score and entropy",
+        "Feature importance shift for high vs. low regulators",
+        "Calibration curves stratified by regulation strategy"
+      ],
+      "mechanism_builder_notes": "Need to distinguish trait vs. state regulation; consider multi-modal features and regulation-aware labeling."
+    },
+    {
+      "hypothesis_id": "H5",
+      "mechanism_variables": [
+        "Non-wear episodes (accelerometer-based detection, timestamp, duration)",
+        "Self-reported stress during non-wear (retrospective EMA)",
+        "Observed stress classifier uncertainty during wear periods",
+        "True stress exposure (EMA including non-wear recall)",
+        "Imputation method (mean, last observation, model-based)"
+      ],
+      "causal_path": "High stress event → device removal → missing high-stress epochs → observed data lacks peak stress → classifier trained/calibrated on observed data underestimates stress probability for that subject → uncertainty estimates biased downward for high-stress subjects",
+      "expected_direction": "Negative correlation between stress-correlated non-wear frequency and observed uncertainty (downward bias); positive correlation for low-stress subjects (upward bias due to overrepresentation of low-stress data)",
+      "domain_specific_boundary_conditions": [
+        "Wearable with accelerometer for non-wear detection",
+        "EMA prompts random and event-contingent",
+        "Non-wear reasons logged (survey)",
+        "Analysis restricted to subjects with >20% non-wear time"
+      ],
+      "measurable_outcomes": [
+        "Bias in subject-level predictive entropy (observed vs. true with imputed ground truth)",
+        "Correlation between non-wear during high-stress EMA and entropy bias",
+        "Calibration error before/after multiple imputation"
+      ],
+      "mechanism_builder_notes": "Requires ground truth stress during non-wear (e.g., retrospective recall, proxy measures); consider pattern-mixture models for informative missingness."
+    },
+    {
+      "hypothesis_id": "H6",
+      "mechanism_variables": [
+        "Respiratory rate and depth (thoracic impedance, accelerometry)",
+        "RSA magnitude (HF-HRV power during paced breathing)",
+        "Vagal tone index (HRV during controlled breathing)",
+        "HRV stress reactivity (change in RMSSD/HF from baseline to stress)",
+        "Classifier uncertainty (predictive entropy) for HRV-only model"
+      ],
+      "causal_path": "Shallow/fast breathing → low RSA coupling → low baseline HF-HRV despite normal vagal tone → stress-induced vagal withdrawal produces smaller absolute HF change → HRV features show attenuated stress response → classifier yields high uncertainty (low confidence) for weak-coupling subjects",
+      "expected_direction": "Negative correlation between RSA coupling strength (RSA per unit vagal tone) and stress-detection uncertainty for HRV-based classifiers",
+      "domain_specific_boundary_conditions": [
+        "Controlled breathing vs. free breathing",
+        "Paced breathing protocol to assess coupling (0.25 Hz)",
+        "Exclusion of respiratory disorders (asthma, COPD)",
+        "Classifier uses only HRV features (no respiration input)"
+      ],
+      "measurable_outcomes": [
+        "Subject-level RSA coupling coefficient (HF-HRV / respiratory depth)",
+        "Correlation between coupling coefficient and classifier entropy",
+        "Calibration error for weak vs. strong couplers",
+        "Improvement in uncertainty with respiration-augmented model"
+      ],
+      "mechanism_builder_notes": "Need to measure respiration concurrently; consider individual breathing patterns during stress; RSA coupling may be state-dependent."
+    },
+    {
+      "hypothesis_id": "H7",
+      "mechanism_variables": [
+        "Wrist circumference (mm)",
+        "Bone prominence (ultrasound or anthropometry)",
+        "Device tightness preference (self-report, or measured via strap tension sensor)",
+        "PPG signal quality index (SQI) during rest and activity",
+        "EDA contact impedance (kΩ)",
+        "Motion artifact magnitude (accelerometer variance)",
+        "Stress classifier uncertainty per subject"
+      ],
+      "causal_path": "Loose wear → high motion artifact + low perfusion → PPG features noisy → classifier uncertainty high. Tight wear → venous congestion → altered pulse waveform morphology (e.g., increased pulse transit time, changed amplitude) → feature bias → misclassification → high uncertainty. Optimal tightness minimizes both.",
+      "expected_direction": "U-shaped relationship between tightness and uncertainty; also moderated by wrist circumference/bone prominence",
+      "domain_specific_boundary_conditions": [
+        "Specific wearable model (strap design, sensor geometry)",
+        "Controlled activity protocols (sedentary, walking, stress)",
+        "Standardized placement instructions vs. habitual wear",
+        "Exclusion of vascular pathologies"
+      ],
+      "measurable_outcomes": [
+        "Subject-level PPG SQI and EDA impedance",
+        "Correlation between tightness preference and predictive entropy",
+        "Feature distribution shift (mean, variance) across tightness levels",
+        "Uncertainty reduction with personalized calibration"
+      ],
+      "mechanism_builder_notes": "Need objective tightness measurement (e.g., pressure sensor); consider dynamic tightness changes during activity."
+    },
+    {
+      "hypothesis_id": "H8",
+      "mechanism_variables": [
+        "Allostatic load index (composite: hair cortisol, CRP, HbA1c, BP, waist-hip ratio, HDL)",
+        "Acute stress reactivity (HRV, EDA, cortisol response to TSST)",
+        "Feature dynamic range (max-min of HRV/EDA during stress vs. baseline)",
+        "Within-subject feature variance (stress and non-stress epochs)",
+        "Classifier predictive entropy per subject",
+        "Class separation (Mahalanobis distance between stress/non-stress feature clusters)"
+      ],
+      "causal_path": "High allostatic load → blunted autonomic reactivity → smaller feature changes during stress → reduced class separation + increased within-class variance → classifier decision boundary overlaps both classes → high predictive entropy",
+      "expected_direction": "Positive correlation between allostatic load index and stress-detection uncertainty (predictive entropy); negative correlation with class separation",
+      "domain_specific_boundary_conditions": [
+        "Validated allostatic load composite (minimum 6 biomarkers)",
+        "Standardized acute stressor (TSST)",
+        "Free-living wearable data for classifier training",
+        "Exclusion of acute illness, medication affecting ANS"
+      ],
+      "measurable_outcomes": [
+        "Subject-level predictive entropy vs. allostatic load",
+        "Class separation metrics per subject",
+        "Calibration error stratified by allostatic load tertiles",
+        "Feature variance ratios (within/between stress conditions)"
+      ],
+      "mechanism_builder_notes": "Allostatic load measurement requires multiple biomarkers; consider longitudinal design to establish causality."
+    },
+    {
+      "hypothesis_id": "H9",
+      "mechanism_variables": [
+        "Interoceptive awareness (MAIA score, heartbeat counting task accuracy)",
+        "EMA prompt timing and response",
+        "Physiological features (HRV, EDA) in windows pre- and post-EMA",
+        "Stress label (EMA rating)",
+        "Classifier uncertainty (predictive entropy) for epochs near EMA"
+      ],
+      "causal_path": "High interoceptive awareness → EMA prompt directs attention to body → amplified physiological reactivity post-prompt → wearable features during post-prompt window correlate with label (which was just given) → classifier learns spurious association → uncertainty estimates contaminated (overconfident for high awareness, underconfident for low)",
+      "expected_direction": "For high awareness: lower uncertainty (overconfidence) for post-EMA epochs; for low awareness: higher uncertainty. Overall, subject-level uncertainty correlates with interoceptive awareness.",
+      "domain_specific_boundary_conditions": [
+        "EMA prompt frequency and randomness",
+        "Control for stressor timing relative to EMA",
+        "Physiological recording continuous",
+        "Classifier trained on data including post-EMA windows"
+      ],
+      "measurable_outcomes": [
+        "Difference in predictive entropy for pre- vs. post-EMA windows by awareness group",
+        "Correlation between MAIA score and entropy bias",
+        "Feature-label correlation in post-EMA window vs. baseline",
+        "Calibration error with/without post-EMA data exclusion"
+      ],
+      "mechanism_builder_notes": "Need to isolate EMA reactivity from true stress; consider control prompts (non-stress questions) to measure attention effect."
+    },
+    {
+      "hypothesis_id": "H10",
+      "mechanism_variables": [
+        "Subject-specific baseline (intercept) for HRV/EDA",
+        "Subject-specific stress reactivity (slope)",
+        "Subject-specific autocorrelation (AR1 parameter)",
+        "Population-level classifier predictive distribution (mean, variance)",
+        "Hierarchical model (mixed-effects) predictive distribution",
+        "Calibration metrics: expected calibration error (ECE) per subject, prediction interval coverage"
+      ],
+      "causal_path": "Ignoring random effects → model pools all subjects → estimates single residual variance → for high-variability subjects, true within-subject variance > pooled estimate → predictive intervals too narrow (anti-conservative); for low-variability subjects, true within-subject variance < pooled estimate → intervals too wide (over-conservative)",
+      "expected_direction": "Negative correlation between subject-level residual variance and prediction interval coverage (high variability → under-coverage); positive correlation for low variability",
+      "domain_specific_boundary_conditions": [
+        "Sufficient repeated measures per subject (>50 stress/non-stress epochs)",
+        "Hierarchical model correctly specified (random intercepts, slopes, AR1)",
+        "Comparison between flat (pooled) and hierarchical models",
+        "Stressors varied in type/intensity"
+      ],
+      "measurable_outcomes": [
+        "Per-subject ECE for flat vs. hierarchical model",
+        "Prediction interval coverage probability per subject",
+        "Correlation between subject-level variance components and coverage bias",
+        "Log-likelihood improvement with hierarchical model"
+      ],
+      "mechanism_builder_notes": "Requires multilevel modeling framework; consider Bayesian hierarchical models for uncertainty quantification; test with cross-validation."
+    }
+  ]
+}

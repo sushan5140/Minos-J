@@ -1,0 +1,413 @@
+{
+  "sample_index": 7,
+  "valid": true,
+  "error": null,
+  "cards": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Subjects with high baseline heart rate variability (HRV) exhibit non-exchangeable residuals under the Mondrian taxonomy because the stratification bins by stress condition ignore autonomic flexibility, causing conformal sets to be too narrow for high-HRV individuals during stress transitions.",
+      "proposed_mechanism": "High baseline HRV → greater autonomic reactivity → larger residual dispersion within stress-condition strata → empirical coverage falls below nominal level for high-HRV subjects.",
+      "causal_path": "baseline_HRV (RMSSD) → autonomic_reactivity (ΔHRV_stress_rest) → residual_variance_within_stratum → conformal_set_width → coverage_probability",
+      "mechanism_variables": [
+        "baseline_RMSSD_ms",
+        "stress_condition_label",
+        "nonconformity_score",
+        "prediction_set_size",
+        "empirical_coverage_per_subject"
+      ],
+      "possible_confounders": [
+        "age",
+        "fitness_level_VO2max",
+        "medication_beta_blockers",
+        "circadian_phase"
+      ],
+      "control_variables": [
+        "stratify by baseline_RMSSD_tertile within each stress condition",
+        "include age and VO2max as covariates in nonconformity score"
+      ],
+      "rival_explanation": "Undercoverage is driven by sensor motion artifacts during stress tasks, not autonomic physiology; high-HRV subjects simply move more.",
+      "rival_prediction": "If motion artifacts drive undercoverage, then ACC magnitude during stress will correlate with residual magnitude more strongly than baseline RMSSD does.",
+      "distinguishing_test": "Fit mixed-effects model: residual_magnitude ~ baseline_RMSSD + ACC_magnitude + (1|subject). If baseline_RMSSD remains significant (p<0.01) after controlling for ACC, H1 is favored.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Prior WESAD analyses show RMSSD explains ~15-20% of variance in stress reactivity; Mondrian binning by condition alone discards this continuous moderator.",
+      "minimum_data_needed": [
+        "WESAD chest ECG for RMSSD computation per subject per condition",
+        "Mondrian nonconformity scores per calibration/test split",
+        "subject-level coverage indicators",
+        "ACC magnitude per trial"
+      ],
+      "testable_prediction": "Subjects in top RMSSD tertile will show empirical coverage ≥5 percentage points below nominal (e.g., ≤85% at 90% nominal) while bottom tertile meets nominal.",
+      "failure_condition": "No significant correlation (Spearman ρ < 0.1, p > 0.2) between baseline RMSSD and per-subject coverage deficit across ≥10 random calibration/test splits.",
+      "statistical_test_plan": "Per-subject coverage deficit = nominal - empirical. Spearman correlation vs baseline RMSSD. Permutation test (10,000 shuffles) for p-value. Bonferroni across 10 splits.",
+      "falsification_test": "Re-stratify Mondrian taxonomy by baseline RMSSD tertile × stress condition. If undercoverage persists in high-HRV stratum (coverage deficit >3pp), H1 is falsified."
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Wrist EDA sensor detachment during the TSST (Trier Social Stress Test) condition creates missing-not-at-random gaps that the Mondrian imputation strategy (forward-fill) systematically underestimates, yielding falsely small nonconformity scores for affected subjects.",
+      "proposed_mechanism": "TSST social-evaluative threat → increased arm movement/gesturing → wrist EDA electrode detachment → signal dropout → forward-fill imputation → attenuated phasic EDA peaks → reduced nonconformity scores → prediction sets too narrow → undercoverage.",
+      "causal_path": "TSST_condition → arm_movement_ACC_wrist → EDA_signal_quality_index → imputation_error_magnitude → nonconformity_score_bias → coverage_deficit",
+      "mechanism_variables": [
+        "condition_label",
+        "wrist_ACC_magnitude",
+        "EDA_signal_quality_index",
+        "imputation_fraction",
+        "nonconformity_score",
+        "empirical_coverage"
+      ],
+      "possible_confounders": [
+        "wrist_circumference",
+        "electrode_adhesive_type",
+        "ambient_humidity",
+        "baseline_sweating_rate"
+      ],
+      "control_variables": [
+        "exclude trials with EDA_signal_quality_index < 0.7",
+        "use multiple imputation with ACC-informed model",
+        "stratify by signal quality bin"
+      ],
+      "rival_explanation": "Undercoverage in TSST stems from genuine physiological heterogeneity in sympathetic response, not sensor artifacts.",
+      "rival_prediction": "If physiological heterogeneity drives undercoverage, chest EDA (less motion-prone) will show similar coverage deficits for the same subjects.",
+      "distinguishing_test": "Compare per-subject coverage deficit between wrist-EDA-based and chest-EDA-based Mondrian models. If wrist shows deficit but chest does not (paired t-test, p<0.01), H2 favored.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "WESAD documentation notes frequent wrist EDA dropout during TSST; forward-fill can attenuate SCR peaks by 30-50% based on wearable sensor literature.",
+      "minimum_data_needed": [
+        "WESAD wrist EDA raw signal with quality flags",
+        "wrist ACC",
+        "chest EDA",
+        "Mondrian nonconformity scores per sensor modality",
+        "per-subject coverage per modality"
+      ],
+      "testable_prediction": "Subjects with >15% wrist EDA imputation fraction during TSST will show coverage deficit ≥8pp vs <2pp for subjects with <5% imputation.",
+      "failure_condition": "No difference in coverage deficit between high-imputation and low-imputation groups (two-sample t-test, p>0.2, Cohen's d<0.2).",
+      "statistical_test_plan": "Group subjects by wrist EDA imputation fraction during TSST (high >15% vs low <5%). Two-sided t-test on coverage deficit. Bootstrap 95% CI for mean difference (10,000 resamples).",
+      "falsification_test": "Re-run Mondrian with complete-case deletion (drop any trial with wrist EDA dropout). If undercoverage remains for same subjects, H2 falsified."
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "The Mondrian taxonomy uses discrete stress condition labels (baseline, amusement, stress, meditation) but physiological transitions are continuous; subjects with slow autonomic recovery after stress show residuals that belong to a different effective stratum than their assigned label, violating exchangeability.",
+      "proposed_mechanism": "Slow autonomic recovery (high τ_HRV_recovery) → physiological state during 'recovery/baseline' label still reflects prior stress → nonconformity scores computed against wrong stratum distribution → miscalibrated prediction sets → undercoverage for slow-recovery subjects.",
+      "causal_path": "HRV_recovery_time_constant → physiological_state_mismatch → stratum_assignment_error → nonconformity_score_distribution_shift → coverage_deficit",
+      "mechanism_variables": [
+        "HRV_recovery_tau_sec",
+        "condition_label",
+        "time_since_stress_offset",
+        "nonconformity_score",
+        "stratum_assignment",
+        "empirical_coverage"
+      ],
+      "possible_confounders": [
+        "order_of_conditions",
+        "inter-condition_interval_duration",
+        "subjective_stress_rating",
+        "breathing_rate"
+      ],
+      "control_variables": [
+        "include time_since_stress_offset as continuous covariate in nonconformity score",
+        "use hidden Markov model to infer latent physiological state",
+        "exclude first 5 min post-stress"
+      ],
+      "rival_explanation": "Undercoverage is due to label noise in self-reported stress ratings, not physiological recovery dynamics.",
+      "rival_prediction": "If label noise drives undercoverage, coverage deficit will correlate with self-report inconsistency (e.g., high stress rating during amusement), not with HRV recovery tau.",
+      "distinguishing_test": "Regress per-subject coverage deficit on HRV_recovery_tau and self_report_inconsistency simultaneously. If HRV_recovery_tau coefficient significant (p<0.01) but self_report_inconsistency not, H3 favored.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Literature shows HRV recovery tau varies 2-5 fold across individuals; WESAD has 5-min inter-condition intervals, insufficient for slow recoverers (tau > 3 min).",
+      "minimum_data_needed": [
+        "Continuous ECG for HRV time-series per subject",
+        "condition timestamps",
+        "Mondrian nonconformity scores per trial",
+        "self-report stress ratings per condition"
+      ],
+      "testable_prediction": "Subjects with HRV recovery tau > 180 sec will show coverage deficit ≥6pp in the first post-stress condition vs ≤2pp for tau < 60 sec.",
+      "failure_condition": "No association between HRV recovery tau and coverage deficit in post-stress conditions (linear mixed model, p>0.2).",
+      "statistical_test_plan": "Estimate HRV recovery tau per subject via exponential fit to RMSSD time-course post-TSST. Linear mixed model: coverage_deficit ~ tau + (1|split). Likelihood ratio test vs null.",
+      "falsification_test": "Re-define Mondrian strata using latent physiological state (HMM with 3 states) instead of condition labels. If undercoverage disappears for slow-recovery subjects, H3 falsified."
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Mondrian's calibration set size per stratum is too small for rare subject-condition combinations (e.g., meditation for high-anxiety subjects), causing high variance in quantile estimation of nonconformity scores and systematic undercoverage due to finite-sample bias.",
+      "proposed_mechanism": "Small calibration stratum size (n_stratum) → high variance in empirical (1-α) quantile → downward bias in estimated quantile (order statistic bias) → prediction sets too narrow → undercoverage, worst for rare strata.",
+      "causal_path": "subject_anxiety_trait → meditation_condition_rarity → calibration_stratum_size → quantile_estimation_bias → prediction_set_width → coverage_probability",
+      "mechanism_variables": [
+        "STAI_trait_score",
+        "condition_label",
+        "calibration_stratum_n",
+        "nonconformity_quantile_estimate",
+        "prediction_set_size",
+        "empirical_coverage"
+      ],
+      "possible_confounders": [
+        "total_calibration_set_size",
+        "number_of_strata",
+        "nonconformity_score_distribution_skew",
+        "subject_dropout"
+      ],
+      "control_variables": [
+        "minimum_stratum_size_threshold (e.g., n≥30)",
+        "merge rare strata with adjacent conditions",
+        "use Bayesian quantile estimation with prior"
+      ],
+      "rival_explanation": "Undercoverage for high-anxiety subjects in meditation is due to genuine physiological atypicality (e.g., inability to relax), not finite-sample bias.",
+      "rival_prediction": "If physiological atypicality drives undercoverage, increasing calibration size (via more data) won't fix it; if finite-sample bias, coverage will improve with larger calibration strata.",
+      "distinguishing_test": "Subsample calibration sets to vary stratum size artificially. Plot coverage deficit vs 1/sqrt(n_stratum). Linear trend supports H4; flat line supports rival.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Finite-sample quantile bias is O(1/n); with typical WESAD stratum sizes ~20-50, bias ~2-5pp. But only affects rare strata subset.",
+      "minimum_data_needed": [
+        "STAI or similar anxiety trait scores per subject",
+        "Mondrian stratum assignments and sizes per split",
+        "per-stratum coverage estimates",
+        "ability to resample calibration sets"
+      ],
+      "testable_prediction": "Coverage deficit will correlate negatively with calibration stratum size (Spearman ρ < -0.3, p<0.05) across strata; deficit >4pp for strata with n<20.",
+      "failure_condition": "No correlation between stratum size and coverage deficit (ρ > -0.1, p>0.2).",
+      "statistical_test_plan": "For each Mondrian split, compute per-stratum coverage deficit and stratum size. Mixed-effects: deficit ~ log(stratum_size) + (1|split). Test slope < 0.",
+      "falsification_test": "Augment calibration with synthetic exchangeable samples (bootstrap). If undercoverage persists for rare strata despite effective n→∞, H4 falsified."
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Chest RESP sensor belt slippage during high-movement stress conditions introduces non-stationary baseline wander in respiration-derived features (e.g., respiratory rate variability), which the Mondrian nonconformity score (based on static features) fails to capture, causing undercoverage for mobile subjects.",
+      "proposed_mechanism": "High body movement (chest ACC) → RESP belt slippage → baseline wander in RESP signal → distorted respiratory rate variability (RRV) features → nonconformity score underestimates true anomaly → prediction sets too narrow → undercoverage.",
+      "causal_path": "chest_ACC_magnitude → RESP_signal_quality → RRV_feature_bias → nonconformity_score_error → prediction_set_width → coverage_deficit",
+      "mechanism_variables": [
+        "chest_ACC_magnitude",
+        "RESP_signal_quality_index",
+        "RRV_feature_value",
+        "nonconformity_score",
+        "empirical_coverage",
+        "condition_label"
+      ],
+      "possible_confounders": [
+        "belt_tightness",
+        "body_mass_index",
+        "breathing_pattern_depth",
+        "sensor_placement_consistency"
+      ],
+      "control_variables": [
+        "exclude trials with RESP_signal_quality_index < threshold",
+        "use ACC-robust respiratory features (e.g., from ECG-derived respiration)",
+        "stratify by movement level"
+      ],
+      "rival_explanation": "Undercoverage during stress is due to genuine respiratory pattern complexity (e.g., sighing, irregular breathing) not captured by RRV, not sensor artifact.",
+      "rival_prediction": "If genuine complexity drives undercoverage, chest ECG-derived respiration (EDR) will show similar coverage deficits as belt RESP for same subjects.",
+      "distinguishing_test": "Train two Mondrian models: one using belt RESP features, one using EDR features. Compare per-subject coverage deficit during high-movement conditions. If belt RESP shows deficit but EDR does not (paired test p<0.01), H5 favored.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "WESAD chest ACC during TSST shows 3-5x baseline; belt slippage documented in wearable literature; RRV bias from baseline wander can exceed 50%.",
+      "minimum_data_needed": [
+        "WESAD chest RESP raw signal",
+        "chest ACC",
+        "chest ECG (for EDR)",
+        "RESP signal quality metrics",
+        "Mondrian nonconformity scores per feature set",
+        "per-subject coverage per feature set"
+      ],
+      "testable_prediction": "Subjects with top-quartile chest ACC during stress will show ≥7pp coverage deficit with belt RESP features but ≤2pp with EDR features.",
+      "failure_condition": "No difference in coverage deficit between belt RESP and EDR models for high-movement subjects (paired t-test p>0.2).",
+      "statistical_test_plan": "Paired t-test on per-subject coverage deficit (belt_RESP - EDR) for high-movement subjects. Bootstrap CI. Also test interaction: deficit ~ feature_set * movement_level.",
+      "falsification_test": "Apply wavelet-based baseline wander correction to belt RESP. If undercoverage persists after correction, H5 falsified."
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "The WESAD ground-truth labels for 'stress' vs 'amusement' conditions contain systematic mislabeling for subjects who find the amusement condition stressful (e.g., social anxiety), causing Mondrian to learn incorrect stratum-conditional distributions and undercover for these subjects.",
+      "proposed_mechanism": "High social_anxiety_trait → amusement_condition_perceived_as_stressful → physiological_response_resembles_stress → label_stratum_mismatch → nonconformity_scores_computed_against_wrong_distribution → undercoverage.",
+      "causal_path": "social_anxiety_score → perceived_stress_amusement → physiological_feature_shift → stratum_label_error → nonconformity_score_miscalibration → coverage_deficit",
+      "mechanism_variables": [
+        "LSAS_social_anxiety_score",
+        "condition_label",
+        "self_report_stress_amusement",
+        "physiological_feature_vector",
+        "nonconformity_score",
+        "empirical_coverage"
+      ],
+      "possible_confounders": [
+        "general_anxiety_trait",
+        "humor_sensitivity",
+        "prior_TSST_exposure",
+        "experimenter_effects"
+      ],
+      "control_variables": [
+        "use self-report stress during amusement as soft label",
+        "re-cluster conditions physiologically",
+        "exclude high-social-anxiety subjects"
+      ],
+      "rival_explanation": "Undercoverage for high-social-anxiety subjects is due to their genuinely higher physiological variability, not label error.",
+      "rival_prediction": "If variability drives undercoverage, coverage deficit will correlate with within-condition physiological variance, not with label-physiology mismatch.",
+      "distinguishing_test": "Compute label-physiology mismatch = distance(physiology_amusement, centroid_stress) - distance(physiology_amusement, centroid_amusement). Regress coverage deficit on mismatch and within-condition variance. If mismatch coefficient significant (p<0.01) but variance not, H6 favored.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "~15-20% of population has elevated social anxiety; amusement condition (watching funny clips) can trigger evaluation anxiety; WESAD has self-reports to detect mismatch.",
+      "minimum_data_needed": [
+        "LSAS or similar social anxiety scores",
+        "self-report stress ratings per condition",
+        "physiological features per trial",
+        "Mondrian stratum assignments",
+        "per-subject coverage"
+      ],
+      "testable_prediction": "Subjects with LSAS > 60 will show coverage deficit ≥6pp in amusement condition vs ≤2pp for LSAS < 30; deficit mediated by self-report stress during amusement.",
+      "failure_condition": "No mediation effect of self-report stress during amusement on coverage deficit for high-LSAS subjects (mediation analysis, 95% CI includes 0).",
+      "statistical_test_plan": "Mediation analysis: LSAS → self_report_stress_amusement → coverage_deficit_amusement. Bootstrap 95% CI for indirect effect (10,000 samples).",
+      "falsification_test": "Re-assign stratum labels using physiological clustering (k-means on features) instead of protocol labels. If undercoverage disappears for high-LSAS subjects, H6 falsified."
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Mondrian conformal prediction assumes exchangeability within strata, but circadian phase (time-of-day) modulates physiological baselines systematically; subjects tested in late afternoon show different stress reactivity distributions than morning subjects within the same condition stratum, violating exchangeability.",
+      "proposed_mechanism": "Late_afternoon_testing → higher_baseline_cortisol/HRV → blunted_stress_reactivity → residuals_shifted_relative_to_morning_stratum → nonconformity_scores_miscalibrated → undercoverage_for_afternoon_subjects.",
+      "causal_path": "time_of_day → baseline_cortisol_proxy (HRV) → stress_reactivity_magnitude → residual_distribution_shift → stratum_exchangeability_violation → coverage_deficit",
+      "mechanism_variables": [
+        "session_start_time",
+        "baseline_RMSSD",
+        "stress_reactivity_RMSSD",
+        "nonconformity_score",
+        "stratum_label",
+        "empirical_coverage"
+      ],
+      "possible_confounders": [
+        "sleep_duration_prior_night",
+        "caffeine_intake",
+        "chronic_stress_level",
+        "shift_work_history"
+      ],
+      "control_variables": [
+        "include time_of_day as stratification variable",
+        "normalize features by within-subject baseline",
+        "restrict analysis to morning sessions"
+      ],
+      "rival_explanation": "Afternoon undercoverage is due to fatigue-related sensor artifacts (e.g., poorer electrode contact), not circadian physiology.",
+      "rival_prediction": "If sensor artifacts drive undercoverage, signal quality indices will be lower in afternoon and mediate the effect; if circadian, baseline HRV will mediate.",
+      "distinguishing_test": "Mediation analysis: time_of_day → baseline_RMSSD → coverage_deficit vs time_of_day → signal_quality → coverage_deficit. Compare indirect effect sizes.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Circadian HRV variation ~10-15%; WESAD sessions span ~9am-5pm; effect likely modest but systematic. Only affects coverage if stratum sizes unbalanced by time.",
+      "minimum_data_needed": [
+        "Session timestamps per subject",
+        "baseline HRV per session",
+        "Mondrian nonconformity scores",
+        "signal quality indices",
+        "per-subject coverage"
+      ],
+      "testable_prediction": "Subjects tested after 2pm will show coverage deficit ≥4pp vs before 11am; deficit mediated by baseline RMSSD (indirect effect 95% CI excludes 0).",
+      "failure_condition": "No coverage deficit difference by time-of-day (two-sample t-test p>0.2) or mediation by baseline RMSSD not significant.",
+      "statistical_test_plan": "Split subjects by median session time. Two-sample t-test on coverage deficit. Mediation: time_of_day (continuous) → baseline_RMSSD → coverage_deficit. Bootstrap CI.",
+      "falsification_test": "Re-stratify Mondrian by time-of-day bins (morning/afternoon) × condition. If undercoverage persists within time bins, H7 falsified."
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "The nonconformity score function (e.g., 1 - predicted_probability) is miscalibrated for subjects with high interoceptive accuracy because their physiological responses are more stereotyped, making the classifier overconfident and the nonconformity scores too small, leading to undercoverage.",
+      "proposed_mechanism": "High_interoceptive_accuracy → more_stereotyped_physiological_response → classifier_predicted_probability_extreme (near 0/1) → nonconformity_score_small → prediction_set_narrow → undercoverage_when_errors_occur.",
+      "causal_path": "interoceptive_accuracy_score → physiological_response_consistency → classifier_confidence → nonconformity_score → prediction_set_size → coverage_probability",
+      "mechanism_variables": [
+        "heartbeat_detection_accuracy",
+        "physiological_feature_consistency_CV",
+        "classifier_predicted_probability",
+        "nonconformity_score",
+        "prediction_set_size",
+        "empirical_coverage"
+      ],
+      "possible_confounders": [
+        "general_cognitive_ability",
+        "attention_to_task",
+        "physiological_signal_quality",
+        "classifier_type"
+      ],
+      "control_variables": [
+        "use calibrated classifier (Platt scaling)",
+        "use adaptive nonconformity score (e.g., log-odds)",
+        "stratify by interoceptive accuracy"
+      ],
+      "rival_explanation": "High interoceptive accuracy subjects have better signal quality, leading to genuinely easier classification; undercoverage is a statistical fluke from small test sets.",
+      "rival_prediction": "If signal quality drives the effect, coverage deficit will correlate with signal quality indices; if interoceptive accuracy, it will correlate with heartbeat detection score controlling for signal quality.",
+      "distinguishing_test": "Multiple regression: coverage_deficit ~ heartbeat_detection_accuracy + signal_quality_index. If heartbeat_detection_accuracy coefficient significant (p<0.01) but signal_quality not, H8 favored.",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "No prior studies link interoceptive accuracy to conformal coverage. Would need WESAD heartbeat detection task data (not in standard release) or external sample to estimate.",
+      "minimum_data_needed": [
+        "Heartbeat detection task performance per subject (external or WESAD subset)",
+        "classifier predicted probabilities per trial",
+        "nonconformity scores",
+        "per-subject coverage",
+        "signal quality indices"
+      ],
+      "testable_prediction": "Top-quartile interoceptive accuracy subjects will show coverage deficit ≥5pp vs bottom quartile, after controlling for signal quality.",
+      "failure_condition": "No association between interoceptive accuracy and coverage deficit in multiple regression controlling for signal quality (p>0.2).",
+      "statistical_test_plan": "Linear model: coverage_deficit ~ interoceptive_accuracy + signal_quality + (1|split). Test coefficient of interoceptive_accuracy.",
+      "falsification_test": "Replace nonconformity score with calibrated version (isotonic regression on calibration set). If undercoverage persists for high-interoceptive subjects, H8 falsified."
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Mondrian's stratification by discrete condition ignores within-condition temporal dynamics; the first minute of each stress trial has different residual distribution than later minutes due to orienting response, but all minutes are pooled, causing undercoverage for subjects with strong orienting responses.",
+      "proposed_mechanism": "Strong_orienting_response → large_transient_residuals_in_first_minute → pooled_stratum_distribution_heavy_tailed → quantile_estimate_inflated_by_outliers → paradoxically_narrow_sets_for_typical_minutes → undercoverage_for_typical_epochs.",
+      "causal_path": "orienting_response_magnitude → first_minute_residual_distribution → pooled_stratum_quantile → prediction_set_width_for_typical_epochs → coverage_for_typical_epochs",
+      "mechanism_variables": [
+        "orienting_response_index (first_minute_HRV_drop)",
+        "time_within_trial",
+        "nonconformity_score",
+        "stratum_quantile",
+        "prediction_set_size",
+        "epoch_level_coverage"
+      ],
+      "possible_confounders": [
+        "trial_order",
+        "habituation_rate",
+        "baseline_arousal",
+        "stimulus_intensity_variation"
+      ],
+      "control_variables": [
+        "exclude first 60 seconds of each trial",
+        "stratify by time_within_trial bins",
+        "use time-adaptive nonconformity score"
+      ],
+      "rival_explanation": "Undercoverage is uniform across trial time; orienting response is not the cause.",
+      "rival_prediction": "If orienting response drives undercoverage, coverage deficit will be largest for epochs 2-5 min (typical) not first minute; if uniform, deficit constant across time.",
+      "distinguishing_test": "Compute per-epoch coverage (30-sec epochs) within stress trials. Test interaction: coverage ~ epoch_bin * orienting_response_group. If significant interaction (p<0.01) with worst coverage in middle epochs for high-orienting group, H9 favored.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Orienting response causes 20-30% HRV drop in first minute; WESAD trials ~5-10 min; pooling inflates quantile by ~10-15% based on mixture distribution math.",
+      "minimum_data_needed": [
+        "Continuous physiological features per 30-sec epoch",
+        "trial timestamps",
+        "Mondrian nonconformity scores per epoch",
+        "orienting response metric per subject per trial"
+      ],
+      "testable_prediction": "High-orienting subjects (top quartile first-minute HRV drop) will show ≥6pp coverage deficit in epochs 2-5 min vs ≤2pp for low-orienting subjects.",
+      "failure_condition": "No interaction between epoch bin and orienting response group on coverage (linear mixed model p>0.2).",
+      "statistical_test_plan": "Linear mixed model: epoch_coverage ~ epoch_bin * orienting_group + (1|subject) + (1|split). Test interaction term. Post-hoc contrasts for middle epochs.",
+      "falsification_test": "Exclude first 60 seconds from calibration and test sets. If undercoverage disappears for high-orienting subjects, H9 falsified."
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "The Mondrian taxonomy creates strata that are too coarse for subjects with comorbid physiological conditions (e.g., hypertension, arrhythmia) because their stress response distributions are shifted and widened, but they are pooled with healthy subjects in the same condition stratum, violating the identical distribution assumption.",
+      "proposed_mechanism": "Comorbidity_flag → altered_autonomic_stress_response (shifted_mean, increased_variance) → residuals_from_comorbid_subjects_contaminate_stratum_distribution → quantile_estimate_biased_for_both_groups → undercoverage_for_comorbid_subjects (sets too narrow) AND overcoverage_for_healthy (sets too wide).",
+      "causal_path": "comorbidity_status → stress_response_distribution_parameters → stratum_mixture_distribution → quantile_estimate → group_conditional_coverage",
+      "mechanism_variables": [
+        "comorbidity_flag (HTN/arrhythmia)",
+        "condition_label",
+        "nonconformity_score",
+        "stratum_quantile",
+        "prediction_set_size",
+        "group_conditional_coverage"
+      ],
+      "possible_confounders": [
+        "age",
+        "medication_use",
+        "BMI",
+        "fitness_level"
+      ],
+      "control_variables": [
+        "exclude comorbid subjects",
+        "stratify by comorbidity status",
+        "use covariate-adjusted nonconformity score"
+      ],
+      "rival_explanation": "Comorbid subjects have noisier signals (medication artifacts, ectopic beats) causing higher nonconformity scores, not shifted distributions.",
+      "rival_prediction": "If noise drives undercoverage, comorbid subjects will have higher median nonconformity scores; if distribution shift, they may have lower or higher depending on direction of shift.",
+      "distinguishing_test": "Compare nonconformity score distributions (median, IQR) between comorbid and healthy within same stratum. If medians differ significantly (Mann-Whitney p<0.01) but IQRs similar, supports shift (H10); if IQRs differ, supports noise (rival).",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Comorbidities like hypertension alter baroreflex sensitivity, changing stress HRV response by 30-50%; WESAD includes health screening data; pooling creates mixture with bimodal residuals.",
+      "minimum_data_needed": [
+        "WESAD health screening data (hypertension, arrhythmia flags)",
+        "Mondrian stratum assignments",
+        "nonconformity scores per subject per trial",
+        "per-subject coverage by group"
+      ],
+      "testable_prediction": "Comorbid subjects (n≥5) will show coverage deficit ≥10pp vs healthy in same stratum; healthy subjects in mixed strata will show overcoverage ≥3pp vs healthy in pure strata.",
+      "failure_condition": "No difference in coverage between comorbid and healthy subjects within same stratum (two-sample test p>0.2, deficit <3pp).",
+      "statistical_test_plan": "For each split, compute coverage by comorbidity status within each condition stratum. Mixed-effects: coverage ~ comorbidity * condition + (1|split). Test interaction.",
+      "falsification_test": "Re-stratify Mondrian by comorbidity_status × condition. If undercoverage for comorbid subjects disappears, H10 falsified."
+    }
+  ],
+  "total_tokens": 7854,
+  "completion_tokens": 7302
+}

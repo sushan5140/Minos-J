@@ -1,0 +1,84 @@
+{
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Subjects with high baseline heart‑rate variability violate the exchangeability assumption of Mondrian conformal prediction, causing systematic undercoverage.",
+      "proposed_mechanism": "Elevated HRV leads to non‑i.i.d. residuals that are not captured by the calibration set, so prediction intervals are too narrow.",
+      "core_assumption": "The calibration residuals are exchangeable across all subjects; high‑HRV subjects break this assumption.",
+      "knowledge_gap_addressed": "Lack of understanding how individual autonomic baseline differences affect conformal guarantees in physiological stress detection.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Motion artifacts in the accelerometer channel for certain subjects introduce heteroscedastic noise that Mondrian CP fails to model, yielding undercoverage.",
+      "proposed_mechanism": "Subject‑specific movement patterns increase variance non‑uniformly across time, violating the homoscedasticity implicit in the nonconformity score.",
+      "core_assumption": "Noise variance is constant across subjects and time; artifact‑induced variance breaks this.",
+      "knowledge_gap_addressed": "Impact of subject‑specific sensor noise structure on conformal prediction validity.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Temporal non‑stationarity of stress responses (e.g., habituation) causes the conditional distribution of labels to drift, making Mondrian intervals undercover for later segments.",
+      "proposed_mechanism": "As subjects adapt, the true stress‑label distribution shifts, but calibration uses early data, so intervals are misaligned.",
+      "core_assumption": "Label distribution is stationary over the recording period; habituation violates this.",
+      "knowledge_gap_addressed": "Role of temporal drift in physiological stress labeling on conformal coverage.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Misaligned timestamps between ECG and respiration sensors for some subjects create spurious feature correlations, leading to overconfident predictions.",
+      "proposed_mechanism": "Sensor desynchronization introduces bias in feature space, shrinking residuals and narrowing intervals.",
+      "core_assumption": "All sensor streams are perfectly synchronized; any misalignment is negligible.",
+      "knowledge_gap_addressed": "Effect of inter‑sensor synchronization errors on conformal prediction reliability.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Labeling inconsistencies (e.g., ambiguous stress annotations) for certain subjects produce noisy true outcomes, causing Mondrian CP to underestimate uncertainty.",
+      "proposed_mechanism": "Noisy labels increase apparent conformity scores, making intervals appear tighter than warranted.",
+      "core_assumption": "Provided labels are ground‑truth truth; label noise is minimal.",
+      "knowledge_gap_addressed": "Influence of label quality on conformal guarantees in affective computing datasets.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Stratification by stress intensity ignores subject‑specific baseline shifts, so the Mondrian nonconformity score is miscalibrated for low‑baseline subjects.",
+      "proposed_mechanism": "Using a global stratification fails to capture individual offset, leading to biased residuals for subjects with low baseline arousal.",
+      "core_assumption": "Stratification levels are sufficient to achieve exchangeability within each stratum.",
+      "knowledge_gap_addressed": "Need for subject‑level baselines in stratified conformal prediction for physiological data.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Small calibration set size for certain subjects (due to few stress episodes) yields high variance in the empirical quantile, producing intervals that are too narrow on average.",
+      "proposed_mechanism": "Limited calibration samples increase sampling error of the quantile estimate, biasing coverage downward.",
+      "core_assumption": "Calibration set is large enough for accurate quantile estimation; small‑sample effects are negligible.",
+      "knowledge_gap_addressed": "Impact of limited per‑subject calibration data on Mondrian CP coverage.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Non‑linear interactions between galvanic skin response and temperature are not captured by the linear scoring function, causing mis‑calibrated residuals for subjects with strong coupling.",
+      "proposed_mechanism": "The nonconformity score fails to reflect true error structure when interactions are present, leading to underestimated uncertainty.",
+      "core_assumption": "The chosen scoring function adequately captures the relationship between features and label.",
+      "knowledge_gap_addressed": "Effect of feature interaction complexity on conformal prediction validity.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Subjects with medication or caffeine intake exhibit altered physiological dynamics that shift the conditional distribution, violating the i.i.d. assumption across the cohort.",
+      "proposed_mechanism": "Pharmacological influences change baseline and responsiveness, creating a subpopulation with different error characteristics.",
+      "core_assumption": "All subjects share the same physiological response distribution absent of external substances.",
+      "knowledge_gap_addressed": "Role of exogenous substances in breaking exchangeability assumptions for conformal methods.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Window‑based feature extraction introduces edge effects that are uneven across subjects, causing systematic bias in residuals for those with shorter stress bouts.",
+      "proposed_mechanism": "Features computed over fixed windows misrepresent short events, inflating conformity scores and narrowing intervals.",
+      "core_assumption": "Window length is appropriate for all stress episode durations; edge effects are negligible.",
+      "knowledge_gap_addressed": "Influence of feature extraction window size on conformal prediction coverage for variable‑length stress events.",
+      "status": "SPECULATIVE"
+    }
+  ]
+}

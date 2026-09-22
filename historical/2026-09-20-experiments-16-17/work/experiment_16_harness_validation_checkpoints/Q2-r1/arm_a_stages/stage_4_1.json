@@ -1,0 +1,154 @@
+{
+  "mechanism_builds": [
+    {
+      "hypothesis_id": "H1",
+      "mechanism_variables": [
+        "Fake var H1 (n811) with a specific variable relation."
+      ],
+      "causal_path": "Fake path H1 (n646) with a specific variable relation.",
+      "expected_direction": "increase",
+      "domain_specific_boundary_conditions": [
+        "Fake boundary H1 (n372) with a specific variable relation."
+      ],
+      "measurable_outcomes": [
+        "Fake outcome H1 (n234) with a specific variable relation."
+      ],
+      "mechanism_builder_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H2",
+      "mechanism_variables": [
+        "Fake var H2 (n3) with a specific variable relation."
+      ],
+      "causal_path": "Fake path H2 (n591) with a specific variable relation.",
+      "expected_direction": "increase",
+      "domain_specific_boundary_conditions": [
+        "Fake boundary H2 (n379) with a specific variable relation."
+      ],
+      "measurable_outcomes": [
+        "Fake outcome H2 (n547) with a specific variable relation."
+      ],
+      "mechanism_builder_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H3",
+      "mechanism_variables": [
+        "Fake var H3 (n446) with a specific variable relation."
+      ],
+      "causal_path": "Fake path H3 (n424) with a specific variable relation.",
+      "expected_direction": "increase",
+      "domain_specific_boundary_conditions": [
+        "Fake boundary H3 (n418) with a specific variable relation."
+      ],
+      "measurable_outcomes": [
+        "Fake outcome H3 (n220) with a specific variable relation."
+      ],
+      "mechanism_builder_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H4",
+      "mechanism_variables": [
+        "Fake var H4 (n259) with a specific variable relation."
+      ],
+      "causal_path": "Fake path H4 (n254) with a specific variable relation.",
+      "expected_direction": "increase",
+      "domain_specific_boundary_conditions": [
+        "Fake boundary H4 (n704) with a specific variable relation."
+      ],
+      "measurable_outcomes": [
+        "Fake outcome H4 (n952) with a specific variable relation."
+      ],
+      "mechanism_builder_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H5",
+      "mechanism_variables": [
+        "Fake var H5 (n780) with a specific variable relation."
+      ],
+      "causal_path": "Fake path H5 (n142) with a specific variable relation.",
+      "expected_direction": "increase",
+      "domain_specific_boundary_conditions": [
+        "Fake boundary H5 (n104) with a specific variable relation."
+      ],
+      "measurable_outcomes": [
+        "Fake outcome H5 (n605) with a specific variable relation."
+      ],
+      "mechanism_builder_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H6",
+      "mechanism_variables": [
+        "Fake var H6 (n166) with a specific variable relation."
+      ],
+      "causal_path": "Fake path H6 (n236) with a specific variable relation.",
+      "expected_direction": "increase",
+      "domain_specific_boundary_conditions": [
+        "Fake boundary H6 (n526) with a specific variable relation."
+      ],
+      "measurable_outcomes": [
+        "Fake outcome H6 (n465) with a specific variable relation."
+      ],
+      "mechanism_builder_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H7",
+      "mechanism_variables": [
+        "Fake var H7 (n133) with a specific variable relation."
+      ],
+      "causal_path": "Fake path H7 (n774) with a specific variable relation.",
+      "expected_direction": "increase",
+      "domain_specific_boundary_conditions": [
+        "Fake boundary H7 (n914) with a specific variable relation."
+      ],
+      "measurable_outcomes": [
+        "Fake outcome H7 (n854) with a specific variable relation."
+      ],
+      "mechanism_builder_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H8",
+      "mechanism_variables": [
+        "Fake var H8 (n499) with a specific variable relation."
+      ],
+      "causal_path": "Fake path H8 (n942) with a specific variable relation.",
+      "expected_direction": "increase",
+      "domain_specific_boundary_conditions": [
+        "Fake boundary H8 (n938) with a specific variable relation."
+      ],
+      "measurable_outcomes": [
+        "Fake outcome H8 (n631) with a specific variable relation."
+      ],
+      "mechanism_builder_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H9",
+      "mechanism_variables": [
+        "Fake var H9 (n882) with a specific variable relation."
+      ],
+      "causal_path": "Fake path H9 (n790) with a specific variable relation.",
+      "expected_direction": "increase",
+      "domain_specific_boundary_conditions": [
+        "Fake boundary H9 (n514) with a specific variable relation."
+      ],
+      "measurable_outcomes": [
+        "Fake outcome H9 (n602) with a specific variable relation."
+      ],
+      "mechanism_builder_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H10",
+      "mechanism_variables": [
+        "Fake var H10 (n161) with a specific variable relation."
+      ],
+      "causal_path": "Fake path H10 (n442) with a specific variable relation.",
+      "expected_direction": "increase",
+      "domain_specific_boundary_conditions": [
+        "Fake boundary H10 (n611) with a specific variable relation."
+      ],
+      "measurable_outcomes": [
+        "Fake outcome H10 (n152) with a specific variable relation."
+      ],
+      "mechanism_builder_notes": "fake"
+    }
+  ]
+}

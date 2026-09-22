@@ -1,0 +1,360 @@
+{
+  "sample_index": 1,
+  "valid": true,
+  "error": null,
+  "cards": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Subject-specific baseline heart rate variability influences conformal prediction coverage stability.",
+      "proposed_mechanism": "Higher baseline HRV leads to larger prediction errors, causing conformal intervals to be too narrow and resulting in under-coverage.",
+      "causal_path": "baseline_HRV -> prediction_error_magnitude -> interval_width -> coverage_rate",
+      "mechanism_variables": [
+        "baseline_HRV",
+        "prediction_error_magnitude",
+        "interval_width",
+        "coverage_rate"
+      ],
+      "possible_confounders": [
+        "age",
+        "medication_use",
+        "signal_quality"
+      ],
+      "control_variables": [
+        "age",
+        "medication_use"
+      ],
+      "rival_explanation": "Coverage fluctuations are due to random noise in the conformal algorithm rather than subject traits.",
+      "rival_prediction": "Coverage variability will be uncorrelated with baseline HRV across subjects.",
+      "distinguishing_test": "If coverage correlates negatively with baseline HRV after controlling for age and medication, the mechanism is supported; if no correlation, the rival is supported.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Prior work shows moderate association between HRV and prediction error in physiological signals.",
+      "minimum_data_needed": [
+        "baseline_HRV_measurements",
+        "physiological_signal_segments",
+        "conformal_prediction_outputs",
+        "coverage_labels"
+      ],
+      "testable_prediction": "Subjects with higher baseline HRV will exhibit lower coverage than those with lower HRV.",
+      "failure_condition": "No significant difference in coverage between high and low HRV groups.",
+      "statistical_test_plan": "Linear mixed-effects model with coverage as outcome, baseline_HRV as fixed effect, subject as random effect, controlling for age and medication.",
+      "falsification_test": "Pharmacologically reduce HRV (e.g., via beta-blocker) and test whether coverage moves toward the nominal level; failure to change falsifies the mechanism."
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Sensor drift induces non-stationary noise that breaks conformal prediction's exchangeability assumption.",
+      "proposed_mechanism": "Gradual baseline shift in sensor output changes signal mean, altering error distribution and causing miscalibrated intervals.",
+      "causal_path": "sensor_drift_rate -> signal_mean_shift -> nonconformity_score_distortion -> coverage_rate",
+      "mechanism_variables": [
+        "sensor_drift_rate",
+        "signal_mean_shift",
+        "nonconformity_score_distortion",
+        "coverage_rate"
+      ],
+      "possible_confounders": [
+        "temperature",
+        "humidity",
+        "subject_movement"
+      ],
+      "control_variables": [
+        "temperature",
+        "humidity"
+      ],
+      "rival_explanation": "Coverage failure stems from temporal autocorrelation violating exchangeability, not sensor drift.",
+      "rival_prediction": "Coverage loss will be similar across sensors regardless of measured drift magnitude.",
+      "distinguishing_test": "If coverage deficit correlates with sensor drift after adjusting for temperature and humidity, the mechanism is supported; otherwise the rival is supported.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Sensor drift can produce substantial bias in physiological measurements, leading to large coverage errors.",
+      "minimum_data_needed": [
+        "sensor_drift_log",
+        "raw_signal",
+        "conformal_scores",
+        "coverage_indicator"
+      ],
+      "testable_prediction": "Segments with higher sensor drift will show lower coverage.",
+      "failure_condition": "No association between sensor drift magnitude and coverage.",
+      "statistical_test_plan": "Partial correlation between sensor drift magnitude and coverage deficit, controlling for temperature and humidity.",
+      "falsification_test": "Perform sensor recalibration mid-experiment; if coverage improves to nominal after recalibration, the mechanism is supported; if coverage does not improve, it is falsified."
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Arousal-induced heteroscedasticity in physiological signals leads to conformal prediction coverage instability.",
+      "proposed_mechanism": "Increased arousal raises signal variance, widening prediction errors; conformal's assumption of homoscedastic error causes intervals to be too narrow during high arousal, producing under-coverage.",
+      "causal_path": "arousal_level -> error_variance_increase -> prediction_interval_width_misestimation -> coverage_rate",
+      "mechanism_variables": [
+        "arousal_level",
+        "error_variance",
+        "prediction_interval_width",
+        "coverage_rate"
+      ],
+      "possible_confounders": [
+        "time_of_day",
+        "caffeine_intake"
+      ],
+      "control_variables": [
+        "time_of_day",
+        "caffeine_intake"
+      ],
+      "rival_explanation": "Coverage instability arises from model misspecification (e.g., using linear relationships) rather than arousal-driven variance changes.",
+      "rival_prediction": "Coverage deficits will be uniform across arousal levels if the model is misspecified.",
+      "distinguishing_test": "If coverage deficit correlates with arousal after adjusting for time of day and caffeine, the mechanism is supported; if not, the rival is supported.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Arousal is known to moderately affect variance of signals such as heart rate and skin conductance.",
+      "minimum_data_needed": [
+        "arousal_measure (e.g., pupil dilation)",
+        "prediction_errors",
+        "interval_widths",
+        "coverage_labels"
+      ],
+      "testable_prediction": "Higher arousal will be associated with lower coverage (under-coverage).",
+      "failure_condition": "No significant correlation between arousal level and coverage deficit.",
+      "statistical_test_plan": "Regression of coverage deficit on arousal level with random intercept for subject, controlling for time of day and caffeine intake.",
+      "falsification_test": "Induce a calm state via guided breathing and measure coverage; if coverage does not return to nominal, the mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Circadian phase shifts alter baseline physiological levels, causing conformal prediction coverage to vary across the day.",
+      "proposed_mechanism": "Changes in circadian phase shift the mean of physiological signals, leading to systematic errors in nonconformity scores and fluctuating coverage.",
+      "causal_path": "circadian_phase -> baseline_shift -> nonconformity_score_bias -> coverage_rate",
+      "mechanism_variables": [
+        "circadian_phase",
+        "baseline_shift",
+        "nonconformity_score_bias",
+        "coverage_rate"
+      ],
+      "possible_confounders": [
+        "activity_level",
+        "light_exposure"
+      ],
+      "control_variables": [
+        "activity_level",
+        "light_exposure"
+      ],
+      "rival_explanation": "Coverage changes are due to batch effects in data processing pipelines across time, not circadian biology.",
+      "rival_prediction": "Coverage defects will align with processing batch boundaries irrespective of circadian phase.",
+      "distinguishing_test": "If coverage variation aligns with circadian phase after adjusting for batch effects, the mechanism is supported; if it aligns with batch, the rival is supported.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Circadian effects on physiological baselines are typically modest, leading to small coverage deviations.",
+      "minimum_data_needed": [
+        "circadian_phase_marker (e.g., melatonin)",
+        "processing_batch_id",
+        "coverage_outcome"
+      ],
+      "testable_prediction": "Coverage will be lowest during the biological night (high melatonin).",
+      "failure_condition": "No difference in coverage across circadian phase bins.",
+      "statistical_test_plan": "ANOVA comparing coverage across circadian phase bins, controlling for processing batch as a covariate.",
+      "falsification_test": "Apply a constant routine protocol to eliminate circadian variation; if coverage remains unstable, the mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Systematic labeling errors in the reference standard bias conformal prediction nonconformity scores, destabilizing coverage.",
+      "proposed_mechanism": "Mislabelled events (e.g., false arrhythmia annotations) produce consistently high or low nonconformity scores, shifting the empirical quantile used for interval construction and causing over- or under-coverage.",
+      "causal_path": "label_error_rate -> biased_nonconformity_scores -> miscalibrated_quantile -> coverage_rate",
+      "mechanism_variables": [
+        "label_error_rate",
+        "nonconformity_score_bias",
+        "miscalibrated_quantile",
+        "coverage_rate"
+      ],
+      "possible_confounders": [
+        "signal_artifact_rate",
+        "annotator_experience"
+      ],
+      "control_variables": [
+        "signal_artifact_rate",
+        "annotator_experience"
+      ],
+      "rival_explanation": "Coverage failure results from the algorithm's sensitivity to outliers, not from labeling errors.",
+      "rival_prediction": "Segments with many outliers will show coverage loss regardless of label error rate.",
+      "distinguishing_test": "If correcting label errors improves coverage while outlier removal does not, the mechanism is supported; if the opposite, the rival is supported.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Label errors can drastically shift empirical quantiles, producing large coverage deviations.",
+      "minimum_data_needed": [
+        "gold_standard_labels",
+        "putative_labels",
+        "discrepancy_flags",
+        "conformal_scores",
+        "coverage_indicator"
+      ],
+      "testable_prediction": "Segments with higher label disagreement will exhibit lower coverage.",
+      "failure_condition": "No relationship between label disagreement rate and coverage.",
+      "statistical_test_plan": "Logistic regression of coverage failure (binary) on proportion of disputed labels, adjusting for signal artifact rate.",
+      "falsification_test": "Obtain blind re-annotations from an expert panel; if coverage reaches nominal using the corrected labels, the mechanism is supported; if coverage does not improve, it is falsified."
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Failure to stratify conformal prediction by activity type leads to heterogeneous error distributions and unstable coverage.",
+      "proposed_mechanism": "Different activities (e.g., walking vs resting) generate distinct signal dynamics; pooling violates exchangeability, causing activity-specific over- or under-coverage.",
+      "causal_path": "activity_type -> distinct_error_distribution -> pooled_conformal_assumption_violation -> coverage_rate",
+      "mechanism_variables": [
+        "activity_type",
+        "error_distribution_params",
+        "coverage_rate"
+      ],
+      "possible_confounders": [
+        "heart_rate",
+        "movement_artifact"
+      ],
+      "control_variables": [
+        "heart_rate",
+        "movement_artifact"
+      ],
+      "rival_explanation": "Coverage instability stems from insufficient calibration set size rather than activity heterogeneity.",
+      "rival_prediction": "Increasing the calibration set size will uniformly improve coverage across all activities.",
+      "distinguishing_test": "If computing conformal separately for each activity restores nominal coverage, the mechanism is supported; if coverage remains off despite stratification, the rival is supported.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Activity-related changes in signal statistics are moderate but sufficient to affect conformal quantiles.",
+      "minimum_data_needed": [
+        "activity_labels",
+        "conformal_scores_per_segment",
+        "coverage_indicator"
+      ],
+      "testable_prediction": "Coverage during walking will be lower than during rest when a single conformal model is used.",
+      "failure_condition": "No difference in coverage between activity types.",
+      "statistical_test_plan": "Compute coverage per activity and test difference using a chi-square test of proportions.",
+      "falsification_test": "Apply activity-specific conformal calibration; if coverage becomes nominal across all activities, the mechanism is supported; if coverage remains off, it is falsified."
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Temporal autocorrelation within physiological signal segments violates the exchangeability assumption of conformal prediction, leading to coverage loss.",
+      "proposed_mechanism": "Strong lag-1 autocorrelation creates dependence among nonconformity scores, biasing the empirical quantile low and producing intervals that are too narrow.",
+      "causal_path": "lag1_autocorrelation -> score_dependence -> biased_quantile_estimate -> coverage_rate",
+      "mechanism_variables": [
+        "lag1_autocorrelation",
+        "score_dependence",
+        "estimated_quantile",
+        "coverage_rate"
+      ],
+      "possible_confounders": [
+        "signal_sampling_rate",
+        "filter_order"
+      ],
+      "control_variables": [
+        "signal_sampling_rate",
+        "filter_order"
+      ],
+      "rival_explanation": "Coverage loss is due to model underfitting (e.g., overly simple predictor) rather than temporal dependence.",
+      "rival_prediction": "Increasing model complexity will fix coverage regardless of autocorrelation level.",
+      "distinguishing_test": "If decorrelating scores (e.g., via block bootstrap) restores nominal coverage, the mechanism is supported; if coverage does not improve, the rival is supported.",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "The magnitude of the effect depends on the autocorrelation structure; it will be estimated from data by regressing coverage deficit on lag-1 autocorrelation.",
+      "minimum_data_needed": [
+        "raw_signal",
+        "lag1_autocorrelation_estimate",
+        "conformal_scores",
+        "coverage_indicator"
+      ],
+      "testable_prediction": "Higher lag-1 autocorrelation will be associated with lower coverage.",
+      "failure_condition": "No significant association between lag-1 autocorrelation and coverage deficit.",
+      "statistical_test_plan": "Linear regression of coverage deficit on lag-1 autocorrelation, controlling for sampling rate and filter order.",
+      "falsification_test": "Generate surrogate data that destroys temporal dependence (phase randomization); if coverage becomes nominal, the mechanism is supported; if coverage does not change, it is falsified."
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Heavy-tailed error distributions cause conformal prediction intervals to be too narrow in the tails, reducing coverage for extreme values.",
+      "proposed_mechanism": "High kurtosis in prediction errors leads to underestimated tail mass; conformal's empirical quantile fails to capture extreme errors, resulting in under-coverage in the distribution tails.",
+      "causal_path": "error_kurtosis -> tail_mass_underestimation -> interval_width_insufficient -> coverage_rate_extremes",
+      "mechanism_variables": [
+        "error_kurtosis",
+        "tail_mass_underestimation",
+        "interval_width_insufficient",
+        "coverage_rate_extremes"
+      ],
+      "possible_confounders": [
+        "outlier_rate",
+        "signal_amplitude"
+      ],
+      "control_variables": [
+        "outlier_rate",
+        "signal_amplitude"
+      ],
+      "rival_explanation": "Coverage loss arises from using an inappropriate conformity score function (e.g., absolute error) rather than heavy tails.",
+      "rival_prediction": "Switching to a different score (e.g., squared error) will fix coverage regardless of error kurtosis.",
+      "distinguishing_test": "If using a robustness-oriented score (e.g., Huber loss) improves tail coverage, the mechanism is supported; if not, the rival is supported.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Heavy tails may affect only extreme quantiles, producing modest changes in overall coverage.",
+      "minimum_data_needed": [
+        "error_samples",
+        "kurtosis_estimate",
+        "conformal_intervals",
+        "coverage_in_tails"
+      ],
+      "testable_prediction": "Segments with higher error kurtosis will show lower coverage in the 95% tails.",
+      "failure_condition": "No difference in tail coverage between high and low kurtosis groups.",
+      "statistical_test_plan": "Compare tail coverage between high vs low kurtosis groups using Welch's t-test.",
+      "falsification_test": "Apply a heavy-tail aware conformal method (e.g., quantile regression forests); if coverage normalizes, the mechanism is supported; if coverage remains off, it is falsified."
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Subject-specific medication alters both the mean and variance of physiological signals, leading to conformal prediction coverage instability.",
+      "proposed_mechanism": "Medication (e.g., beta-blockers) reduces heart rate mean and variability, shifting error distribution and causing conformal intervals to be misaligned, producing either over- or under-coverage depending on direction.",
+      "causal_path": "medication_use -> signal_mean_change & signal_variance_change -> error_distribution_shift -> coverage_rate",
+      "mechanism_variables": [
+        "medication_use",
+        "signal_mean",
+        "signal_variance",
+        "error_distribution",
+        "coverage_rate"
+      ],
+      "possible_confounders": [
+        "age",
+        "underlying_condition"
+      ],
+      "control_variables": [
+        "age",
+        "underlying_condition"
+      ],
+      "rival_explanation": "Coverage instability is due to time-varying noise unrelated to medication.",
+      "rival_prediction": "Coverage deficits will be uncorrelated with medication status after accounting for time-varying noise.",
+      "distinguishing_test": "If coverage differs between medicated and non-medicated subjects after controlling for age and underlying condition, the mechanism is supported; if not, the rival is supported.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Medications like beta-blockers are known to produce moderate changes in heart rate mean and variance.",
+      "minimum_data_needed": [
+        "medication_status",
+        "physiological_signal",
+        "conformal_output",
+        "coverage_label"
+      ],
+      "testable_prediction": "Subjects taking medication will have coverage that deviates from nominal in a consistent direction (e.g., under-coverage for beta-blockers).",
+      "failure_condition": "No significant difference in coverage between medicated and non-medicated groups.",
+      "statistical_test_plan": "Two-sample t-test comparing coverage between medicated and non-medicated subjects, controlling for age and underlying condition via ANCOVA.",
+      "falsification_test": "Withdraw medication in a crossover design; if coverage moves toward nominal, the mechanism is supported; if coverage does not change, it is falsified."
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Class imbalance in the calibration set causes conformal prediction to produce intervals with systematically incorrect coverage for the minority class.",
+      "proposed_mechanism": "When the calibration set under-represents a physiological state (e.g., arrhythmia), the empirical quantile used for interval width is dominated by the majority class, leading to intervals that are too narrow for the minority class and under-coverage.",
+      "causal_path": "class_imbalance_ratio -> biased_empirical_quantile -> interval_width_mismatch -> coverage_rate_minority",
+      "mechanism_variables": [
+        "class_imbalance_ratio",
+        "empirical_quantile",
+        "interval_width",
+        "coverage_rate_minority"
+      ],
+      "possible_confounders": [
+        "signal_noise_level",
+        "feature_distribution_shift"
+      ],
+      "control_variables": [
+        "signal_noise_level",
+        "feature_distribution_shift"
+      ],
+      "rival_explanation": "Coverage loss for minority class stems from the predictor's poor performance on that class, not from conformal calibration.",
+      "rival_prediction": "Improving the predictor's accuracy on the minority class will fix coverage regardless of class imbalance.",
+      "distinguishing_test": "If reweighting the calibration set to balance classes restores nominal coverage for the minority class while predictor accuracy unchanged, the mechanism is supported; if coverage does not improve, the rival is supported.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Severe class imbalance can shift quantiles substantially, producing large coverage errors.",
+      "minimum_data_needed": [
+        "class_labels",
+        "calibration_set_size_per_class",
+        "conformal_scores",
+        "coverage_indicator"
+      ],
+      "testable_prediction": "Segments belonging to the minority class will exhibit lower coverage than those from the majority class when using a standard conformal predictor.",
+      "failure_condition": "No difference in coverage between minority and majority class segments.",
+      "statistical_test_plan": "Logistic regression of coverage failure (binary) on class membership, adjusting for signal noise level and feature distribution shift.",
+      "falsification_test": "Apply class-weighted conformal prediction (e.g., weighted quantiles); if coverage for minority class reaches nominal, the mechanism is supported; if coverage remains low, it is falsified."
+    }
+  ],
+  "total_tokens": 26973,
+  "completion_tokens": 22117
+}

@@ -1,0 +1,24 @@
+{
+  "event": "interrupted_request_reconciliation",
+  "unit_id": "Q3-r1",
+  "arm": "B",
+  "stage": "baseline_sample",
+  "reason": "The operator interrupted the process during the final daily-quota backoff to prevent the controller from launching further guaranteed-to-fail samples.",
+  "evidence": {
+    "diagnostic_archive_sequences": [34, 35, 36, 37],
+    "http_status": 429,
+    "schema_name": "baseline_sample",
+    "model": "nvidia/nemotron-3-super-120b-a12b:free",
+    "http_attempts": 4,
+    "transient_http_retries": 3,
+    "provider_limit_source": "openrouter_free_tier_daily"
+  },
+  "ledger_reconciliation": {
+    "request_failed_seq": 39,
+    "logical_call_seq": 40,
+    "token_usage": 0,
+    "note": "HTTP failures returned no model usage. The four attempts are included in attempt accounting and do not alter arm token totals."
+  },
+  "scientific_protocol_changed": false,
+  "model_changed": false
+}

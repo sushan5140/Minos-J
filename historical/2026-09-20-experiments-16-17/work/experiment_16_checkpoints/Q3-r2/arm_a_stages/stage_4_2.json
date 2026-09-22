@@ -1,0 +1,254 @@
+{
+  "confounder_rival_builds": [
+    {
+      "hypothesis_id": "H1",
+      "possible_confounders": [
+        "Cardiorespiratory fitness (VO2max)",
+        "Beta-blocker or anticholinergic medication use",
+        "Age-related autonomic decline",
+        "Sex hormone status (menstrual phase, testosterone)",
+        "Recent caffeine/nicotine/alcohol intake"
+      ],
+      "control_variables": [
+        "VO2max_ml_kg_min",
+        "medication_status_binary",
+        "age_years",
+        "sex_binary",
+        "substance_use_24h_binary"
+      ],
+      "boring_rival_explanations": [
+        "Fitness level drives both ANS reactivity phenotype and SNR, not a distinct ANS trait",
+        "Medication effects masquerade as phenotype differences",
+        "Age-related vascular stiffening reduces PPG amplitude independent of ANS"
+      ],
+      "rival_prediction": "VO2max will explain more variance in per-subject SNR and detection uncertainty than the ANS_reactivity_phenotype_score; when VO2max is covaried, the phenotype score loses significant predictive power.",
+      "distinguishing_condition": "In a hierarchical regression predicting per-subject ECE, adding VO2max in step 1 renders the ANS_reactivity_phenotype_score non-significant in step 2 (ΔR² < 0.01, p > 0.05), whereas the reverse order leaves VO2max significant.",
+      "confounder_rival_notes": "Fitness is a known determinant of both baseline HRV and stress reactivity. Must measure VO2max directly (not estimated) and exclude medicated participants. Residualize phenotype score for fitness before testing."
+    },
+    {
+      "hypothesis_id": "H2",
+      "possible_confounders": [
+        "Sensor band tightness and placement consistency",
+        "Wrist circumference and bone geometry",
+        "Physical activity level during recording",
+        "Ambient temperature drift during session",
+        "Skin temperature at sensor site"
+      ],
+      "control_variables": [
+        "band_tightness_N",
+        "wrist_circumference_mm",
+        "activity_counts_per_min",
+        "ambient_temp_C",
+        "skin_temp_C"
+      ],
+      "boring_rival_explanations": [
+        "Loose vs. tight band fit explains signal quality variation better than skin properties",
+        "Wrist size determines optical path length more than epidermal thickness",
+        "Movement artifacts correlate with hair density but are caused by activity, not hair"
+      ],
+      "rival_prediction": "Within-subject variation in band tightness (measured via force sensor) will predict PPG/EDA signal quality indices more strongly than between-subject skin property measures.",
+      "distinguishing_condition": "A linear mixed model with random intercepts for subject shows band_tightness_N as a significant fixed effect (p < 0.001) on PPG SQI, while stratum_corneum_hydration_AU becomes non-significant (p > 0.1) when both are included.",
+      "confounder_rival_notes": "Band tightness is rarely measured but critically affects contact. Use instrumented strap with force sensor. Standardize placement with 3D-printed guide. Measure skin temp via infrared to separate vascular from interface effects."
+    },
+    {
+      "hypothesis_id": "H3",
+      "possible_confounders": [
+        "Prior wake duration (sleep pressure)",
+        "Caffeine consumption timing and dose",
+        "Physical activity in preceding 2 hours",
+        "Light exposure history (lux-hours)",
+        "Meal timing and composition"
+      ],
+      "control_variables": [
+        "prior_wake_duration_h",
+        "caffeine_dose_mg_last_4h",
+        "activity_METs_last_2h",
+        "light_exposure_lux_h_last_24h",
+        "time_since_last_meal_h"
+      ],
+      "boring_rival_explanations": [
+        "Homeostatic sleep pressure (prior wake duration) drives baseline autonomic shifts, not circadian phase",
+        "Caffeine's half-life creates time-of-day confounding with chronotype",
+        "Morning vs. evening activity patterns differ by chronotype and affect physiology"
+      ],
+      "rival_prediction": "Prior wake duration will predict resting RMSSD and stress reactivity at fixed clock times better than phase angle; controlling for wake duration eliminates the phase angle effect.",
+      "distinguishing_condition": "In a mixed model with phase_angle_minutes and prior_wake_duration_h as predictors of baseline RMSSD, the coefficient for prior_wake_duration_h remains significant (p < 0.01) while phase_angle_minutes becomes non-significant (p > 0.1) when both are included.",
+      "confounder_rival_notes": "Chronotype correlates with sleep timing. Use forced desynchrony or constant routine to truly isolate circadian phase. At minimum, measure and control prior wake duration via actigraphy. Caffeine logs essential."
+    },
+    {
+      "hypothesis_id": "H4",
+      "possible_confounders": [
+        "Seasonal variation in physiology and behavior",
+        "Wearable sensor firmware updates or drift",
+        "Changes in daily routine (vacation, illness)",
+        "Menstrual cycle phase (for female participants)",
+        "Medication or supplement changes"
+      ],
+      "control_variables": [
+        "day_of_year",
+        "firmware_version",
+        "routine_change_binary",
+        "menstrual_phase_category",
+        "medication_change_binary"
+      ],
+      "boring_rival_explanations": [
+        "Sensor degradation or firmware changes create artificial drift mimicking habituation",
+        "Seasonal changes in temperature/light drive physiological trends",
+        "Life events (exams, holidays) cause non-stationarity unrelated to stressor repetition"
+      ],
+      "rival_prediction": "A control mannequin wearing the same device model will show similar feature drift over 28 days if sensor drift is the cause; human data will show additional subject-specific trajectories.",
+      "distinguishing_condition": "Compare slope distributions of EDA_peak_frequency over deployment days between human participants (n≥30) and a mannequin control (n=5 devices). If human slopes are significantly more variable (Levene's test p < 0.01) and include both negative and positive slopes while mannequin slopes are near zero and unidirectional, habituation/sensitization is supported over sensor drift.",
+      "confounder_rival_notes": "Deploy identical devices on mannequins in same environment. Log firmware updates. Use menstrual tracking apps. Exclude participants with major routine changes. Seasonal effect controlled by staggered enrollment or including day_of_year as spline."
+    },
+    {
+      "hypothesis_id": "H5",
+      "possible_confounders": [
+        "Stressor ambiguity (unclear whether event is stressful)",
+        "EMA prompt timing relative to stressor onset/offset",
+        "Cognitive load at time of prompt",
+        "Social desirability bias",
+        "Language/literacy barriers"
+      ],
+      "control_variables": [
+        "stressor_ambiguity_rating",
+        "prompt_stressor_latency_min",
+        "concurrent_nback_load",
+        "MCSDS_social_desirability_score",
+        "language_proficiency_score"
+      ],
+      "boring_rival_explanations": [
+        "Ambiguous stressors produce inconsistent labels regardless of subject traits",
+        "Prompts delivered during stressor recovery vs. peak create systematic misalignment",
+        "High cognitive load at prompt time impairs recall for all subjects equally"
+      ],
+      "rival_prediction": "Label noise (estimated via physiological consistency) will be higher for ambiguous stressors and mistimed prompts across all subjects, with trait scores (TAS-20, BFI-2) explaining minimal additional variance.",
+      "distinguishing_condition": "A variance partitioning analysis (hierarchical regression) shows stressor_ambiguity_rating and prompt_stressor_latency_min jointly explain >40% of per-subject label_noise_estimate variance, while adding TAS20_alexithymia_score and BFI2_conscientiousness_score increases R² by <5% (ΔR² < 0.05, p > 0.05).",
+      "confounder_rival_notes": "Stressor ambiguity rated by independent coders from EMA free-text. Prompt latency logged automatically. Use experience sampling with random prompts to decorrelate prompt timing from stressor timing. Validate label noise with structured interview subset."
+    },
+    {
+      "hypothesis_id": "H6",
+      "possible_confounders": [
+        "Stressor intensity and duration variation across contexts",
+        "Stressor predictability (expected vs. unexpected)",
+        "Coping strategy deployment (suppression, reappraisal)",
+        "Time since last stressor (carryover effects)",
+        "Baseline physiological state at stressor onset"
+      ],
+      "control_variables": [
+        "stressor_intensity_VAS",
+        "stressor_duration_min",
+        "predictability_binary",
+        "coping_strategy_checklist",
+        "baseline_RMSSD_pre_stressor"
+      ],
+      "boring_rival_explanations": [
+        "Social contexts involve more intense stressors, not distinct physiology",
+        "Physical threat contexts have longer duration, causing greater EDA",
+        "Predictability differences across contexts drive physiology, not context per se"
+      ],
+      "rival_prediction": "When stressor intensity, duration, and predictability are matched across contexts (via experimental manipulation or statistical control), context-specific physiological reactivity differences and detection performance disparities will disappear.",
+      "distinguishing_condition": "In a lab study with orthogonally manipulated context (social vs. non-social) and stressor intensity (low vs. high), the context × intensity interaction on HRV_reactivity is non-significant (p > 0.1), while intensity main effect is significant (p < 0.001). Context-conditional models show no improvement over intensity-only models (ΔECE < 0.005).",
+      "confounder_rival_notes": "Naturalistic data cannot fully disentangle context from stressor properties. Need experimental manipulation: same stressor type (e.g., cognitive task) in different contexts with intensity matched. Measure coping via brief post-stressor EMA. Control baseline with pre-stressor window."
+    },
+    {
+      "hypothesis_id": "H7",
+      "possible_confounders": [
+        "Ambient temperature and humidity fluctuations",
+        "Electromagnetic interference (EMI) from environment",
+        "Device temperature (self-heating)",
+        "Battery voltage level",
+        "Skin temperature changes"
+      ],
+      "control_variables": [
+        "ambient_temp_C",
+        "ambient_humidity_pct",
+        "EMI_index",
+        "device_temp_C",
+        "battery_voltage_V",
+        "skin_temp_C"
+      ],
+      "boring_rival_explanations": [
+        "Environmental temperature drives both motion (thermoregulation) and PPG noise",
+        "EMI from nearby electronics causes burst artifacts unrelated to subject traits",
+        "Device self-heating alters sensor characteristics over recording session"
+      ],
+      "rival_prediction": "Noise distribution parameters (kurtosis, burst rate) will correlate more strongly with concurrent environmental measures (ambient_temp_C, EMI_index) than with subject ID; within-subject noise varies more across environments than between subjects in the same environment.",
+      "distinguishing_condition": "A variance components analysis (random effects model) shows environment (session-level) explains >50% of variance in motion_artifact_burst_rate and EDA_baseline_drift_volatility, while subject ID explains <20%. ICC for subject < 0.3.",
+      "confounder_rival_notes": "Record environment continuously. Use Faraday cage for lab sessions to isolate EMI. Monitor device temp via internal sensor. Compare same subject across multiple days/environments. Trait-like noise requires high ICC across environments."
+    },
+    {
+      "hypothesis_id": "H8",
+      "possible_confounders": [
+        "Stressor modality (interoceptive vs. exteroceptive focus)",
+        "Attentional focus manipulation (body vs. external)",
+        "Anxiety sensitivity (fear of bodily sensations)",
+        "Baseline autonomic tone",
+        "Respiratory pattern during stressor"
+      ],
+      "control_variables": [
+        "stressor_modality_category",
+        "attention_focus_condition",
+        "ASI_anxiety_sensitivity_score",
+        "baseline_RMSSD_ms",
+        "respiration_rate_bpm"
+      ],
+      "boring_rival_explanations": [
+        "High interoceptive accuracy individuals attend more to bodily sensations during any stressor, amplifying physiology via attention, not coupling gain",
+        "Interoceptive stressors (e.g., CO2 challenge) inflate coupling for high IA; exteroceptive stressors (e.g., speech) do not",
+        "Anxiety sensitivity drives both IA questionnaire scores and physiological reactivity"
+      ],
+      "rival_prediction": "The coupling gain slope (physiology per VAS unit) will be significantly steeper for high IA individuals only during interoceptive-focused stressors; during exteroceptive stressors (e.g., Trier Social Stress Test), the IA × stressor interaction on coupling gain will be non-significant.",
+      "distinguishing_condition": "In a within-subject design with counterbalanced interoceptive (cold pressor, CO2) and exteroceptive (TSST, mental arithmetic) stressors, the correlation between interoceptive_accuracy and coupling_gain_slope is significant (p < 0.01) for interoceptive stressors but not for exteroceptive stressors (p > 0.2), tested via Fisher's z-test for dependent correlations.",
+      "confounder_rival_notes": "Must manipulate stressor modality. Control respiration (paced breathing) to isolate autonomic from respiratory effects. Measure anxiety sensitivity (ASI-3) as covariate. Use multiple IA measures (heartbeat counting, heartbeat discrimination, MAIA)."
+    },
+    {
+      "hypothesis_id": "H9",
+      "possible_confounders": [
+        "Fixed epoch length mismatched to recovery dynamics",
+        "Stressor duration variability",
+        "Labeling granularity (event vs. epoch labels)",
+        "Post-stressor physical activity",
+        "Caffeine/nicotine affecting recovery speed"
+      ],
+      "control_variables": [
+        "epoch_length_min",
+        "stressor_duration_min",
+        "labeling_method_category",
+        "post_stressor_activity_counts",
+        "caffeine_nicotine_4h_binary"
+      ],
+      "boring_rival_explanations": [
+        "Fixed 1-min epochs are too long for fast recoverers (smearing) and too short for slow recoverers (fragmentation)",
+        "Longer stressors produce longer recovery, not trait-like recovery kinetics",
+        "Post-stressor movement accelerates recovery via mechanical artifact, not autonomic rebound"
+      ],
+      "rival_prediction": "Using adaptive epoch lengths (e.g., scaled to individual recovery half-life) will eliminate the correlation between recovery half-life and boundary misclassification rate; fixed epochs produce the correlation artifactually.",
+      "distinguishing_condition": "Compute boundary misclassification rate using fixed 1-min epochs and using personalized epochs (length = 2 × subject's HRV_recovery_half_life). The correlation between HRV_recovery_half_life and misclassification rate is significant (p < 0.01) for fixed epochs but non-significant (p > 0.2) for personalized epochs.",
+      "confounder_rival_notes": "Recovery half-life must be estimated independently (e.g., from separate recovery-only session). Control post-stressor activity strictly (seated). Exclude caffeine/nicotine. Test multiple epoch lengths. Compare fixed-window CNN vs. semi-Markov CRF with learned state durations."
+    },
+    {
+      "hypothesis_id": "H10",
+      "possible_confounders": [
+        "Genetic ancestry / population stratification",
+        "Linkage disequilibrium with causal variants",
+        "Gene-environment interaction (G×E) with stress exposure",
+        "Epistasis between ADRB1, ADRB2, COMT",
+        "Medication use by genotype (pharmacogenetics)"
+      ],
+      "control_variables": [
+        "genetic_ancestry_PC1_10",
+        "stress_exposure_score",
+        "medication_status_by_class",
+        "polygenic_score_autonomic"
+      ],
+      "boring_rival_explanations": [
+        "Ancestry differences correlate with both genotype frequencies and autonomic physiology",
+        "Observed SNPs are proxies for unmeasured causal variants in LD",
+        "Genotype effects only appear under high stress exposure (G×E), not main effects"
+      ],
+      "rival_prediction": "The association between ADRB1/ADRB2/COMT genotypes and HRV/EDA reactivity will become non-significant after controlling for the first 10 genetic ancestry principal components; the mixture model bimodality will disappear in ancestry-homogeneous subsamples.",
+      "distinguishing_condition": "In a linear mixed model predicting HRV_stress_reactivity with genotype as fixed effect and ancestry PCs as covariates, the genotype effect is non-significant (p > 0.05) while PCs are significant (p < 0.01). Mixture model BIC improvement over single Gaussian drops from >10 to <2 when analyzed within a single ancestry cluster (e.g., European PC1/PC2 cluster).",
+      "confounder_rival_notes": "Population stratification is the primary rival for genetic associations. Must use homogeneous ancestry cohort (e.g., European only via PCs) or include PCs as covariates. Test G×E by adding stress_exposure × genotype interaction. Check LD structure. Exclude medicated participants. Power for minority homozygotes requires large N."
+    }
+  ]
+}

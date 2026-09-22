@@ -1,0 +1,15 @@
+{
+  "archive_sequence": 31,
+  "classification": "http_error",
+  "captured_at_utc": "2026-09-20T13:06:48Z",
+  "metadata": {
+    "model": "nvidia/nemotron-3-super-120b-a12b:free",
+    "schema_name": "baseline_sample",
+    "http_attempt": 3,
+    "status": 429
+  },
+  "body_sha256": "cfd535dd9610952b24a85f7e72024277032031a96d36f0acc37d452538184a42",
+  "body_bytes": 482,
+  "body_encoding": "utf-8",
+  "body": "{\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day\",\"code\":429,\"metadata\":{\"headers\":{\"X-RateLimit-Limit\":\"50\",\"X-RateLimit-Remaining\":\"0\",\"X-RateLimit-Reset\":\"1789948800000\"},\"limit_source\":\"openrouter_free_tier_daily\",\"remedy_hint\":\"Wait for the daily reset (see X-RateLimit-Reset), or purchase credits to raise your free-model daily limit.\",\"provider_name\":null}},\"user_id\":\"user_33JmDEp9NrcGFVmnCFHqFQNMqBO\"}"
+}

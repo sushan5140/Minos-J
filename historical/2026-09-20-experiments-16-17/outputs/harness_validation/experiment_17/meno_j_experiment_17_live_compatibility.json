@@ -1,0 +1,56 @@
+{
+  "artifact": "Meno-J Experiment 17 live compatibility test",
+  "banner": "LIVE COMPATIBILITY TEST ONLY — not a scientific Experiment 17 result.",
+  "scientific_results": false,
+  "overall_status": "PASS",
+  "generator": {
+    "model": "nvidia/nemotron-3-super-120b-a12b:free",
+    "status": "PASS",
+    "valid_stage_json": true,
+    "decision_rules_followed": true,
+    "decision_counts": {
+      "PASS": 3,
+      "SALVAGEABLE": 4,
+      "REJECT": 3
+    },
+    "error": null
+  },
+  "judge": {
+    "model": "nex-agi/nex-n2.5-pro:free",
+    "status": "PASS",
+    "schema_conforming": true,
+    "card_ids": [
+      "C17a0b1c2"
+    ],
+    "error": null
+  },
+  "logical_calls": 2,
+  "successful_requests": 2,
+  "failed_requests": 0,
+  "http_attempts": 2,
+  "token_usage": {
+    "prompt_tokens": 3048,
+    "completion_tokens": 11236,
+    "total_tokens": 14284
+  },
+  "usage_reported_for_all_successes": true,
+  "rate_limit_retries": 0,
+  "retry_counters": {
+    "timeout_retries": 0,
+    "network_retries": 0,
+    "incomplete_read_retries": 0,
+    "transient_http_retries": 0,
+    "invalid_response_json_retries": 0,
+    "invalid_response_shape_retries": 0
+  },
+  "response_bodies_captured_safely": true,
+  "credential_scan_passed": true,
+  "protocol_sha256_before": "373f069d0a35b8b204b4ce6524c32b092faa0172245e7e9fcddfdcf45864385c",
+  "protocol_sha256_after": "373f069d0a35b8b204b4ce6524c32b092faa0172245e7e9fcddfdcf45864385c",
+  "protocol_unchanged": true,
+  "ready_for_full_execution": true,
+  "paths": {
+    "ledger": "work\\experiment_17_live_compatibility\\request_ledger.jsonl",
+    "diagnostic_archive": "work\\experiment_17_live_compatibility\\diagnostic_responses"
+  }
+}

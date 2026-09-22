@@ -1,0 +1,84 @@
+{
+  "rival_prediction_matrix": [
+    {
+      "hypothesis_id": "H1",
+      "meno_j_hypothesis": "Inter-subject heterogeneity in autonomic regulation causes non-exchangeable residuals across segments, violating conformal prediction's exchangeability assumption.",
+      "meno_j_prediction": "Subjects with autonomic parameter coefficient of variation >30% across the cohort will show mean absolute coverage deviation >5% from nominal 90% in leave-one-subject-out conformal prediction, with a positive correlation between subject-level autonomic distance from calibration pool mean and coverage deviation.",
+      "rival_explanation": "Coverage instability stems from systematic sensor placement differences across subjects, not autonomic physiology.",
+      "rival_prediction": "If sensor placement or body composition drives coverage deviation, then coverage will correlate with signal amplitude/quality metrics (e.g., PPG AC/DC ratio) rather than autonomic parameters (RMSSD, BRS) after controlling for subject ID.",
+      "distinguishing_test": "In a multivariate regression of per-subject coverage deviation on both autonomic parameters (RMSSD, LF/HF) and signal quality metrics (PPG SNR, AC/DC ratio), the signal quality metrics remain significant predictors (p < 0.01) while autonomic parameters become non-significant (p > 0.05).",
+      "what_result_supports_meno_j": "Autonomic parameters (RMSSD, LF/HF) significantly predict coverage deviation (p < 0.05) while signal quality metrics do not, and the correlation between autonomic distance and coverage deviation is positive and significant.",
+      "what_result_supports_rival": "Signal quality metrics (PPG SNR, AC/DC ratio) significantly predict coverage deviation (p < 0.01) while autonomic parameters become non-significant (p > 0.05) in the multivariate regression."
+    },
+    {
+      "hypothesis_id": "H2",
+      "meno_j_hypothesis": "Time-varying sensor impedance and motion artifacts induce segment-dependent noise distributions that break the identical distribution assumption of conformal prediction.",
+      "meno_j_prediction": "Segments in the top quartile of electrode impedance drift (>20% change) or accelerometer variance will exhibit conformal coverage ≤80% at nominal 90%, while bottom-quartile segments will maintain ≥88% coverage, with a monotonic negative correlation between artifact severity metrics and coverage.",
+      "rival_explanation": "Coverage drops during high-motion segments because physiological dynamics genuinely change (e.g., HRV suppression during exercise), not because sensor noise corrupts measurements.",
+      "rival_prediction": "If physiological state changes drive coverage failure, then segments with matched motion levels but different physiological states (e.g., stress vs. exercise at same accelerometer variance) will show different coverage; if sensor noise drives it, coverage will depend only on motion/impedance metrics regardless of physiological state.",
+      "distinguishing_test": "In a controlled protocol where subjects perform matched-motion tasks at different physiological arousal levels (e.g., mental stress vs. physical exercise at same accelerometer RMS), coverage deviation correlates with physiological state markers (e.g., cortisol, HRV) after adjusting for motion metrics (p < 0.01 for state, p > 0.05 for motion).",
+      "what_result_supports_meno_j": "Coverage deviation correlates strongly with motion/impedance metrics (p < 0.01) but not with physiological state markers after adjusting for motion (p > 0.05), and top-quartile artifact segments show coverage ≤80%.",
+      "what_result_supports_rival": "Coverage deviation correlates with physiological state markers (cortisol, HRV) after adjusting for motion metrics (p < 0.01) while motion metrics become non-significant (p > 0.05)."
+    },
+    {
+      "hypothesis_id": "H3",
+      "meno_j_hypothesis": "Transitions between discrete physiological states (e.g., sleep stages, arousal levels) create abrupt distributional shifts in residuals that conformal prediction cannot adapt to without state-aware calibration.",
+      "meno_j_prediction": "Conformal coverage at nominal 90% will drop ≥10% within 2 minutes after verified autonomic state transitions (e.g., N2→REM), with drop magnitude inversely proportional to (window size / state duration) ratio; coverage will recover to within 3% of nominal only after the calibration window contains >80% new-state samples.",
+      "rival_explanation": "Coverage drops at state transitions because movement artifacts corrupt the signal during transitions (e.g., body movements during arousals), not because autonomic dynamics change.",
+      "rival_prediction": "If movement artifacts drive coverage drops, then coverage will correlate with movement intensity during transition windows regardless of state type; if autonomic shifts drive it, coverage will correlate with autonomic markers (HRV complexity, RSA) after controlling for movement.",
+      "distinguishing_test": "In segments with verified state transitions (PSG-scored) but low movement (accelerometer variance < 10th percentile), coverage still drops ≥10% post-transition; conversely, high-movement periods without state transitions show no coverage drop.",
+      "what_result_supports_meno_j": "Coverage drops ≥10% post-transition in low-movement segments (accelerometer variance < 10th percentile) and correlates with autonomic markers (HRV complexity, RSA) after controlling for movement.",
+      "what_result_supports_rival": "Coverage drop correlates with movement intensity during transitions (p < 0.01) but not with autonomic markers after controlling for movement (p > 0.05), and high-movement periods without state transitions show similar coverage drops."
+    },
+    {
+      "hypothesis_id": "H4",
+      "meno_j_hypothesis": "Circadian and ultradian rhythms induce periodic non-stationarity in both signal characteristics and prediction difficulty, causing coverage to oscillate with time-of-day.",
+      "meno_j_prediction": "Conformal coverage at nominal 90% will oscillate with a 24-hour period (cosinor amplitude ≥2.5%, p<0.05), reaching minimum at circadian phases corresponding to peak residual variance (e.g., 04:00-06:00), and phase-stratified calibration will reduce oscillation amplitude by ≥50% compared to fixed calibration.",
+      "rival_explanation": "Coverage oscillates because daily activity patterns (sleep/wake, exercise) create non-stationarity, not endogenous circadian rhythms.",
+      "rival_prediction": "If behavioral/environmental cycles drive coverage oscillation, then coverage rhythm will persist in constant routine conditions (constant posture, dim light, hourly snacks) but with altered phase/amplitude; if endogenous circadian drives it, rhythm will free-run with ~24.2h period in constant routine.",
+      "distinguishing_test": "In a constant routine protocol (≥40h), coverage oscillation persists with a period significantly different from 24h (e.g., 24.2 ± 0.5h) and phase-locks to DLMO, not clock time; in normal conditions, coverage oscillation phase-locks to clock time/activity.",
+      "what_result_supports_meno_j": "In constant routine, coverage oscillation free-runs with a period of ~24.2h and phase-locks to DLMO (p < 0.05 for non-24h period), while in normal conditions it phase-locks to clock time.",
+      "what_result_supports_rival": "In constant routine, coverage oscillation disappears or phase-locks to clock time/activity (period not significantly different from 24h), indicating behavioral/environmental drivers."
+    },
+    {
+      "hypothesis_id": "H5",
+      "meno_j_hypothesis": "Inconsistent or noisy ground truth annotations across segments (e.g., sleep stage scoring variability) introduce label noise that corrupts conformal calibration and invalidates coverage guarantees.",
+      "meno_j_prediction": "Segments with inter-rater agreement (Cohen's kappa) <0.7 will show absolute coverage deviation ≥8% from nominal 90% when calibrated on single-rater labels, but coverage will be within 2% of nominal when calibrated on adjudicated labels; coverage deviation will correlate with rater-specific bias patterns after controlling for SQI.",
+      "rival_explanation": "Low inter-rater agreement marks segments where physiology is genuinely ambiguous (transitional states), and the model correctly reflects this uncertainty; conformal coverage appears off because the 'true' label is undefined.",
+      "rival_prediction": "If true physiological ambiguity drives coverage deviation, then segments with low rater agreement but high signal quality will show symmetric coverage errors (both over/under); if label noise drives it, coverage errors will correlate with rater-specific biases (e.g., systematic over-scoring of N3) after controlling for SQI.",
+      "distinguishing_test": "Using adjudicated labels as ground truth, segments with high initial disagreement (kappa < 0.6) but high SQI show coverage within 2% of nominal when calibrated on adjudicated labels; segments with low SQI show coverage deviation >8% even with adjudicated labels.",
+      "what_result_supports_meno_j": "Coverage deviation in low-kappa segments is ≥8% with single-rater labels but reduces to ≤2% with adjudicated labels, and deviation correlates with rater-specific bias patterns after controlling for SQI.",
+      "what_result_supports_rival": "Segments with low kappa but high SQI show symmetric coverage errors (both over/under) and coverage within 2% of nominal when using adjudicated labels, while low-SQI segments show >8% deviation even with adjudicated labels."
+    },
+    {
+      "hypothesis_id": "H6",
+      "meno_j_hypothesis": "Improper stratification by activity context (e.g., rest vs. exercise) leaves hidden covariate shift between calibration and test segments, causing systematic undercoverage during high-dynamic states.",
+      "meno_j_prediction": "Unstratified conformal prediction calibrated on mixed-activity data will show coverage ≤75% at nominal 90% during vigorous activity (METs>6) and ≥95% during rest; activity-stratified calibration (minimum 4 strata: rest, light, moderate, vigorous) will restore coverage to within 3% of nominal per stratum.",
+      "rival_explanation": "Undercoverage during exercise is caused by motion artifacts corrupting the PPG/ECG waveform, not by genuine cardiovascular dynamics changes.",
+      "rival_prediction": "If motion artifacts drive undercoverage, then coverage during exercise will correlate with motion artifact metrics (accelerometer high-frequency power) after controlling for activity intensity (METs); if cardiovascular dynamics drive it, coverage will correlate with hemodynamic markers (pulse transit time, BP variability) after controlling for motion.",
+      "distinguishing_test": "In a controlled exercise protocol with simultaneous reference BP and wearable PPG, segments matched on METs but differing in motion artifact severity (e.g., cycling vs. running at same METs) show coverage deviation tracking motion metrics (p < 0.01) not METs (p > 0.05).",
+      "what_result_supports_meno_j": "Coverage during vigorous activity is ≤75% with unstratified calibration, and activity-stratified calibration restores coverage to within 3% of nominal per stratum; coverage deviation correlates with hemodynamic markers (pulse transit time, BP variability) after controlling for motion.",
+      "what_result_supports_rival": "Coverage deviation during exercise correlates with motion artifact metrics (accelerometer high-frequency power) after controlling for METs (p < 0.01) while METs become non-significant (p > 0.05)."
+    },
+    {
+      "hypothesis_id": "H8",
+      "meno_j_hypothesis": "Variable sampling rates and missing data patterns across segments (e.g., due to Bluetooth dropout) distort residual distributions in ways that conformal prediction's i.i.d. assumption cannot accommodate.",
+      "meno_j_prediction": "Native MNAR missingness >20% will cause conformal coverage deviation ≥10% from nominal 90%, while artificially imposed MCAR missingness at the same rate will maintain coverage within 3% of nominal; coverage degradation will be specific to missingness mechanism (MNAR >> MAR > MCAR) and imputation method.",
+      "rival_explanation": "Missing data is a symptom of physiological events (e.g., arrhythmia, movement) that also change the signal distribution; the missingness mechanism is not the cause.",
+      "rival_prediction": "If physiological events drive both missingness and coverage failure, then segments with artificially induced MCAR missingness (simulated dropout) will maintain nominal coverage, while segments with physiologically correlated missingness will not; if missingness mechanism itself drives it, MCAR missingness will also degrade coverage.",
+      "distinguishing_test": "In a dataset with simultaneous wired reference and wireless wearable, artificially imposing MCAR missingness (random dropout) on the wireless stream at 30% rate yields coverage within 3% of nominal, while the native MNAR missingness at same rate yields coverage deviation >10%.",
+      "what_result_supports_meno_j": "Native MNAR missingness >20% causes coverage deviation ≥10%, while artificially imposed MCAR missingness at 30% maintains coverage within 3% of nominal; mechanism-specific differences are statistically significant (p < 0.01).",
+      "what_result_supports_rival": "Artificially imposed MCAR missingness at 30% causes coverage deviation >5%, or native MNAR missingness at 20% yields coverage deviation <5%, indicating missingness mechanism is not the primary driver."
+    },
+    {
+      "hypothesis_id": "H10",
+      "meno_j_hypothesis": "Model misspecification error correlates with physiological signal morphology (e.g., waveform shape), causing residual distributions to shift with morphology changes across segments.",
+      "meno_j_prediction": "Conformal coverage at nominal 90% will deviate by >8% when test-segment morphology distribution shift (Wasserstein distance) exceeds 0.5 relative to calibration; segments with morphology features outside the calibration convex hull will show undercoverage ≥15%; morphology-stratified conformal prediction will restore nominal coverage across all shift magnitudes.",
+      "rival_explanation": "Coverage fails because the test morphology distribution shifts outside the calibration support (covariate shift), not because model error depends on morphology per se.",
+      "rival_prediction": "If covariate shift drives coverage failure, then importance-weighted conformal prediction (weighting calibration by test morphology density) will restore nominal coverage without adding morphology as a covariate; if morphology-dependent misspecification drives it, importance weighting will fail but morphology-stratified conformal will succeed.",
+      "distinguishing_test": "In a dataset with induced morphology shifts (vascular interventions), importance-weighted conformal prediction using morphology density ratios achieves coverage within 3% of nominal across all shift magnitudes, while standard conformal shows >10% deviation; morphology-stratified conformal also works but is not necessary.",
+      "what_result_supports_meno_j": "Coverage deviation >8% for Wasserstein distance >0.5, undercoverage ≥15% for out-of-hull segments, and morphology-stratified conformal restores nominal coverage while importance-weighted conformal fails.",
+      "what_result_supports_rival": "Importance-weighted conformal prediction achieves coverage within 3% of nominal across all shift magnitudes, while morphology-stratified conformal is not necessary; standard conformal shows >10% deviation."
+    }
+  ]
+}

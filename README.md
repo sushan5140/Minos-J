@@ -134,6 +134,12 @@ The intended next stage for Q3 produces exactly 10 statistical-testability objec
 - failure condition
 - statistical-test plan
 
+### Experiments 16–17 — matched-compute falsification
+
+- **Experiment 16:** inconclusive. 0 of 9 units were analysable, and the failures traced to engineering causes, not science.
+- **Experiment 17:** interrupted by the OpenRouter free-tier quota with 0 of 9 units evaluated. Its records and last valid checkpoint are preserved in [`historical/2026-09-20-experiments-16-17`](historical/2026-09-20-experiments-16-17/RECOVERY_REPORT.md).
+- **Experiment 17-C:** a Claude-based replication of Experiment 17, in progress. See [`experiments/experiment_17c`](experiments/experiment_17c/README.md).
+
 ---
 
 ## Reproducibility work

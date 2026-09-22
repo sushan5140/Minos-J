@@ -1,0 +1,106 @@
+{
+  "statistical_testability_builds": [
+    {
+      "hypothesis_id": "H1",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Prior work shows ANS reactivity phenotypes explain 10-20% of variance in stress-evoked HRV/EDA amplitudes; sensor noise floors are well-characterized (e.g., Empatica E4 HRV noise ~2-3 ms RMSSD, EDA noise ~0.02 µS), yielding expected SNR differences of 3-6 dB between high/low reactivity groups, corresponding to Cohen's d ≈ 0.5-0.7 for per-subject ECE.",
+      "minimum_data_needed": [
+        "Per-subject baseline RMSSD (ms) from ≥5 min resting recording",
+        "Per-subject stressor-evoked HRV suppression (%) during standardized lab stressor (TSST or cold pressor)",
+        "Per-subject EDA phasic peak amplitude (µS) during same stressor",
+        "Sensor noise floor specifications for HRV (ms) and EDA (µS) for the exact wearable model used",
+        "Per-subject stress vs. non-stress classification AUC from held-out test data",
+        "Per-subject expected calibration error (ECE) across probability bins",
+        "ANS reactivity phenotype composite score (z-scored composite of baseline RMSSD, HRV suppression, EDA peak amplitude)"
+      ],
+      "testable_prediction": "Subjects with high ANS reactivity phenotype scores (top tertile) will show significantly lower per-subject ECE (mean difference ≥0.05) and higher stress-detection AUC (mean difference ≥0.07) compared to low reactivity phenotype subjects (bottom tertile), with a positive correlation between phenotype score and SNR (r ≥ 0.4).",
+      "failure_condition": "If the correlation between ANS_reactivity_phenotype_score and per-subject ECE is not significantly negative (p > 0.05, one-tailed) after controlling for VO2max, age, sex, and medication status, or if the high vs. low reactivity tertile difference in ECE is <0.02 with 95% CI overlapping zero.",
+      "statistical_test_plan": "1. Compute ANS_reactivity_phenotype_score as first principal component of z-scored baseline_RMSSD_ms, stressor_evoked_HRV_suppression_pct, and EDA_phasic_peak_amplitude_uS. 2. Compute within-subject SNR for HRV and EDA: 20*log10(signal_amplitude/noise_floor). 3. Fit linear mixed model: ECE ~ ANS_reactivity_phenotype_score + VO2max_ml_kg_min + age_years + sex_binary + medication_status_binary + (1|subject). 4. Test one-tailed hypothesis that phenotype score coefficient < 0 (α=0.05). 5. Tertile analysis: ANOVA with Tukey HSD for ECE and AUC across tertiles. 6. Mediation analysis: phenotype_score -> SNR -> ECE (bootstrapped 95% CI, 5000 samples). 7. Power analysis: n=60 yields 80% power to detect r=0.35 at α=0.05.",
+      "statistical_testability_notes": "VO2max must be directly measured (not estimated). Exclude participants on beta-blockers, anticholinergics, or with autonomic neuropathy. Standardize stressor intensity and ambient conditions. Use Empatica E4 or equivalent with published noise floors. ECE computed with 10 probability bins. SNR computed per stress epoch relative to preceding baseline."
+    },
+    {
+      "hypothesis_id": "H2",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Skin hydration changes EDA contact impedance by 2-5x (50-200 kΩ range), directly altering signal amplitude; epidermal thickness varies 0.5-1.5 mm at wrist, attenuating PPG AC/DC ratio by 30-60%. Prior validation studies show skin properties explain 15-25% of signal quality variance, corresponding to medium effect sizes for feature extraction error and downstream AUC.",
+      "minimum_data_needed": [
+        "Stratum corneum hydration (AU) via corneometer at sensor site",
+        "Epidermal thickness (mm) via 20 MHz ultrasound at sensor site",
+        "Subcutaneous fat thickness (mm) via same ultrasound",
+        "Hair density (follicles/cm²) via trichoscopy at sensor site",
+        "PPG AC/DC ratio from wearable during controlled rest",
+        "EDA contact impedance (kΩ) at 10 Hz from wearable built-in check",
+        "Signal quality indices for PPG and EDA (per 1-min window, established algorithms)",
+        "Reference-grade ECG and lab EDA simultaneously recorded for ground-truth feature extraction",
+        "Per-subject feature extraction RMSE (wearable vs. reference) for HRV (RMSSD) and EDA peaks",
+        "Per-subject stress detection AUC"
+      ],
+      "testable_prediction": "Higher stratum corneum hydration will correlate with lower EDA contact impedance (r ≤ -0.4) and higher EDA signal quality index (r ≥ 0.35); greater epidermal thickness will correlate with lower PPG AC/DC ratio (r ≤ -0.35) and lower PPG signal quality index (r ≤ -0.3). Mediation analysis will show skin properties → signal quality → feature extraction RMSE → AUC with significant indirect effects (95% CI excluding zero).",
+      "failure_condition": "If none of the four skin properties show significant bivariate correlations (p > 0.05, Bonferroni-corrected α=0.0125) with their respective signal quality indices, or if the mediation path skin_property → signal_quality → feature_RMSE → AUC has a non-significant indirect effect (95% CI includes zero) for all properties.",
+      "statistical_test_plan": "1. Measure skin properties at standardized wrist location (ulnar side, 2 cm proximal to styloid). 2. Record 10-min resting baseline with simultaneous wearable and reference devices. 3. Compute PPG SQI (Karlen et al. algorithm) and EDA SQI (Greco et al. algorithm) per 1-min window; average across windows. 4. Compute feature extraction RMSE: wearable vs. reference RMSSD and EDA peak count/amplitude. 5. Bivariate Spearman correlations between each skin property and corresponding SQI (4 tests, Bonferroni α=0.0125). 6. Linear mixed models: SQI ~ skin_property + band_tightness_N + wrist_circumference_mm + activity_counts + skin_temp_C + (1|subject). 7. Serial mediation (PROCESS Model 6): skin_property → SQI → feature_RMSE → AUC, with covariates. 8. Stratify AUC by skin property tertiles; test trend with Jonckheere-Terpstra. 9. Power: n=80 yields 80% power for r=0.3 at α=0.0125.",
+      "statistical_testability_notes": "Control band tightness with instrumented strap (force sensor, target 0.5-1.0 N). Standardize skin prep: alcohol wipe, 12h no lotions. Exclude dermatological conditions, tattoos, scars. Ambient temp 22-24°C, humidity 40-60%. Use same wearable model for all. Reference ECG: 3-lead, 500 Hz; reference EDA: constant voltage 0.5 V, 50 Hz. Feature extraction uses identical algorithms on wearable and reference streams."
+    },
+    {
+      "hypothesis_id": "H3",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Circadian phase shifts of 2-4 hours (common in evening chronotypes at morning testing) alter baseline RMSSD by 15-25% and stress reactivity by 20-30% based on forced desynchrony studies. This compresses dynamic range enough to reduce fixed-threshold AUC by 0.05-0.10 and increase ECE by 0.03-0.06, corresponding to medium effect sizes (Cohen's f² ≈ 0.15).",
+      "minimum_data_needed": [
+        "Dim light melatonin onset (DLMO) time (hh:mm) from hourly saliva sampling under <50 lux",
+        "Morningness-Eveningness Questionnaire (MEQ) chronotype score",
+        "Social jetlag (hours) from actigraphy (midpoint sleep free vs. work days)",
+        "Clock time of each stress measurement (hh:mm)",
+        "Phase angle (minutes) = DLMO - measurement time",
+        "Resting RMSSD (ms) and skin conductance level (µS) at each measurement timepoint",
+        "Cortisol awakening response (nmol/L) from saliva",
+        "Stress reactivity: HRV suppression (%) and EDA peak amplitude (µS) at each timepoint",
+        "Per-subject detection sensitivity, specificity, AUC, and ECE at each circadian phase",
+        "Actigraphy-verified sleep-wake schedules (±1h) for ≥7 days prior"
+      ],
+      "testable_prediction": "Phase angle (minutes) will significantly predict baseline RMSSD (negative slope, p < 0.01) and stress reactivity HRV suppression (negative slope, p < 0.05) in linear mixed models. Per-subject ECE will increase by ≥0.04 per hour of phase misalignment (phase angle > 120 min vs. < 60 min). Circadian-phase-aligned models (using phase angle as covariate) will improve AUC by ≥0.05 and reduce ECE by ≥0.03 compared to clock-time-aligned models.",
+      "failure_condition": "If phase angle is not a significant predictor of baseline RMSSD or stress reactivity after controlling for prior wake duration, caffeine, and activity (p > 0.05), or if circadian-phase-aligned models do not significantly improve AUC (DeLong test p > 0.05) or reduce ECE (paired t-test p > 0.05) over clock-time models.",
+      "statistical_test_plan": "1. Conduct 3-day controlled light protocol (<50 lux evening, >500 lux morning). 2. Measure DLMO via hourly saliva (ELISA) under dim light. 3. Schedule stress measurements at fixed clock times (08:00, 14:00, 20:00) with standardized stressor. 4. Compute phase angle per measurement. 5. Linear mixed models: baseline_RMSSD ~ phase_angle + prior_wake_duration + caffeine_dose + activity_METs + light_exposure + (1|subject). 6. Same for stress reactivity outcomes. 7. Compute per-subject detection metrics at each phase. 8. Compare clock-time model (time-of-day dummy) vs. circadian-phase model (phase angle spline) using likelihood ratio test and DeLong test for AUC. 9. Power: n=50 with 3 repeated measures yields 80% power for slope detection (f²=0.15, α=0.05).",
+      "statistical_testability_notes": "Exclude shift workers, transmeridian travel <30 days, melatonin use. Control prior wake duration via actigraphy. Caffeine logs for 24h prior. Standardized meals. Use same stressor protocol at each timepoint. Circadian-phase model: include phase angle as restricted cubic spline (3 knots). ECE computed with 10 bins. AUC compared via DeLong test for correlated ROC curves."
+    },
+    {
+      "hypothesis_id": "H4",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Habituation studies show EDA peak frequency declines 20-40% over 2-4 weeks of repeated stressor exposure; HRV suppression magnitude shows similar drift. This non-stationarity causes prediction interval coverage to drop from nominal 95% to 80-85% over 28 days in stationary models, while time-varying models maintain coverage. Effect size for slope heterogeneity (between-subject SD of slopes) is medium (Cohen's d ≈ 0.6 for fast vs. slow habituators).",
+      "minimum_data_needed": [
+        "Daily stressor exposure frequency (count/day) from EMA/context logs for ≥28 days",
+        "Daily EDA peak frequency (peaks/min) during stressor windows",
+        "Daily HRV suppression magnitude (%) during stressor windows",
+        "Daily recovery time constant tau (min) post-stressor",
+        "Per-subject habituation/sensitization slope (per day) for each feature via linear mixed model",
+        "Deployment day index (1 to N days)",
+        "Time-varying AUC in 7-day sliding windows",
+        "Prediction interval coverage probability (PICP) per week for stationary vs. time-varying models",
+        "Wearable wear time ≥80% per day (actigraphy-verified)",
+        "EMA stress labels 5x/day synchronized with wearable timestamps"
+      ],
+      "testable_prediction": "Within-subject slopes of EDA peak frequency and HRV suppression over deployment days will show significant between-subject variance (σ²_slope > 0, p < 0.01). Subjects with negative slopes (habituators) will show declining PICP for stationary models (week 1: 95% → week 4: ≤85%), while positive slopes (sensitizers) show increasing false negatives. Time-varying models (Kalman filter/RNN) will maintain PICP ≥90% across weeks and improve AUC by ≥0.07 in weeks 3-4 vs. stationary models.",
+      "failure_condition": "If between-subject variance in habituation slopes is not significantly >0 (likelihood ratio test p > 0.05), or if stationary model PICP does not decline significantly over weeks (Cochran's Q test p > 0.05), or if time-varying models do not significantly improve week 4 AUC (paired t-test p > 0.05) or PICP (McNemar test p > 0.05).",
+      "statistical_test_plan": "1. Naturalistic deployment ≥28 days, wrist PPG+EDA ≥32 Hz, EMA 5x/day. 2. Identify recurring stressors via EMA/context (commuting, deadlines). 3. Extract stressor-aligned windows (±5 min). 4. Compute daily EDA peak frequency, HRV suppression, recovery tau. 5. Fit linear mixed model: feature ~ day_index + (day_index|subject); extract random slopes. 6. Test σ²_slope > 0 via LRT vs. random intercept only. 7. Compute weekly PICP for stationary model (trained on week 1) and time-varying model (Kalman filter with daily update). 8. Compare week 4 AUC and PICP between models (paired tests). 9. Mannequin control: 5 devices on mannequins same environment; test slope variance difference (Levene's test). 10. Power: n=40 yields 80% power to detect σ²_slope > 0 (α=0.05).",
+      "statistical_testability_notes": "Exclude major life events, medication changes, illness. Minimum 3 stressor exposures/week. Use conformal prediction for PICP (95% intervals). Time-varying model: Kalman filter with state = feature mean, observation = daily feature. RNN alternative: LSTM with 7-day lookback. Mannequin control essential to rule out sensor drift. Seasonal effects: include day_of_year as spline or stagger enrollment."
+    },
+    {
+      "hypothesis_id": "H5",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Alexithymia (TAS-20) correlates with EMA non-compliance (r ≈ -0.3 to -0.4) and recall bias; conscientiousness (BFI-2) correlates with response rates (r ≈ 0.3). Label noise estimated via physiological consistency explains 15-25% of variance in classifier residual variance. Subgroup AUC differences between high/low alexithymia tertiles are typically 0.08-0.12, corresponding to medium effect sizes.",
+      "minimum_data_needed": [
+        "EMA response latency (min) per prompt per subject",
+        "EMA response rate (%) per subject over ≥14 days",
+        "Toronto Alexithymia Scale (TAS-20) total score",
+        "BFI-2 Conscientiousness domain score",
+        "Negative affect reporting bias score (validated scale)",
+        "Label-physiology alignment: cross-correlation between EMA stress labels and wearable features (HRV, EDA) in ±30 min windows",
+        "Per-subject label noise estimate (residual variance from initial model or test-retest consistency)",
+        "Stress detection AUC and ECE per subject before and after label-noise correction",
+        "Structured interview stress labels for validation subset (n≥20)",
+        "EMA prompt timestamps and wearable timestamps synchronized"
+      ],
+      "testable_prediction": "TAS-20 score will negatively correlate with EMA response rate (r ≤ -0.3) and positively with label noise estimate (r ≥ 0.35). BFI-2 Conscientiousness will positively correlate with response rate (r ≥ 0.3) and negatively with label noise (r ≤ -0.3). Label noise estimate will mediate the relationship between traits and detection performance: high alexithymia → higher label noise → lower AUC (indirect effect 95% CI excludes zero). Label-noise correction (EM algorithm) will improve AUC by ≥0.06 and reduce ECE by ≥0.04 for high alexithymia subgroup.",
+      "failure_condition": "If neither TAS-20 nor BFI-2 Conscientiousness significantly predicts label noise estimate (p > 0.05) after controlling for stressor ambiguity and prompt latency, or if label-noise correction does not significantly improve AUC/ECE for high alexithymia subgroup (paired t-test p > 0.05), or if variance partitioning shows traits explain <5% of label noise variance beyond ambiguity/latency.",
+      "statistical_test_plan": "1. EMA 5x/day ≥14 days, random prompts in 2h windows. 2. Wearable PPG+EDA synchronized. 3. Compute per-subject label noise: (a) train initial XGBoost on all data, (b) compute per-subject residual variance after physiological features; high residual = high label noise. Alternative: use structured interview subset (n≥20) to estimate noise transition matrix. 4. Hierarchical regression: label_noise ~ stressor_ambiguity + prompt_latency (step 1) + TAS20 + BFI2_conscientiousness (step 2); test ΔR². 5. Mediation: TAS20 → label_noise → AUC (bootstrapped CI). 6. Subgroup analysis: tertiles of TAS20; compare AUC/ECE before/after EM label-noise correction. 7. Power: n=100 yields 80% power for r=0.25 at α=0.05.",
+      "statistical_testability_notes": "No monetary incentives tied to compliance. Stressor ambiguity rated by 2 independent coders from EMA free-text (κ>0.8). Prompt latency logged automatically. Language proficiency assessed. Structured interview at study end (PSS-10 + event recall). EM algorithm: initialize with noisy labels, iterate E-step (estimate true labels) and M-step (retrain classifier). Convergence when label changes <1%."
+    }
+  ]
+}

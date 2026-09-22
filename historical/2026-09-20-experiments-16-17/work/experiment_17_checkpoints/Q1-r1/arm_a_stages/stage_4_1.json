@@ -1,0 +1,230 @@
+{
+  "mechanism_builds": [
+    {
+      "hypothesis_id": "H1",
+      "mechanism_variables": [
+        "baseline HRV (RMSSD)",
+        "residual autocorrelation lag-1",
+        "prediction interval width",
+        "empirical coverage"
+      ],
+      "causal_path": "Higher baseline HRV -> increased temporal autocorrelation of conformity scores -> violation of exchangeability assumption -> Mondrian quantile underestimates needed width -> narrower intervals -> lower empirical coverage",
+      "expected_direction": "Increase in baseline HRV leads to decrease in empirical coverage (negative direction)",
+      "domain_specific_boundary_conditions": [
+        "resting baseline period >=5 min before stress",
+        "ECG sampling rate >=130 Hz",
+        "stress labels defined as per WESAD protocol"
+      ],
+      "measurable_outcomes": [
+        "empirical coverage rate",
+        "average prediction interval width",
+        "Ljung-Box test p-value for residual autocorrelation"
+      ],
+      "mechanism_builder_notes": "Require baseline HRV computed from first 5 min of each subject's ECG; compute conformity scores on calibration set; test exchangeability via runs test."
+    },
+    {
+      "hypothesis_id": "H2",
+      "mechanism_variables": [
+        "accelerometer high-frequency RMS",
+        "local residual variance",
+        "prediction interval width",
+        "empirical coverage"
+      ],
+      "causal_path": "Greater motion artifact -> increased local variance of sensor signals -> homoscedasticity assumption violated -> quantile underestimates needed width for high-variance periods -> intervals too narrow -> lower empirical coverage",
+      "expected_direction": "Increase in accelerometer high-frequency RMS leads to decrease in empirical coverage (negative direction)",
+      "domain_specific_boundary_conditions": [
+        "periods subject is ambulatory or performing tasks",
+        "sampling rate >=32 Hz for accelerometer",
+        "sensor firmly attached"
+      ],
+      "measurable_outcomes": [
+        "empirical coverage rate",
+        "average prediction interval width",
+        "Breusch-Pagan test p-value for heteroscedasticity"
+      ],
+      "mechanism_builder_notes": "Label motion artifact using accelerometer magnitude > threshold; compute local variance in sliding windows; compare coverage across low vs high artifact windows."
+    },
+    {
+      "hypothesis_id": "H3",
+      "mechanism_variables": [
+        "time since recording start (min)",
+        "stress label probability",
+        "residual mean shift",
+        "empirical coverage"
+      ],
+      "causal_path": "As recording progresses, habituation reduces physiological response -> true stress label distribution shifts -> calibration based on early data misrepresents later -> conformity scores biased -> intervals too narrow -> lower empirical coverage for later segments",
+      "expected_direction": "Later time -> decrease in empirical coverage (negative direction)",
+      "domain_specific_boundary_conditions": [
+        "stress episodes occurring after >10 min from start",
+        "baseline physiological state stable before each episode",
+        "labels derived from self-report and video annotation"
+      ],
+      "measurable_outcomes": [
+        "empirical coverage per time bin",
+        "average prediction interval width per bin",
+        "Kolmogorov-Smirnov test p-value between early and late residuals"
+      ],
+      "mechanism_builder_notes": "Split data into early (first half) and late (second half) segments; compute coverage separately; test for distributional shift."
+    },
+    {
+      "hypothesis_id": "H4",
+      "mechanism_variables": [
+        "timestamp offset between ECG and respiration (ms)",
+        "cross-correlation lag at max mutual information",
+        "residual mean",
+        "empirical coverage"
+      ],
+      "causal_path": "Misaligned timestamps -> spurious feature correlations -> model overconfident -> residuals shrunk -> prediction intervals too narrow -> lower empirical coverage",
+      "expected_direction": "Larger absolute offset -> decrease in empirical coverage (negative direction)",
+      "domain_specific_boundary_conditions": [
+        "ECG and respiration sampled at same nominal rate but unknown relative delay",
+        "segments where both signals present",
+        "sampling rate >=130 Hz for ECG, >=70 Hz for respiration"
+      ],
+      "measurable_outcomes": [
+        "empirical coverage rate",
+        "average prediction interval width",
+        "peak cross-correlation coefficient"
+      ],
+      "mechanism_builder_notes": "Estimate offset by maximizing mutual information between ECG-derived features and respiration features; evaluate coverage as function of estimated offset."
+    },
+    {
+      "hypothesis_id": "H5",
+      "mechanism_variables": [
+        "label noise entropy (inter-annotator disagreement)",
+        "conformity score distribution",
+        "prediction interval width",
+        "empirical coverage"
+      ],
+      "causal_path": "Noisy labels -> observed conformity scores inflated (model penalized for mismatched labels) -> quantile underestimates true uncertainty -> intervals too narrow -> lower empirical coverage",
+      "expected_direction": "Higher label noise entropy -> decrease in empirical coverage (negative direction)",
+      "domain_specific_boundary_conditions": [
+        "periods where annotators disagree on stress label",
+        "labels derived from self-report, video, and expert review",
+        "minimum of two independent annotators"
+      ],
+      "measurable_outcomes": [
+        "empirical coverage rate",
+        "average prediction interval width",
+        "label entropy",
+        "Cohen's kappa between annotators"
+      ],
+      "mechanism_builder_notes": "If multiple labels unavailable, simulate label noise by flipping a proportion of labels according to estimated error rate."
+    },
+    {
+      "hypothesis_id": "H6",
+      "mechanism_variables": [
+        "subject baseline arousal (mean skin conductance level)",
+        "stress intensity stratum (low/medium/high)",
+        "residual mean per stratum",
+        "empirical coverage"
+      ],
+      "causal_path": "Global stratification fails to adjust for individual offset -> residuals for low-baseline subjects systematically shifted -> conformity scores biased -> intervals too narrow -> lower empirical coverage for those subjects",
+      "expected_direction": "Lower baseline arousal -> decrease in empirical coverage (negative direction) when using high-intensity stratum",
+      "domain_specific_boundary_conditions": [
+        "baseline measured during 5-min resting period before each stress episode",
+        "stress intensity defined by self-report Likert scale",
+        "sampling rates sufficient for GSR"
+      ],
+      "measurable_outcomes": [
+        "empirical coverage per baseline group",
+        "average prediction interval width per group",
+        "mean residual bias per stratum"
+      ],
+      "mechanism_builder_notes": "Compute each subject's baseline from pre-stimulus period; stratify by stress intensity; evaluate coverage within each baseline stratum."
+    },
+    {
+      "hypothesis_id": "H7",
+      "mechanism_variables": [
+        "number of calibration samples per subject",
+        "standard error of empirical quantile",
+        "prediction interval width",
+        "empirical coverage"
+      ],
+      "causal_path": "Fewer calibration samples -> higher sampling error of empirical quantile -> estimated quantile too low (optimistic) -> intervals narrower -> lower empirical coverage",
+      "expected_direction": "Decrease in calibration size -> decrease in empirical coverage (negative direction)",
+      "domain_specific_boundary_conditions": [
+        "calibration set drawn from labeled stress episodes only",
+        "minimum of 10 samples required for stable quantile",
+        "same scoring function applied across subjects"
+      ],
+      "measurable_outcomes": [
+        "empirical coverage rate",
+        "average prediction interval width",
+        "quantile confidence interval width"
+      ],
+      "mechanism_builder_notes": "Use bootstrap to estimate quantile variance; compare coverage across subjects with calibration size above vs below threshold."
+    },
+    {
+      "hypothesis_id": "H8",
+      "mechanism_variables": [
+        "galvanic skin response (GSR)",
+        "skin temperature",
+        "interaction term (GSR * temperature)",
+        "residual from linear scoring function",
+        "empirical coverage"
+      ],
+      "causal_path": "Missing non-linear interaction -> model mis-specifies relationship -> residuals larger for subjects with strong coupling but not captured -> conformity scores miscalibrated -> intervals too narrow -> lower empirical coverage",
+      "expected_direction": "Stronger GSR-temperature interaction (higher product) -> decrease in empirical coverage (negative direction)",
+      "domain_specific_boundary_conditions": [
+        "periods where both GSR and temperature vary (e.g., during stress)",
+        "sampling rate >=4 Hz for GSR, >=4 Hz for temperature",
+        "sensor placement on same hand"
+      ],
+      "measurable_outcomes": [
+        "empirical coverage rate",
+        "average prediction interval width",
+        "significance of interaction term in augmented model",
+        "Ramsey RESET test p-value"
+      ],
+      "mechanism_builder_notes": "Fit linear scoring function; add interaction term; test whether inclusion improves calibration (e.g., reduces coverage error)."
+    },
+    {
+      "hypothesis_id": "H9",
+      "mechanism_variables": [
+        "caffeine dosage (mg)",
+        "medication presence (binary)",
+        "physiological response slope (e.g., HRV change per stress unit)",
+        "residual distribution",
+        "empirical coverage"
+      ],
+      "causal_path": "Substance intake -> altered baseline and responsiveness -> different error characteristics -> exchangeability violated across cohort -> intervals miscalibrated -> lower empirical coverage for affected subjects",
+      "expected_direction": "Presence of caffeine/medication -> decrease in empirical coverage (negative direction)",
+      "domain_specific_boundary_conditions": [
+        "self-report of intake within 2h before recording",
+        "control for time of day and baseline state",
+        "same experimental protocol across subjects"
+      ],
+      "measurable_outcomes": [
+        "empirical coverage per substance group",
+        "average prediction interval width per group",
+        "Kolmogorov-Smirnov test p-value between groups"
+      ],
+      "mechanism_builder_notes": "Collect intake logs; if unavailable, use metabolite assays; compare coverage of users vs non-users."
+    },
+    {
+      "hypothesis_id": "H10",
+      "mechanism_variables": [
+        "window length (s)",
+        "stress bout duration (s)",
+        "feature bias (difference between true and windowed feature)",
+        "residual mean",
+        "empirical coverage"
+      ],
+      "causal_path": "Short stress bouts -> window includes pre/post non-stress data -> feature values diluted -> model predicts less extreme -> conformity scores inflated -> intervals too narrow -> lower empirical coverage for short bouts",
+      "expected_direction": "Shorter bout length relative to window -> decrease in empirical coverage (negative direction)",
+      "domain_specific_boundary_conditions": [
+        "stress bouts defined by annotation epochs",
+        "fixed window length used for feature extraction (e.g., 10s)",
+        "sampling rate sufficient to capture dynamics within window"
+      ],
+      "measurable_outcomes": [
+        "empirical coverage for bouts < window length",
+        "empirical coverage for bouts >= window length",
+        "average prediction interval width per bout duration bin",
+        "feature bias magnitude"
+      ],
+      "mechanism_builder_notes": "Vary window length in analysis; compute coverage as function of bout duration/window ratio; test for significant interaction."
+    }
+  ]
+}

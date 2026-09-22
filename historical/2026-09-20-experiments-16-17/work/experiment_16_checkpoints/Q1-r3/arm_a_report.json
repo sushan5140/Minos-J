@@ -1,0 +1,1059 @@
+{
+  "experiment_name": "Meno-J Experiment 7: v4 Architecture Upgrade and Ablation",
+  "version": "v4_mechanism_confounder_testability",
+  "research_question": "Why does Mondrian conformal prediction show undercoverage for some physiological stress subjects in WESAD?",
+  "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "stage_4_hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Inter-subject variability in autonomic nervous system reactivity causes systematic miscalibration of prediction intervals for high-reactivity individuals.",
+      "proposed_mechanism": "Subjects with exaggerated sympathetic responses (e.g., larger EDA phasic peaks, greater HR acceleration) produce feature vectors that fall in low-density regions of the calibration set, leading to inflated nonconformity scores and undercoverage when Mondrian binning groups them with typical responders.",
+      "core_assumption": "The calibration set underrepresents extreme physiological reactivity phenotypes, and Mondrian taxonomy bins do not adequately separate high-reactivity from typical subjects.",
+      "knowledge_gap_addressed": "Whether conformal prediction's exchangeability assumption holds across the full spectrum of autonomic reactivity in WESAD, and how taxonomy granularity interacts with physiological outliers.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Wrist-worn sensor (Empatica E4) motion artifacts during stress tasks disproportionately affect certain subjects, corrupting features used for nonconformity scoring.",
+      "proposed_mechanism": "Subjects who gesture more during the TSST or have looser watch fit generate correlated noise in BVP and ACC channels that mimics stress signatures, causing the model to assign high confidence to incorrect predictions; Mondrian bins based on predicted class then pool clean and artifact-contaminated samples.",
+      "core_assumption": "Motion artifact severity correlates with stress expression behavior (e.g., fidgeting, speaking gestures) and is not fully captured by existing signal quality indices in WESAD preprocessing.",
+      "knowledge_gap_addressed": "The extent to which subject-specific motion patterns during psychosocial stress violate the i.i.d. assumption within Mondrian taxonomy bins, and whether artifact-aware taxonomies could restore coverage.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Temporal non-stationarity in physiological stress trajectories violates the exchangeability assumption within Mondrian calibration folds for slow-responding subjects.",
+      "proposed_mechanism": "Subjects with delayed cortisol/HRV recovery exhibit feature distributions that drift across the calibration window; when Mondrian bins pool early and late calibration samples, the resulting prediction intervals are too narrow for the late-phase distribution.",
+      "core_assumption": "Stress recovery dynamics vary systematically across subjects (fast vs. slow recoverers) and the calibration set's temporal ordering is not accounted for in the Mondrian taxonomy.",
+      "knowledge_gap_addressed": "Whether conformal prediction's finite-sample coverage guarantees degrade under temporal distribution shift within taxonomy bins, and how to design time-aware taxonomies for longitudinal physiological data.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Inconsistent self-report labeling (VAS scores) for subjective stress creates noisy ground truth that disproportionately impacts coverage for subjects with high interoceptive variability.",
+      "proposed_mechanism": "Subjects who poorly discriminate physiological arousal from emotional valence produce VAS ratings that mismatch their physiological state; Mondrian bins conditioned on predicted class then mix truly stressed and mislabeled calm samples, widening the true nonconformity distribution beyond the calibrated quantile.",
+      "core_assumption": "Label noise is heteroscedastic across subjects and correlates with alexithymia or interoceptive accuracy traits not captured in WESAD metadata.",
+      "knowledge_gap_addressed": "The interaction between label noise heterogeneity and Mondrian conditional coverage guarantees, and whether proxy physiological labels (e.g., EDA peak count) could provide more stable taxonomy conditioning.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Mondrian taxonomy based on predicted class alone ignores continuous stress intensity, causing undercoverage for subjects at extreme intensity levels within each class.",
+      "proposed_mechanism": "The binary stress/non-stress taxonomy pools mild and severe stress responses; subjects with extreme physiological responses (top decile of EDA/HR) have systematically higher nonconformity scores than the bin's quantile threshold, but their rarity prevents the calibration quantile from adapting.",
+      "core_assumption": "Stress intensity is a continuous latent variable not captured by the binary WESAD protocol labels, and its extremes coincide with coverage failures.",
+      "knowledge_gap_addressed": "Whether Mondrian conformal prediction requires intensity-aware taxonomies (e.g., predicted probability bins) to maintain coverage across the full stress response spectrum.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Subject-specific sensor-skin interface impedance (especially for EDA) creates systematic feature distribution shifts that violate the identical distribution assumption within taxonomy bins.",
+      "proposed_mechanism": "Dry skin, calluses, or excessive sweating alter EDA tonic level and phasic driver amplitude independently of sympathetic activity; these subjects' features occupy different manifold regions, but Mondrian bins group them by predicted class rather than signal quality, leading to miscalibrated intervals.",
+      "core_assumption": "EDA signal quality varies systematically across subjects due to anatomical/dermatological factors, and this variation is not captured by WESAD's signal quality flags.",
+      "knowledge_gap_addressed": "How sensor-skin interface variability interacts with conformal prediction's exchangeability assumption, and whether impedance-aware taxonomies or feature normalization could mitigate coverage gaps.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Circadian phase at time of TSST administration modulates baseline autonomic tone, creating a hidden covariate shift that Mondrian taxonomy does not condition on.",
+      "proposed_mechanism": "Subjects tested in morning vs. afternoon have different baseline cortisol and HRV; the model trained on pooled data learns a decision boundary that miscalibrates for one circadian group, and Mondrian bins by predicted class fail to separate these groups because both classes contain mixed circadian phases.",
+      "core_assumption": "WESAD data collection times vary across subjects and circadian effects on physiological features are large enough to induce covariate shift within taxonomy bins.",
+      "knowledge_gap_addressed": "Whether time-of-day should be an explicit conditioning variable in Mondrian taxonomies for physiological stress detection, and how to estimate its effect size on coverage.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "The nonconformity score function (e.g., 1 - predicted probability) is poorly calibrated for subjects with atypical feature covariance structure, causing systematic undercoverage.",
+      "proposed_mechanism": "Subjects with comorbid conditions (undetected in WESAD screening) or unique physiological phenotypes (e.g., athletes with high HRV) exhibit feature correlations that differ from the training population; the model's predicted probabilities are overconfident for these out-of-distribution samples, and Mondrian binning by class does not correct this because the miscalibration is conditional on features, not class.",
+      "core_assumption": "Feature covariance heterogeneity across subjects violates the model's inductive bias, and the resulting probability miscalibration is not fully captured by class-conditional nonconformity scores.",
+      "knowledge_gap_addressed": "Whether conformal prediction with class-conditional taxonomies can correct for feature-conditional miscalibration, or if feature-aware taxonomies (e.g., k-NN based) are needed for physiological data.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Finite calibration set size combined with rare subject phenotypes leads to high variance in empirical quantile estimates for those subjects' effective taxonomy bins.",
+      "proposed_mechanism": "Subjects belonging to rare physiological phenotypes (e.g., non-responders, paradoxical responders) have few calibration samples in their Mondrian bin; the empirical (1-α) quantile is then upwardly biased (too small) due to order statistic variability, producing intervals that undercover in expectation for that phenotype.",
+      "core_assumption": "The WESAD calibration set contains insufficient samples from certain physiological response phenotypes to reliably estimate conditional quantiles, and Mondrian's fixed taxonomy cannot adapt bin granularity to data density.",
+      "knowledge_gap_addressed": "The finite-sample coverage properties of Mondrian conformal prediction under phenotype imbalance, and whether adaptive taxonomy granularity or Bayesian quantile estimation could improve worst-case coverage.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Anticipatory anxiety during the pre-TSST baseline period contaminates 'non-stress' calibration samples for high-trait-anxiety subjects, shrinking the effective nonconformity gap between classes.",
+      "proposed_mechanism": "Subjects with high trait anxiety show elevated EDA/HR during the supposed baseline; when these samples are used to calibrate the 'non-stress' class bin, the nonconformity score distribution for true non-stress shifts upward, causing the quantile threshold to be too low for genuinely calm periods and too high for stress periods, resulting in undercoverage for both classes for these subjects.",
+      "core_assumption": "Baseline periods are not physiologically neutral for all subjects, and trait anxiety (unmeasured in WESAD) systematically biases baseline features in a way that Mondrian's class-conditional taxonomy cannot disentangle.",
+      "knowledge_gap_addressed": "Whether baseline contamination violates the label-conditional exchangeability assumption in Mondrian conformal prediction, and how to design taxonomies robust to imperfect 'negative' class samples in physiological stress detection.",
+      "status": "SPECULATIVE"
+    }
+  ],
+  "stage_4_1_mechanism_builder": [
+    {
+      "hypothesis_id": "H1",
+      "mechanism_variables": [
+        "EDA phasic peak amplitude (µS)",
+        "HR acceleration (bpm/s) during TSST onset",
+        "Sympathetic reactivity index (composite z-score of EDA/HR features)",
+        "Calibration set feature density (k-NN distance in feature space)",
+        "Nonconformity score (1 - predicted probability of true class)"
+      ],
+      "causal_path": "High sympathetic reactivity index → feature vectors land in low-density regions of calibration feature space (k-NN distance > 90th percentile) → nonconformity scores inflated relative to typical responders in same Mondrian bin → empirical (1-α) quantile underestimates true nonconformity for high-reactivity subjects → prediction intervals undercover",
+      "expected_direction": "Positive correlation between sympathetic reactivity index and undercoverage magnitude (coverage rate decreases as reactivity increases)",
+      "domain_specific_boundary_conditions": [
+        "Calibration set size n=15 (WESAD subjects)",
+        "Mondrian taxonomy: binary predicted class (stress/non-stress)",
+        "Reactivity threshold: top 20% of sympathetic reactivity index",
+        "Feature space: 34-dimensional physiological features (EDA, HR, TEMP, ACC)"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per reactivity quantile (decile bins)",
+        "Nonconformity score distribution shift (KS statistic) between high-reactivity and typical subjects within same Mondrian bin",
+        "Calibration set feature density (mean k-NN distance) for high-reactivity vs typical subjects",
+        "Interval width vs actual error for high-reactivity subjects"
+      ],
+      "mechanism_builder_notes": "Test by stratifying WESAD subjects by sympathetic reactivity index computed from TSST response; compute per-subject coverage and correlate with reactivity."
+    },
+    {
+      "hypothesis_id": "H2",
+      "mechanism_variables": [
+        "ACC vector magnitude (g) during TSST",
+        "BVP signal quality index (SQI, 0-1)",
+        "Gesture frequency (peaks/min in ACC > 0.5g)",
+        "Watch fit tightness (subject-reported 1-5 scale)",
+        "Nonconformity score (1 - predicted probability)"
+      ],
+      "causal_path": "High gesture frequency + loose watch fit (≤3/5) → correlated motion artifacts in BVP (SQI < 0.7) and ACC → artifact pattern mimics stress signature (elevated HR, reduced HRV) → model assigns high confidence to incorrect stress prediction → Mondrian bin (predicted stress) pools clean and artifact-contaminated samples → empirical quantile inflated by clean samples → intervals undercover for artifact-contaminated subjects",
+      "expected_direction": "Positive correlation between gesture frequency × (6 - watch fit) interaction term and undercoverage; coverage lowest for high-gesture/loose-fit subgroup",
+      "domain_specific_boundary_conditions": [
+        "TSST task only (social stress with speaking/gesturing)",
+        "Empatica E4 sampling rates: BVP 64Hz, ACC 32Hz",
+        "Artifact threshold: BVP SQI < 0.7 or ACC magnitude > 1.5g",
+        "Mondrian taxonomy: binary predicted class"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per artifact severity quartile (gesture frequency × fit interaction)",
+        "Nonconformity score correlation with ACC magnitude within predicted-stress bin",
+        "Misclassification rate for high-artifact vs low-artifact subjects",
+        "BVP SQI distribution per Mondrian bin"
+      ],
+      "mechanism_builder_notes": "Use existing WESAD ACC/BVP data; compute gesture frequency from ACC peaks during TSST; watch fit not in WESAD but can proxy via baseline ACC variance."
+    },
+    {
+      "hypothesis_id": "H3",
+      "mechanism_variables": [
+        "HRV recovery slope (RMSSD change per minute post-TSST)",
+        "Cortisol recovery half-life (min, from saliva samples)",
+        "Calibration sample temporal index (early vs late in calibration window)",
+        "Feature distribution drift (Wasserstein distance between early/late calibration features)",
+        "Nonconformity score"
+      ],
+      "causal_path": "Slow recovery phenotype (HRV recovery slope < median, cortisol half-life > 60min) → physiological feature distribution drifts across calibration window (Wasserstein distance > 0.5) → Mondrian bin pools early (near-stress) and late (recovery) calibration samples → empirical (1-α) quantile reflects mixed distribution → prediction intervals too narrow for late-phase feature distribution → undercoverage for slow recoverers in late calibration period",
+      "expected_direction": "Negative correlation between recovery speed (HRV slope) and coverage; coverage decreases for later calibration samples within slow-recovery subjects",
+      "domain_specific_boundary_conditions": [
+        "WESAD protocol: baseline, TSST, recovery (~20min), meditation",
+        "Calibration window: all non-stress + stress samples pooled",
+        "Recovery phenotype: bottom 30% HRV recovery slope",
+        "Mondrian taxonomy: binary predicted class"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per recovery phenotype (fast vs slow) and calibration temporal half (early vs late)",
+        "Nonconformity score drift over calibration time (slope of score vs sample index)",
+        "Wasserstein distance between early/late calibration feature distributions per subject",
+        "Interval width vs actual error for late calibration samples of slow recoverers"
+      ],
+      "mechanism_builder_notes": "Requires temporal ordering of calibration samples; WESAD has sequential protocol so calibration samples have implicit time order."
+    },
+    {
+      "hypothesis_id": "H4",
+      "mechanism_variables": [
+        "VAS stress rating (0-100)",
+        "Interoceptive accuracy score (heartbeat counting task, 0-1)",
+        "Alexithymia score (TAS-20, 20-100)",
+        "Physiological arousal index (EDA tonic + HR z-score)",
+        "Label-physiology mismatch (|VAS - physiological arousal index|)"
+      ],
+      "causal_path": "Low interoceptive accuracy (≤0.6) or high alexithymia (≥60) → VAS ratings mismatch physiological arousal (mismatch > 30 percentile) → Mondrian bin (predicted class) mixes truly stressed (high physiology, high VAS) and mislabeled calm (high physiology, low VAS) → true nonconformity distribution widens beyond calibrated quantile → intervals undercover for high-mismatch subjects",
+      "expected_direction": "Negative correlation between interoceptive accuracy and coverage; positive correlation between label-physiology mismatch and undercoverage",
+      "domain_specific_boundary_conditions": [
+        "VAS collected post-TSST and post-meditation in WESAD",
+        "Interoceptive accuracy/alexithymia not in WESAD (requires external measurement)",
+        "Mondrian taxonomy: binary predicted class",
+        "Mismatch threshold: top 30% of |VAS - physiology| distribution"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per interoceptive accuracy tertile (if available) or mismatch tertile",
+        "Nonconformity score distribution width (IQR) per Mondrian bin for high vs low mismatch",
+        "Label-physiology mismatch magnitude vs nonconformity score correlation",
+        "Proportion of mislabeled samples (high physiology, low VAS) per bin"
+      ],
+      "mechanism_builder_notes": "WESAD lacks interoceptive measures; mechanism testable via simulation injecting label noise correlated with physiology, or on datasets with interoceptive data."
+    },
+    {
+      "hypothesis_id": "H5",
+      "mechanism_variables": [
+        "Predicted probability of stress class (0-1)",
+        "EDA tonic level during TSST (µS)",
+        "HR max during TSST (bpm)",
+        "Stress intensity latent variable (PC1 of physiological features)",
+        "Nonconformity score (1 - predicted probability for true class)"
+      ],
+      "causal_path": "Binary Mondrian taxonomy (predicted stress/non-stress) pools mild (predicted prob 0.5-0.7) and severe (predicted prob >0.9) stress → extreme responders (top 10% EDA tonic/HR max) have systematically higher nonconformity scores than bin quantile → rarity (n<2 per bin) prevents quantile adaptation → empirical quantile reflects mild stress majority → intervals undercover for extreme intensity",
+      "expected_direction": "Coverage decreases monotonically with predicted probability within predicted-stress bin; coverage gap between mild (0.5-0.7) and severe (>0.9) > 15 percentage points",
+      "domain_specific_boundary_conditions": [
+        "Mondrian taxonomy: binary predicted class only",
+        "Calibration set: 15 subjects × ~200 samples each",
+        "Extreme intensity: top decile of stress intensity latent variable",
+        "Nonconformity score: 1 - predicted probability of true class"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per predicted probability decile within each Mondrian bin",
+        "Nonconformity score vs stress intensity (PC1) correlation within bin",
+        "Coverage difference between mild (prob 0.5-0.7) and severe (prob >0.9) stress",
+        "Empirical quantile vs true nonconformity quantile per intensity decile"
+      ],
+      "mechanism_builder_notes": "Directly testable on WESAD by binning calibration samples by predicted probability and computing per-bin coverage."
+    },
+    {
+      "hypothesis_id": "H6",
+      "mechanism_variables": [
+        "EDA tonic level (µS)",
+        "EDA phasic driver amplitude (µS)",
+        "Skin impedance estimate (kΩ, from EDA tonic + phasic ratio)",
+        "Skin condition category (dry/normal/sweaty, from tonic level thresholds)",
+        "Signal quality flag (WESAD provided)"
+      ],
+      "causal_path": "Extreme skin condition (tonic < 0.1µS dry or > 20µS sweaty) → EDA features shifted on manifold independent of sympathetic activity → Mondrian bin (predicted class) groups disparate skin conditions → nonconformity score distribution becomes bimodal within bin → empirical quantile falls between modes → intervals undercover for both extreme conditions",
+      "expected_direction": "U-shaped coverage vs EDA tonic level: lowest coverage for very dry (<0.5µS) and very sweaty (>15µS) skin; highest for normal (1-10µS)",
+      "domain_specific_boundary_conditions": [
+        "Empatica E4 EDA sensor (dry electrode)",
+        "WESAD signal quality flags (may not capture impedance)",
+        "Mondrian taxonomy: binary predicted class",
+        "Skin condition thresholds: dry <0.5µS, sweaty >15µS tonic"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per skin condition category (dry/normal/sweaty)",
+        "EDA feature manifold position (t-SNE/UMAP) colored by skin condition",
+        "Nonconformity score distribution modality (Hartigan's dip test) per bin",
+        "Correlation between EDA tonic level and nonconformity score residual"
+      ],
+      "mechanism_builder_notes": "WESAD provides EDA tonic/phasic; skin impedance not directly measured but inferable from tonic/phasic ratio."
+    },
+    {
+      "hypothesis_id": "H7",
+      "mechanism_variables": [
+        "Time of TSST start (hours since midnight)",
+        "Baseline cortisol (nmol/L, first saliva sample)",
+        "Baseline HRV (RMSSD, ms)",
+        "Cortisol awakening response (CAR) magnitude",
+        "Nonconformity score"
+      ],
+      "causal_path": "Morning TSST (8-11am) vs afternoon (1-4pm) → higher baseline cortisol + lower HRV in morning → model trained on pooled data learns decision boundary biased toward afternoon distribution → morning subjects miscalibrated (overconfident non-stress) → Mondrian bin by predicted class fails to separate circadian groups (both classes contain mixed times) → undercoverage for morning-tested subjects",
+      "expected_direction": "Coverage lower for morning-tested subjects (8-11am) vs afternoon (1-4pm) by >10 percentage points; direction depends on which group is underrepresented in calibration",
+      "domain_specific_boundary_conditions": [
+        "WESAD data collection times vary across subjects (not standardized)",
+        "Cortisol samples at baseline, +20, +40, +60min post-TSST",
+        "Mondrian taxonomy: binary predicted class",
+        "Circadian effect size: baseline cortisol difference > 2 nmol/L between morning/afternoon"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per time-of-day bin (morning vs afternoon)",
+        "Baseline feature shift magnitude (Mahalanobis distance) between morning/afternoon",
+        "Nonconformity score distribution per circadian phase per Mondrian bin",
+        "Model calibration error (ECE) per time-of-day group"
+      ],
+      "mechanism_builder_notes": "WESAD has timestamps; cortisol data available for subset. Test by splitting subjects by median TSST start time."
+    },
+    {
+      "hypothesis_id": "H8",
+      "mechanism_variables": [
+        "Feature covariance Mahalanobis distance from training population mean",
+        "Predicted probability calibration error (ECE per subject)",
+        "Subject phenotype (athlete: resting HR <50bpm; comorbid: self-report)",
+        "Nonconformity score (1 - predicted probability)",
+        "True error indicator (0/1)"
+      ],
+      "causal_path": "Atypical feature covariance (Mahalanobis distance > 95th percentile) → model's inductive bias violated → predicted probabilities overconfident (ECE > 0.15) for these subjects → nonconformity score (1-p) too small → Mondrian binning by class does not correct feature-conditional miscalibration → intervals undercover for atypical covariance subjects",
+      "expected_direction": "Negative correlation between Mahalanobis distance and coverage; coverage < 80% for distance > 95th percentile",
+      "domain_specific_boundary_conditions": [
+        "Model: gradient boosting or neural net trained on WESAD",
+        "Training population: 15 subjects leave-one-out",
+        "Nonconformity score: 1 - predicted probability of true class",
+        "Atypical phenotype: athletes (n≈2 in WESAD) or high HRV outliers"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per Mahalanobis distance quintile",
+        "Subject-level ECE vs coverage correlation",
+        "Nonconformity score vs true error calibration curve per phenotype",
+        "Feature covariance matrix distance distribution per subject"
+      ],
+      "mechanism_builder_notes": "Compute Mahalanobis distance using training set covariance; test on left-out subject in LOOCV."
+    },
+    {
+      "hypothesis_id": "H9",
+      "mechanism_variables": [
+        "Phenotype frequency in calibration set (count)",
+        "Empirical (1-α) quantile estimate",
+        "Quantile estimate bootstrap variance",
+        "Effective bin size per phenotype (n_bin)",
+        "Coverage rate per phenotype"
+      ],
+      "causal_path": "Rare phenotype (e.g., non-responders: n=2 in calibration) → few samples in Mondrian bin (n_bin < 5) → empirical (1-α) quantile upwardly biased (order statistic variance ∝ 1/n_bin) → quantile too small → prediction intervals systematically too narrow → undercoverage in expectation for that phenotype",
+      "expected_direction": "Inverse relationship: coverage ≈ 1-α - O(1/√n_bin); phenotypes with n_bin < 10 show coverage < 85% at α=0.1",
+      "domain_specific_boundary_conditions": [
+        "WESAD calibration set: 14 subjects (LOOCV)",
+        "Mondrian taxonomy: binary predicted class (2 bins)",
+        "Rare phenotype definition: non-responders (EDA peak < 0.1µS), paradoxical responders (HR deceleration)",
+        "α = 0.1 (90% target coverage)"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per phenotype (frequency-stratified)",
+        "Bootstrap variance of empirical quantile vs phenotype frequency",
+        "Worst-case coverage across all phenotypes",
+        "Quantile bias (empirical - true) estimated via simulation"
+      ],
+      "mechanism_builder_notes": "Simulate by subsampling calibration set to vary phenotype frequency; compute coverage vs n_bin."
+    },
+    {
+      "hypothesis_id": "H10",
+      "mechanism_variables": [
+        "Trait anxiety score (STAI-T, 20-80)",
+        "Baseline EDA tonic (µS) during pre-TSST rest",
+        "Baseline HR (bpm) during pre-TSST rest",
+        "Nonconformity score gap: median(non-stress) - median(stress)",
+        "Coverage rate per class per anxiety group"
+      ],
+      "causal_path": "High trait anxiety (STAI-T > 50) → elevated baseline EDA/HR during pre-TSST (tonic > 2µS, HR > 80bpm) → non-stress calibration samples contaminated with stress-like physiology → nonconformity distribution for non-stress shifts upward → quantile threshold for non-stress bin too low → intervals undercover for true non-stress; simultaneously, stress bin quantile too high → undercoverage for stress → both classes undercover for high-anxiety subjects",
+      "expected_direction": "Negative correlation between trait anxiety and coverage for both stress and non-stress classes; nonconformity gap between classes shrinks as anxiety increases",
+      "domain_specific_boundary_conditions": [
+        "Pre-TSST baseline: ~5min rest in WESAD",
+        "Trait anxiety not measured in WESAD (requires external data)",
+        "Mondrian taxonomy: binary predicted class",
+        "Anxiety threshold: STAI-T > 50 (clinical cutoff)"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate per trait anxiety tertile (low/medium/high) per class",
+        "Baseline EDA/HR elevation magnitude vs anxiety score",
+        "Nonconformity score gap between classes vs anxiety",
+        "Proportion of baseline samples exceeding stress-threshold physiology per anxiety group"
+      ],
+      "mechanism_builder_notes": "Testable via simulation injecting anticipatory anxiety into baseline; or on datasets with STAI-T (e.g., WESAD+)."
+    }
+  ],
+  "stage_4_2_confounder_rival_builder": [
+    {
+      "hypothesis_id": "H1",
+      "possible_confounders": [
+        "Age",
+        "Cardiovascular fitness (resting HR)",
+        "Medication affecting autonomic function (beta-blockers, anticholinergics)",
+        "Baseline anxiety level",
+        "Time of day of TSST",
+        "Sensor placement variability"
+      ],
+      "control_variables": [
+        "Age",
+        "Sex",
+        "BMI",
+        "Resting heart rate",
+        "Medication status",
+        "Time of day"
+      ],
+      "boring_rival_explanations": [
+        "Undercoverage is caused by general model misspecification (e.g., inadequate feature set) affecting all subjects equally, not specifically high-reactivity individuals.",
+        "The calibration set is simply too small to reliably estimate quantiles for any subgroup, making reactivity a spurious correlate."
+      ],
+      "rival_prediction": "If model misspecification is the primary driver, coverage will not systematically correlate with sympathetic reactivity index after controlling for per-subject model accuracy (e.g., classification error).",
+      "distinguishing_condition": "Compute per-subject coverage and sympathetic reactivity index; regress coverage on reactivity while including per-subject classification accuracy as a covariate. A significant reactivity coefficient supports the proposed mechanism; a non-significant coefficient supports the rival.",
+      "confounder_rival_notes": "Control for fitness via resting HR; medication via self-report. The rival test directly pits reactivity-specific miscalibration against general model failure."
+    },
+    {
+      "hypothesis_id": "H2",
+      "possible_confounders": [
+        "Skin tone (affects BVP signal quality)",
+        "Ambient temperature (affects vascular tone and motion)",
+        "Sensor placement tightness (distinct from watch fit)",
+        "Non-gestural movement (postural shifts, fidgeting)",
+        "Electrode-skin impedance for EDA"
+      ],
+      "control_variables": [
+        "Skin tone (Fitzpatrick scale if available)",
+        "Ambient temperature",
+        "Baseline ACC variance (proxy for fit)",
+        "Gesture frequency (ACC peaks >0.5g/min)",
+        "BVP signal quality index (SQI)"
+      ],
+      "boring_rival_explanations": [
+        "Undercoverage is driven by general BVP signal degradation (low SQI) regardless of gesture-specific motion patterns.",
+        "The model simply performs poorly on all subjects with high overall movement, not specifically those with gesture-artifact interaction."
+      ],
+      "rival_prediction": "If general signal quality is the culprit, coverage will correlate with BVP SQI but not with the gesture frequency × watch-fit interaction after conditioning on SQI.",
+      "distinguishing_condition": "Stratify subjects by gesture frequency (high/low) and BVP SQI (high/low). If undercoverage is specific to high-gesture/low-SQI group, the proposed mechanism wins; if all low-SQI groups show similar undercoverage regardless of gesture, the rival wins.",
+      "confounder_rival_notes": "Watch fit not directly in WESAD; baseline ACC variance serves as proxy. The interaction term isolates gesture-specific artifact from general noise."
+    },
+    {
+      "hypothesis_id": "H3",
+      "possible_confounders": [
+        "Task order (TSST always before recovery in WESAD)",
+        "Fatigue accumulation across protocol",
+        "Habituation to sensor or lab environment",
+        "Time since last meal/caffeine",
+        "Menstrual cycle phase (affects autonomic recovery)"
+      ],
+      "control_variables": [
+        "Time since TSST onset (calibration sample index)",
+        "Caffeine intake (binary)",
+        "Fatigue self-report (if available)",
+        "Menstrual phase (if available)",
+        "Baseline HRV"
+      ],
+      "boring_rival_explanations": [
+        "Temporal non-stationarity affects all subjects uniformly (e.g., sensor drift, global fatigue), not selectively slow recoverers.",
+        "The calibration window is too short to capture any recovery dynamics, making the drift a universal problem."
+      ],
+      "rival_prediction": "If non-stationarity is universal, coverage will decline over calibration time for both fast and slow recoverers with similar slopes.",
+      "distinguishing_condition": "Fit a mixed-effects model: coverage ~ recovery_phenotype * calibration_time_half + (1|subject). A significant interaction (steeper decline for slow recoverers in late half) supports the proposed mechanism; a non-significant interaction with a main effect of time supports the rival.",
+      "confounder_rival_notes": "WESAD protocol fixes task order, so time is confounded with task phase. The interaction test isolates phenotype-specific drift."
+    },
+    {
+      "hypothesis_id": "H4",
+      "possible_confounders": [
+        "Current mood state (PANAS)",
+        "Demand characteristics / social desirability",
+        "Language/comprehension of VAS scale",
+        "Cultural differences in scale usage",
+        "Recent stressful life events"
+      ],
+      "control_variables": [
+        "Baseline mood (PANAS negative affect)",
+        "VAS comprehension check",
+        "Alexithymia score (TAS-20) if available",
+        "Interoceptive accuracy (heartbeat counting) if available",
+        "Physiological arousal index (EDA tonic + HR z-score)"
+      ],
+      "boring_rival_explanations": [
+        "VAS noise is random and uncorrelated with interoceptive traits; coverage failures are due to inherent label unreliability affecting all subjects.",
+        "The model's predictions are noisy for all subjects, making any label noise appear consequential."
+      ],
+      "rival_prediction": "If label noise is random, the label-physiology mismatch magnitude will not correlate with interoceptive accuracy (where measured) and coverage will not correlate with mismatch after controlling for physiology.",
+      "distinguishing_condition": "On a dataset with interoceptive accuracy measures (e.g., WESAD+), compute partial correlation between coverage and label-physiology mismatch controlling for physiological arousal. A significant partial correlation supports the proposed mechanism; a non-significant correlation supports the rival.",
+      "confounder_rival_notes": "WESAD lacks interoceptive measures; this test requires external data or simulation. The rival is distinguished by the systematic trait-dependence of mismatch."
+    },
+    {
+      "hypothesis_id": "H5",
+      "possible_confounders": [
+        "Model calibration quality (predicted probabilities not reflecting true frequencies)",
+        "Feature selection bias (intensity-relevant features omitted)",
+        "Class imbalance in calibration set",
+        "Nonconformity score function choice (1-p vs. margin-based)"
+      ],
+      "control_variables": [
+        "Model calibration error (ECE) per subject",
+        "Predicted probability of true class",
+        "Stress intensity latent variable (PC1 of physiological features)",
+        "Calibration set size per predicted probability bin",
+        "Nonconformity score function type"
+      ],
+      "boring_rival_explanations": [
+        "Undercoverage at extreme intensities is caused by the model's poor probability calibration at the extremes, not by the binary taxonomy itself.",
+        "The nonconformity score (1-p) is inherently poorly suited for extreme probabilities, regardless of taxonomy."
+      ],
+      "rival_prediction": "If model calibration is the root cause, recalibrating the model (e.g., Platt scaling) will restore coverage across intensities even with the binary taxonomy.",
+      "distinguishing_condition": "Apply temperature scaling to the model's predicted probabilities, then compute coverage per intensity decile using the same binary Mondrian taxonomy. If coverage gaps persist, the taxonomy is the bottleneck (proposed mechanism); if gaps close, model calibration was the driver (rival).",
+      "confounder_rival_notes": "The test directly isolates taxonomy granularity from probability calibration. Use the same nonconformity score (1-p) throughout."
+    },
+    {
+      "hypothesis_id": "H6",
+      "possible_confounders": [
+        "Skin hydration level",
+        "Electrode gel degradation over session",
+        "Ambient humidity",
+        "Skin temperature",
+        "Sensor placement location (wrist vs. palm)"
+      ],
+      "control_variables": [
+        "Ambient humidity",
+        "Skin temperature (from TEMP sensor)",
+        "EDA tonic level (µS)",
+        "EDA phasic driver amplitude (µS)",
+        "WESAD signal quality flag"
+      ],
+      "boring_rival_explanations": [
+        "EDA tonic level variations reflect true sympathetic tone differences, not sensor-skin impedance artifacts.",
+        "The existing WESAD signal quality flags already capture impedance-related degradation."
+      ],
+      "rival_prediction": "If EDA tonic shifts reflect true sympathetic differences, coverage will correlate with tonic level only when HR and other sympathetic markers are not controlled for.",
+      "distinguishing_condition": "Regress coverage on EDA tonic level (quadratic term for U-shape) while including HR max, HRV, and respiration rate as covariates. A significant quadratic tonic effect after controlling for other sympathetic markers supports the impedance mechanism; a non-significant effect supports the rival.",
+      "confounder_rival_notes": "Skin impedance not directly measured; tonic/phasic ratio serves as proxy. The covariate control isolates impedance-specific variance."
+    },
+    {
+      "hypothesis_id": "H7",
+      "possible_confounders": [
+        "Sleep duration and quality prior to session",
+        "Wake time (hours since awakening)",
+        "Caffeine consumption timing and dose",
+        "Light exposure before session",
+        "Menstrual cycle phase"
+      ],
+      "control_variables": [
+        "Time of TSST start (hours since midnight)",
+        "Sleep duration (self-report)",
+        "Caffeine intake (binary, within 4h)",
+        "Wake time",
+        "Baseline cortisol (nmol/L)"
+      ],
+      "boring_rival_explanations": [
+        "Time-of-day effects are mediated entirely by sleep deprivation or caffeine, not endogenous circadian rhythm.",
+        "The model is simply better calibrated for the majority time-of-day group due to calibration set composition."
+      ],
+      "rival_prediction": "If sleep/caffeine mediate the effect, controlling for them will eliminate the coverage difference between morning and afternoon groups.",
+      "distinguishing_condition": "Fit a logistic regression: coverage ~ time_of_day_group + sleep_duration + caffeine + time_of_day_group:sleep_duration. If the time_of_day_group coefficient remains significant after adding sleep/caffeine, circadian mechanism wins; if it becomes non-significant, the rival wins.",
+      "confounder_rival_notes": "WESAD has timestamps but not sleep/caffeine logs; this test requires augmented metadata. The interaction term checks for moderation."
+    },
+    {
+      "hypothesis_id": "H8",
+      "possible_confounders": [
+        "Model architecture and hyperparameters",
+        "Training set composition (leave-one-out subject)",
+        "Feature engineering choices (e.g., time-domain vs. frequency-domain HRV)",
+        "Outlier influence in training data",
+        "Regularization strength"
+      ],
+      "control_variables": [
+        "Model type (fixed across tests)",
+        "Training set size (LOOCV)",
+        "Feature set (fixed)",
+        "Mahalanobis distance from training population mean",
+        "Subject phenotype label (athlete, high HRV, etc.)"
+      ],
+      "boring_rival_explanations": [
+        "Miscalibration for atypical subjects is due to general model overfitting to the training population, not a specific failure of class-conditional nonconformity scores.",
+        "The nonconformity score function (1-p) is inherently inadequate for any out-of-distribution sample, regardless of taxonomy."
+      ],
+      "rival_prediction": "If overfitting is the cause, a feature-aware taxonomy (e.g., k-NN based on training features) will not improve coverage over class-conditional taxonomy for high-Mahalanobis subjects, because the model's probabilities are fundamentally unreliable.",
+      "distinguishing_condition": "Compare coverage for high-Mahalanobis subjects (top 5%) using class-conditional Mondrian vs. k-NN Mondrian (k=10) with the same model. If k-NN taxonomy restores coverage to nominal, the proposed mechanism wins; if both taxonomies undercover equally, the rival wins.",
+      "confounder_rival_notes": "The test directly evaluates whether feature-conditional calibration can be rescued by taxonomy design. Mahalanobis distance computed on training set covariance."
+    },
+    {
+      "hypothesis_id": "H9",
+      "possible_confounders": [
+        "Phenotype definition criteria (arbitrary thresholds)",
+        "Calibration set sampling strategy (LOOCV vs. random split)",
+        "Nonconformity score distribution skewness",
+        "Correlation between phenotype rarity and inherent predictability"
+      ],
+      "control_variables": [
+        "Phenotype frequency in calibration set (n_bin)",
+        "Calibration set size (n=14 LOOCV)",
+        "Nonconformity score distribution parameters (mean, variance, skew)",
+        "Target coverage level (1-α)",
+        "Quantile estimation method (empirical vs. bootstrap-corrected)"
+      ],
+      "boring_rival_explanations": [
+        "Rare phenotypes are inherently harder to predict (higher irreducible error), so undercoverage reflects model bias not quantile estimation variance.",
+        "The empirical quantile bias is negligible; the real issue is that the nonconformity score distribution for rare phenotypes has heavier tails."
+      ],
+      "rival_prediction": "If model bias drives undercoverage, increasing calibration set size (via synthetic augmentation or external data) will not fully restore coverage for rare phenotypes.",
+      "distinguishing_condition": "Simulate increasing calibration set size for a rare phenotype by adding synthetic samples drawn from the same phenotype distribution (using bootstrap or generative model). Plot coverage vs. n_bin. If coverage converges to 1-α as n_bin grows, finite-sample mechanism wins; if coverage plateaus below 1-α, model bias rival wins.",
+      "confounder_rival_notes": "The simulation isolates quantile estimation variance from model bias. Use the same nonconformity scores; only vary calibration set composition."
+    },
+    {
+      "hypothesis_id": "H10",
+      "possible_confounders": [
+        "State anxiety (STAI-S) at baseline",
+        "Baseline duration (insufficient habituation)",
+        "Prior stress exposure (e.g., previous TSST experience)",
+        "Neuroticism personality trait",
+        "General physiological arousal propensity"
+      ],
+      "control_variables": [
+        "Trait anxiety (STAI-T) if available",
+        "State anxiety (STAI-S) if available",
+        "Baseline duration (fixed in WESAD ~5min)",
+        "Baseline EDA tonic (µS)",
+        "Baseline HR (bpm)"
+      ],
+      "boring_rival_explanations": [
+        "Baseline contamination occurs for all subjects because the 5-minute rest is insufficient for physiological habituation, not specifically high-trait-anxiety individuals.",
+        "The model learns a shifted decision boundary due to baseline contamination, but this affects all subjects equally."
+      ],
+      "rival_prediction": "If baseline protocol is universally insufficient, coverage will be low for all subjects and will not correlate with trait anxiety after controlling for baseline physiology.",
+      "distinguishing_condition": "Regress per-subject coverage on trait anxiety while including baseline EDA tonic and HR as covariates. A significant trait anxiety coefficient supports the proposed mechanism; a non-significant coefficient supports the rival.",
+      "confounder_rival_notes": "Trait anxiety not in WESAD; requires external data. The covariate control tests whether anxiety has an effect beyond baseline physiology."
+    }
+  ],
+  "stage_4_3_statistical_testability_builder": [
+    {
+      "hypothesis_id": "H1",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Mechanism predicts a positive correlation between sympathetic reactivity index and undercoverage magnitude. With n=15 subjects (WESAD), top 20% reactivity threshold yields ~3 high-reactivity subjects. Prior literature on autonomic reactivity and model miscalibration suggests medium effect sizes (Cohen's d ~0.5-0.8) for physiological outliers. However, exact effect size unknown without pilot data on reactivity-coverage correlation.",
+      "minimum_data_needed": [
+        "Per-subject sympathetic reactivity index (composite z-score of EDA phasic peak amplitude and HR acceleration during TSST onset)",
+        "Per-subject coverage rates from Mondrian conformal prediction (binary taxonomy) on WESAD using leave-one-subject-out calibration",
+        "Per-subject classification accuracy (or model confidence calibration error) as control variable"
+      ],
+      "testable_prediction": "Subjects in the top 20% of sympathetic reactivity index will have coverage rates at least 15 percentage points lower than subjects in the bottom 80%, after controlling for per-subject classification accuracy.",
+      "failure_condition": "The partial correlation between sympathetic reactivity index and coverage rate (controlling for classification accuracy) is non-significant (p > 0.05) or the effect direction is reversed.",
+      "statistical_test_plan": "1. Compute sympathetic reactivity index for each of 15 WESAD subjects from TSST EDA/HR features. 2. Run Mondrian conformal prediction with binary predicted-class taxonomy in leave-one-subject-out fashion; record per-subject coverage at α=0.1. 3. Compute per-subject classification accuracy (or ECE). 4. Fit linear regression: coverage ~ reactivity_index + classification_accuracy. 5. Test H0: β_reactivity = 0 vs H1: β_reactivity < 0 (one-tailed). 6. Report effect size (standardized β) and 95% CI.",
+      "statistical_testability_notes": "Small n=15 limits power; consider bootstrap CI for regression coefficient. Reactivity index must be computed identically across subjects. Classification accuracy control isolates reactivity-specific miscalibration from general model failure (rival)."
+    },
+    {
+      "hypothesis_id": "H2",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Mechanism predicts gesture frequency × watch-fit interaction drives undercoverage via motion artifacts. WESAD has ACC/BVP data for gesture frequency estimation; watch fit proxied by baseline ACC variance. Prior work on wrist-worn sensor artifacts suggests medium interaction effects (η² ~0.06-0.14) for gesture-specific corruption. Exact magnitude unknown without artifact-labeled ground truth.",
+      "minimum_data_needed": [
+        "Per-subject gesture frequency during TSST (ACC peaks >0.5g per minute from Empatica E4 32Hz data)",
+        "Per-subject baseline ACC variance (proxy for watch fit tightness)",
+        "Per-subject BVP signal quality index (SQI) during TSST",
+        "Per-subject coverage rates from Mondrian conformal prediction (binary taxonomy) on WESAD"
+      ],
+      "testable_prediction": "The interaction term (gesture_frequency × (6 - baseline_ACC_variance_proxy)) will significantly predict coverage rate (p < 0.05), with highest undercoverage in high-gesture/high-baseline-ACC-variance (loose-fit proxy) subgroup.",
+      "failure_condition": "The interaction term is non-significant (p > 0.05) in a regression predicting coverage, or coverage does not differ between high-gesture/loose-fit and high-gesture/tight-fit subgroups after conditioning on BVP SQI.",
+      "statistical_test_plan": "1. Compute gesture frequency from ACC magnitude peaks during TSST for each subject. 2. Compute baseline ACC variance (5-min pre-TSST) as watch-fit proxy. 3. Compute BVP SQI during TSST. 4. Obtain per-subject coverage from Mondrian CP (LOOCV). 5. Fit linear model: coverage ~ gesture_freq + baseline_ACC_var + gesture_freq:baseline_ACC_var + BVP_SQI. 6. Test interaction coefficient significance. 7. Stratify by median gesture_freq and baseline_ACC_var; compare coverage in four subgroups via ANOVA.",
+      "statistical_testability_notes": "Watch fit not directly measured; baseline ACC variance is imperfect proxy. Rival (general signal quality) tested by including BVP SQI as covariate. If interaction remains significant after SQI control, gesture-specific mechanism supported."
+    },
+    {
+      "hypothesis_id": "H3",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Mechanism predicts slower HRV recovery slope associates with coverage decline over calibration time. WESAD protocol provides temporal ordering. Prior studies on physiological non-stationarity show medium effect sizes for recovery-phenotype × time interactions (Cohen's f² ~0.15). Exact effect size unknown without quantifying within-subject feature drift.",
+      "minimum_data_needed": [
+        "Per-subject HRV recovery slope (RMSSD change per minute during post-TSST recovery period)",
+        "Temporal index of each calibration sample (early vs late half of calibration window)",
+        "Per-subject coverage rates for early vs late calibration samples from Mondrian CP",
+        "Wasserstein distance between early and late calibration feature distributions per subject"
+      ],
+      "testable_prediction": "Slow recoverers (bottom 30% HRV recovery slope) will show a significant coverage decline from early to late calibration half (>10 percentage points), while fast recoverers will show no significant decline.",
+      "failure_condition": "The recovery_phenotype × calibration_time_half interaction is non-significant (p > 0.05) in a mixed-effects model, or both phenotypes show similar coverage decline slopes.",
+      "statistical_test_plan": "1. Compute HRV recovery slope for each subject from post-TSST RMSSD trajectory. 2. Split calibration samples into early/late halves by temporal order. 3. Run Mondrian CP (LOOCV) and compute per-subject coverage separately for early and late calibration samples. 4. Fit mixed-effects logistic regression: coverage ~ recovery_phenotype * time_half + (1|subject). 5. Test interaction term significance. 6. Compute Wasserstein distance between early/late feature distributions per subject; correlate with coverage decline.",
+      "statistical_testability_notes": "WESAD protocol fixes task order, so time is confounded with task phase. The interaction test isolates phenotype-specific drift. Rival (universal non-stationarity) predicts main effect of time only."
+    },
+    {
+      "hypothesis_id": "H4",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "WESAD lacks interoceptive accuracy (heartbeat counting) and alexithymia (TAS-20) measures. Effect size cannot be estimated without data linking label-physiology mismatch to interoceptive traits. Need external dataset with both physiological stress data and interoceptive measures (e.g., WESAD+ or similar).",
+      "minimum_data_needed": [
+        "Per-subject interoceptive accuracy score (heartbeat counting task, 0-1) or alexithymia score (TAS-20)",
+        "Per-subject VAS stress ratings and physiological arousal index (EDA tonic + HR z-score) during TSST",
+        "Per-subject label-physiology mismatch magnitude (|VAS - physiological_arousal_index|)",
+        "Per-subject coverage rates from Mondrian CP on the same dataset"
+      ],
+      "testable_prediction": "Subjects with low interoceptive accuracy (≤0.6) or high alexithymia (≥60) will show significantly lower coverage rates, mediated by larger label-physiology mismatch (partial correlation significant after controlling for physiological arousal).",
+      "failure_condition": "On a dataset with interoceptive measures, the partial correlation between coverage and label-physiology mismatch (controlling for physiological arousal) is non-significant (p > 0.05), or mismatch does not correlate with interoceptive accuracy.",
+      "statistical_test_plan": "1. Obtain dataset with physiological stress data, VAS, and interoceptive accuracy/alexithymia (e.g., augment WESAD or use external dataset). 2. Compute label-physiology mismatch per sample. 3. Run Mondrian CP (binary taxonomy) and compute per-subject coverage. 4. Fit mediation model: interoceptive_accuracy → mismatch → coverage. 5. Test indirect effect significance via bootstrap (5000 samples). 6. Compare to rival: random label noise predicts no mediation.",
+      "statistical_testability_notes": "Not directly testable on WESAD alone. Requires external interoceptive data. Simulation alternative: inject trait-correlated label noise into WESAD VAS and test if coverage correlates with injected noise magnitude."
+    },
+    {
+      "hypothesis_id": "H5",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Mechanism predicts coverage gap >15 percentage points between mild (predicted prob 0.5-0.7) and severe (prob >0.9) stress within predicted-stress bin. Binary taxonomy pooling extremes is a known failure mode for conformal prediction; prior work shows large coverage disparities (20-30pp) when intensity heterogeneity is ignored. WESAD calibration set (14 subjects × ~200 samples) provides sufficient samples per probability decile to estimate.",
+      "minimum_data_needed": [
+        "Predicted probability of stress class for each calibration sample (from LOOCV model)",
+        "Stress intensity latent variable (PC1 of physiological features during TSST)",
+        "Per-sample nonconformity scores (1 - predicted probability of true class)",
+        "Empirical (1-α) quantile per predicted probability decile within predicted-stress bin"
+      ],
+      "testable_prediction": "Coverage rate will decrease monotonically with predicted probability within the predicted-stress bin; coverage for severe stress (prob >0.9) will be at least 15 percentage points lower than for mild stress (prob 0.5-0.7).",
+      "failure_condition": "Coverage does not significantly differ across predicted probability deciles within the predicted-stress bin (ANOVA p > 0.05), or the mild-vs-severe gap is <5 percentage points.",
+      "statistical_test_plan": "1. Run LOOCV Mondrian CP with binary taxonomy; record predicted probability and nonconformity score per calibration sample. 2. Bin predicted-stress samples by predicted probability deciles. 3. Compute coverage rate per decile (using test samples falling in each decile's bin). 4. Test monotonic trend (Jonckheere-Terpstra test). 5. Compare coverage for mild (0.5-0.7) vs severe (>0.9) via proportion test. 6. Rival test: apply temperature scaling to probabilities, repeat; if gap persists, taxonomy is bottleneck.",
+      "statistical_testability_notes": "Directly testable on WESAD. Rival (model calibration) tested via temperature scaling. Nonconformity score fixed as 1-p. Intensity latent variable (PC1) used for validation."
+    },
+    {
+      "hypothesis_id": "H6",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Mechanism predicts U-shaped coverage vs EDA tonic level (lowest for very dry <0.5µS and very sweaty >15µS). EDA tonic level varies widely across subjects; impedance effects on dry-electrode EDA are documented but effect size on downstream CP coverage unquantified. Medium expectation based on typical EDA quality-coverage relationships in wearable studies.",
+      "minimum_data_needed": [
+        "Per-subject mean EDA tonic level during TSST (µS)",
+        "Per-subject EDA phasic driver amplitude (µS)",
+        "Per-subject coverage rates from Mondrian CP (binary taxonomy)",
+        "WESAD signal quality flags for EDA"
+      ],
+      "testable_prediction": "Coverage rate will show a significant quadratic relationship with EDA tonic level (U-shaped), with lowest coverage for tonic <0.5µS and >15µS, after controlling for HR max, HRV, and respiration rate.",
+      "failure_condition": "The quadratic term for EDA tonic level is non-significant (p > 0.05) in a regression predicting coverage while controlling for other sympathetic markers (HR max, HRV, respiration), or WESAD signal quality flags fully explain the coverage variance.",
+      "statistical_test_plan": "1. Compute mean EDA tonic and phasic driver amplitude per subject during TSST. 2. Define skin condition categories: dry (<0.5µS), normal (1-10µS), sweaty (>15µS). 3. Obtain per-subject coverage from Mondrian CP (LOOCV). 4. Fit regression: coverage ~ tonic + tonic² + HR_max + HRV + respiration_rate. 5. Test quadratic coefficient significance. 6. Compare coverage across skin condition categories via ANOVA. 7. Test modality of nonconformity score distribution per bin (Hartigan's dip test).",
+      "statistical_testability_notes": "Skin impedance not directly measured; tonic/phasic ratio serves as proxy. Covariate control (HR, HRV, respiration) isolates impedance-specific variance from true sympathetic differences (rival). WESAD signal quality flags tested as alternative explanation."
+    },
+    {
+      "hypothesis_id": "H7",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "WESAD has timestamps but lacks sleep duration, caffeine logs, and cortisol for all subjects. Circadian effect size on coverage cannot be estimated without controlling for sleep/caffeine mediators. Need augmented metadata (sleep, caffeine, wake time) or external dataset with controlled time-of-day and these covariates.",
+      "minimum_data_needed": [
+        "Time of TSST start for each subject (hours since midnight)",
+        "Baseline cortisol (nmol/L) and baseline HRV (RMSSD) for each subject",
+        "Sleep duration and caffeine intake within 4h prior to session (per subject)",
+        "Per-subject coverage rates from Mondrian CP, split by morning (8-11am) vs afternoon (1-4pm) TSST"
+      ],
+      "testable_prediction": "Morning-tested subjects will show significantly lower coverage than afternoon-tested subjects (>10pp difference), and this difference will remain significant after controlling for sleep duration and caffeine intake.",
+      "failure_condition": "The time-of-day group coefficient becomes non-significant (p > 0.05) after adding sleep duration and caffeine as covariates, or baseline cortisol/HRV do not differ significantly between morning/afternoon groups.",
+      "statistical_test_plan": "1. Split subjects by median TSST start time (morning vs afternoon). 2. Compute baseline cortisol and HRV per subject. 3. Obtain per-subject coverage from Mondrian CP (LOOCV). 4. Fit logistic regression: coverage ~ time_of_day_group + sleep_duration + caffeine + time_of_day_group:sleep_duration. 5. Test time_of_day_group coefficient significance before and after adding covariates. 6. Test baseline cortisol/HRV difference between groups (t-test).",
+      "statistical_testability_notes": "WESAD lacks sleep/caffeine data; test requires augmented metadata. Rival (sleep/caffeine mediation) tested via covariate adjustment. Interaction term checks if sleep moderates time-of-day effect."
+    },
+    {
+      "hypothesis_id": "H8",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Mechanism predicts coverage <80% for subjects with Mahalanobis distance >95th percentile from training population. Feature covariance heterogeneity is known to cause miscalibration; prior work on OOD detection shows medium effect sizes for Mahalanobis distance vs calibration error (r ~0.4-0.6). WESAD LOOCV provides natural test: each subject is OOD relative to other 14.",
+      "minimum_data_needed": [
+        "Per-subject Mahalanobis distance from training population feature covariance (computed on 14-subject training set in LOOCV)",
+        "Per-subject expected calibration error (ECE) of predicted probabilities",
+        "Per-subject coverage rates from Mondrian CP (binary taxonomy) and k-NN Mondrian (k=10) taxonomy",
+        "Subject phenotype labels (athlete: resting HR <50bpm; high HRV outlier)"
+      ],
+      "testable_prediction": "Coverage for high-Mahalanobis subjects (top 5%) will be <80% with class-conditional Mondrian, but will restore to ≥85% with k-NN Mondrian (k=10) using same model probabilities.",
+      "failure_condition": "Both class-conditional and k-NN Mondrian taxonomies show equally low coverage (<80%) for high-Mahalanobis subjects, or k-NN taxonomy does not significantly improve coverage (paired test p > 0.05).",
+      "statistical_test_plan": "1. For each LOOCV fold, compute training set (14 subjects) feature covariance matrix. 2. Compute Mahalanobis distance of left-out subject's features to training mean. 3. Run class-conditional Mondrian CP and k-NN Mondrian (k=10, using training features) on left-out subject. 4. Record coverage for each taxonomy. 5. Compare coverage for high-Mahalanobis subjects (top 5%) between taxonomies via paired Wilcoxon test. 6. Correlate Mahalanobis distance with coverage for each taxonomy.",
+      "statistical_testability_notes": "Directly tests whether feature-aware taxonomy rescues feature-conditional miscalibration. Rival (general overfitting) predicts no improvement with k-NN. Mahalanobis distance computed per fold to avoid leakage."
+    },
+    {
+      "hypothesis_id": "H9",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Finite-sample quantile estimation bias is well-characterized: coverage ≈ 1-α - O(1/√n_bin). For rare phenotypes with n_bin < 5 (e.g., non-responders n=2 in WESAD), expected coverage deficit is large (>15pp at α=0.1). This is a mathematical property of order statistics, not empirical guess. Simulation can quantify exactly.",
+      "minimum_data_needed": [
+        "Phenotype definitions and counts in WESAD calibration set (e.g., non-responders: EDA peak <0.1µS; paradoxical responders: HR deceleration)",
+        "Per-phenotype effective bin size (n_bin) in Mondrian taxonomy",
+        "Empirical (1-α) quantile estimates per phenotype bin",
+        "Bootstrap variance of quantile estimates per phenotype (via resampling calibration set)"
+      ],
+      "testable_prediction": "Coverage for phenotypes with n_bin < 10 will be significantly below 1-α (90%), with deficit inversely proportional to √n_bin. Simulated coverage will converge to 90% as n_bin increases via synthetic augmentation.",
+      "failure_condition": "Coverage for rare phenotypes (n_bin < 5) is not significantly below 90% (one-sample proportion test p > 0.05), or simulated coverage plateaus below 90% even with large n_bin (indicating model bias, not quantile variance).",
+      "statistical_test_plan": "1. Define rare phenotypes in WESAD (non-responders, paradoxical responders). 2. Compute n_bin per phenotype in Mondrian bins. 3. Run LOOCV Mondrian CP; record per-phenotype coverage. 4. Test coverage vs 90% via exact binomial test per phenotype. 5. Simulate: for each phenotype, bootstrap calibration samples (with replacement) to create synthetic calibration sets of increasing size; compute coverage vs n_bin curve. 6. Fit coverage = 1-α - c/√n_bin; test if c > 0.",
+      "statistical_testability_notes": "Mathematical mechanism allows precise prediction. Simulation isolates quantile variance from model bias (rival). WESAD n=14 calibration set provides natural rare phenotypes."
+    },
+    {
+      "hypothesis_id": "H10",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "WESAD lacks trait anxiety (STAI-T) measures. Effect size cannot be estimated without data linking trait anxiety to baseline physiology contamination and coverage. Need external dataset with STAI-T, baseline physiology, and stress protocol (e.g., WESAD+ or similar augmented dataset).",
+      "minimum_data_needed": [
+        "Per-subject trait anxiety score (STAI-T, 20-80)",
+        "Per-subject baseline EDA tonic (µS) and HR (bpm) during pre-TSST rest",
+        "Per-subject coverage rates for stress and non-stress classes separately from Mondrian CP",
+        "Nonconformity score gap between classes (median non-stress - median stress) per subject"
+      ],
+      "testable_prediction": "Trait anxiety will significantly predict coverage for both stress and non-stress classes (negative correlation), and the nonconformity score gap between classes will shrink as anxiety increases, after controlling for baseline EDA tonic and HR.",
+      "failure_condition": "On a dataset with STAI-T, the partial correlation between trait anxiety and coverage (controlling for baseline EDA/HR) is non-significant (p > 0.05) for both classes, or baseline physiology fully mediates the anxiety-coverage relationship.",
+      "statistical_test_plan": "1. Obtain dataset with STAI-T, baseline physiology, and stress protocol. 2. Run Mondrian CP (binary taxonomy); compute per-subject coverage per class. 3. Compute nonconformity score gap per subject. 4. Fit regression: coverage_stress ~ STAI_T + baseline_EDA + baseline_HR; same for coverage_nonstress. 5. Test STAI_T coefficients. 6. Mediation analysis: STAI_T → baseline_physiology → coverage. 7. Rival test: if baseline protocol universally insufficient, coverage low for all and anxiety non-significant after physiology control.",
+      "statistical_testability_notes": "Not testable on WESAD alone (no STAI-T). Requires external data. Simulation alternative: inject anticipatory anxiety into baseline physiology of synthetic subjects and test coverage impact."
+    }
+  ],
+  "stage_5_audits": [
+    {
+      "hypothesis_id": "H1",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All eight critical checks pass. The mechanism specifies a concrete, domain-specific causal path from sympathetic reactivity through calibration feature density to nonconformity inflation and undercoverage within Mondrian's binary taxonomy. Variables are measurable from WESAD (EDA phasic peaks, HR acceleration, k-NN distance). Confounders (age, fitness, medication, etc.) are identified and a rival explanation (general model misspecification) is distinguished via a regression controlling for per-subject classification accuracy. Effect size is plausibly medium with a clear rationale. Data requirements are explicit and testable on WESAD via LOOCV. The mechanism is non-generic because it names the specific interaction between autonomic reactivity outliers, Mondrian's predicted-class binning, and finite calibration density.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H2",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All eight critical checks pass. The mechanism identifies a specific gesture-frequency × watch-fit interaction that corrupts BVP/ACC in a way that mimics stress signatures, which is distinct to wrist-worn sensors (Empatica E4) and Mondrian's binary taxonomy. Variables (ACC magnitude, BVP SQI, gesture frequency, baseline ACC variance as fit proxy) are measurable from WESAD. Confounders (skin tone, temperature, non-gestural movement) are listed and a rival (general signal degradation) is distinguished by conditioning on BVP SQI. Effect size is plausibly medium with literature support. Data requirements are clear and the interaction-term regression plan is directly executable on WESAD. The mechanism is non-generic because it ties gesture-specific motion artifacts to conformal prediction's bin-pooling failure.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H3",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All eight critical checks pass. The mechanism specifies a precise temporal non-stationarity pathway: slow HRV/cortisol recovery causes feature distribution drift across the calibration window, and Mondrian's static binary taxonomy pools early and late samples, biasing the empirical quantile. Variables (HRV recovery slope, cortisol half-life, Wasserstein distance, temporal calibration index) are measurable from WESAD's protocol. Confounders (fatigue, habituation, caffeine, menstrual phase) are identified and a universal-non-stationarity rival is distinguished via a recovery-phenotype × calibration-time interaction. Effect size is plausibly medium. Data requirements are explicit and the mixed-effects model test is feasible on WESAD. The mechanism is non-generic because it links longitudinal physiological recovery dynamics to conformal prediction's exchangeability violation within taxonomy bins.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H4",
+      "audit_decision": "REJECT",
+      "variables_measurable": false,
+      "causal_chain_valid": true,
+      "base_rate_plausible": false,
+      "confounders_identified": true,
+      "effect_size_plausible": false,
+      "data_requirements_clear": false,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": false,
+      "failure_points": [
+        "variables_measurable",
+        "base_rate_plausible",
+        "effect_size_plausible",
+        "data_requirements_clear",
+        "prediction_is_testable"
+      ],
+      "decision_reason": "Five critical checks fail. The core mechanism variables—interoceptive accuracy (heartbeat counting) and alexithymia (TAS-20)—are not measured in WESAD, making variables_measurable false. Without these, base_rate_plausible and effect_size_plausible cannot be assessed (both rated unknown in the statistical testability builder). Data requirements explicitly require an external dataset with interoceptive measures, so data_requirements_clear is false for WESAD. Prediction_is_testable is false because the proposed mediation test cannot be run on WESAD alone. Although the causal chain is logically valid and confounders are identified, and the mechanism is non-generic (label-noise heterogeneity interacting with Mondrian conditional coverage), the hypothesis is not empirically grounded in the available data.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H5",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All eight critical checks pass. The mechanism identifies a known failure mode of coarse Mondrian taxonomies: binary predicted-class binning pools mild and severe stress, and the empirical quantile is dominated by the majority mild-stress samples, causing undercoverage for extreme responders. Variables (predicted probability, EDA tonic, HR max, PC1 intensity, nonconformity score) are all computable from WESAD. Confounders (model calibration, feature selection, class imbalance, score function) are listed and a model-calibration rival is distinguished via temperature scaling. Effect size is plausibly large with a strong rationale (20-30pp gaps documented in prior work). Data requirements are clear and the decile-binned coverage test is directly runnable on WESAD. The mechanism is non-generic because it specifically addresses taxonomy granularity vs. continuous stress intensity in conformal prediction.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H6",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All eight critical checks pass. The mechanism specifies a sensor-skin interface pathway: extreme skin conditions (dry/sweaty) shift EDA tonic/phasic features independent of sympathetic activity, creating bimodal nonconformity distributions within Mondrian's binary bins, so the empirical quantile falls between modes. Variables (EDA tonic, phasic driver amplitude, tonic/phasic ratio as impedance proxy, WESAD signal quality flags) are measurable. Confounders (hydration, gel degradation, humidity, temperature) are identified and a true-sympathetic-difference rival is distinguished by controlling for HR, HRV, and respiration. Effect size is plausibly medium. Data requirements are explicit and the quadratic regression with covariates is testable on WESAD. The mechanism is non-generic because it ties dry-electrode impedance artifacts to conformal prediction's bin-pooling failure in a physiological stress context.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H7",
+      "audit_decision": "REJECT",
+      "variables_measurable": false,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": false,
+      "data_requirements_clear": false,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": false,
+      "failure_points": [
+        "variables_measurable",
+        "effect_size_plausible",
+        "data_requirements_clear",
+        "prediction_is_testable"
+      ],
+      "decision_reason": "Four critical checks fail. Key confounders—sleep duration and caffeine intake—are not measured in WESAD, so variables_measurable is false for the variables needed to distinguish the circadian mechanism from the sleep/caffeine mediation rival. Effect_size_plausible is rated unknown in the statistical testability builder because these mediators are missing. Data_requirements_clear is false because the test explicitly requires augmented metadata (sleep, caffeine, wake time) not present in WESAD. Prediction_is_testable is false on WESAD alone. The causal chain is valid and confounders are well-identified, and the mechanism is non-generic (circadian phase as hidden covariate in Mondrian taxonomy), but the hypothesis cannot be evaluated with the available data.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H8",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All eight critical checks pass. The mechanism specifies a feature-conditional miscalibration pathway: atypical feature covariance (high Mahalanobis distance) violates the model's inductive bias, causing overconfident probabilities that class-conditional Mondrian taxonomy cannot correct because the miscalibration is feature-dependent, not class-dependent. Variables (Mahalanobis distance per LOOCV fold, per-subject ECE, phenotype labels, coverage under two taxonomies) are computable from WESAD. Confounders (model architecture, training set, feature engineering) are identified and a general-overfitting rival is distinguished by comparing class-conditional vs. k-NN Mondrian taxonomies. Effect size is plausibly medium with literature support. Data requirements are clear and the paired taxonomy comparison is directly executable. The mechanism is non-generic because it targets the specific mismatch between feature-conditional miscalibration and class-conditional conformal prediction in physiological data.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H9",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All eight critical checks pass. The mechanism is a mathematical property of finite-sample quantile estimation: rare phenotypes have small effective bin sizes (n_bin), causing upward bias in the empirical (1-α) quantile (order statistic variance ∝ 1/n_bin), leading to systematically narrow intervals. Variables (phenotype frequency, empirical quantile, bootstrap variance, n_bin, coverage) are measurable. Confounders (phenotype definition, sampling strategy, score skewness, predictability correlation) are identified and a model-bias rival is distinguished by simulating synthetic calibration-set augmentation. Effect size is large and mathematically grounded (coverage ≈ 1-α - O(1/√n_bin)). Data requirements are explicit and the bootstrap simulation plan is feasible on WESAD. The mechanism is non-generic because it addresses the specific interaction between phenotype rarity, Mondrian's fixed taxonomy, and finite-sample quantile bias in conformal prediction.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H10",
+      "audit_decision": "REJECT",
+      "variables_measurable": false,
+      "causal_chain_valid": true,
+      "base_rate_plausible": false,
+      "confounders_identified": true,
+      "effect_size_plausible": false,
+      "data_requirements_clear": false,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": false,
+      "failure_points": [
+        "variables_measurable",
+        "base_rate_plausible",
+        "effect_size_plausible",
+        "data_requirements_clear",
+        "prediction_is_testable"
+      ],
+      "decision_reason": "Five critical checks fail. The core mechanism variable—trait anxiety (STAI-T)—is not measured in WESAD, making variables_measurable false. Without it, base_rate_plausible and effect_size_plausible cannot be assessed (both rated unknown). Data_requirements_clear is false because the test requires an external dataset with STAI-T, baseline physiology, and stress protocol. Prediction_is_testable is false on WESAD alone. The causal chain is logically valid and confounders are identified, and the mechanism is non-generic (baseline contamination violating label-conditional exchangeability in Mondrian CP), but the hypothesis lacks empirical grounding in the available data.",
+      "salvage_note": ""
+    }
+  ],
+  "diagnostics": {
+    "generated_count": 10,
+    "passed_count": 7,
+    "rejected_count": 3,
+    "salvageable_count": 0,
+    "pass_survival_rate": 0.7,
+    "salvageable_rate": 0.0,
+    "rejection_reason_diversity": 5,
+    "top_failed_checklist_fields": {
+      "data_requirements_clear": 3,
+      "effect_size_plausible": 3,
+      "prediction_is_testable": 3,
+      "variables_measurable": 3,
+      "base_rate_plausible": 2
+    },
+    "failure_points_consistency": true,
+    "rubber_stamp_red_flags": [],
+    "mechanism_builder_count": 10,
+    "confounder_rival_builder_count": 10,
+    "statistical_testability_builder_count": 10,
+    "avg_mechanism_variables_per_hypothesis": 5.0,
+    "avg_confounders_per_hypothesis": 4.9,
+    "avg_rivals_per_hypothesis": 2.0,
+    "hypotheses_with_effect_size_expectation": 10,
+    "hypotheses_with_failure_condition": 10,
+    "hypotheses_with_testable_prediction": 10
+  },
+  "stage_6_rival_prediction_matrix": [
+    {
+      "hypothesis_id": "H1",
+      "meno_j_hypothesis": "Inter-subject variability in autonomic nervous system reactivity causes systematic miscalibration of prediction intervals for high-reactivity individuals.",
+      "meno_j_prediction": "Subjects in the top 20% of sympathetic reactivity index will have coverage rates at least 15 percentage points lower than subjects in the bottom 80%, after controlling for per-subject classification accuracy.",
+      "rival_explanation": "Undercoverage for high-reactivity subjects is caused by the nonconformity score function (1 - predicted probability) having higher variance for extreme probability values, not by low feature density in the calibration set.",
+      "rival_prediction": "If nonconformity score variance drives undercoverage, coverage will correlate with the variance of predicted probabilities for high-reactivity subjects, and a variance-stabilized nonconformity score (e.g., logit-transformed) will eliminate the reactivity-coverage correlation.",
+      "distinguishing_test": "Compute per-subject predicted probability variance during TSST; regress coverage on sympathetic reactivity index with and without probability variance as a covariate. Also test a logit-transformed nonconformity score (log(p/(1-p))) in Mondrian CP and compare reactivity-coverage correlation.",
+      "what_result_supports_meno_j": "Reactivity-coverage correlation remains significant after controlling for probability variance, and logit-transformed nonconformity score does not eliminate the correlation.",
+      "what_result_supports_rival": "Probability variance fully mediates the reactivity-coverage correlation, and logit-transformed nonconformity score restores nominal coverage for high-reactivity subjects."
+    },
+    {
+      "hypothesis_id": "H2",
+      "meno_j_hypothesis": "Wrist-worn sensor (Empatica E4) motion artifacts during stress tasks disproportionately affect certain subjects, corrupting features used for nonconformity scoring.",
+      "meno_j_prediction": "The interaction term (gesture_frequency × (6 - baseline_ACC_variance_proxy)) will significantly predict coverage rate (p < 0.05), with highest undercoverage in high-gesture/high-baseline-ACC-variance (loose-fit proxy) subgroup.",
+      "rival_explanation": "Undercoverage during TSST is caused by the model's inability to generalize to high-movement conditions, not by gesture-specific motion artifacts pooling in Mondrian bins.",
+      "rival_prediction": "If model generalization failure drives undercoverage, coverage will decline with overall movement intensity (ACC magnitude) for all subjects during TSST, regardless of gesture frequency or watch fit, and will not be specific to the predicted-stress bin.",
+      "distinguishing_test": "Stratify by overall ACC magnitude (high/low) and predicted class. Test if coverage decline is specific to high-gesture/loose-fit subjects in predicted-stress bin (proposed) or occurs uniformly across high-movement subjects in both bins (rival).",
+      "what_result_supports_meno_j": "Coverage decline is specific to high-gesture/loose-fit subjects within the predicted-stress bin; low-movement subjects and non-stress bin show nominal coverage.",
+      "what_result_supports_rival": "Coverage declines with ACC magnitude across all subjects and both predicted classes, with no interaction between gesture frequency and watch fit."
+    },
+    {
+      "hypothesis_id": "H3",
+      "meno_j_hypothesis": "Temporal non-stationarity in physiological stress trajectories violates the exchangeability assumption within Mondrian calibration folds for slow-responding subjects.",
+      "meno_j_prediction": "Slow recoverers (bottom 30% HRV recovery slope) will show a significant coverage decline from early to late calibration half (>10 percentage points), while fast recoverers will show no significant decline.",
+      "rival_explanation": "Coverage decline over calibration time is caused by sensor drift or battery depletion affecting all subjects equally, not by subject-specific recovery dynamics.",
+      "rival_prediction": "If sensor drift drives coverage decline, coverage will decrease over calibration time for both fast and slow recoverers with similar slopes, and the decline will correlate with sensor-level metrics (e.g., battery voltage, temperature) rather than HRV recovery.",
+      "distinguishing_test": "Fit mixed-effects model: coverage ~ recovery_phenotype * calibration_time_half + sensor_drift_metric + (1|subject). Test if recovery_phenotype × time interaction remains significant after controlling for sensor drift metrics.",
+      "what_result_supports_meno_j": "Recovery phenotype × time interaction is significant (p < 0.05) after controlling for sensor drift; slow recoverers show steeper coverage decline in late calibration half.",
+      "what_result_supports_rival": "Sensor drift metric explains the time effect; recovery phenotype × time interaction becomes non-significant when sensor drift is included."
+    },
+    {
+      "hypothesis_id": "H5",
+      "meno_j_hypothesis": "Mondrian taxonomy based on predicted class alone ignores continuous stress intensity, causing undercoverage for subjects at extreme intensity levels within each class.",
+      "meno_j_prediction": "Coverage rate will decrease monotonically with predicted probability within the predicted-stress bin; coverage for severe stress (prob >0.9) will be at least 15 percentage points lower than for mild stress (prob 0.5-0.7).",
+      "rival_explanation": "The coverage gap at extreme intensities is caused by the nonconformity score function (1-p) having higher variance for extreme probabilities, not by the binary taxonomy pooling.",
+      "rival_prediction": "If nonconformity score variance drives the gap, a variance-stabilized nonconformity score (e.g., logit-transformed) will eliminate the coverage gap across predicted probability deciles within the predicted-stress bin, even with the same binary taxonomy.",
+      "distinguishing_test": "Apply logit-transformed nonconformity score (log(p/(1-p))) in Mondrian CP with binary taxonomy; compute coverage per predicted probability decile. Compare coverage gap between mild (0.5-0.7) and severe (>0.9) stress before and after transformation.",
+      "what_result_supports_meno_j": "Coverage gap persists (>10pp) with logit-transformed nonconformity score under binary taxonomy.",
+      "what_result_supports_rival": "Coverage gap closes (<5pp) with logit-transformed nonconformity score under the same binary taxonomy."
+    },
+    {
+      "hypothesis_id": "H6",
+      "meno_j_hypothesis": "Subject-specific sensor-skin interface impedance (especially for EDA) creates systematic feature distribution shifts that violate the identical distribution assumption within taxonomy bins.",
+      "meno_j_prediction": "Coverage rate will show a significant quadratic relationship with EDA tonic level (U-shaped), with lowest coverage for tonic <0.5µS and >15µS, after controlling for HR max, HRV, and respiration rate.",
+      "rival_explanation": "Coverage variation with EDA tonic level is mediated by the model's feature weighting (e.g., over-reliance on EDA features for extreme tonic values), not by sensor-skin impedance artifacts.",
+      "rival_prediction": "If model feature weighting drives the U-shape, retraining the model with EDA features down-weighted or removed will eliminate the quadratic coverage-tonic relationship, while impedance artifacts would persist regardless of model architecture.",
+      "distinguishing_test": "Train two models: (1) full feature set, (2) EDA features removed or down-weighted. Run Mondrian CP with both; test quadratic tonic-coverage relationship for each. If U-shape disappears with EDA removal, rival wins.",
+      "what_result_supports_meno_j": "U-shaped coverage-tonic relationship persists even when EDA features are removed or down-weighted in the model.",
+      "what_result_supports_rival": "U-shaped relationship disappears when EDA features are removed or down-weighted, indicating model weighting mediates the effect."
+    },
+    {
+      "hypothesis_id": "H8",
+      "meno_j_hypothesis": "The nonconformity score function (e.g., 1 - predicted probability) is poorly calibrated for subjects with atypical feature covariance structure, causing systematic undercoverage.",
+      "meno_j_prediction": "Coverage for high-Mahalanobis subjects (top 5%) will be <80% with class-conditional Mondrian, but will restore to ≥85% with k-NN Mondrian (k=10) using same model probabilities.",
+      "rival_explanation": "Miscalibration for atypical subjects stems from the nonconformity score (1-p) being insensitive to feature-space density, not from the class-conditional taxonomy failing to correct feature-conditional miscalibration.",
+      "rival_prediction": "If nonconformity score insensitivity drives miscalibration, a density-aware nonconformity score (e.g., 1-p weighted by local feature density) will restore coverage for high-Mahalanobis subjects even with class-conditional taxonomy.",
+      "distinguishing_test": "Compare three approaches on high-Mahalanobis subjects: (1) class-conditional Mondrian with 1-p, (2) k-NN Mondrian with 1-p, (3) class-conditional Mondrian with density-weighted nonconformity score. Test which restores coverage.",
+      "what_result_supports_meno_j": "k-NN Mondrian (2) restores coverage to ≥85% while density-weighted class-conditional (3) does not.",
+      "what_result_supports_rival": "Density-weighted class-conditional (3) restores coverage to ≥85% while k-NN Mondrian (2) does not."
+    },
+    {
+      "hypothesis_id": "H9",
+      "meno_j_hypothesis": "Finite calibration set size combined with rare subject phenotypes leads to high variance in empirical quantile estimates for those subjects' effective taxonomy bins.",
+      "meno_j_prediction": "Coverage for phenotypes with n_bin < 10 will be significantly below 1-α (90%), with deficit inversely proportional to √n_bin. Simulated coverage will converge to 90% as n_bin increases via synthetic augmentation.",
+      "rival_explanation": "Undercoverage for rare phenotypes is caused by the nonconformity score distribution having heavier tails for these phenotypes, not by finite-sample quantile estimation variance.",
+      "rival_prediction": "If heavy tails drive undercoverage, the empirical quantile bias will not decrease with increasing n_bin (simulated), and a robust quantile estimator (e.g., trimmed mean of order statistics) will restore coverage without increasing n_bin.",
+      "distinguishing_test": "Simulate coverage vs n_bin by bootstrapping calibration samples for rare phenotypes. Fit coverage = 1-α - c/√n_bin. Also test a robust quantile estimator (e.g., 0.95 quantile of nonconformity scores) at original n_bin.",
+      "what_result_supports_meno_j": "Simulated coverage converges to 90% as n_bin increases (c > 0 significant); robust quantile estimator at original n_bin does not fully restore coverage.",
+      "what_result_supports_rival": "Simulated coverage plateaus below 90% even at large n_bin (c not significant); robust quantile estimator restores coverage at original n_bin."
+    }
+  ],
+  "stage_7_falsification_tests": [
+    {
+      "hypothesis_id": "H1",
+      "strongest_falsification_test": "Within each Mondrian bin (predicted stress/non-stress), perform a two-sample Kolmogorov-Smirnov test comparing nonconformity score distributions of high-reactivity subjects (top 20% sympathetic reactivity index) versus typical responders. Simultaneously, fit a linear regression of per-subject coverage on sympathetic reactivity index controlling for per-subject classification accuracy. If the KS test fails to reject the null (p > 0.05) AND the reactivity coefficient is non-significant (p > 0.05) or positive, the proposed mechanism is falsified.",
+      "failure_condition": "KS test p-value > 0.05 and partial correlation between reactivity index and coverage (controlling for classification accuracy) is non-significant (p > 0.05) or positive.",
+      "minimum_data_needed": "Per-subject sympathetic reactivity index, per-subject nonconformity scores for each calibration sample, per-subject coverage rates, per-subject classification accuracy from Mondrian CP with binary taxonomy on WESAD (LOOCV).",
+      "most_likely_false_positive_risk": "Small sample size (n=15) may yield non-significant results even if mechanism exists (low power).",
+      "most_likely_false_negative_risk": "If the reactivity index is poorly measured or the Mondrian bins are too coarse, the test may fail to detect a real mechanism."
+    },
+    {
+      "hypothesis_id": "H2",
+      "strongest_falsification_test": "Stratify subjects by gesture frequency (high/low) and baseline ACC variance (high/low as loose-fit proxy). Fit a linear model predicting coverage with gesture frequency, baseline ACC variance, their interaction, and BVP SQI as covariate. If the interaction term is non-significant (p > 0.05) AND coverage does not differ between high-gesture/high-baseline-ACC and high-gesture/low-baseline-ACC subgroups after conditioning on BVP SQI (ANCOVA p > 0.05), the mechanism is falsified.",
+      "failure_condition": "The interaction term p-value > 0.05 and the ANCOVA comparing coverage across gesture/fit subgroups with BVP SQI as covariate yields non-significant subgroup effect (p > 0.05).",
+      "minimum_data_needed": "Per-subject gesture frequency during TSST (ACC peaks >0.5g/min), per-subject baseline ACC variance (5-min pre-TSST), per-subject BVP SQI during TSST, per-subject coverage rates from Mondrian CP (binary taxonomy, LOOCV).",
+      "most_likely_false_positive_risk": "Baseline ACC variance is an imperfect proxy for watch fit; residual confounding may mask true interaction.",
+      "most_likely_false_negative_risk": "If motion artifacts affect all high-movement subjects similarly regardless of gesture specificity, the interaction may be non-significant even if artifacts cause undercoverage."
+    },
+    {
+      "hypothesis_id": "H3",
+      "strongest_falsification_test": "Fit a mixed-effects logistic regression: coverage ~ recovery_phenotype * calibration_time_half + (1|subject). If the interaction term is non-significant (p > 0.05) AND the coverage decline slope for slow recoverers is not significantly steeper than for fast recoverers (linear contrast p > 0.05), the mechanism is falsified.",
+      "failure_condition": "The recovery_phenotype × calibration_time_half interaction p-value > 0.05 and the difference in coverage decline slopes between phenotypes is non-significant (p > 0.05).",
+      "minimum_data_needed": "Per-subject HRV recovery slope (RMSSD change/min post-TSST), temporal index of each calibration sample (early/late half), per-subject coverage for early and late calibration samples from Mondrian CP (LOOCV).",
+      "most_likely_false_positive_risk": "WESAD protocol fixes task order, so time is confounded with task phase; a main effect of time may be misattributed to phenotype interaction.",
+      "most_likely_false_negative_risk": "If the calibration window is too short to capture drift, or if recovery phenotype is misclassified, the test may lack power to detect interaction."
+    },
+    {
+      "hypothesis_id": "H5",
+      "strongest_falsification_test": "Bin predicted-stress calibration samples by predicted probability deciles. Compute coverage per decile. Perform Jonckheere-Terpstra test for monotonic trend of coverage with predicted probability. If the trend test is non-significant (p > 0.05) AND the coverage difference between mild (prob 0.5-0.7) and severe (prob >0.9) stress is <5 percentage points, the mechanism is falsified.",
+      "failure_condition": "Jonckheere-Terpstra test p-value > 0.05 and mild-vs-severe coverage gap < 5 percentage points.",
+      "minimum_data_needed": "Predicted probability of stress class for each calibration sample (LOOCV), stress intensity latent variable (PC1 of physiological features), per-sample nonconformity scores, empirical (1-α) quantile per predicted probability decile within predicted-stress bin.",
+      "most_likely_false_positive_risk": "If the model's predicted probabilities are poorly calibrated, the decile binning may not reflect true intensity, masking the taxonomy effect.",
+      "most_likely_false_negative_risk": "If the nonconformity score function (1-p) is inherently unsuited for extreme probabilities, coverage gaps may persist even with intensity-aware taxonomy, making it appear the binary taxonomy is not the bottleneck."
+    },
+    {
+      "hypothesis_id": "H6",
+      "strongest_falsification_test": "Fit a regression: coverage ~ tonic + tonic² + HR_max + HRV + respiration_rate. If the quadratic tonic term is non-significant (p > 0.05) AND an ANOVA comparing coverage across skin condition categories (dry/normal/sweaty) is non-significant (p > 0.05) after controlling for HR_max, HRV, respiration, the mechanism is falsified.",
+      "failure_condition": "Quadratic tonic coefficient p-value > 0.05 and skin condition category effect p-value > 0.05 in ANCOVA with sympathetic covariates.",
+      "minimum_data_needed": "Per-subject mean EDA tonic level during TSST, per-subject EDA phasic driver amplitude, per-subject coverage rates, HR max, HRV, respiration rate during TSST.",
+      "most_likely_false_positive_risk": "EDA tonic level may correlate with true sympathetic tone; residual confounding may produce spurious U-shape.",
+      "most_likely_false_negative_risk": "Skin impedance not directly measured; tonic/phasic ratio may be insufficient proxy, leading to misclassification of skin condition."
+    },
+    {
+      "hypothesis_id": "H8",
+      "strongest_falsification_test": "For each LOOCV fold, compute Mahalanobis distance of left-out subject to training set. Identify high-Mahalanobis subjects (top 5%). Run class-conditional Mondrian and k-NN Mondrian (k=10) on these subjects. Perform paired Wilcoxon test comparing coverage between taxonomies. If the test is non-significant (p > 0.05) AND both taxonomies yield coverage <80% for high-Mahalanobis subjects, the mechanism is falsified.",
+      "failure_condition": "Paired Wilcoxon test p-value > 0.05 and median coverage for high-Mahalanobis subjects <80% under both taxonomies.",
+      "minimum_data_needed": "Per-subject Mahalanobis distance from training population feature covariance (LOOCV), per-subject coverage from class-conditional Mondrian and k-NN Mondrian (k=10), subject phenotype labels.",
+      "most_likely_false_positive_risk": "k-NN taxonomy may not adequately capture feature-conditional calibration if k is poorly chosen or feature space is high-dimensional.",
+      "most_likely_false_negative_risk": "If the model's probabilities are fundamentally unreliable for OOD samples, no taxonomy can rescue coverage, making it appear the mechanism is wrong when it's actually a model limitation."
+    },
+    {
+      "hypothesis_id": "H9",
+      "strongest_falsification_test": "Define rare phenotypes in WESAD (non-responders, paradoxical responders). Compute n_bin per phenotype in Mondrian bins. Run LOOCV Mondrian CP; record per-phenotype coverage. Test coverage vs 90% via exact binomial test. Simulate: bootstrap calibration samples to create synthetic sets of increasing size; compute coverage vs n_bin. Fit coverage = 1-α - c/√n_bin. If per-phenotype coverage is not significantly below 90% (binomial test p > 0.05) OR the simulated coverage plateaus below 90% as n_bin grows (c not significantly >0), the mechanism is falsified.",
+      "failure_condition": "Exact binomial test p-value > 0.05 for all rare phenotypes, or the simulated coverage curve plateaus below 90% (c ≤ 0 in coverage = 1-α - c/√n_bin).",
+      "minimum_data_needed": "Phenotype definitions and counts in WESAD calibration set, per-phenotype effective bin size (n_bin), empirical (1-α) quantile estimates per phenotype bin, bootstrap variance of quantile estimates per phenotype.",
+      "most_likely_false_positive_risk": "Phenotype definitions may be arbitrary; small n_bin may yield non-significant binomial tests due to low power.",
+      "most_likely_false_negative_risk": "If the nonconformity score distribution for rare phenotypes has heavier tails, coverage may not converge to 1-α even with large n_bin, mimicking model bias."
+    }
+  ]
+}

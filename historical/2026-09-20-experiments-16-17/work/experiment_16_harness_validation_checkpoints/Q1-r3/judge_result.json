@@ -1,0 +1,578 @@
+{
+  "status": "OK",
+  "key": {
+    "C5a014b91": {
+      "arm": "A",
+      "source_ref": "H5"
+    },
+    "C42f59313": {
+      "arm": "B",
+      "source_ref": "S4-H9"
+    },
+    "C74e78dd0": {
+      "arm": "A",
+      "source_ref": "H8"
+    },
+    "C2113f0d4": {
+      "arm": "A",
+      "source_ref": "H1"
+    },
+    "Cf60996f8": {
+      "arm": "A",
+      "source_ref": "H9"
+    },
+    "C2227c91f": {
+      "arm": "A",
+      "source_ref": "H2"
+    },
+    "C1ecd8d91": {
+      "arm": "B",
+      "source_ref": "S1-H6"
+    },
+    "C04dbcbb7": {
+      "arm": "B",
+      "source_ref": "S4-H4"
+    },
+    "Cf26cf85d": {
+      "arm": "A",
+      "source_ref": "H10"
+    },
+    "Cda36bed5": {
+      "arm": "B",
+      "source_ref": "S1-H7"
+    },
+    "C9db476d6": {
+      "arm": "B",
+      "source_ref": "S4-H5"
+    },
+    "C8899cace": {
+      "arm": "A",
+      "source_ref": "H6"
+    }
+  },
+  "blinded_cards": [
+    {
+      "card_id": "C5a014b91",
+      "hypothesis": "Fake hypothesis 5 (n200) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 5 (n312) with a specific variable relation.",
+      "causal_path": "Fake path H5 (n6) with a specific variable relation.",
+      "mechanism_variables": [
+        "Fake var H5 (n524) with a specific variable relation."
+      ],
+      "possible_confounders": [
+        "Fake confounder H5 (n77) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H5 (n833) with a specific variable relation."
+      ],
+      "rival_explanation": "Fake rival H5 (n495) with a specific variable relation.",
+      "rival_prediction": "Fake rp H5 (n248) with a specific variable relation.",
+      "distinguishing_test": "Fake dt H5 (n523) with a specific variable relation.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H5 (n639) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H5 (n203) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H5 (n897) with a specific variable relation.",
+      "failure_condition": "Fake fc H5 (n545) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H5 (n742) with a specific variable relation.",
+      "falsification_test": "Fake ft H5 (n306) with a specific variable relation."
+    },
+    {
+      "card_id": "C42f59313",
+      "hypothesis": "Fake hypothesis 9 (n444) with a specific variable relation.",
+      "proposed_mechanism": "Fake proposed_mechanism 9 (n677) with a specific variable relation.",
+      "causal_path": "Fake causal_path 9 (n548) with a specific variable relation.",
+      "mechanism_variables": [
+        "Fake mechanism_variables 9 (n185) with a specific variable relation."
+      ],
+      "possible_confounders": [
+        "Fake possible_confounders 9 (n692) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control_variables 9 (n764) with a specific variable relation."
+      ],
+      "rival_explanation": "Fake rival_explanation 9 (n784) with a specific variable relation.",
+      "rival_prediction": "Fake rival_prediction 9 (n735) with a specific variable relation.",
+      "distinguishing_test": "Fake distinguishing_test 9 (n389) with a specific variable relation.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Fake effect_size_rationale 9 (n17) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake minimum_data_needed 9 (n955) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake testable_prediction 9 (n6) with a specific variable relation.",
+      "failure_condition": "Fake failure_condition 9 (n919) with a specific variable relation.",
+      "statistical_test_plan": "Fake statistical_test_plan 9 (n380) with a specific variable relation.",
+      "falsification_test": "Fake falsification_test 9 (n310) with a specific variable relation."
+    },
+    {
+      "card_id": "C74e78dd0",
+      "hypothesis": "Fake hypothesis 8 (n644) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 8 (n561) with a specific variable relation.",
+      "causal_path": "Fake path H8 (n167) with a specific variable relation.",
+      "mechanism_variables": [
+        "Fake var H8 (n9) with a specific variable relation."
+      ],
+      "possible_confounders": [
+        "Fake confounder H8 (n11) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H8 (n174) with a specific variable relation."
+      ],
+      "rival_explanation": "Fake rival H8 (n207) with a specific variable relation.",
+      "rival_prediction": "Fake rp H8 (n964) with a specific variable relation.",
+      "distinguishing_test": "Fake dt H8 (n703) with a specific variable relation.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H8 (n993) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H8 (n903) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H8 (n742) with a specific variable relation.",
+      "failure_condition": "Fake fc H8 (n137) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H8 (n935) with a specific variable relation.",
+      "falsification_test": "Fake ft H8 (n164) with a specific variable relation."
+    },
+    {
+      "card_id": "C2113f0d4",
+      "hypothesis": "Fake hypothesis 1 (n60) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 1 (n240) with a specific variable relation.",
+      "causal_path": "Fake path H1 (n115) with a specific variable relation.",
+      "mechanism_variables": [
+        "Fake var H1 (n653) with a specific variable relation."
+      ],
+      "possible_confounders": [
+        "Fake confounder H1 (n479) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H1 (n951) with a specific variable relation."
+      ],
+      "rival_explanation": "Fake rival H1 (n535) with a specific variable relation.",
+      "rival_prediction": "Fake rp H1 (n956) with a specific variable relation.",
+      "distinguishing_test": "Fake dt H1 (n69) with a specific variable relation.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H1 (n618) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H1 (n385) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H1 (n209) with a specific variable relation.",
+      "failure_condition": "Fake fc H1 (n309) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H1 (n862) with a specific variable relation.",
+      "falsification_test": "Fake ft H1 (n722) with a specific variable relation."
+    },
+    {
+      "card_id": "Cf60996f8",
+      "hypothesis": "Fake hypothesis 9 (n575) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 9 (n120) with a specific variable relation.",
+      "causal_path": "Fake path H9 (n191) with a specific variable relation.",
+      "mechanism_variables": [
+        "Fake var H9 (n70) with a specific variable relation."
+      ],
+      "possible_confounders": [
+        "Fake confounder H9 (n89) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H9 (n575) with a specific variable relation."
+      ],
+      "rival_explanation": "Fake rival H9 (n394) with a specific variable relation.",
+      "rival_prediction": "Fake rp H9 (n483) with a specific variable relation.",
+      "distinguishing_test": "Fake dt H9 (n14) with a specific variable relation.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H9 (n455) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H9 (n298) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H9 (n303) with a specific variable relation.",
+      "failure_condition": "Fake fc H9 (n784) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H9 (n498) with a specific variable relation.",
+      "falsification_test": "Fake ft H9 (n832) with a specific variable relation."
+    },
+    {
+      "card_id": "C2227c91f",
+      "hypothesis": "Fake hypothesis 2 (n268) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 2 (n911) with a specific variable relation.",
+      "causal_path": "Fake path H2 (n386) with a specific variable relation.",
+      "mechanism_variables": [
+        "Fake var H2 (n592) with a specific variable relation."
+      ],
+      "possible_confounders": [
+        "Fake confounder H2 (n460) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H2 (n246) with a specific variable relation."
+      ],
+      "rival_explanation": "Fake rival H2 (n125) with a specific variable relation.",
+      "rival_prediction": "Fake rp H2 (n132) with a specific variable relation.",
+      "distinguishing_test": "Fake dt H2 (n704) with a specific variable relation.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H2 (n593) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H2 (n539) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H2 (n901) with a specific variable relation.",
+      "failure_condition": "Fake fc H2 (n975) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H2 (n278) with a specific variable relation.",
+      "falsification_test": "Fake ft H2 (n814) with a specific variable relation."
+    },
+    {
+      "card_id": "C1ecd8d91",
+      "hypothesis": "Fake hypothesis 6 (n283) with a specific variable relation.",
+      "proposed_mechanism": "Fake proposed_mechanism 6 (n55) with a specific variable relation.",
+      "causal_path": "Fake causal_path 6 (n576) with a specific variable relation.",
+      "mechanism_variables": [
+        "Fake mechanism_variables 6 (n811) with a specific variable relation."
+      ],
+      "possible_confounders": [
+        "Fake possible_confounders 6 (n795) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control_variables 6 (n295) with a specific variable relation."
+      ],
+      "rival_explanation": "Fake rival_explanation 6 (n820) with a specific variable relation.",
+      "rival_prediction": "Fake rival_prediction 6 (n987) with a specific variable relation.",
+      "distinguishing_test": "Fake distinguishing_test 6 (n420) with a specific variable relation.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Fake effect_size_rationale 6 (n325) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake minimum_data_needed 6 (n539) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake testable_prediction 6 (n900) with a specific variable relation.",
+      "failure_condition": "Fake failure_condition 6 (n497) with a specific variable relation.",
+      "statistical_test_plan": "Fake statistical_test_plan 6 (n900) with a specific variable relation.",
+      "falsification_test": "Fake falsification_test 6 (n966) with a specific variable relation."
+    },
+    {
+      "card_id": "C04dbcbb7",
+      "hypothesis": "Fake hypothesis 4 (n659) with a specific variable relation.",
+      "proposed_mechanism": "Fake proposed_mechanism 4 (n228) with a specific variable relation.",
+      "causal_path": "Fake causal_path 4 (n722) with a specific variable relation.",
+      "mechanism_variables": [
+        "Fake mechanism_variables 4 (n362) with a specific variable relation."
+      ],
+      "possible_confounders": [
+        "Fake possible_confounders 4 (n902) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control_variables 4 (n538) with a specific variable relation."
+      ],
+      "rival_explanation": "Fake rival_explanation 4 (n675) with a specific variable relation.",
+      "rival_prediction": "Fake rival_prediction 4 (n66) with a specific variable relation.",
+      "distinguishing_test": "Fake distinguishing_test 4 (n477) with a specific variable relation.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Fake effect_size_rationale 4 (n789) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake minimum_data_needed 4 (n114) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake testable_prediction 4 (n434) with a specific variable relation.",
+      "failure_condition": "Fake failure_condition 4 (n190) with a specific variable relation.",
+      "statistical_test_plan": "Fake statistical_test_plan 4 (n941) with a specific variable relation.",
+      "falsification_test": "Fake falsification_test 4 (n285) with a specific variable relation."
+    },
+    {
+      "card_id": "Cf26cf85d",
+      "hypothesis": "Fake hypothesis 10 (n762) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 10 (n220) with a specific variable relation.",
+      "causal_path": "Fake path H10 (n581) with a specific variable relation.",
+      "mechanism_variables": [
+        "Fake var H10 (n11) with a specific variable relation."
+      ],
+      "possible_confounders": [
+        "Fake confounder H10 (n825) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H10 (n817) with a specific variable relation."
+      ],
+      "rival_explanation": "Fake rival H10 (n755) with a specific variable relation.",
+      "rival_prediction": "Fake rp H10 (n125) with a specific variable relation.",
+      "distinguishing_test": "Fake dt H10 (n694) with a specific variable relation.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H10 (n447) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H10 (n95) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H10 (n757) with a specific variable relation.",
+      "failure_condition": "Fake fc H10 (n367) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H10 (n755) with a specific variable relation.",
+      "falsification_test": "Fake ft H10 (n685) with a specific variable relation."
+    },
+    {
+      "card_id": "Cda36bed5",
+      "hypothesis": "Fake hypothesis 7 (n348) with a specific variable relation.",
+      "proposed_mechanism": "Fake proposed_mechanism 7 (n485) with a specific variable relation.",
+      "causal_path": "Fake causal_path 7 (n492) with a specific variable relation.",
+      "mechanism_variables": [
+        "Fake mechanism_variables 7 (n698) with a specific variable relation."
+      ],
+      "possible_confounders": [
+        "Fake possible_confounders 7 (n644) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control_variables 7 (n756) with a specific variable relation."
+      ],
+      "rival_explanation": "Fake rival_explanation 7 (n197) with a specific variable relation.",
+      "rival_prediction": "Fake rival_prediction 7 (n212) with a specific variable relation.",
+      "distinguishing_test": "Fake distinguishing_test 7 (n977) with a specific variable relation.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Fake effect_size_rationale 7 (n828) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake minimum_data_needed 7 (n413) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake testable_prediction 7 (n305) with a specific variable relation.",
+      "failure_condition": "Fake failure_condition 7 (n833) with a specific variable relation.",
+      "statistical_test_plan": "Fake statistical_test_plan 7 (n159) with a specific variable relation.",
+      "falsification_test": "Fake falsification_test 7 (n928) with a specific variable relation."
+    },
+    {
+      "card_id": "C9db476d6",
+      "hypothesis": "Fake hypothesis 5 (n62) with a specific variable relation.",
+      "proposed_mechanism": "Fake proposed_mechanism 5 (n561) with a specific variable relation.",
+      "causal_path": "Fake causal_path 5 (n374) with a specific variable relation.",
+      "mechanism_variables": [
+        "Fake mechanism_variables 5 (n411) with a specific variable relation."
+      ],
+      "possible_confounders": [
+        "Fake possible_confounders 5 (n836) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control_variables 5 (n832) with a specific variable relation."
+      ],
+      "rival_explanation": "Fake rival_explanation 5 (n934) with a specific variable relation.",
+      "rival_prediction": "Fake rival_prediction 5 (n407) with a specific variable relation.",
+      "distinguishing_test": "Fake distinguishing_test 5 (n733) with a specific variable relation.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Fake effect_size_rationale 5 (n774) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake minimum_data_needed 5 (n685) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake testable_prediction 5 (n372) with a specific variable relation.",
+      "failure_condition": "Fake failure_condition 5 (n905) with a specific variable relation.",
+      "statistical_test_plan": "Fake statistical_test_plan 5 (n656) with a specific variable relation.",
+      "falsification_test": "Fake falsification_test 5 (n610) with a specific variable relation."
+    },
+    {
+      "card_id": "C8899cace",
+      "hypothesis": "Fake hypothesis 6 (n240) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 6 (n942) with a specific variable relation.",
+      "causal_path": "Fake path H6 (n414) with a specific variable relation.",
+      "mechanism_variables": [
+        "Fake var H6 (n174) with a specific variable relation."
+      ],
+      "possible_confounders": [
+        "Fake confounder H6 (n632) with a specific variable relation."
+      ],
+      "control_variables": [
+        "Fake control H6 (n80) with a specific variable relation."
+      ],
+      "rival_explanation": "Fake rival H6 (n725) with a specific variable relation.",
+      "rival_prediction": "Fake rp H6 (n85) with a specific variable relation.",
+      "distinguishing_test": "Fake dt H6 (n918) with a specific variable relation.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H6 (n528) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H6 (n654) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H6 (n795) with a specific variable relation.",
+      "failure_condition": "Fake fc H6 (n478) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H6 (n817) with a specific variable relation.",
+      "falsification_test": "Fake ft H6 (n171) with a specific variable relation."
+    }
+  ],
+  "judgments": [
+    {
+      "card_id": "C5a014b91",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": false,
+      "prediction_is_testable": false,
+      "rival_prediction_diverges": false,
+      "failure_condition_operational": true,
+      "judge_reason": "Fake judge reason for C5a014b91."
+    },
+    {
+      "card_id": "C42f59313",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": false,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "rival_prediction_diverges": true,
+      "failure_condition_operational": true,
+      "judge_reason": "Fake judge reason for C42f59313."
+    },
+    {
+      "card_id": "C74e78dd0",
+      "variables_measurable": false,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "rival_prediction_diverges": true,
+      "failure_condition_operational": true,
+      "judge_reason": "Fake judge reason for C74e78dd0."
+    },
+    {
+      "card_id": "C2113f0d4",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "rival_prediction_diverges": true,
+      "failure_condition_operational": true,
+      "judge_reason": "Fake judge reason for C2113f0d4."
+    },
+    {
+      "card_id": "Cf60996f8",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": false,
+      "data_requirements_clear": false,
+      "mechanism_is_non_generic": false,
+      "prediction_is_testable": true,
+      "rival_prediction_diverges": true,
+      "failure_condition_operational": true,
+      "judge_reason": "Fake judge reason for Cf60996f8."
+    },
+    {
+      "card_id": "C2227c91f",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "rival_prediction_diverges": true,
+      "failure_condition_operational": true,
+      "judge_reason": "Fake judge reason for C2227c91f."
+    },
+    {
+      "card_id": "C1ecd8d91",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": false,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "rival_prediction_diverges": true,
+      "failure_condition_operational": true,
+      "judge_reason": "Fake judge reason for C1ecd8d91."
+    },
+    {
+      "card_id": "C04dbcbb7",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "rival_prediction_diverges": true,
+      "failure_condition_operational": true,
+      "judge_reason": "Fake judge reason for C04dbcbb7."
+    },
+    {
+      "card_id": "Cf26cf85d",
+      "variables_measurable": false,
+      "causal_chain_valid": false,
+      "base_rate_plausible": false,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": false,
+      "prediction_is_testable": false,
+      "rival_prediction_diverges": false,
+      "failure_condition_operational": false,
+      "judge_reason": "Fake judge reason for Cf26cf85d."
+    },
+    {
+      "card_id": "Cda36bed5",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": false,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "rival_prediction_diverges": true,
+      "failure_condition_operational": true,
+      "judge_reason": "Fake judge reason for Cda36bed5."
+    },
+    {
+      "card_id": "C9db476d6",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "rival_prediction_diverges": true,
+      "failure_condition_operational": true,
+      "judge_reason": "Fake judge reason for C9db476d6."
+    },
+    {
+      "card_id": "C8899cace",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "rival_prediction_diverges": false,
+      "failure_condition_operational": false,
+      "judge_reason": "Fake judge reason for C8899cace."
+    }
+  ],
+  "batches": [
+    {
+      "batch": 0,
+      "card_ids": [
+        "C5a014b91",
+        "C42f59313",
+        "C74e78dd0",
+        "C2113f0d4",
+        "Cf60996f8",
+        "C2227c91f",
+        "C1ecd8d91",
+        "C04dbcbb7",
+        "Cf26cf85d",
+        "Cda36bed5"
+      ],
+      "prompt_sha256": "70de2d89ff9812a7e0c4ba8406ef20996cb530e9fb1701009f20d7cf61ee3d52",
+      "cards_sha256": "933fb9ba63f8966e23d287b6b574dc35de3b647fe195900ea5901071ff9d5843"
+    },
+    {
+      "batch": 1,
+      "card_ids": [
+        "C9db476d6",
+        "C8899cace"
+      ],
+      "prompt_sha256": "c1d00c3a22aa0a7fe328c296be58c05e0bd90fff7df98a300b244c85fd127f1b",
+      "cards_sha256": "406d2f986011af711efdf627e5c3dca24f29541dd5617c09afb715b9f22d93c6"
+    }
+  ],
+  "blinding_leak_hits": []
+}

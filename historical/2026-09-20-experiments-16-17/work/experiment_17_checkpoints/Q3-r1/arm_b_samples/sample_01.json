@@ -1,0 +1,401 @@
+{
+  "sample_index": 1,
+  "valid": true,
+  "error": null,
+  "cards": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Subject-specific baseline skin conductance influences wearable stress-detection uncertainty via increased sensor noise.",
+      "proposed_mechanism": "Higher baseline skin conductance raises electrode-skin interface impedance, amplifying motion artifacts in the PPG signal, which increases model prediction uncertainty.",
+      "causal_path": "Baseline skin conductance → Electrode-skin impedance → Motion artifact amplitude → Prediction uncertainty",
+      "mechanism_variables": [
+        "baseline_skin_conductance",
+        "electrode_skin_impedance",
+        "motion_artifact_amplitude",
+        "prediction_uncertainty"
+      ],
+      "possible_confounders": [
+        "ambient_temperature",
+        "subject_movement_intensity",
+        "sensor_placement_tightness"
+      ],
+      "control_variables": [
+        "ambient_temperature",
+        "subject_movement_intensity",
+        "sensor_placement_tightness"
+      ],
+      "rival_explanation": "Uncertainty differences are driven by variations in sensor firmware version across devices.",
+      "rival_prediction": "Subjects using older firmware versions will show higher uncertainty regardless of baseline skin conductance.",
+      "distinguishing_test": "Within a fixed firmware version, test whether baseline skin conductance still predicts uncertainty; a significant effect supports H1, while non-significance supports the rival.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Prior work shows skin conductance explains roughly 10‑15% of variance in PPG noise levels.",
+      "minimum_data_needed": [
+        "baseline_skin_conductance_measurements",
+        "electrode_skin_impedance",
+        "motion_artifact_amplitude",
+        "prediction_uncertainty_per_epoch",
+        "firmware_version_log",
+        "ambient_temperature_readings",
+        "movement_intensity_data"
+      ],
+      "testable_prediction": "Higher baseline skin conductance will be associated with higher prediction uncertainty after controlling for temperature, movement, and placement tightness.",
+      "failure_condition": "No statistically significant association between baseline skin conductance and uncertainty after adjusting for the confounders.",
+      "statistical_test_plan": "Linear mixed-effects model with uncertainty as outcome, fixed effect of baseline skin conductance, random intercept for subject, and the three control variables; evaluate the skin conductance coefficient.",
+      "falsification_test": "Experimentally alter baseline skin conductance via iontophoresis (increase or decrease) while holding temperature, movement, and placement constant; if uncertainty does not change in the predicted direction, the mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Variability in sensor placement tilt angle leads to differential motion artifact and thus uncertainty in stress detection.",
+      "proposed_mechanism": "Greater tilt angle increases the lever arm for subject motion, producing larger motion artifacts in the PPG waveform and raising model uncertainty.",
+      "causal_path": "Placement tilt angle → Motion artifact magnitude → Prediction uncertainty",
+      "mechanism_variables": [
+        "placement_tilt_angle",
+        "motion_artifact_magnitude",
+        "prediction_uncertainty"
+      ],
+      "possible_confounders": [
+        "subject_activity_level",
+        "sensor_adhesion_quality",
+        "skin_hair_density"
+      ],
+      "control_variables": [
+        "activity_level",
+        "adhesion_quality",
+        "hair_density"
+      ],
+      "rival_explanation": "Uncertainty differences arise from individual differences in baseline heart‑rate variability (HRV) affecting model confidence.",
+      "rival_prediction": "Subjects with lower baseline HRV will have higher uncertainty irrespective of sensor tilt angle.",
+      "distinguishing_test": "Within subjects, systematically vary tilt angle while holding HRV constant; if uncertainty changes with tilt, H2 is supported; if not, the rival is favored.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Experimental studies report <5% change in signal‑to‑noise ratio for tilt angles under 10 degrees.",
+      "minimum_data_needed": [
+        "placement_tilt_angle_measurements",
+        "motion_artifact_magnitude",
+        "prediction_uncertainty",
+        "baseline_HRV",
+        "activity_level",
+        "adhesion_quality",
+        "hair_density"
+      ],
+      "testable_prediction": "Larger placement tilt angle predicts higher prediction uncertainty after adjusting for activity, adhesion quality, and hair density.",
+      "failure_condition": "No significant effect of tilt angle on uncertainty after controlling for the confounders.",
+      "statistical_test_plan": "Repeated‑measures linear mixed model with tilt angle as fixed effect, subject as random intercept, and the three control variables; test the tilt coefficient.",
+      "falsification_test": "Fix the sensor with a rigid mount that eliminates tilt variation across all sessions; if uncertainty no longer varies with tilt (i.e., shows no tilt‑related differences), the mechanism is supported; if uncertainty still shows tilt‑related patterns, H2 is falsified."
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Individual baseline cortisol levels modulate stress‑response magnitude, leading to heterogeneous model uncertainty.",
+      "proposed_mechanism": "Higher baseline cortisol attenuates the physiological stress response, producing smaller changes in stress‑sensitive features and thus higher prediction uncertainty.",
+      "causal_path": "Baseline cortisol → Stress‑response magnitude (cortisol AUC) → Prediction uncertainty",
+      "mechanism_variables": [
+        "baseline_cortisol",
+        "stress_response_magnitude",
+        "prediction_uncertainty"
+      ],
+      "possible_confounders": [
+        "time_of_day",
+        "caffeine_intake",
+        "menstrual_phase"
+      ],
+      "control_variables": [
+        "time_of_day",
+        "caffeine_intake",
+        "menstrual_phase"
+      ],
+      "rival_explanation": "Uncertainty stems from unequal labeling density of high‑stress epochs across subjects during model training.",
+      "rival_prediction": "Subjects with fewer high‑stress labels will exhibit higher uncertainty regardless of baseline cortisol.",
+      "distinguishing_test": "After controlling for label density, test whether baseline cortisol still predicts uncertainty; a significant effect supports H3, while non‑significance supports the rival.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Baseline cortisol accounts for approximately 12% of variance in stress‑induced cortisol responses in prior literature.",
+      "minimum_data_needed": [
+        "baseline_cortisol",
+        "stress_task_cortisol_AUC",
+        "prediction_uncertainty",
+        "label_density_per_subject",
+        "time_of_day",
+        "caffeine_intake",
+        "menstrual_phase"
+      ],
+      "testable_prediction": "Higher baseline cortisol predicts higher prediction uncertainty, mediated by a smaller stress‑induced cortisol response.",
+      "failure_condition": "No significant mediation effect of stress‑response magnitude on the relationship between baseline cortisol and uncertainty.",
+      "statistical_test_plan": "Mediation analysis using bootstrapped indirect effects: baseline cortisol → stress‑response magnitude → prediction uncertainty, with the three covariates included in both paths.",
+      "falsification_test": "Pharmacologically lower baseline cortisol (e.g., with metyrapone) and measure whether uncertainty decreases as predicted; if uncertainty does not change, the mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Cutaneous habituation to prolonged wear reduces sensor‑skin impedance, lowering uncertainty over days.",
+      "proposed_mechanism": "Repeated wear leads to epidermal remodeling and improved electrode contact, decreasing impedance and motion‑artifact noise, which reduces model uncertainty.",
+      "causal_path": "Days since first wear → Skin adaptation index (impedance reduction) → Prediction uncertainty",
+      "mechanism_variables": [
+        "days_since_first_wear",
+        "skin_adaptation_index",
+        "prediction_uncertainty"
+      ],
+      "possible_confounders": [
+        "sensor_firmware_updates",
+        "subject_activity_variability",
+        "environmental_humidity"
+      ],
+      "control_variables": [
+        "firmware_version",
+        "activity_variability",
+        "humidity"
+      ],
+      "rival_explanation": "Uncertainty declines because the model accumulates more training samples and improves via online learning, not due to skin changes.",
+      "rival_prediction": "Uncertainty will decrease with the number of labeled samples regardless of how many days the device has been worn.",
+      "distinguishing_test": "Match subjects on total labeled samples but vary wear duration; if uncertainty still correlates with days worn, H4 is supported; if not, the rival is favored.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Habituation‑related impedance shifts are typically modest (<10% change) in short‑term wear studies.",
+      "minimum_data_needed": [
+        "days_since_first_wear",
+        "skin_adaptation_index (impedance)",
+        "prediction_uncertainty",
+        "number_of_labeled_samples",
+        "firmware_version",
+        "activity_variability",
+        "humidity"
+      ],
+      "testable_prediction": "More days of wear predict lower prediction uncertainty after controlling for labeled sample count, firmware version, activity variability, and humidity.",
+      "failure_condition": "No significant association between days worn and uncertainty after adjusting for the confounders.",
+      "statistical_test_plan": "Linear mixed model with uncertainty as outcome, fixed effect of days worn, random intercept for subject, and the three control variables; evaluate the days‑worn coefficient.",
+      "falsification_test": "Apply a thin, inert barrier layer that prevents epidermal changes while keeping the device worn; if uncertainty still declines over days, skin habituation is not the cause, falsifying H4."
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Variability in self‑report accuracy of stress labels introduces label noise that inflates prediction uncertainty for some subjects.",
+      "proposed_mechanism": "Lower concordance between self‑reported stress and physiological gold standard increases noise in the training targets, causing the model to learn less reliable mappings and output higher uncertainty.",
+      "causal_path": "Self‑report accuracy → Label noise variance → Prediction uncertainty",
+      "mechanism_variables": [
+        "self_report_accuracy",
+        "label_noise_variance",
+        "prediction_uncertainty"
+      ],
+      "possible_confounders": [
+        "stress_task_intensity",
+        "subject_awareness",
+        "sensor_signal_quality"
+      ],
+      "control_variables": [
+        "task_intensity",
+        "awareness_score",
+        "signal_quality"
+      ],
+      "rival_explanation": "Uncertainty differences are driven primarily by differences in raw sensor signal quality across subjects.",
+      "rival_prediction": "Subjects with poorer signal quality will have higher uncertainty irrespective of their self‑report accuracy.",
+      "distinguishing_test": "Restrict analysis to epochs with comparable signal quality (e.g., top quartile SNR); if self‑report accuracy still predicts uncertainty, H5 is supported; if not, the rival is favored.",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "The magnitude of label‑noise effects has not been quantified in wearable stress‑detection literature; empirical estimation requires concurrent physiological gold‑standard data.",
+      "minimum_data_needed": [
+        "self_report_stress_scores",
+        "physiological_gold_standard_cortisol",
+        "label_noise_variance (residual variance of self‑report vs gold standard)",
+        "prediction_uncertainty",
+        "task_intensity",
+        "awareness_score",
+        "signal_quality_metric"
+      ],
+      "testable_prediction": "Lower self‑report accuracy predicts higher prediction uncertainty after adjusting for task intensity, awareness, and signal quality.",
+      "failure_condition": "No significant association between self‑report accuracy and uncertainty after controlling for the three confounders.",
+      "statistical_test_plan": "Multiple regression of uncertainty on self‑report accuracy with task intensity, awareness, and signal quality as covariates; test the accuracy coefficient.",
+      "falsification_test": "Replace self‑report labels with objective physiological stress markers (e.g., cortisol AUC) for a subset of subjects; if uncertainty differences disappear, label noise was the driver; if uncertainty differences persist, H5 is falsified."
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Age‑related increases in skin thickness elevate electrode‑skin impedance, leading to higher uncertainty in older users.",
+      "proposed_mechanism": "Older age is associated with thicker stratum corneum and epidermis, which raises impedance and degrades signal quality, increasing model uncertainty.",
+      "causal_path": "Age → Skin thickness → Electrode‑skin impedance → Prediction uncertainty",
+      "mechanism_variables": [
+        "age",
+        "skin_thickness",
+        "electrode_skin_impedance",
+        "prediction_uncertainty"
+      ],
+      "possible_confounders": [
+        "subcutaneous_fat_thickness",
+        "hydration_status",
+        "medication_use"
+      ],
+      "control_variables": [
+        "fat_thickness",
+        "hydration",
+        "medication"
+      ],
+      "rival_explanation": "Uncertainty varies with age due to age‑related declines in autonomic responsiveness (e.g., lower HRV), not skin thickness.",
+      "rival_prediction": "Older subjects will show higher uncertainty because of reduced HRV, regardless of their skin thickness.",
+      "distinguishing_test": "After controlling for HRV, test whether skin thickness still predicts uncertainty; a significant effect supports H6, while non‑significance supports the rival.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Skin thickness explains roughly 15% of variance in impedance measurements across adult age ranges in dermatology studies.",
+      "minimum_data_needed": [
+        "age",
+        "skin_thickness_ultrasound",
+        "electrode_skin_impedance",
+        "prediction_uncertainty",
+        "baseline_HRV",
+        "subcutaneous_fat_thickness",
+        "hydration_status",
+        "medication_use"
+      ],
+      "testable_prediction": "Greater age predicts higher uncertainty via increased skin thickness and impedance, after adjusting for fat, hydration, and medication.",
+      "failure_condition": "No significant mediation pathway from age through skin thickness and impedance to uncertainty.",
+      "statistical_test_plan": "Sequential mediation analysis: age → skin thickness → impedance → uncertainty, with fat, hydration, and medication as covariates in each stage.",
+      "falsification_test": "Apply a conductive gel that equalizes impedance across ages; if age differences in uncertainty persist after impedance normalization, the skin‑thickness mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Subject‑specific muscle tremor frequency contributes to motion‑artifact power in the PPG band, raising uncertainty during low‑activity periods.",
+      "proposed_mechanism": "Higher frequency tremor injects physiological motion into the same bandwidth as the PPG pulse, increasing artifact power and degrading the signal‑to‑noise ratio, which inflates model uncertainty.",
+      "causal_path": "Muscle tremor frequency → Motion‑artifact power in PPG band → Prediction uncertainty",
+      "mechanism_variables": [
+        "muscle_tremor_frequency",
+        "motion_artifact_power_PPG",
+        "prediction_uncertainty"
+      ],
+      "possible_confounders": [
+        "overall_movement_amount",
+        "sensor_placement_location",
+        "skin_tone"
+      ],
+      "control_variables": [
+        "movement_amount",
+        "placement_location",
+        "skin_tone"
+      ],
+      "rival_explanation": "Uncertainty differences arise from variations in baseline heart rate affecting PPG amplitude, not tremor.",
+      "rival_prediction": "Subjects with lower baseline heart rate will have lower PPG amplitude and thus higher uncertainty irrespective of tremor frequency.",
+      "distinguishing_test": "After adjusting for baseline HR and overall movement, test whether tremor frequency still predicts uncertainty; a significant effect supports H7, while non‑significance supports the rival.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Tremor‑related artifact contributions are typically <3% of total PPG variance in resting conditions.",
+      "minimum_data_needed": [
+        "muscle_tremor_frequency (accelerometer PSD 4‑12 Hz)",
+        "motion_artifact_power_PPG (bandpower 0.5‑5 Hz)",
+        "prediction_uncertainty",
+        "baseline_heart_rate",
+        "overall_movement_amount",
+        "placement_location",
+        "skin_tone"
+      ],
+      "testable_prediction": "Higher muscle tremor frequency predicts higher prediction uncertainty after controlling for movement amount, placement location, and skin tone.",
+      "failure_condition": "No significant association between tremor frequency and uncertainty after adjusting for the three confounders.",
+      "statistical_test_plan": "Linear mixed model with uncertainty as outcome, fixed effect of tremor frequency, random intercept for subject, and the three control variables; evaluate the tremor coefficient.",
+      "falsification_test": "Apply a localized vibration‑damping pad over the muscle group driving tremor; if uncertainty does not decrease as predicted, the tremor mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Ambient light intensity interacts with skin pigmentation to alter PPG signal‑to‑noise ratio, producing subject‑level uncertainty differences.",
+      "proposed_mechanism": "Higher ambient light increases photon flux; greater melanin absorption raises shot noise, lowering the PPG SNR and increasing model uncertainty.",
+      "causal_path": "Ambient light intensity × Skin pigmentation → PPG SNR → Prediction uncertainty",
+      "mechanism_variables": [
+        "ambient_light_intensity",
+        "skin_pigmentation_index",
+        "PPG_SNR",
+        "prediction_uncertainty"
+      ],
+      "possible_confounders": [
+        "sensor_gain_setting",
+        "motion_artifact",
+        "temperature"
+      ],
+      "control_variables": [
+        "gain_setting",
+        "motion_artifact",
+        "temperature"
+      ],
+      "rival_explanation": "Uncertainty stems from inter‑subject differences in vascular density (e.g., capillary count) that affect PPG amplitude independently of light or pigment.",
+      "rival_prediction": "Subjects with lower vascular density will have higher uncertainty regardless of ambient light or skin pigmentation.",
+      "distinguishing_test": "After controlling for vascular density, test whether the interaction of light and pigment still predicts SNR and uncertainty; a significant interaction supports H8, while non‑significance supports the rival.",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "The combined effect of ambient light and melanin on PPG noise has not been systematically quantified in wearable studies; empirical data are required.",
+      "minimum_data_needed": [
+        "ambient_light_log",
+        "skin_pigmentation_index (melanin)",
+        "PPG_SNR",
+        "prediction_uncertainty",
+        "sensor_gain_setting",
+        "motion_artifact",
+        "temperature",
+        "vascular_density_measure"
+      ],
+      "testable_prediction": "Higher ambient light and higher pigmentation jointly predict lower PPG SNR and higher prediction uncertainty after adjusting for gain, motion, and temperature.",
+      "failure_condition": "No significant interaction effect of ambient light and skin pigmentation on PPG SNR or uncertainty after controlling for the confounders.",
+      "statistical_test_plan": "Hierarchical linear model: first predict PPG SNR from ambient light, pigmentation, and their interaction (plus controls); second, predict uncertainty from the resulting SNR (or include SNR as mediator). Test the interaction term in the first stage.",
+      "falsification_test": "Use a narrow‑band green LED with tightly controlled intensity and a wavelength‑independent PPG algorithm; if uncertainty differences across pigmentation disappear under fixed lighting, the mechanism is supported; if differences persist, H8 is falsified."
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Lower baroreceptor sensitivity yields blunted heart‑rate‑variability responses to stress, reducing feature discriminability and increasing model uncertainty.",
+      "proposed_mechanism": "Reduced baroreceptor buffering leads to smaller stress‑induced HRV changes, providing less informative dynamics for the stress‑detection model, which consequently outputs higher uncertainty.",
+      "causal_path": "Baroreceptor sensitivity → Stress‑induced HRV change → Prediction uncertainty",
+      "mechanism_variables": [
+        "baroreceptor_sensitivity",
+        "stress_induced_HRV_change",
+        "prediction_uncertainty"
+      ],
+      "possible_confounders": [
+        "baseline_HRV",
+        "medication_use_(e.g.,_beta‑blockers)",
+        "caffeine_intake"
+      ],
+      "control_variables": [
+        "baseline_HRV",
+        "medication",
+        "caffeine"
+      ],
+      "rival_explanation": "Uncertainty differences are due to subject‑specific model calibration errors (e.g., mis‑estimated class priors) rather than physiological differences.",
+      "rival_prediction": "Subjects with poorly calibrated models will show higher uncertainty irrespective of their baroreceptor sensitivity.",
+      "distinguishing_test": "Recalibrate each subject's model using Platt scaling on a held‑out set; if uncertainty still correlates with baroreceptor sensitivity after calibration, H9 is supported; if not, the rival is favored.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Baroreceptor sensitivity explains approximately 10‑12% of variance in stress‑induced HRV changes in psychophysiology literature.",
+      "minimum_data_needed": [
+        "baroreceptor_sensitivity (sequence method)",
+        "stress_task_HRV_change",
+        "prediction_uncertainty",
+        "baseline_HRV",
+        "medication_use",
+        "caffeine_intake",
+        "model_calibration_metric (Brier score)"
+      ],
+      "testable_prediction": "Lower baroreceptor sensitivity predicts higher prediction uncertainty mediated by a smaller stress‑induced HRV response, after adjusting for baseline HRV, medication, and caffeine.",
+      "failure_condition": "No significant mediation effect of stress‑induced HRV change on the relationship between baroreceptor sensitivity and uncertainty.",
+      "statistical_test_plan": "Mediation analysis with bootstrapped indirect effects: baroreceptor sensitivity → stress‑induced HRV change → prediction uncertainty, including baseline HRV, medication, and caffeine as covariates in both paths.",
+      "falsification_test": "Administer a low dose of phenylephrine to transiently increase baroreceptor sensitivity and measure whether uncertainty decreases as predicted; if uncertainty does not change, the mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Subject‑level heteroscedasticity in model residuals drives apparent uncertainty differences; modeling subject‑specific variance components reduces this variation.",
+      "proposed_mechanism": "Greater unexplained residual variance for a subject indicates a noisier data‑generating process, which the predictive distribution captures as higher uncertainty.",
+      "causal_path": "Subject‑specific residual variance → Prediction uncertainty",
+      "mechanism_variables": [
+        "subject_residual_variance",
+        "prediction_uncertainty"
+      ],
+      "possible_confounders": [
+        "model_complexity",
+        "training_set_size_per_subject",
+        "label_noise"
+      ],
+      "control_variables": [
+        "model_complexity",
+        "training_set_size",
+        "label_noise"
+      ],
+      "rival_explanation": "Uncertainty differences arise from shifts in feature means (e.g., average heart rate) across subjects, not from residual variance.",
+      "rival_prediction": "Subjects with extreme mean feature values will have higher uncertainty regardless of their residual variance.",
+      "distinguishing_test": "Fit a heteroscedastic model that estimates subject‑specific variance; if residual variance no longer predicts uncertainty after this modeling, the rival (mean‑shift) is favored; if it still predicts uncertainty, H10 is supported.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Accounting for heteroscedasticity often explains a substantial portion (>30%) of uncertainty variation in similar sensor‑data modeling contexts.",
+      "minimum_data_needed": [
+        "subject_residual_variance_estimates (from a homoscedastic baseline model)",
+        "prediction_uncertainty_per_subject",
+        "model_complexity_metric (number of parameters)",
+        "training_set_size_per_subject",
+        "label_noise_estimate (e.g., entropy of label distribution)"
+      ],
+      "testable_prediction": "Higher subject‑specific residual variance predicts higher prediction uncertainty after controlling for model complexity, training set size, and label noise.",
+      "failure_condition": "No significant association between subject residual variance and uncertainty after adjusting for the three confounders.",
+      "statistical_test_plan": "Linear regression of uncertainty on subject residual variance with the three control variables; test the variance coefficient.",
+      "falsification_test": "Apply a variance‑stabilizing transformation (e.g., log) to the raw sensor features, refit the model forcing homoscedastic residuals, and recompute uncertainty; if subject‑level uncertainty differences persist, heteroscedasticity is not the primary driver, falsifying H10."
+    }
+  ],
+  "total_tokens": 11159,
+  "completion_tokens": 10614
+}

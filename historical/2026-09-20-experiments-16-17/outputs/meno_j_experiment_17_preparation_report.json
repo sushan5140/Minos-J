@@ -1,0 +1,40 @@
+{
+  "artifact": "Meno-J Experiment 17 preparation report",
+  "scientific_results": false,
+  "real_model_completion_calls": 0,
+  "engineering_repairs_completed": [
+    "IncompleteRead and transient network retry handling",
+    "unique ledger sequences across resume",
+    "durable judge-attempt and terminal-failure checkpoints",
+    "standards-compliant UTF-8 JSON with non-finite values represented as null",
+    "credential-free retention of complete, partial, and invalid response bodies",
+    "strict stage-specific JSON schemas with provider capability enforcement"
+  ],
+  "synthetic_validation": {
+    "passed": 14,
+    "total": 14,
+    "scientific_conclusions": false
+  },
+  "recommended_generator_model": "nvidia/nemotron-3-super-120b-a12b:free",
+  "recommended_judge_model": "nex-agi/nex-n2.5-pro:free",
+  "verified_capabilities": [
+    "response_format",
+    "structured_outputs"
+  ],
+  "estimated_api_requirements": {
+    "experimental_units": 9,
+    "generator_logical_calls": "approximately 63-198 before JSON-repair calls",
+    "judge_logical_calls": "approximately 9-36 including allowed invalid-output retries",
+    "experimental_arm_tokens": "approximately 1.6-2.2M",
+    "judge_tokens": "approximately 0.3-0.6M",
+    "advertised_price": "$0/M input and output for both selected endpoints at inspection time"
+  },
+  "protocol": "outputs/meno_j_experiment_17_preregistered_protocol.json",
+  "validation": "outputs/harness_validation/experiment_17/meno_j_experiment_17_preparation_validation.json",
+  "experiment_16_files_verified_unchanged": 244,
+  "remaining_blockers": [
+    "OPENROUTER_MODEL and MINOS_J_JUDGE_MODEL are not configured to the frozen Experiment 17 pair",
+    "minimal live structured-output smoke tests remain intentionally unrun",
+    "free-tier endpoint availability and rate limits must be rechecked immediately before execution"
+  ]
+}

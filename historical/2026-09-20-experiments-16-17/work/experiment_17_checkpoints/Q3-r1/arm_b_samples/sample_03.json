@@ -1,0 +1,8 @@
+{
+  "sample_index": 3,
+  "valid": false,
+  "error": "RuntimeError: OpenRouter HTTP 429; diagnostic body archived.",
+  "cards": [],
+  "total_tokens": 0,
+  "completion_tokens": 0
+}

@@ -1,0 +1,84 @@
+{
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Inter-subject variability in autonomic nervous system reactivity causes non-exchangeable conformity scores for high-reactivity individuals, violating Mondrian's stratification assumption.",
+      "proposed_mechanism": "Subjects with exaggerated sympathetic responses produce EDA and HRV trajectories that fall outside the calibration distribution's support, yielding systematically low p-values for the true stress label.",
+      "core_assumption": "Stress physiology follows a shared generative process across subjects modulo stratification covariates.",
+      "knowledge_gap_addressed": "Whether Mondrian's subject-level stratification covariates (e.g., age, sex) capture sufficient physiological heterogeneity to ensure exchangeability within strata.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Wrist-worn sensor motion artifacts during high-stress periods disproportionately degrade signal quality for specific subjects, creating covariate shift between calibration and test conformity scores.",
+      "proposed_mechanism": "Subjects who fidget or gesture under stress introduce non-stationary noise in BVP/ACC channels that the feature extractor interprets as physiological pattern, shifting conformity score distributions.",
+      "core_assumption": "Motion artifact magnitude correlates with stress intensity in a subject-specific manner not captured by activity labels.",
+      "knowledge_gap_addressed": "The extent to which subject-specific motion-artifact profiles violate the i.i.d. assumption within Mondrian strata during high-arousal states.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Temporal autocorrelation in physiological time series induces conformity score dependence that Mondrian's exchangeability assumption ignores, with stronger effects for subjects exhibiting slower physiological recovery.",
+      "proposed_mechanism": "Slow EDA/HRV recovery kinetics create long-range dependence in conformity scores, causing effective calibration set size to be overestimated for slow-recovery subjects.",
+      "core_assumption": "Conformity scores are exchangeable within strata, implying negligible temporal dependence.",
+      "knowledge_gap_addressed": "Quantification of subject-specific physiological recovery time constants and their impact on conformal coverage guarantees under temporal dependence.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Self-reported stress labels in WESAD contain subject-specific systematic bias (e.g., under-reporting by high-resilience individuals), creating label noise that asymmetrically affects conformity score distributions.",
+      "proposed_mechanism": "Subjects who minimize subjective stress ratings despite high physiological arousal receive incorrect calibration labels, biasing the conformity score distribution for the 'stress' class toward non-stress patterns.",
+      "core_assumption": "Self-report labels are conditionally independent of physiological signals given true stress state.",
+      "knowledge_gap_addressed": "The degree and direction of subject-specific label bias in WESAD and its differential impact on conformal prediction coverage across strata.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Mondrian's stratification by coarse-grained covariates (e.g., binary sex) fails to capture continuous physiological phenotypes (e.g., baseline HRV, baroreflex sensitivity) that determine conformity score distributions.",
+      "proposed_mechanism": "Subjects at extremes of continuous physiological trait distributions fall into strata where their conformity scores are non-exchangeable with the stratum majority, causing systematic undercoverage.",
+      "core_assumption": "Discrete stratification variables sufficiently partition the population into exchangeable groups.",
+      "knowledge_gap_addressed": "Whether data-driven physiological phenotyping would yield strata with better exchangeability properties than demographic stratification for conformal stress detection.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Non-stationary sensor calibration drift (e.g., EDA electrode impedance changes) affects long-duration recordings differently across subjects, creating time-varying conformity score distributions that violate calibration-test exchangeability.",
+      "proposed_mechanism": "Subjects with oilier skin or higher sweat rates experience faster EDA signal degradation, causing conformity scores to drift during the test phase relative to the calibration phase.",
+      "core_assumption": "Sensor characteristics remain stable across the recording session within each subject.",
+      "knowledge_gap_addressed": "Subject-specific sensor degradation trajectories in ambulatory physiological monitoring and their interaction with conformal prediction's exchangeability requirements.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "The conformity score function (e.g., softmax margin) is miscalibrated for subjects with atypical feature distributions, producing anti-conservative p-values specifically for out-of-distribution physiological patterns.",
+      "proposed_mechanism": "Subjects with rare physiological profiles (e.g., arrhythmia, medication effects) map to feature space regions where the classifier's confidence estimates are unreliable, violating the conformity score's monotonicity assumption.",
+      "core_assumption": "The conformity score function yields valid p-values under the exchangeability assumption alone, regardless of feature distribution.",
+      "knowledge_gap_addressed": "Interaction between classifier calibration error and conformal coverage for subjects in low-density regions of the physiological feature space.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Circadian phase at time of stress induction modulates physiological reactivity in a subject-specific manner, creating hidden stratification not accounted for in Mondrian's design.",
+      "proposed_mechanism": "Subjects tested at different circadian phases exhibit different stress response magnitudes for the same stressor, causing conformity score distributions to vary systematically with time-of-day within each Mondrian stratum.",
+      "core_assumption": "Stress physiology is invariant to circadian phase within the study's recording window.",
+      "knowledge_gap_addressed": "The magnitude of circadian modulation of physiological stress responses in WESAD and its confounding effect on conformal coverage when unmodeled.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Finite-sample coverage guarantees of Mondrian prediction fail for small strata containing physiologically distinctive subjects, where the effective calibration set size is too small to control coverage.",
+      "proposed_mechanism": "Rare physiological phenotypes (e.g., high baseline HRV athletes) form small strata where the 1/(n+1) coverage discretization and estimation error combine to produce systematic undercoverage.",
+      "core_assumption": "Stratum sizes are sufficient for asymptotic coverage guarantees to approximate finite-sample behavior.",
+      "knowledge_gap_addressed": "Minimum stratum size requirements for Mondrian conformal prediction under realistic physiological heterogeneity and the coverage deficit for undersized strata.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Subject-specific coping strategies (e.g., cognitive reappraisal, suppression) produce divergent physiological signatures for the same labeled stress state, violating the assumption that stress labels correspond to a unified physiological pattern.",
+      "proposed_mechanism": "Subjects using different emotion regulation strategies activate distinct autonomic pathways (e.g., cardiac vs. vascular sympathetic outflow), creating multiple physiological 'stress' modes that the conformity score cannot simultaneously calibrate.",
+      "core_assumption": "The 'stress' label corresponds to a single coherent physiological response pattern across subjects.",
+      "knowledge_gap_addressed": "The extent of physiological heterogeneity within the 'stress' class attributable to emotion regulation strategies and its impact on conformal prediction validity.",
+      "status": "SPECULATIVE"
+    }
+  ]
+}

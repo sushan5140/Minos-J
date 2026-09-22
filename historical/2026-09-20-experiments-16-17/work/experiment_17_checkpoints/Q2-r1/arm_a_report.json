@@ -1,0 +1,1034 @@
+{
+  "experiment_name": "Meno-J Experiment 7: v4 Architecture Upgrade and Ablation",
+  "version": "v4_mechanism_confounder_testability",
+  "research_question": "Why might conformal prediction fail to maintain stable coverage across different physiological signal segments?",
+  "model": "nvidia/nemotron-3-super-120b-a12b:free",
+  "stage_4_hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Subject-specific baseline physiological variability breaks exchangeability across signal segments, causing coverage drift.",
+      "proposed_mechanism": "Individual differences in baseline heart rate, respiration, or morphology shift the distribution of features between segments.",
+      "core_assumption": "Calibration data from one subject adequately represents the distribution for all subjects.",
+      "knowledge_gap_addressed": "Lack of subject-stratified or personalized conformal prediction methods for physiological signals.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Sensor drift or time-varying noise alters feature distributions, leading to miscalibrated conformal intervals.",
+      "proposed_mechanism": "Changes in electrode impedance, amplifier gain, or environmental interference modify the observed signal statistics over time.",
+      "core_assumption": "Sensor characteristics remain stable and invariant across all recording segments.",
+      "knowledge_gap_addressed": "Insufficient modeling of sensor-specific covariate shift in conformal prediction frameworks.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Physiological state transitions (e.g., sleep vs wake, rest vs exercise) induce concept drift that violates the i.i.d. assumption.",
+      "proposed_mechanism": "Underlying generative processes of the signal change with state, altering the relationship between features and labels.",
+      "core_assumption": "The signal-generating process is stationary within each segment.",
+      "knowledge_gap_addressed": "Absence of state-aware conformal methods that adapt to physiological context changes.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Strong temporal autocorrelation within physiological signals violates exchangeability, causing underestimation of prediction uncertainty.",
+      "proposed_mechanism": "Successive samples are dependent, reducing effective sample size and inflating confidence in conformity scores.",
+      "core_assumption": "Observations are independent and identically distributed.",
+      "knowledge_gap_addressed": "Missing adjustments for temporal dependence in conformity score calculation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Segment-specific label noise or annotation errors bias conformity scores, destabilizing coverage.",
+      "proposed_mechanism": "Mislabelled events (e.g., incorrect arrhythmia tags) produce anomalously large or small residuals, skewing the empirical quantile.",
+      "core_assumption": "All labels are ground-truth accurate.",
+      "knowledge_gap_addressed": "Limited robustness of conformal prediction to heterogeneous label quality across segments.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Rare physiological events are underrepresented in calibration sets, leading to poor coverage for those segments.",
+      "proposed_mechanism": "Imbalanced stratification causes the conformity score quantile to be dominated by common classes, ignoring tail behavior.",
+      "core_assumption": "Calibration set reflects the true prevalence of all event types across segments.",
+      "knowledge_gap_addressed": "Need for stratified or importance-weighted conformal methods to handle class imbalance in physiological data.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Heteroscedasticity in signal amplitude leads to non-uniform error variance, breaking the assumption of constant conformity score distribution.",
+      "proposed_mechanism": "Larger signal excursions produce proportionally larger prediction errors, causing variance to change with amplitude.",
+      "core_assumption": "Prediction errors have homogeneous variance across the signal range.",
+      "knowledge_gap_addressed": "Lack of heteroscedasticity-aware conformal scores that adapt variance estimates locally.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Motion or muscle artifacts introduce outlier segments that inflate conformity scores and destabilize coverage.",
+      "proposed_mechanism": "Artifactual spikes generate extreme residuals, shifting the empirical quantile used for interval construction.",
+      "core_assumption": "Artifacts are negligible or behave like random noise.",
+      "knowledge_gap_addressed": "Insufficient robustness of conformal prediction to structured, non-Gaussian artifacts in physiological recordings.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Changes in recording protocols (sampling rate, filtering, segmentation) create domain shifts that invalidate calibration.",
+      "proposed_mechanism": "Different preprocessing alters feature distributions, causing a mismatch between calibration and test segments.",
+      "core_assumption": "All segments share identical preprocessing and acquisition settings.",
+      "knowledge_gap_addressed": "Need for protocol-invariant or adaptive conformal predictors that accommodate preprocessing variability.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Feedback loops where model predictions influence subsequent signal processing (e.g., adaptive filtering) induce dependence between training and test data.",
+      "proposed_mechanism": "The model’s output alters the signal (e.g., via noise cancellation), changing the distribution of future segments relative to the calibration set.",
+      "core_assumption": "Test segments are generated independently of the model’s predictions.",
+      "knowledge_gap_addressed": "Overlooking the impact of predictive interventions on the data-generating process in conformal evaluation.",
+      "status": "SPECULATIVE"
+    }
+  ],
+  "stage_4_1_mechanism_builder": [
+    {
+      "hypothesis_id": "H1",
+      "mechanism_variables": [
+        "baseline heart rate (bpm)",
+        "respiration rate (breaths/min)",
+        "morphology feature (e.g., QRS amplitude)"
+      ],
+      "causal_path": "Subject-specific baseline physiological variability alters the distribution of extracted features between calibration and test segments, causing conformity scores to be misaligned with the true error distribution.",
+      "expected_direction": "Increased baseline variability leads to decreased coverage (under-coverage) relative to the nominal level.",
+      "domain_specific_boundary_conditions": [
+        "Physiological signals recorded from healthy adults at rest",
+        "Segment length ≥ 30 seconds",
+        "Sampling rate ≥ 250 Hz"
+      ],
+      "measurable_outcomes": [
+        "Empirical coverage rate of conformal intervals",
+        "Kolmogorov‑Smirnov distance between calibration and test feature distributions"
+      ],
+      "mechanism_builder_notes": "Can be tested by stratifying calibration data by subject‑specific baselines and measuring coverage drift across held‑out segments."
+    },
+    {
+      "hypothesis_id": "H2",
+      "mechanism_variables": [
+        "electrode impedance (kΩ)",
+        "amplifier gain (dB)",
+        "environmental interference power (µV²)",
+        "noise variance estimate"
+      ],
+      "causal_path": "Changes in sensor characteristics (impedance, gain, interference) alter the observed signal statistics, shifting the feature distribution and biasing conformity scores, which leads to coverage drift.",
+      "expected_direction": "Higher impedance or noise variance reduces coverage (under‑coverage) because intervals become too narrow.",
+      "domain_specific_boundary_conditions": [
+        "Wearable ECG patches",
+        "Sampling rate 500 Hz",
+        "Recording duration > 1 hour",
+        "Ambient temperature stable"
+      ],
+      "measurable_outcomes": [
+        "Coverage rate over time",
+        "Mean absolute error of conformity scores",
+        "Impedance trajectory"
+      ],
+      "mechanism_builder_notes": "Can be tested by injecting known impedance changes (e.g., via saline) and monitoring coverage."
+    },
+    {
+      "hypothesis_id": "H3",
+      "mechanism_variables": [
+        "physiological state label (sleep/wake, rest/exercise)",
+        "heart‑rate variability index",
+        "movement count",
+        "metabolic equivalent (MET)"
+      ],
+      "causal_path": "Physiological state transitions change the underlying generative process of the signal, altering the relationship between features and labels, which miscalibrates conformity scores and destabilizes coverage.",
+      "expected_direction": "Transition to higher arousal states (e.g., exercise) increases prediction error variance, leading to under‑coverage if not accounted for.",
+      "domain_specific_boundary_conditions": [
+        "Laboratory polysomnography or controlled exercise protocol",
+        "Segment length ≥ 1 minute",
+        "Stable ambient conditions"
+      ],
+      "measurable_outcomes": [
+        "Coverage per state",
+        "Calibration error (difference between nominal and empirical coverage)",
+        "State transition detection accuracy"
+      ],
+      "mechanism_builder_notes": "Can be evaluated by constructing state‑stratified calibration sets and testing on held‑out state‑specific segments."
+    },
+    {
+      "hypothesis_id": "H4",
+      "mechanism_variables": [
+        "lag‑1 autocorrelation coefficient (ρ)",
+        "effective sample size (n_eff)",
+        "conformity score variance"
+      ],
+      "causal_path": "Positive temporal autocorrelation reduces the effective independence of observations, causing the empirical quantile of conformity scores to be underestimated, which yields prediction intervals that are too narrow and under‑cover.",
+      "expected_direction": "Higher ρ leads to lower coverage (under‑coverage).",
+      "domain_specific_boundary_conditions": [
+        "Signals with sampling ≥250 Hz",
+        "Segment length ≥10 s",
+        "Known physiological autocorrelation (EEG, ECG)"
+      ],
+      "measurable_outcomes": [
+        "Empirical coverage",
+        "Estimated n_eff",
+        "Ratio of nominal to empirical interval width"
+      ],
+      "mechanism_builder_notes": "Can be assessed using block bootstrap or subsampling to adjust for dependence."
+    },
+    {
+      "hypothesis_id": "H5",
+      "mechanism_variables": [
+        "label error rate (%)",
+        "residual magnitude for mislabeled samples",
+        "skew of conformity score distribution"
+      ],
+      "causal_path": "Mislabelled events produce anomalously large or small residuals, which shift the empirical quantile used to construct conformal intervals, biasing the intervals and causing coverage drift.",
+      "expected_direction": "Higher label error rate reduces coverage (under‑coverage) when errors increase residuals; direction depends on bias sign.",
+      "domain_specific_boundary_conditions": [
+        "Expert‑annotated arrhythmia datasets",
+        "Inter‑annotator agreement <0.8",
+        "Segments containing ≥1 annotated event"
+      ],
+      "measurable_outcomes": [
+        "Coverage",
+        "Calibration slope",
+        "Brier score for label correctness"
+      ],
+      "mechanism_builder_notes": "Can be tested by synthetically corrupting a known fraction of labels and measuring resulting coverage."
+    },
+    {
+      "hypothesis_id": "H6",
+      "mechanism_variables": [
+        "prevalence of rare event class (p_rare)",
+        "number of rare samples in calibration (n_rare)",
+        "conformity score quantile for rare class"
+      ],
+      "causal_path": "When rare physiological events are under‑represented in the calibration set, the conformity score quantile is dominated by common classes, producing intervals that are too narrow for rare segments and thus under‑covering them.",
+      "expected_direction": "Lower p_rare leads to lower coverage for rare‑event segments (under‑coverage).",
+      "domain_specific_boundary_conditions": [
+        "Physiological seizure or rare arrhythmia detection",
+        "Rare event prevalence <1%",
+        "Calibration set size ≥5000 samples"
+      ],
+      "measurable_outcomes": [
+        "Coverage per class",
+        "Recall for rare class",
+        "Interval width per class"
+      ],
+      "mechanism_builder_notes": "Can be evaluated by applying importance‑weighted or stratified conformal methods and comparing coverage."
+    },
+    {
+      "hypothesis_id": "H7",
+      "mechanism_variables": [
+        "signal amplitude (RMS)",
+        "residual variance as a function of amplitude",
+        "heteroscedasticity coefficient (slope of variance vs amplitude)"
+      ],
+      "causal_path": "Larger signal excursions produce proportionally larger prediction errors, causing error variance to change with amplitude; this violates the constant‑variance assumption of conformity scores, leading to miscalibrated intervals.",
+      "expected_direction": "Higher amplitude leads to decreased coverage (under‑coverage) if variance increases with amplitude.",
+      "domain_specific_boundary_conditions": [
+        "ECG amplitude range 0.1–5 mV",
+        "Segments with varying activity levels",
+        "Sampling rate ≥250 Hz"
+      ],
+      "measurable_outcomes": [
+        "Coverage versus amplitude bins",
+        "Calibration curve",
+        "Breusch‑Pagan test for heteroscedasticity"
+      ],
+      "mechanism_builder_notes": "Can be tested by modeling variance locally (e.g., using quantile regression) and checking whether coverage improves."
+    },
+    {
+      "hypothesis_id": "H8",
+      "mechanism_variables": [
+        "artifact amplitude (peak‑to‑peak)",
+        "artifact occurrence rate per minute",
+        "proportion of residual outliers"
+      ],
+      "causal_path": "Motion or muscle artifacts generate extreme residuals (spikes) that shift the empirical quantile of conformity scores; this can inflate intervals (over‑coverage) for clean segments and produce unstable coverage across artifact‑contaminated segments.",
+      "expected_direction": "Higher artifact rate increases interval width, causing overall over‑coverage but segment‑wise instability.",
+      "domain_specific_boundary_conditions": [
+        "Ambulatory recordings with mild exercise",
+        "Artifact detection threshold >3 SD",
+        "Segment length ≥5 s"
+      ],
+      "measurable_outcomes": [
+        "Coverage stability across artifact‑free vs artifact‑contaminated segments",
+        "Mean interval width",
+        "Artifact detection rate"
+      ],
+      "mechanism_builder_notes": "Can be evaluated by adding synthetic motion artifacts at known amplitudes and measuring resulting coverage changes."
+    },
+    {
+      "hypothesis_id": "H9",
+      "mechanism_variables": [
+        "sampling rate (Hz)",
+        "filter cutoff frequency (Hz)",
+        "segmentation window length (s)",
+        "feature set dimensionality"
+      ],
+      "causal_path": "Different preprocessing (sampling rate, filtering, segmentation) alters the distribution of extracted features, creating a mismatch between calibration and test segments that biases conformity scores and leads to coverage drift.",
+      "expected_direction": "Lower sampling rate or stronger low‑pass filtering reduces high‑frequency information, increasing prediction error and decreasing coverage (under‑coverage) if not corrected.",
+      "domain_specific_boundary_conditions": [
+        "Multi‑site study with varying devices",
+        "Documented protocol changes",
+        "Segment length ≥5 s"
+      ],
+      "measurable_outcomes": [
+        "Coverage per protocol",
+        "Wasserstein distance between feature distributions across protocols",
+        "Recalibration error"
+      ],
+      "mechanism_builder_notes": "Can be assessed by harmonizing data (e.g., resampling to a common rate) and comparing coverage before and after harmonization."
+    },
+    {
+      "hypothesis_id": "H10",
+      "mechanism_variables": [
+        "model prediction influence gain (adaptive filter coefficient)",
+        "post‑processing signal noise level",
+        "mutual information between predictions and subsequent signal"
+      ],
+      "causal_path": "The model’s output alters the signal (e.g., via adaptive noise cancellation), changing the distribution of future segments relative to the calibration set; conformity scores computed from outdated statistics become miscalibrated, causing coverage drift.",
+      "expected_direction": "Stronger feedback influence (higher gain) produces larger distribution shifts, leading to lower coverage (under‑coverage).",
+      "domain_specific_boundary_conditions": [
+        "Closed‑loop neurostimulation or adaptive filtering system",
+        "Real‑time processing latency <50 ms",
+        "Calibration set collected before feedback activation"
+      ],
+      "measurable_outcomes": [
+        "Coverage over time",
+        "KL divergence between calibration and post‑feedback feature distributions",
+        "Adaptive filter coefficient trajectory"
+      ],
+      "mechanism_builder_notes": "Can be tested by disabling the feedback loop and comparing coverage with and without the loop."
+    }
+  ],
+  "stage_4_2_confounder_rival_builder": [
+    {
+      "hypothesis_id": "H1",
+      "possible_confounders": [
+        "age",
+        "medication use",
+        "signal-to-noise ratio"
+      ],
+      "control_variables": [
+        "age",
+        "sex",
+        "signal-to-noise ratio"
+      ],
+      "boring_rival_explanations": [
+        "Variation in segment length across recordings",
+        "Inconsistent labeling accuracy across subjects",
+        "Random sampling variability in conformity score quantile due to limited calibration size"
+      ],
+      "rival_prediction": "Higher subject-specific baseline variability leads to increased empirical coverage (over‑coverage) because the conformity score distribution becomes more spread, raising the quantile.",
+      "distinguishing_condition": "When baseline variability is high, observe whether empirical coverage is above the nominal level (over‑coverage) – if so, the rival explanation is supported; if coverage is below nominal, the proposed mechanism is supported.",
+      "confounder_rival_notes": "Controlling for age, sex, and signal‑to‑noise ratio helps isolate the effect of baseline variability on coverage."
+    },
+    {
+      "hypothesis_id": "H2",
+      "possible_confounders": [
+        "ambient temperature",
+        "subject movement",
+        "battery voltage"
+      ],
+      "control_variables": [
+        "ambient temperature",
+        "subject movement",
+        "battery voltage"
+      ],
+      "boring_rival_explanations": [
+        "Changes in subject physiological state coinciding with sensor drift",
+        "Variations in labeling quality over time",
+        "Gradual drift in algorithm hyperparameters due to software updates"
+      ],
+      "rival_prediction": "Increased electrode impedance or noise variance leads to higher empirical coverage (over‑coverage) because the conformity score quantile shifts upward.",
+      "distinguishing_condition": "During periods of rising impedance, measure whether empirical coverage exceeds the nominal level; excess coverage supports the rival, while reduced coverage supports the proposed mechanism.",
+      "confounder_rival_notes": "Controlling for temperature, movement, and battery voltage isolates the sensor‑drift effect."
+    },
+    {
+      "hypothesis_id": "H3",
+      "possible_confounders": [
+        "time of day",
+        "caffeine intake",
+        "ambient noise"
+      ],
+      "control_variables": [
+        "time of day",
+        "caffeine intake",
+        "ambient noise"
+      ],
+      "boring_rival_explanations": [
+        "Changes in labeling consistency across states",
+        "Variations in signal amplitude unrelated to state",
+        "Fluctuations in calibration set size due to missing data"
+      ],
+      "rival_prediction": "Higher arousal states produce higher empirical coverage (over‑coverage) because the conformity score quantile increases due to larger residuals being trimmed.",
+      "distinguishing_condition": "When subjects are in exercise vs rest, compare empirical coverage; if coverage is above nominal, the rival explanation is favored; if below nominal, the proposed mechanism is favored.",
+      "confounder_rival_notes": "Adjusting for time of day, caffeine, and ambient noise helps isolate the state‑transition effect."
+    },
+    {
+      "hypothesis_id": "H4",
+      "possible_confounders": [
+        "segment length",
+        "sampling rate",
+        "filtering bandwidth"
+      ],
+      "control_variables": [
+        "segment length",
+        "sampling rate",
+        "filtering bandwidth"
+      ],
+      "boring_rival_explanations": [
+        "Variations in signal amplitude causing heteroscedasticity",
+        "Changes in labeling density across segments",
+        "Drifts in model hyperparameters over time"
+      ],
+      "rival_prediction": "Stronger temporal autocorrelation yields higher empirical coverage (over‑coverage) because the conformity score distribution becomes heavier‑tailed, increasing the quantile.",
+      "distinguishing_condition": "During epochs with high lag‑1 autocorrelation, measure whether empirical coverage exceeds the nominal level; excess coverage supports the rival, while reduced coverage supports the proposed mechanism.",
+      "confounder_rival_notes": "Controlling for segment length, sampling rate, and filter bandwidth isolates the autocorrelation effect."
+    },
+    {
+      "hypothesis_id": "H5",
+      "possible_confounders": [
+        "annotator experience",
+        "signal clarity",
+        "event rarity"
+      ],
+      "control_variables": [
+        "annotator experience",
+        "signal clarity",
+        "event rarity"
+      ],
+      "boring_rival_explanations": [
+        "Variations in feature extraction parameters across segments",
+        "Changes in physiological state affecting residuals",
+        "Temporal drift in model performance unrelated to labels"
+      ],
+      "rival_prediction": "Increased label error rate produces higher empirical coverage (over‑coverage) because mislabeled samples generate anomalously small residuals, pulling the conformity score quantile downward.",
+      "distinguishing_condition": "When the proportion of mislabeled annotations rises, check whether empirical coverage moves above the nominal level; an increase indicates the rival explanation, whereas a decrease indicates the proposed mechanism.",
+      "confounder_rival_notes": "Adjusting for annotator experience, signal clarity, and event rarity isolates the impact of label noise."
+    },
+    {
+      "hypothesis_id": "H6",
+      "possible_confounders": [
+        "overall calibration set size",
+        "class imbalance in training data",
+        "signal quality for rare events"
+      ],
+      "control_variables": [
+        "overall calibration set size",
+        "class imbalance in training data",
+        "signal quality for rare events"
+      ],
+      "boring_rival_explanations": [
+        "Variations in feature rarity definitions across segments",
+        "Changes in labeling consistency for common events",
+        "Fluctuations in model confidence due to optimizer stochasticity"
+      ],
+      "rival_prediction": "When rare physiological events are scarce in the calibration set, the empirical coverage for those segments becomes higher than nominal (over‑coverage) because the conformity score quantile shifts downward.",
+      "distinguishing_condition": "For segments containing rare events, compare empirical coverage to the nominal level; coverage above nominal supports the rival, while coverage below nominal supports the proposed mechanism.",
+      "confounder_rival_notes": "Controlling for calibration size, overall class imbalance, and signal quality isolates the rarity effect."
+    },
+    {
+      "hypothesis_id": "H7",
+      "possible_confounders": [
+        "baseline noise level",
+        "filtering cutoff",
+        "subject movement"
+      ],
+      "control_variables": [
+        "baseline noise level",
+        "filtering cutoff",
+        "subject movement"
+      ],
+      "boring_rival_explanations": [
+        "Changes in model architecture across amplitude ranges",
+        "Variations in label density with amplitude",
+        "Temporal shifts in calibration set composition"
+      ],
+      "rival_prediction": "Greater signal amplitude produces higher empirical coverage (over‑coverage) because the conformity score distribution spreads, increasing the quantile used for interval construction.",
+      "distinguishing_condition": "During high‑amplitude epochs, measure whether empirical coverage exceeds the nominal level; excess coverage indicates the rival explanation, while reduced coverage indicates the proposed mechanism.",
+      "confounder_rival_notes": "Adjusting for baseline noise, filter cutoff, and movement helps isolate the heteroscedasticity effect."
+    },
+    {
+      "hypothesis_id": "H8",
+      "possible_confounders": [
+        "subject activity level",
+        "electrode contact quality",
+        "recording duration"
+      ],
+      "control_variables": [
+        "subject activity level",
+        "electrode contact quality",
+        "recording duration"
+      ],
+      "boring_rival_explanations": [
+        "Variations in signal amplitude unrelated to artifacts",
+        "Changes in labeling consistency across artifact periods",
+        "Fluctuations in model hyperparameters due to batch normalization"
+      ],
+      "rival_prediction": "Increased motion or muscle artifact rate leads to lower empirical coverage (under‑coverage) because extreme residuals are trimmed or receive low weight, pulling the conformity score quantile downward.",
+      "distinguishing_condition": "When artifact occurrence rises, check whether empirical coverage falls below the nominal level; a decrease supports the rival, while an increase supports the proposed mechanism.",
+      "confounder_rival_notes": "Controlling for activity level, electrode contact, and recording duration isolates the artifact effect."
+    },
+    {
+      "hypothesis_id": "H9",
+      "possible_confounders": [
+        "subject demographics",
+        "signal condition",
+        "experimenter"
+      ],
+      "control_variables": [
+        "subject demographics",
+        "signal condition",
+        "experimenter"
+      ],
+      "boring_rival_explanations": [
+        "Variations in physiological state across protocol changes",
+        "Differences in labeling quality between protocols",
+        "Temporal drift in model performance unrelated to protocol"
+      ],
+      "rival_prediction": "Adopting a lower sampling rate or stronger low‑pass filter yields higher empirical coverage (over‑coverage) because the conformity score distribution becomes narrower, decreasing the quantile.",
+      "distinguishing_condition": "When recordings are down‑sampled or more heavily filtered, measure whether empirical coverage exceeds the nominal level; excess coverage indicates the rival explanation, while a deficit indicates the proposed mechanism.",
+      "confounder_rival_notes": "Adjusting for subject demographics, signal condition, and experimenter helps isolate the protocol‑shift effect."
+    },
+    {
+      "hypothesis_id": "H10",
+      "possible_confounders": [
+        "latency of feedback loop",
+        "baseline signal stability",
+        "adaptive filter type"
+      ],
+      "control_variables": [
+        "latency of feedback loop",
+        "baseline signal stability",
+        "adaptive filter type"
+      ],
+      "boring_rival_explanations": [
+        "Variations in external noise unrelated to feedback",
+        "Changes in subject state coinciding with feedback activation",
+        "Drifts in calibration set due to data accumulation"
+      ],
+      "rival_prediction": "Strong feedback influence (high adaptive‑filter coefficient) results in higher empirical coverage (over‑coverage) because the model’s action suppresses signal variability, tightening the conformity score distribution.",
+      "distinguishing_condition": "During periods of high feedback gain, check whether empirical coverage is above the nominal level; excess coverage supports the rival, while reduced coverage supports the proposed mechanism.",
+      "confounder_rival_notes": "Controlling for loop latency, baseline stability, and filter type isolates the feedback effect."
+    }
+  ],
+  "stage_4_3_statistical_testability_builder": [
+    {
+      "hypothesis_id": "H1",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "To estimate effect size, a pilot study is needed that measures the change in empirical coverage (difference from nominal) per unit increase in a composite baseline variability score (e.g., PCA of baseline heart rate, respiration, and QRS amplitude) across subjects, allowing calculation of Cohen's d or regression slope magnitude.",
+      "minimum_data_needed": [
+        "Multi-subject physiological signal dataset (e.g., ECG) with baseline heart rate, respiration rate, and QRS amplitude measured per subject",
+        "At least 20 subjects",
+        "Segment length >=30 seconds",
+        "Sampling rate >=250 Hz",
+        "Calibration and test splits per subject"
+      ],
+      "testable_prediction": "Higher subject-specific baseline physiological variability leads to lower empirical coverage (under-coverage) relative to the nominal level.",
+      "failure_condition": "If the slope of coverage deviation on baseline variability is not significantly less than zero (one-sided p > 0.05), the hypothesis fails.",
+      "statistical_test_plan": "Compute empirical coverage per test segment; fit a linear mixed-effects model with coverage deviation as outcome, baseline variability score as fixed effect, and subject as random intercept; test the fixed effect slope < 0 using a one-sided Wald test.",
+      "statistical_testability_notes": "Control for age, sex, and signal-to-noise ratio as confounders."
+    },
+    {
+      "hypothesis_id": "H2",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size estimation requires a pilot experiment where electrode impedance or noise variance is systematically varied (e.g., via saline injection) and the resulting change in coverage deviation is measured, allowing computation of the standardized mean difference or regression slope.",
+      "minimum_data_needed": [
+        "Wearable ECG patch recordings with electrode impedance, amplifier gain, environmental interference power, and noise variance logged over time",
+        "At least 1 hour recording per subject",
+        "Sampling rate 500 Hz",
+        "Ambient temperature stable",
+        "Segments sufficient to compute coverage in sliding windows"
+      ],
+      "testable_prediction": "Higher electrode impedance or noise variance leads to lower empirical coverage (under-coverage).",
+      "failure_condition": "If coverage deviation does not show a significant negative association with impedance/noise variance (one-sided p > 0.05), the hypothesis fails.",
+      "statistical_test_plan": "Compute coverage deviation in temporal windows; correlate window-level impedance/noise variance with coverage deviation using Spearman correlation; test one-sided hypothesis that correlation < 0.",
+      "statistical_testability_notes": "Control for ambient temperature, subject movement, and battery voltage as confounders."
+    },
+    {
+      "hypothesis_id": "H3",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "To estimate effect size, a pilot study measuring coverage deviation across physiological state transitions (e.g., rest vs exercise) is needed, allowing calculation of the mean difference in coverage between states and its standard deviation to derive Cohen's d.",
+      "minimum_data_needed": [
+        "Polysomnography or controlled exercise dataset with physiological state labels (sleep/wake, rest/exercise)",
+        "Heart-rate variability index, movement count, and MET recorded per segment",
+        "Segment length >=1 minute",
+        "Stable ambient conditions",
+        "At least 30 segments per state"
+      ],
+      "testable_prediction": "Transition to higher arousal states (e.g., exercise) leads to lower empirical coverage (under-coverage).",
+      "failure_condition": "If empirical coverage in higher arousal states is not significantly lower than in lower arousal states (one-sided p > 0.05), the hypothesis fails.",
+      "statistical_test_plan": "Compute coverage deviation per segment; compare coverage between low and high arousal states using a one-sided paired t-test (or Wilcoxon signed-rank if non-normal) testing that coverage in high arousal < coverage in low arousal.",
+      "statistical_testability_notes": "Control for time of day, caffeine intake, and ambient noise as confounders."
+    },
+    {
+      "hypothesis_id": "H4",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size can be estimated from a pilot study that quantifies the change in coverage deviation per unit increase in lag-1 autocorrelation, enabling calculation of a standardized regression coefficient.",
+      "minimum_data_needed": [
+        "Physiological signals (EEG or ECG) with sampling rate >=250 Hz",
+        "Segment length >=10 seconds",
+        "Lag-1 autocorrelation coefficient estimated per segment",
+        "At least 50 segments"
+      ],
+      "testable_prediction": "Higher lag-1 autocorrelation leads to lower empirical coverage (under-coverage).",
+      "failure_condition": "If the slope of coverage deviation on autocorrelation is not significantly less than zero (one-sided p > 0.05), the hypothesis fails.",
+      "statistical_test_plan": "Regress coverage deviation on lag-1 autocorrelation using linear regression; test the slope < 0 with a one-sided t-test; optionally use block bootstrap to obtain robust standard errors.",
+      "statistical_testability_notes": "Control for segment length, sampling rate, and filtering bandwidth as confounders."
+    },
+    {
+      "hypothesis_id": "H5",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "To estimate effect size, a pilot study where known proportions of labels are synthetically corrupted and the resulting coverage deviation is measured is needed, allowing computation of the trend effect size (e.g., Cohen's f for trend).",
+      "minimum_data_needed": [
+        "Expert-annotated arrhythmia dataset with ability to synthetically corrupt labels",
+        "Known label error rates (e.g., 0%, 5%, 10%, 20%)",
+        "Segments containing at least one annotated event",
+        "Inter-annotator agreement <0.8"
+      ],
+      "testable_prediction": "Higher label error rate leads to lower empirical coverage (under-coverage) when errors increase residuals.",
+      "failure_condition": "If coverage deviation does not show a significant decreasing trend with increasing label error rate (one-sided p > 0.05 for Jonckheere-Terpstra trend test), the hypothesis fails.",
+      "statistical_test_plan": "For each label error level, compute coverage deviation; apply the Jonckheere-Terpstra test for ordered alternatives (decreasing coverage with increasing error) using a one-sided alternative.",
+      "statistical_testability_notes": "Control for annotator experience, signal clarity, and event rarity as confounders."
+    },
+    {
+      "hypothesis_id": "H6",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size estimation requires a pilot study varying the number of rare-event samples in the calibration set and measuring the resulting coverage on rare-event test segments, enabling calculation of the slope of coverage vs rare sample count and its standard deviation.",
+      "minimum_data_needed": [
+        "Dataset with physiological rare events (e.g., seizures or rare arrhythmias) with known prevalence <1%",
+        "Calibration set size >=5000 samples",
+        "Ability to vary the number of rare samples in calibration (e.g., via subsampling)",
+        "At least 100 rare-event test segments"
+      ],
+      "testable_prediction": "Lower prevalence of rare events in the calibration set leads to lower empirical coverage for rare-event test segments (under-coverage).",
+      "failure_condition": "If coverage on rare-event test segments does not increase significantly with more rare samples in calibration (one-sided p > 0.05), the hypothesis fails.",
+      "statistical_test_plan": "Create multiple calibration sets with varying rare sample counts; compute coverage on a held-out rare-event test set; test for a positive association between rare sample count and coverage using Spearman correlation (one-sided > 0).",
+      "statistical_testability_notes": "Control for overall calibration size, class imbalance in training data, and signal quality for rare events as confounders."
+    },
+    {
+      "hypothesis_id": "H7",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "To estimate effect size, a pilot study measuring coverage deviation across amplitude bins and regressing on mean amplitude is needed, allowing derivation of the standardized slope (effect size).",
+      "minimum_data_needed": [
+        "ECG recordings with amplitude range 0.1–5 mV",
+        "Segments with varying activity levels",
+        "Sampling rate >=250 Hz",
+        "Amplitude measured as RMS per segment",
+        "At least 30 segments distributed across amplitude bins"
+      ],
+      "testable_prediction": "Higher signal amplitude leads to lower empirical coverage (under-coverage) when error variance increases with amplitude.",
+      "failure_condition": "If the slope of coverage deviation on amplitude is not significantly less than zero (one-sided p > 0.05), the hypothesis fails.",
+      "statistical_test_plan": "Bin segments by amplitude (e.g., low, medium, high); compute coverage deviation per bin; fit a linear regression of coverage deviation on mean amplitude; test slope < 0 using a one-sided t-test.",
+      "statistical_testability_notes": "Control for baseline noise level, filtering cutoff, and subject movement as confounders."
+    },
+    {
+      "hypothesis_id": "H8",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size can be estimated from a pilot study that quantifies the change in mean interval width per unit increase in artifact occurrence rate, allowing calculation of a standardized regression coefficient.",
+      "minimum_data_needed": [
+        "Ambulatory recordings with mild exercise",
+        "Artifact detection threshold >3 SD",
+        "Segment length >=5 seconds",
+        "At least 20 minutes of recording",
+        "Artifact occurrence logged per minute"
+      ],
+      "testable_prediction": "Higher artifact occurrence rate leads to increased mean conformal interval width (and thus decreased coverage stability).",
+      "failure_condition": "If mean interval width does not show a significant positive association with artifact occurrence rate (one-sided p > 0.05), the hypothesis fails.",
+      "statistical_test_plan": "Compute artifact occurrence rate per minute and mean interval width in non-overlapping windows; test for a positive correlation using Spearman correlation with a one-sided alternative (correlation > 0).",
+      "statistical_testability_notes": "Control for subject activity level, electrode contact quality, and recording duration as confounders."
+    },
+    {
+      "hypothesis_id": "H9",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "To estimate effect size, a pilot study varying sampling rate and filter cutoff while measuring coverage deviation is needed, allowing computation of the standardized coefficients for each protocol variable.",
+      "minimum_data_needed": [
+        "Multi-site study with varying devices and documented protocol changes (sampling rate, filter cutoff, segmentation window)",
+        "Segment length >=5 seconds",
+        "At least 10 segments per protocol condition"
+      ],
+      "testable_prediction": "Lower sampling rate or stronger low-pass filtering leads to lower empirical coverage (under-coverage).",
+      "failure_condition": "If coverage deviation does not show a significant positive association with sampling rate and filter cutoff (one-sided p > 0.05 for each coefficient), the hypothesis fails.",
+      "statistical_test_plan": "Compute coverage deviation per segment; fit a linear mixed-effects model with coverage deviation as outcome, sampling rate (Hz) and filter cutoff (Hz) as fixed effects, and site as random intercept; test each fixed effect > 0 using one-sided Wald tests.",
+      "statistical_testability_notes": "Control for subject demographics, signal condition, and experimenter as confounders."
+    },
+    {
+      "hypothesis_id": "H10",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size estimation requires a pilot study where adaptive filter gain is varied and the resulting coverage deviation is measured, enabling calculation of the standardized slope (effect size).",
+      "minimum_data_needed": [
+        "Closed-loop neurostimulation or adaptive filtering system",
+        "Real-time processing latency <50 ms",
+        "Calibration set collected before feedback activation",
+        "At least 30 minutes of post-feedback data",
+        "Adaptive filter gain logged over time"
+      ],
+      "testable_prediction": "Stronger feedback influence (higher adaptive filter gain) leads to lower empirical coverage (under-coverage).",
+      "failure_condition": "If coverage deviation does not show a significant negative association with adaptive filter gain (one-sided p > 0.05), the hypothesis fails.",
+      "statistical_test_plan": "Compute coverage deviation in sliding windows; correlate adaptive filter gain with coverage deviation using Spearman correlation; test one-sided hypothesis that correlation < 0.",
+      "statistical_testability_notes": "Control for feedback loop latency, baseline signal stability, and adaptive filter type as confounders."
+    }
+  ],
+  "stage_5_audits": [
+    {
+      "hypothesis_id": "H1",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All checklist criteria satisfied: variables are measurable (baseline heart rate, respiration rate, morphology), causal chain links baseline variability to distribution shift and coverage drift, confounders (age, medication, SNR) identified, data requirements clearly specified (multi-subject ECG with baseline measures, ≥20 subjects, segment length ≥30s, sampling ≥250Hz), mechanism is non-generic due to specific physiological variables and boundary conditions (healthy adults at rest, segment length ≥30s, sampling ≥250Hz), prediction is testable via linear mixed-effects model of coverage deviation on baseline variability score.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H2",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All checklist criteria satisfied: variables measurable (impedance, gain, interference power, noise variance), causal chain connects sensor characteristic changes to feature distribution shift and coverage drift, confounders (ambient temperature, subject movement, battery voltage) identified, data requirements clearly specified (wearable ECG patches with logged sensor metrics, ≥1hr per subject, 500Hz, stable temperature), mechanism non-generic due to specific sensor variables and boundary conditions (wearable ECG patches, 500Hz, >1hr, stable ambient temperature), prediction testable via Spearman correlation of window-level impedance/noise with coverage deviation, one-sided hypothesis.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H3",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All checklist criteria satisfied: variables measurable (physiological state label, HRV index, movement count, MET), causal chain links state transitions to changes in generative process and coverage drift, confounders (time of day, caffeine intake, ambient noise) identified, data requirements clearly specified (polysomnography or controlled exercise dataset with state labels, HRV, movement, MET, segment length ≥1min, stable ambient, ≥30 segments per state), mechanism non-generic due to specific physiological state variables and boundary conditions (lab polysomnography or controlled exercise, segment length ≥1min, stable ambient), prediction testable via one-sided paired t-test comparing coverage in high vs low arousal states.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H4",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All checklist criteria satisfied: variables measurable (lag-1 autocorrelation ρ, effective sample size, conformity score variance), causal chain explains how positive temporal autocorrelation reduces effective independence, underestimates quantile, leading to under-coverage, confounders (segment length, sampling rate, filtering bandwidth) identified, data requirements clearly specified (physiological signals EEG/ECG, sampling ≥250Hz, segment length ≥10s, lag-1 autocorrelation per segment, ≥50 segments), mechanism non-generic due to specific autocorrelation variable and boundary conditions (EEG/ECG signals, sampling ≥250Hz, segment length ≥10s), prediction testable via regression of coverage deviation on lag-1 autocorrelation with one-sided t-test on slope.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H5",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All checklist criteria satisfied: variables measurable (label error rate, residual magnitude for mislabeled samples, skew of conformity score distribution), causal chain describes how mislabeled events produce anomalous residuals shifting empirical quantile and coverage, confounders (annotator experience, signal clarity, event rarity) identified, data requirements clearly specified (expert-annotated arrhythmia dataset with ability to synthetically corrupt labels, known error rates, segments with ≥1 annotated event, inter-annotator agreement <0.8), mechanism non-generic due to specific label error variables and boundary conditions (expert-annotated arrhythmia, inter-annotator agreement <0.8, segments containing ≥1 event), prediction testable via Jonckheere-Terpstra trend test for decreasing coverage with increasing label error rate.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H6",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All checklist criteria satisfied: variables measurable (prevalence of rare event class, number of rare samples in calibration, conformity score quantile for rare class), causal chain explains underrepresentation of rare events leading to quantile dominated by common classes and narrow intervals for rare segments, confounders (overall calibration size, class imbalance in training data, signal quality for rare events) identified, data requirements clearly specified (dataset with physiological rare events prevalence <1%, calibration set ≥5000 samples, ability to vary rare sample count, ≥100 rare-event test segments), mechanism non-generic due to specific rare event variables and boundary conditions (physiological seizure or rare arrhythmia detection, prevalence <1%, calibration size ≥5000), prediction testable via Spearman correlation of rare sample count in calibration with coverage on rare-event test set, one-sided >0.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H7",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All checklist criteria satisfied: variables measurable (signal amplitude RMS, residual variance as function of amplitude, heteroscedasticity coefficient), causal chain links larger signal excursions to proportionally larger prediction errors, violating constant variance assumption and causing coverage drift, confounders (baseline noise level, filtering cutoff, subject movement) identified, data requirements clearly specified (ECG recordings amplitude 0.1–5mV, varying activity levels, sampling ≥250Hz, RMS per segment, ≥30 segments across amplitude bins), mechanism non-generic due to specific amplitude and heteroscedasticity variables and boundary conditions (ECG amplitude range, varying activity, sampling ≥250Hz), prediction testable via linear regression of coverage deviation on mean amplitude with one-sided t-test on slope.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H8",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All checklist criteria satisfied: variables measurable (artifact amplitude peak-to-peak, artifact occurrence rate per minute, proportion of residual outliers), causal chain describes how motion/muscle artifacts create extreme residuals shifting empirical quantile and causing coverage instability, confounders (subject activity level, electrode contact quality, recording duration) identified, data requirements clearly specified (ambulatory recordings with mild exercise, artifact detection >3SD, segment length ≥5s, ≥20min recording, artifact occurrence logged per minute), mechanism non-generic due to specific artifact variables and boundary conditions (ambulatory mild exercise, artifact threshold >3SD, segment length ≥5s), prediction testable via Spearman correlation of artifact occurrence rate with mean interval width, one-sided >0.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H9",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All checklist criteria satisfied: variables measurable (sampling rate Hz, filter cutoff Hz, segmentation window length s, feature set dimensionality), causal chain explains how different preprocessing alters feature distribution creating mismatch between calibration and test segments and biasing conformity scores, confounders (subject demographics, signal condition, experimenter) identified, data requirements clearly specified (multi-site study with varying devices and documented protocol changes, segment length ≥5s, ≥10 segments per protocol condition), mechanism non-generic due to specific protocol variables and boundary conditions (multi-site, documented protocol changes, segment length ≥5s), prediction testable via linear mixed-effects model of coverage deviation on sampling rate and filter cutoff with one-sided Wald tests on fixed effects.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H10",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All checklist criteria satisfied: variables measurable (model prediction influence gain, post-processing signal noise level, mutual information between predictions and subsequent signal), causal chain describes how model output via adaptive noise cancellation alters signal distribution, shifting conformity scores and causing coverage drift, confounders (feedback loop latency, baseline signal stability, adaptive filter type) identified, data requirements clearly specified (closed-loop neurostimulation or adaptive filtering system, latency <50ms, calibration set pre-feedback, ≥30min post-feedback data, adaptive filter gain logged), mechanism non-generic due to specific feedback variables and boundary conditions (closed-loop neurostimulation/adaptive filtering, latency <50ms, calibration pre-feedback), prediction testable via Spearman correlation of adaptive filter gain with coverage deviation in sliding windows, one-sided <0.",
+      "salvage_note": ""
+    }
+  ],
+  "diagnostics": {
+    "generated_count": 10,
+    "passed_count": 10,
+    "rejected_count": 0,
+    "salvageable_count": 0,
+    "pass_survival_rate": 1.0,
+    "salvageable_rate": 0.0,
+    "rejection_reason_diversity": 0,
+    "top_failed_checklist_fields": {},
+    "failure_points_consistency": true,
+    "rubber_stamp_red_flags": [
+      "10/10 passed",
+      "0 rejection reasons",
+      "all checklist values true",
+      "no salvageable or rejected hypotheses"
+    ],
+    "mechanism_builder_count": 10,
+    "confounder_rival_builder_count": 10,
+    "statistical_testability_builder_count": 10,
+    "avg_mechanism_variables_per_hypothesis": 3.3,
+    "avg_confounders_per_hypothesis": 3.0,
+    "avg_rivals_per_hypothesis": 3.0,
+    "hypotheses_with_effect_size_expectation": 10,
+    "hypotheses_with_failure_condition": 10,
+    "hypotheses_with_testable_prediction": 10
+  },
+  "stage_6_rival_prediction_matrix": [
+    {
+      "what_result_supports_meno_j": "When baseline variability is high, empirical coverage is below the nominal level (under‑coverage).",
+      "what_result_supports_rival": "When baseline variability is high, empirical coverage is above the nominal level (over‑coverage).",
+      "meno_j_prediction": "Higher subject-specific baseline physiological variability leads to lower empirical coverage (under-coverage) relative to the nominal level.",
+      "distinguishing_test": "When baseline variability is high, observe whether empirical coverage is above the nominal level (over‑coverage) – if so, the rival explanation is supported; if coverage is below nominal, the proposed mechanism is supported.",
+      "meno_j_hypothesis": "Subject-specific baseline physiological variability breaks exchangeability across signal segments, causing coverage drift.",
+      "hypothesis_id": "H1",
+      "rival_explanation": "Variation in segment length across recordings",
+      "rival_prediction": "Higher subject-specific baseline variability leads to increased empirical coverage (over‑coverage) because the conformity score distribution becomes more spread, raising the quantile."
+    },
+    {
+      "what_result_supports_meno_j": "During periods of rising impedance, empirical coverage is below the nominal level (under‑coverage).",
+      "what_result_supports_rival": "During periods of rising impedance, empirical coverage is above the nominal level (over‑coverage).",
+      "meno_j_prediction": "Higher electrode impedance or noise variance leads to lower empirical coverage (under-coverage).",
+      "distinguishing_test": "During periods of rising impedance, measure whether empirical coverage exceeds the nominal level; excess coverage supports the rival, while reduced coverage supports the proposed mechanism.",
+      "meno_j_hypothesis": "Sensor drift or time-varying noise alters feature distributions, leading to miscalibrated conformal intervals.",
+      "hypothesis_id": "H2",
+      "rival_explanation": "Changes in subject physiological state coinciding with sensor drift",
+      "rival_prediction": "Increased electrode impedance or noise variance leads to higher empirical coverage (over‑coverage) because the conformity score quantile shifts upward."
+    },
+    {
+      "what_result_supports_meno_j": "When subjects are in higher arousal states (exercise), empirical coverage is below the nominal level (under‑coverage).",
+      "what_result_supports_rival": "When subjects are in higher arousal states (exercise), empirical coverage is above the nominal level (over‑coverage).",
+      "meno_j_prediction": "Transition to higher arousal states (e.g., exercise) leads to lower empirical coverage (under-coverage).",
+      "distinguishing_test": "When subjects are in exercise vs rest, compare empirical coverage; if coverage is above nominal, the rival explanation is favored; if below nominal, the proposed mechanism is favored.",
+      "meno_j_hypothesis": "Physiological state transitions (e.g., sleep vs wake, rest vs exercise) induce concept drift that violates the i.i.d. assumption.",
+      "hypothesis_id": "H3",
+      "rival_explanation": "Changes in labeling consistency across states",
+      "rival_prediction": "Higher arousal states produce higher empirical coverage (over‑coverage) because the conformity score quantile increases due to larger residuals being trimmed."
+    },
+    {
+      "what_result_supports_meno_j": "During epochs with high lag‑1 autocorrelation, empirical coverage is below the nominal level (under‑coverage).",
+      "what_result_supports_rival": "During epochs with high lag‑1 autocorrelation, empirical coverage is above the nominal level (over‑coverage).",
+      "meno_j_prediction": "Higher lag-1 autocorrelation leads to lower empirical coverage (under-coverage).",
+      "distinguishing_test": "During epochs with high lag‑1 autocorrelation, measure whether empirical coverage exceeds the nominal level; excess coverage supports the rival, while reduced coverage supports the proposed mechanism.",
+      "meno_j_hypothesis": "Strong temporal autocorrelation within physiological signals violates exchangeability, causing underestimation of prediction uncertainty.",
+      "hypothesis_id": "H4",
+      "rival_explanation": "Variations in signal amplitude causing heteroscedasticity",
+      "rival_prediction": "Stronger temporal autocorrelation yields higher empirical coverage (over‑coverage) because the conformity score distribution becomes heavier‑tailed, increasing the quantile."
+    },
+    {
+      "what_result_supports_meno_j": "When the proportion of mislabeled annotations rises, empirical coverage moves below the nominal level (under‑coverage).",
+      "what_result_supports_rival": "When the proportion of mislabeled annotations rises, empirical coverage moves above the nominal level (over‑coverage).",
+      "meno_j_prediction": "Higher label error rate leads to lower empirical coverage (under-coverage) when errors increase residuals.",
+      "distinguishing_test": "When the proportion of mislabeled annotations rises, check whether empirical coverage moves above the nominal level; an increase indicates the rival explanation, whereas a decrease indicates the proposed mechanism.",
+      "meno_j_hypothesis": "Segment-specific label noise or annotation errors bias conformity scores, destabilizing coverage.",
+      "hypothesis_id": "H5",
+      "rival_explanation": "Variations in feature extraction parameters across segments",
+      "rival_prediction": "Increased label error rate produces higher empirical coverage (over‑coverage) because mislabeled samples generate anomalously small residuals, pulling the conformity score quantile downward."
+    },
+    {
+      "what_result_supports_meno_j": "For segments containing rare events, empirical coverage is below the nominal level (under‑coverage).",
+      "what_result_supports_rival": "For segments containing rare events, empirical coverage is above the nominal level (over‑coverage).",
+      "meno_j_prediction": "Lower prevalence of rare events in the calibration set leads to lower empirical coverage for rare-event test segments (under-coverage).",
+      "distinguishing_test": "For segments containing rare events, compare empirical coverage to the nominal level; coverage above nominal supports the rival, while coverage below nominal supports the proposed mechanism.",
+      "meno_j_hypothesis": "Rare physiological events are underrepresented in calibration sets, leading to poor coverage for those segments.",
+      "hypothesis_id": "H6",
+      "rival_explanation": "Variations in feature rarity definitions across segments",
+      "rival_prediction": "When rare physiological events are scarce in the calibration set, the empirical coverage for those segments becomes higher than nominal (over‑coverage) because the conformity score quantile shifts downward."
+    },
+    {
+      "what_result_supports_meno_j": "During high‑amplitude epochs, empirical coverage is below the nominal level (under‑coverage).",
+      "what_result_supports_rival": "During high‑amplitude epochs, empirical coverage is above the nominal level (over‑coverage).",
+      "meno_j_prediction": "Higher signal amplitude leads to lower empirical coverage (under-coverage) when error variance increases with amplitude.",
+      "distinguishing_test": "During high‑amplitude epochs, measure whether empirical coverage exceeds the nominal level; excess coverage indicates the rival explanation, while reduced coverage indicates the proposed mechanism.",
+      "meno_j_hypothesis": "Heteroscedasticity in signal amplitude leads to non-uniform error variance, breaking the assumption of constant conformity score distribution.",
+      "hypothesis_id": "H7",
+      "rival_explanation": "Changes in model architecture across amplitude ranges",
+      "rival_prediction": "Greater signal amplitude produces higher empirical coverage (over‑coverage) because the conformity score distribution spreads, increasing the quantile used for interval construction."
+    },
+    {
+      "what_result_supports_meno_j": "When artifact occurrence rises, empirical coverage is above the nominal level (over‑coverage).",
+      "what_result_supports_rival": "When artifact occurrence rises, empirical coverage is below the nominal level (under‑coverage).",
+      "meno_j_prediction": "Higher artifact occurrence rate leads to increased mean conformal interval width (and thus decreased coverage stability).",
+      "distinguishing_test": "When artifact occurrence rises, check whether empirical coverage falls below the nominal level; a decrease supports the rival, while an increase supports the proposed mechanism.",
+      "meno_j_hypothesis": "Motion or muscle artifacts introduce outlier segments that inflate conformity scores and destabilize coverage.",
+      "hypothesis_id": "H8",
+      "rival_explanation": "Variations in external noise unrelated to feedback",
+      "rival_prediction": "Increased motion or muscle artifact rate leads to lower empirical coverage (under‑coverage) because extreme residuals are trimmed or receive low weight, pulling the conformity score quantile downward."
+    },
+    {
+      "what_result_supports_meno_j": "When recordings are down‑sampled or more heavily filtered, empirical coverage is below the nominal level (under‑coverage).",
+      "what_result_supports_rival": "When recordings are down‑sampled or more heavily filtered, empirical coverage is above the nominal level (over‑coverage).",
+      "meno_j_prediction": "Lower sampling rate or stronger low-pass filtering leads to lower empirical coverage (under-coverage).",
+      "distinguishing_test": "When recordings are down‑sampled or more heavily filtered, measure whether empirical coverage exceeds the nominal level; excess coverage indicates the rival explanation, while a deficit indicates the proposed mechanism.",
+      "meno_j_hypothesis": "Changes in recording protocols (sampling rate, filtering, segmentation) create domain shifts that invalidate calibration.",
+      "hypothesis_id": "H9",
+      "rival_explanation": "Variations in physiological state across protocol changes",
+      "rival_prediction": "Adopting a lower sampling rate or stronger low‑pass filter yields higher empirical coverage (over‑coverage) because the conformity score distribution becomes narrower, decreasing the quantile."
+    },
+    {
+      "what_result_supports_meno_j": "During periods of high feedback gain, empirical coverage is below the nominal level (under‑coverage).",
+      "what_result_supports_rival": "During periods of high feedback gain, empirical coverage is above the nominal level (over‑coverage).",
+      "meno_j_prediction": "Stronger feedback influence (higher adaptive filter gain) leads to lower empirical coverage (under-coverage).",
+      "distinguishing_test": "During periods of high feedback gain, check whether empirical coverage is above the nominal level; excess coverage supports the rival, while reduced coverage supports the proposed mechanism.",
+      "meno_j_hypothesis": "Feedback loops where model predictions influence subsequent signal processing (e.g., adaptive filtering) induce dependence between training and test data.",
+      "hypothesis_id": "H10",
+      "rival_explanation": "Variations in external noise unrelated to feedback",
+      "rival_prediction": "Strong feedback influence (high adaptive‑filter coefficient) results in higher empirical coverage (over‑coverage) because the model’s action suppresses signal variability, tightening the conformity score distribution."
+    }
+  ],
+  "stage_7_falsification_tests": [
+    {
+      "minimum_data_needed": "Multi-subject ECG dataset with baseline heart rate, respiration rate, and QRS amplitude measured per subject; at least 20 subjects; segment length ≥30 seconds; sampling rate ≥250 Hz; calibration and test splits per subject.",
+      "hypothesis_id": "H1",
+      "failure_condition": "If the slope of coverage deviation on baseline variability is not significantly less than zero (one-sided p > 0.05), the hypothesis fails.",
+      "most_likely_false_positive_risk": "Confounding by age, medication use, or signal-to-noise ratio creating a spurious association between baseline variability and coverage deviation.",
+      "most_likely_false_negative_risk": "Insufficient inter‑subject variability in baseline measures or low statistical power due to small sample size masking a true negative slope.",
+      "strongest_falsification_test": "Fit a linear mixed‑effects model with coverage deviation as outcome, baseline variability score (PCA of HR, respiration, QRS amplitude) as fixed effect, subject as random intercept, controlling for age, sex, and SNR; test the fixed‑effect slope < 0 with a one‑sided Wald test."
+    },
+    {
+      "minimum_data_needed": "Wearable ECG patch recordings with electrode impedance, amplifier gain, environmental interference power, and noise variance logged over time; at least 1 hour per subject; sampling rate 500 Hz; stable ambient temperature; segments sufficient for sliding‑window coverage.",
+      "hypothesis_id": "H2",
+      "failure_condition": "If coverage deviation does not show a significant negative association with impedance/noise variance (one-sided p > 0.05), the hypothesis fails.",
+      "most_likely_false_positive_risk": "Uncontrolled changes in ambient temperature, subject movement, or battery voltage correlating with impedance shifts and producing spurious coverage effects.",
+      "most_likely_false_negative_risk": "Limited range of impedance variation during recording or high measurement noise obscuring the true relationship.",
+      "strongest_falsification_test": "Compute coverage deviation in temporal windows; correlate window‑level impedance and noise variance with coverage deviation using Spearman correlation; test one‑sided hypothesis that correlation < 0 while controlling for temperature, movement, and battery voltage."
+    },
+    {
+      "minimum_data_needed": "Polysomnography or controlled exercise dataset with physiological state labels (sleep/wake, rest/exercise); heart‑rate variability index, movement count, and MET per segment; segment length ≥1 minute; stable ambient conditions; at least 30 segments per state.",
+      "hypothesis_id": "H3",
+      "failure_condition": "If empirical coverage in higher arousal states is not significantly lower than in lower arousal states (one-sided p > 0.05), the hypothesis fails.",
+      "most_likely_false_positive_risk": "Confounding by time of day, caffeine intake, or ambient noise that co‑varies with state and influences coverage independently.",
+      "most_likely_false_negative_risk": "Insufficient contrast between low and high arousal states or low event count reducing power to detect a coverage drop.",
+      "strongest_falsification_test": "Compute coverage deviation per segment; compare coverage between low and high arousal states using a one‑sided paired t‑test (or Wilcoxon signed‑rank if non‑normal) testing that coverage in high arousal < coverage in low arousal, adjusting for time of day, caffeine, and ambient noise."
+    },
+    {
+      "minimum_data_needed": "Physiological signals (EEG or ECG) with sampling rate ≥250 Hz; segment length ≥10 seconds; lag‑1 autocorrelation coefficient estimated per segment; at least 50 segments.",
+      "hypothesis_id": "H4",
+      "failure_condition": "If the slope of coverage deviation on autocorrelation is not significantly less than zero (one-sided p > 0.05), the hypothesis fails.",
+      "most_likely_false_positive_risk": "Variations in segment length, sampling rate, or filtering bandwidth that co‑vary with autocorrelation and affect coverage independently.",
+      "most_likely_false_negative_risk": "Low variability in autocorrelation across segments or high measurement error in ρ reducing ability to detect a true negative slope.",
+      "strongest_falsification_test": "Regress coverage deviation on lag‑1 autocorrelation using linear regression (optionally with block bootstrap for robust SEs); test slope < 0 with a one‑sided t‑test, controlling for segment length, sampling rate, and filtering bandwidth."
+    },
+    {
+      "minimum_data_needed": "Expert‑annotated arrhythmia dataset with ability to synthetically corrupt labels; known label error rates (e.g., 0%, 5%, 10%, 20%); segments containing ≥1 annotated event; inter‑annotator agreement <0.8.",
+      "hypothesis_id": "H5",
+      "failure_condition": "If coverage deviation does not show a significant decreasing trend with increasing label error rate (one-sided p > 0.05 for Jonckheere‑Terpstra trend test), the hypothesis fails.",
+      "most_likely_false_positive_risk": "Confounding by annotator experience, signal clarity, or event rarity that co‑varies with induced label errors and influences coverage.",
+      "most_likely_false_negative_risk": "Synthetic label corruption not reflecting real error patterns or insufficient granularity of error levels to detect a trend.",
+      "strongest_falsification_test": "For each label error level compute coverage deviation; apply the Jonckheere‑Terpstra test for ordered alternatives (decreasing coverage with increasing error) using a one‑sided alternative, controlling for annotator experience, signal clarity, and event rarity."
+    },
+    {
+      "minimum_data_needed": "Dataset with physiological rare events (e.g., seizures or rare arrhythmias) prevalence <1%; calibration set size ≥5000 samples; ability to vary number of rare samples in calibration (e.g., via subsampling); at least 100 rare‑event test segments.",
+      "hypothesis_id": "H6",
+      "failure_condition": "If coverage on rare‑event test segments does not increase significantly with more rare samples in calibration (one-sided p > 0.05), the hypothesis fails.",
+      "most_likely_false_positive_risk": "Confounding by overall calibration set size, class imbalance in training data, or signal quality for rare events that co‑vary with rare sample count and affect coverage.",
+      "most_likely_false_negative_risk": "Too few rare‑event test segments or insufficient variation in rare sample count limiting power to detect a positive association.",
+      "strongest_falsification_test": "Create multiple calibration sets with varying rare sample counts; compute coverage on a held‑out rare‑event test set; test for a positive association between rare sample count and coverage using Spearman correlation (one‑sided > 0), controlling for overall calibration size, training‑data class imbalance, and rare‑event signal quality."
+    },
+    {
+      "minimum_data_needed": "ECG recordings with amplitude range 0.1–5 mV; segments with varying activity levels; sampling rate ≥250 Hz; amplitude measured as RMS per segment; at least 30 segments distributed across amplitude bins.",
+      "hypothesis_id": "H7",
+      "failure_condition": "If the slope of coverage deviation on amplitude is not significantly less than zero (one-sided p > 0.05), the hypothesis fails.",
+      "most_likely_false_positive_risk": "Confounding by baseline noise level, filtering cutoff, or subject movement that co‑varies with amplitude and influences coverage independently.",
+      "most_likely_false_negative_risk": "Limited amplitude range or high measurement error in RMS reducing ability to detect a true negative slope.",
+      "strongest_falsification_test": "Bin segments by amplitude (low, medium, high); compute coverage deviation per bin; fit linear regression of coverage deviation on mean amplitude; test slope < 0 using a one‑sided t‑test, controlling for baseline noise, filtering cutoff, and subject movement."
+    },
+    {
+      "minimum_data_needed": "Ambulatory recordings with mild exercise; artifact detection threshold >3 SD; segment length ≥5 seconds; at least 20 minutes of recording; artifact occurrence logged per minute.",
+      "hypothesis_id": "H8",
+      "failure_condition": "If mean interval width does not show a significant positive association with artifact occurrence rate (one-sided p > 0.05), the hypothesis fails.",
+      "most_likely_false_positive_risk": "Confounding by subject activity level, electrode contact quality, or recording duration that co‑varies with artifact rate and affects interval width.",
+      "most_likely_false_negative_risk": "Low variability in artifact occurrence or high measurement noise obscuring the true positive relationship.",
+      "strongest_falsification_test": "Compute artifact occurrence rate per minute and mean interval width in non‑overlapping windows; test for a positive correlation using Spearman correlation with a one‑sided alternative (correlation > 0), controlling for activity level, electrode contact quality, and recording duration."
+    },
+    {
+      "minimum_data_needed": "Multi‑site study with varying devices and documented protocol changes (sampling rate, filter cutoff, segmentation window); segment length ≥5 seconds; at least 10 segments per protocol condition.",
+      "hypothesis_id": "H9",
+      "failure_condition": "If coverage deviation does not show a significant positive association with sampling rate and filter cutoff (one-sided p > 0.05 for each coefficient), the hypothesis fails.",
+      "most_likely_false_positive_risk": "Confounding by subject demographics, signal condition, or experimenter that co‑varies with protocol changes and influences coverage independently.",
+      "most_likely_false_negative_risk": "Insufficient variation in sampling rate or filter cutoff across sites or high measurement noise reducing power to detect the expected positive association.",
+      "strongest_falsification_test": "Compute coverage deviation per segment; fit a linear mixed‑effects model with coverage deviation as outcome, sampling rate (Hz) and filter cutoff (Hz) as fixed effects, site as random intercept; test each fixed effect > 0 using one‑sided Wald tests, controlling for subject demographics, signal condition, and experimenter."
+    },
+    {
+      "minimum_data_needed": "Closed‑loop neurostimulation or adaptive filtering system; real‑time processing latency <50 ms; calibration set collected before feedback activation; at least 30 minutes of post‑feedback data; adaptive filter gain logged over time.",
+      "hypothesis_id": "H10",
+      "failure_condition": "If coverage deviation does not show a significant negative association with adaptive filter gain (one-sided p > 0.05), the hypothesis fails.",
+      "most_likely_false_positive_risk": "Confounding by feedback loop latency, baseline signal stability, or adaptive filter type that co‑varies with gain and influences coverage independently.",
+      "most_likely_false_negative_risk": "Limited range of adaptive filter gain variation or high measurement noise obscuring the true negative relationship.",
+      "strongest_falsification_test": "Compute coverage deviation in sliding windows; correlate adaptive filter gain with coverage deviation using Spearman correlation; test one‑sided hypothesis that correlation < 0 while controlling for loop latency, baseline signal stability, and filter type."
+    }
+  ]
+}

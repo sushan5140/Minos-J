@@ -1,0 +1,124 @@
+{
+  "statistical_testability_builds": [
+    {
+      "hypothesis_id": "H1",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H1 (n353) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H1 (n342) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H1 (n469) with a specific variable relation.",
+      "failure_condition": "Fake failure H1 (n909) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H1 (n151) with a specific variable relation.",
+      "statistical_testability_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H2",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H2 (n669) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H2 (n837) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H2 (n626) with a specific variable relation.",
+      "failure_condition": "Fake failure H2 (n239) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H2 (n204) with a specific variable relation.",
+      "statistical_testability_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H3",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H3 (n470) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H3 (n142) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H3 (n180) with a specific variable relation.",
+      "failure_condition": "Fake failure H3 (n37) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H3 (n562) with a specific variable relation.",
+      "statistical_testability_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H4",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H4 (n97) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H4 (n230) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H4 (n931) with a specific variable relation.",
+      "failure_condition": "Fake failure H4 (n264) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H4 (n149) with a specific variable relation.",
+      "statistical_testability_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H5",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H5 (n918) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H5 (n304) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H5 (n187) with a specific variable relation.",
+      "failure_condition": "Fake failure H5 (n475) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H5 (n703) with a specific variable relation.",
+      "statistical_testability_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H6",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H6 (n835) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H6 (n846) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H6 (n600) with a specific variable relation.",
+      "failure_condition": "Fake failure H6 (n844) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H6 (n565) with a specific variable relation.",
+      "statistical_testability_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H7",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H7 (n815) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H7 (n290) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H7 (n633) with a specific variable relation.",
+      "failure_condition": "Fake failure H7 (n371) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H7 (n944) with a specific variable relation.",
+      "statistical_testability_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H8",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H8 (n442) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H8 (n950) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H8 (n604) with a specific variable relation.",
+      "failure_condition": "Fake failure H8 (n480) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H8 (n981) with a specific variable relation.",
+      "statistical_testability_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H9",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H9 (n877) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H9 (n390) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H9 (n284) with a specific variable relation.",
+      "failure_condition": "Fake failure H9 (n70) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H9 (n458) with a specific variable relation.",
+      "statistical_testability_notes": "fake"
+    },
+    {
+      "hypothesis_id": "H10",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fake rationale H10 (n565) with a specific variable relation.",
+      "minimum_data_needed": [
+        "Fake data H10 (n760) with a specific variable relation."
+      ],
+      "testable_prediction": "Fake prediction H10 (n247) with a specific variable relation.",
+      "failure_condition": "Fake failure H10 (n867) with a specific variable relation.",
+      "statistical_test_plan": "Fake plan H10 (n395) with a specific variable relation.",
+      "statistical_testability_notes": "fake"
+    }
+  ]
+}

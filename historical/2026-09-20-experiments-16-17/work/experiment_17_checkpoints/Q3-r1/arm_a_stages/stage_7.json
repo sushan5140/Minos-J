@@ -1,0 +1,84 @@
+{
+  "falsification_tests": [
+    {
+      "strongest_falsification_test": "Linear mixed-effects regression of model prediction entropy on resting RMSSD with random intercept for subject, controlling for age, sex, VO2max, caffeine intake, and medication status; test significance of RMSSD coefficient.",
+      "failure_condition": "After adjusting for age, sex, VO2max, caffeine, and medication, the regression coefficient for resting RMSSD is not significantly positive (p>0.05) or is negative.",
+      "most_likely_false_negative_risk": "Low reliability of resting RMSSD or entropy measurements, or insufficient within-subject variation, could attenuate the true association leading to a false negative.",
+      "most_likely_false_positive_risk": "Uncontrolled confounding by aerobic fitness or caffeine intake that influences both resting RMSSD and model uncertainty could produce a spurious positive association.",
+      "hypothesis_id": "H1",
+      "minimum_data_needed": "N=120 participants aged 18-45; 5-min seated baseline ECG/PPG to compute resting RMSSD; standardized psychosocial stress task (TSST) with PPG recording; model prediction entropy for each stress vs non-stress segment; covariates: age, sex, VO2max, caffeine intake, medication status."
+    },
+    {
+      "strongest_falsification_test": "Multiple linear regression of model prediction entropy on skin impedance controlling for skin hydration, ambient temperature, hair presence, lotion use, and sweat rate; test significance of impedance coefficient.",
+      "failure_condition": "After controlling for skin hydration, ambient temperature, hair, lotion, sweat, the impedance coefficient is not significantly positive (p>0.05).",
+      "most_likely_false_negative_risk": "Measurement error in impedance or SNR, or limited range of impedance values, could mask a true effect, yielding a false negative.",
+      "most_likely_false_positive_risk": "Residual confounding by unmeasured sweat composition or skin temperature could create a false positive link between impedance and uncertainty.",
+      "hypothesis_id": "H2",
+      "minimum_data_needed": "N=100 participants; skin impedance measured at sensor site (kΩ); PPG AC amplitude and SNR computed; model prediction entropy; covariates: skin hydration, ambient temperature, hair presence, lotion use, sweat rate."
+    },
+    {
+      "strongest_falsification_test": "Linear mixed-effects model of model prediction entropy on absolute circadian phase difference controlling for sleep duration, caffeine, chronotype, recent stressor, and ambient light; test significance of phase difference coefficient.",
+      "failure_condition": "After adjusting for sleep deprivation, caffeine, chronotype, recent stress, and light, the phase difference coefficient is not significantly positive (p>0.05).",
+      "most_likely_false_negative_risk": "Imprecise estimation of circadian phase (e.g., using actigraphy proxy) adds noise, potentially obscuring a true relationship and causing false negative.",
+      "most_likely_false_positive_risk": "Uncontrolled influence of sleep deprivation or caffeine on both perceived phase and physiological responsiveness could produce a spurious positive association.",
+      "hypothesis_id": "H3",
+      "minimum_data_needed": "N=80 participants with stable sleep-wake schedule ≥3 days; circadian phase assessed via melatonin onset (DLMO) or core body temperature; clock time of each measurement; compute absolute phase difference (hours); model prediction entropy; covariates: sleep duration, caffeine, chronotype, recent stressor, light exposure."
+    },
+    {
+      "strongest_falsification_test": "Multiple regression of model prediction entropy on self-report bias score controlling for neuroticism, social desirability, momentary affect, working memory, and language proficiency; test significance of bias coefficient.",
+      "failure_condition": "After controlling for neuroticism, social desirability, momentary affect, working memory, language proficiency, the bias coefficient is not significantly positive (p>0.05).",
+      "most_likely_false_negative_risk": "Low EMA compliance or noisy physiological ground truth could attenuate bias estimate, masking a true effect and causing false negative.",
+      "most_likely_false_positive_risk": "Shared method variance between EMA and physiological measures could inflate bias score and its association with uncertainty, leading to false positive.",
+      "hypothesis_id": "H4",
+      "minimum_data_needed": "N=90 participants; EMA prompts 6×/day for 2 weeks; physiological ground truth from validated stress inducer (e.g., cold pressor) to compute label noise per subject; self-report bias score (e.g., ICC between EMA and physiology); model prediction entropy; covariates: neuroticism, social desirability, momentary affect, working memory, language proficiency."
+    },
+    {
+      "strongest_falsification_test": "Linear mixed-effects model of model prediction entropy on strap tightness controlling for arm circumference, fat thickness, skin elasticity, movement variance, and strap usage duration; test significance of tightness coefficient (expected negative).",
+      "failure_condition": "After adjusting for arm circumference, fat thickness, skin elasticity, movement variance, and strap usage, the tightness coefficient is not significantly negative (p>0.05).",
+      "most_likely_false_negative_risk": "Limited variation in strap tightness across participants or high algorithmic motion correction could reduce observable effect, yielding false negative.",
+      "most_likely_false_positive_risk": "Unmeasured skin moisture or temperature affecting both strap coupling and signal quality could produce a spurious inverse association.",
+      "hypothesis_id": "H5",
+      "minimum_data_needed": "N=110 participants; strap tightness measured via force sensor (N) during rest and 6‑min walk test; motion artifact index (accelerometer variance); PPG SNR; model prediction entropy; covariates: arm circumference, fat thickness, skin elasticity, movement variance, strap usage duration."
+    },
+    {
+      "strongest_falsification_test": "Linear regression of model prediction entropy on COMT Val158Met allele count controlling for baseline dopamine, recent stress exposure, medication affecting catecholamines, MAOA genotype, and ancestry principal components; test significance of allele count coefficient (expected positive).",
+      "failure_condition": "After adjusting for baseline dopamine, recent stress, medication, MAOA, ancestry, the Val allele coefficient is not significantly positive (p>0.05).",
+      "most_likely_false_negative_risk": "Small effect size and limited genetic variance may require larger sample; insufficient power could yield false negative.",
+      "most_likely_false_positive_risk": "Population stratification or linkage disequilibrium with other functional variants could create a spurious association between Val allele count and uncertainty.",
+      "hypothesis_id": "H6",
+      "minimum_data_needed": "N=250 participants; genotyping for COMT Val158Met (0‑2 Val alleles); stress task (mental arithmetic or TSST) with ECG/PPG ≥256 Hz; stress‑evoked HRV change (ΔRMSSD); model prediction entropy; covariates: baseline dopamine, recent stress exposure, medication affecting catecholamines, MAOA genotype, ancestry PCs."
+    },
+    {
+      "strongest_falsification_test": "Linear mixed-effects model of model prediction entropy on absolute change in within‑subject stress‑response slope across sessions controlling for life event score, medication changes, PSQI trend, ambient temperature, and firmware version; test significance of slope‑change coefficient.",
+      "failure_condition": "After adjusting for life events, medication changes, sleep quality, temperature, firmware, the slope‑change coefficient is not significantly positive (p>0.05).",
+      "most_likely_false_negative_risk": "High intra‑session variability in stress response or low compliance could mask true drift, leading to false negative.",
+      "most_likely_false_positive_risk": "Unmeasured seasonal variations in activity or daylight could confound slope change and uncertainty, producing false positive.",
+      "hypothesis_id": "H7",
+      "minimum_data_needed": "N=70 participants; weekly lab sessions ≥8 weeks with standardized stressor; wearable compliance >90%; compute within‑subject stress‑response slope (ΔRMSSD per session) via mixed‑effects; model prediction entropy per session; covariates: life event checklist, medication changes, PSQI trend, ambient temperature, firmware version."
+    },
+    {
+      "strongest_falsification_test": "Multiple regression of model prediction entropy on average daily activity intensity (MET‑hours) controlling for VO2max, resting RMSSD, exercise‑induced ΔRMSSD, daily caffeine, and proportion of morning activity; test significance of activity intensity coefficient.",
+      "failure_condition": "After adjusting for VO2max, resting RMSSD, exercise‑induced ΔRMSSD, caffeine, and time‑of‑day activity, the activity intensity coefficient is not significantly positive (p>0.05).",
+      "most_likely_false_negative_risk": "If activity context is already partially captured by the model (e.g., via motion features), the added variance may be small, risking false negative.",
+      "most_likely_false_positive_risk": "Higher fitness may simultaneously increase activity intensity and improve signal quality, creating a spurious positive association if not fully controlled.",
+      "hypothesis_id": "H8",
+      "minimum_data_needed": "N=100 participants; 7‑day free‑living monitoring with accelerometer 30 Hz; compute average daily activity intensity (MET‑hours) and proportion time in moderate‑vigorous activity; model prediction entropy (context‑agnostic); covariates: VO2max, resting RMSSD, exercise‑induced ΔRMSSD, daily caffeine, proportion activity morning vs evening."
+    },
+    {
+      "strongest_falsification_test": "Linear regression of model prediction uncertainty on number of labeled samples per subject controlling for label variance, label reliability (kappa), regularization lambda, class imbalance, and mean stress intensity; test significance of sample size coefficient (expected negative).",
+      "failure_condition": "After controlling for label variance, label reliability, regularization strength, class imbalance, and stress intensity, the sample size coefficient is not significantly negative (p>0.05).",
+      "most_likely_false_negative_risk": "Limited range of sample sizes or strong regularization may diminish the impact of sample size on uncertainty, masking a true effect and causing false negative.",
+      "most_likely_false_positive_risk": "If label noise is higher for subjects with more samples, it could invert the expected relationship, producing a false positive negative association.",
+      "hypothesis_id": "H9",
+      "minimum_data_needed": "N=60 participants with varying numbers of labeled stress samples per subject (range 5‑50); same regularized logistic regression hyperparameters for all subjects; labels from validated stress inductions; compute posterior variance of classifier weights (or predictive variance) per subject; model prediction uncertainty (predictive variance); covariates: label variance, label reliability (kappa), regularization lambda, class imbalance, mean stress intensity."
+    },
+    {
+      "strongest_falsification_test": "Multiple regression of model prediction entropy on sampling rate jitter (SD of inter‑sample interval) and synchronization offset controlling for ambient temperature, battery voltage, firmware version, EMI exposure, and casing strain; test significance of jitter and offset coefficients (expected positive).",
+      "failure_condition": "After adjusting for ambient temperature, battery voltage, firmware version, EMI, and casing strain, the jitter/offset coefficients are not significantly positive (p>0.05).",
+      "most_likely_false_negative_risk": "High interpolation effectiveness may reduce residual jitter to negligible levels, making true effect undetectable and yielding false negative.",
+      "most_likely_false_positive_risk": "Unmeasured electromagnetic interference or temperature fluctuations could affect both timing jitter and signal amplitude, creating a spurious positive association.",
+      "hypothesis_id": "H10",
+      "minimum_data_needed": "N=80 participants; device firmware logs timestamps with µs resolution; compute sampling rate jitter (SD of inter‑sample interval) and synchronization offset between PPG and accelerometer; feature misalignment index (cross‑correlation lag); model prediction entropy; covariates: ambient temperature, battery voltage, firmware version, EMI exposure, casing strain."
+    }
+  ]
+}

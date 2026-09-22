@@ -1,0 +1,440 @@
+{
+  "sample_index": 4,
+  "valid": true,
+  "error": null,
+  "cards": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Subjects with high baseline heart rate variability (HRV) exhibit non-exchangeable residuals under Mondrian binning by stress condition because their autonomic flexibility creates heteroscedastic prediction errors that violate the exchangeability assumption within bins.",
+      "proposed_mechanism": "High baseline HRV subjects have greater autonomic reactivity range, causing residual variance to scale with predicted stress probability in a subject-specific manner that Mondrian's condition-level bins cannot capture.",
+      "causal_path": "High baseline HRV → greater autonomic reactivity range → subject-specific heteroscedastic residuals → violation of exchangeability within Mondrian bins → undercoverage for high-HRV subjects",
+      "mechanism_variables": [
+        "baseline_RMSSD",
+        "residual_variance_per_subject",
+        "predicted_stress_probability",
+        "Mondrian_bin_assignment",
+        "empirical_coverage_per_subject"
+      ],
+      "possible_confounders": [
+        "age",
+        "fitness_level",
+        "medication_use",
+        "circadian_phase",
+        "sensor_placement_quality"
+      ],
+      "control_variables": [
+        "stratify by age decade",
+        "control for VO2max if available",
+        "exclude beta-blocker users",
+        "match time-of-day across conditions",
+        "include only subjects with chest sensor quality index > 0.9"
+      ],
+      "rival_explanation": "Undercoverage stems from label noise in self-reported stress ratings rather than physiological heteroscedasticity.",
+      "rival_prediction": "Undercoverage correlates with self-report inconsistency (e.g., high variance in repeated stress ratings) but not with baseline HRV.",
+      "distinguishing_test": "Compute correlation between baseline RMSSD and per-subject coverage deficit; compute correlation between self-report test-retest reliability and coverage deficit. The HRV mechanism predicts the former correlation is stronger.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Prior work shows HRV explains 15-25% of variance in stress reactivity; Mondrian binning typically yields 5-15% coverage gaps for outliers. Expect Cohen's d ~ 0.5-0.7 for high vs low HRV groups.",
+      "minimum_data_needed": [
+        "WESAD chest ECG for baseline RMSSD computation (first 5 min of baseline condition)",
+        "Mondrian conformal prediction intervals per subject per condition",
+        "Ground truth stress labels per condition",
+        "Subject metadata: age, medication"
+      ],
+      "testable_prediction": "Subjects in top quartile of baseline RMSSD will show empirical coverage at least 10 percentage points below nominal (e.g., <80% for 90% nominal) while bottom quartile subjects achieve nominal coverage.",
+      "failure_condition": "No significant correlation (p > 0.05) between baseline RMSSD and per-subject coverage deficit after controlling for confounders.",
+      "statistical_test_plan": "Linear mixed model: coverage_deficit ~ baseline_RMSSD + age + sensor_quality + (1|subject), with Mondrian bin as fixed effect. Test RMSSD coefficient ≠ 0.",
+      "falsification_test": "Re-run Mondrian with subject-specific bins (each subject = own category). If undercoverage persists for high-HRV subjects, the mechanism is falsified because exchangeability violation was bin-specific."
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Wrist EDA sensor detachment during the stress condition (TSST) introduces non-ignorable missingness that biases the nonconformity scores for affected subjects, causing systematic undercoverage.",
+      "proposed_mechanism": "Physical movement during TSST causes wrist EDA electrode contact loss, creating artifactual low EDA readings that the model interprets as low stress, while ground truth labels remain high stress. This inflates nonconformity scores for stress condition in a way that correlates with movement magnitude.",
+      "causal_path": "TSST movement → wrist EDA electrode detachment → artifactual low EDA → underestimated stress probability → inflated nonconformity scores for stress condition → undercoverage for high-movement subjects",
+      "mechanism_variables": [
+        "wrist_ACC_magnitude_during_TSST",
+        "wrist_EDA_signal_quality_index",
+        "EDA_artifact_flag",
+        "nonconformity_score_stress_condition",
+        "empirical_coverage_per_subject"
+      ],
+      "possible_confounders": [
+        "subject_body_composition",
+        "ambient_temperature",
+        "wrist_circumference",
+        "sensor_strap_tightness",
+        "baseline_sweat_level"
+      ],
+      "control_variables": [
+        "include only subjects with wrist ACC magnitude < 90th percentile during baseline",
+        "control for ambient temperature",
+        "exclude subjects with wrist circumference > 3 SD from mean",
+        "verify strap tightness protocol compliance",
+        "include baseline EDA level as covariate"
+      ],
+      "rival_explanation": "Undercoverage is due to chest sensor artifacts during TSST, not wrist EDA detachment.",
+      "rival_prediction": "Coverage deficit correlates with chest ACC magnitude and chest sensor quality metrics, not wrist metrics.",
+      "distinguishing_test": "Compare correlation of coverage deficit with wrist ACC magnitude vs chest ACC magnitude during TSST. Wrist mechanism predicts stronger wrist correlation.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Sensor detachment can cause near-total signal loss (EDA → 0 μS), creating massive prediction errors. Expect coverage drops of 20-40 percentage points for affected subjects.",
+      "minimum_data_needed": [
+        "WESAD wrist ACC (3-axis) during TSST",
+        "WESAD wrist EDA raw signal with quality flags",
+        "Mondrian nonconformity scores per subject per condition",
+        "Ground truth stress labels",
+        "Wrist circumference measurements if available"
+      ],
+      "testable_prediction": "Subjects with wrist ACC magnitude during TSST > 2 SD above baseline median will show empirical coverage < 70% for 90% nominal intervals.",
+      "failure_condition": "No significant association between wrist ACC magnitude during TSST and coverage deficit (p > 0.05) after controlling for chest ACC.",
+      "statistical_test_plan": "Logistic regression: undercovered (binary) ~ wrist_ACC_TSST + chest_ACC_TSST + baseline_EDA + ambient_temp. Test wrist_ACC_TSST coefficient > 0.",
+      "falsification_test": "Impute wrist EDA artifacts using chest EDA (which remains attached) and recompute Mondrian. If undercoverage disappears for high-movement subjects, mechanism confirmed; if persists, mechanism falsified."
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "The Mondrian taxonomy bins by experimental condition (baseline/stress/amusement/meditation) but fails to account for within-condition temporal drift in physiological baselines, causing undercoverage for subjects with strong habituation or sensitization across trials.",
+      "proposed_mechanism": "Repeated exposure to stress induction causes progressive habituation (decreasing physiological response) or sensitization (increasing response) within the stress condition. Mondrian treats all stress-condition windows as exchangeable, but residuals correlate with trial order.",
+      "causal_path": "Repeated stress trials → habituation/sensitization → systematic residual trend within stress condition → violation of exchangeability within Mondrian stress bin → undercoverage for strong habituators/sensitizers",
+      "mechanism_variables": [
+        "trial_number_within_stress_condition",
+        "residual_trend_slope_per_subject",
+        "Mondrian_bin_stress",
+        "empirical_coverage_per_subject",
+        "habituation_index"
+      ],
+      "possible_confounders": [
+        "total_experiment_duration",
+        "inter_trial_interval",
+        "subject_fatigue",
+        "time_of_day",
+        "order_of_conditions"
+      ],
+      "control_variables": [
+        "include only subjects with same condition order",
+        "control for inter-trial interval duration",
+        "match time-of-day",
+        "include total experiment duration as covariate",
+        "exclude subjects with > 30 min breaks"
+      ],
+      "rival_explanation": "Undercoverage is due to between-subject variability in stress reactivity, not within-subject temporal drift.",
+      "rival_prediction": "Coverage deficit correlates with between-subject stress reactivity variance (e.g., std of stress-condition predictions across subjects) but not with within-subject trial-order slope.",
+      "distinguishing_test": "Fit per-subject linear trend of residuals vs trial order within stress condition. Correlate slope magnitude with coverage deficit. Habituation mechanism predicts significant correlation; between-subject mechanism predicts none.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Habituation effects in TSST are modest (5-15% response reduction across trials). Mondrian bins pool across trials, diluting the effect. Expect Cohen's d ~ 0.3-0.4.",
+      "minimum_data_needed": [
+        "Trial-level timestamps and condition labels for WESAD stress condition",
+        "Per-trial nonconformity scores or predictions",
+        "Mondrian bin assignments per trial",
+        "Ground truth per trial"
+      ],
+      "testable_prediction": "Subjects with absolute residual trend slope > 0.5 SD/unit trial will show coverage deficit > 5 percentage points vs subjects with flat trends.",
+      "failure_condition": "No significant correlation between per-subject residual trend slope and coverage deficit (p > 0.05).",
+      "statistical_test_plan": "Per-subject Theil-Sen slope of residuals vs trial order. Spearman correlation between |slope| and coverage deficit. Permutation test (n=10000) for significance.",
+      "falsification_test": "Re-bin Mondrian by trial order within condition (early/late stress trials separate). If undercoverage persists for same subjects, temporal drift mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Subjects with high tonic EDA (high baseline skin conductance level) exhibit compressed dynamic range in phasic EDA responses, causing the nonconformity measure to underestimate uncertainty for stress predictions in these subjects.",
+      "proposed_mechanism": "High tonic EDA saturates the phasic response capacity (ceiling effect), reducing the signal-to-noise ratio of stress-discriminative features. The model learns overconfident predictions for high-tonic subjects, but Mondrian's condition-level bins don't stratify by tonic level.",
+      "causal_path": "High baseline SCL → reduced phasic EDA dynamic range → lower feature discriminability for stress → overconfident model predictions → nonconformity scores too small → undercoverage for high-tonic subjects",
+      "mechanism_variables": [
+        "baseline_SCL_wrist",
+        "baseline_SCL_chest",
+        "phasic_EDA_amplitude_stress",
+        "prediction_confidence_stress",
+        "nonconformity_score_stress",
+        "empirical_coverage_per_subject"
+      ],
+      "possible_confounders": [
+        "hydration_level",
+        "skin_type",
+        "ambient_humidity",
+        "electrode_gel_drying",
+        "medication_anticholinergic"
+      ],
+      "control_variables": [
+        "measure hydration via self-report or urine specific gravity",
+        "control for ambient humidity",
+        "exclude subjects on anticholinergics",
+        "normalize by max observed SCL per subject",
+        "include skin type if available"
+      ],
+      "rival_explanation": "High tonic EDA subjects have genuinely lower stress reactivity (physiological non-responders), so undercoverage reflects true lower variance, not model miscalibration.",
+      "rival_prediction": "High-tonic subjects show low phasic EDA amplitude AND low ground-truth stress reactivity (e.g., low cortisol or self-report). Coverage deficit correlates with low reactivity, not high tonic level per se.",
+      "distinguishing_test": "Test interaction: coverage deficit ~ baseline_SCL * phasic_EDA_amplitude. Tonic saturation mechanism predicts deficit worst when high tonic + low phasic. Non-responder mechanism predicts deficit tracks low phasic regardless of tonic.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Tonic EDA varies 5-10x across population. Phasic dynamic range compression is well-documented. Expect 10-20% coverage gap between high/low tonic groups.",
+      "minimum_data_needed": [
+        "WESAD wrist and chest EDA during baseline (first 5 min)",
+        "Phasic EDA decomposition (e.g., cvxEDA) during stress condition",
+        "Model prediction probabilities per subject per condition",
+        "Mondrian nonconformity scores",
+        "Ground truth stress labels"
+      ],
+      "testable_prediction": "Subjects with baseline SCL > 75th percentile AND phasic EDA amplitude < 25th percentile will show empirical coverage < 75% for 90% nominal intervals.",
+      "failure_condition": "No significant interaction between baseline SCL and phasic amplitude in predicting coverage deficit (p > 0.05).",
+      "statistical_test_plan": "Beta regression: coverage_rate ~ baseline_SCL * phasic_amplitude + sensor_location + age. Test interaction term ≠ 0.",
+      "falsification_test": "Train separate Mondrian models stratified by baseline SCL tertiles. If undercoverage persists in high-tonic stratum, mechanism falsified (stratification should fix it if mechanism is correct)."
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "The WESAD stress label (TSST condition) conflates anticipatory anxiety during preparation with acute stress response, creating label heterogeneity that violates Mondrian's assumption of homogeneous nonconformity distributions within the stress bin.",
+      "proposed_mechanism": "The 'stress' condition includes both the 10-min preparation period (anticipatory anxiety, moderate physiology) and the 5-min TSST (acute stress, high physiology). Subjects differ in anticipatory vs reactive profiles. Mondrian bins all stress windows together, but nonconformity distributions differ between anticipation and reactivity phases.",
+      "causal_path": "Stress condition label heterogeneity → mixed anticipatory/reactive physiology in same Mondrian bin → bimodal nonconformity distribution within bin → coverage deficit for subjects whose phase ratio deviates from bin average",
+      "mechanism_variables": [
+        "phase_label_preparation_vs_TSST",
+        "nonconformity_score_by_phase",
+        "anticipatory_reactivity_ratio_per_subject",
+        "Mondrian_bin_stress",
+        "empirical_coverage_per_subject"
+      ],
+      "possible_confounders": [
+        "preparation_duration_variability",
+        "TSST_duration_variability",
+        "subject_trait_anxiety",
+        "prior_stress_exposure",
+        "experimenter_effects"
+      ],
+      "control_variables": [
+        "use only standardized 10-min prep + 5-min TSST windows",
+        "control for trait anxiety (STAI-T if available)",
+        "exclude subjects with truncated TSST",
+        "match experimenter across subjects",
+        "verify timing protocol compliance"
+      ],
+      "rival_explanation": "Undercoverage is due to individual differences in stress recovery speed after TSST, not label heterogeneity during stress.",
+      "rival_prediction": "Coverage deficit correlates with post-TSST recovery slope (e.g., EDA decay time constant) but not with anticipatory/reactive ratio during stress.",
+      "distinguishing_test": "Compute coverage separately for preparation-phase windows vs TSST-phase windows. Label heterogeneity mechanism predicts different coverage rates between phases; recovery mechanism predicts similar coverage during stress but deficit in recovery.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Anticipatory vs reactive physiology differs substantially (e.g., HR +10 vs +30 bpm). Pooling creates large nonconformity distribution mismatch. Expect 15-30% coverage gaps for phase-mismatched subjects.",
+      "minimum_data_needed": [
+        "WESAD timestamps with phase annotations (preparation vs TSST within stress condition)",
+        "Per-window nonconformity scores",
+        "Mondrian bin assignments",
+        "Ground truth phase labels",
+        "Subject trait anxiety scores if available"
+      ],
+      "testable_prediction": "Empirical coverage for preparation-phase windows will differ from TSST-phase windows by > 15 percentage points for at least 30% of subjects.",
+      "failure_condition": "No significant difference in coverage between preparation and TSST phases (paired t-test p > 0.05) AND no correlation between anticipatory/reactive ratio and coverage deficit.",
+      "statistical_test_plan": "Paired t-test: coverage_preparation vs coverage_TSST per subject. Linear regression: coverage_deficit ~ anticipatory_reactivity_ratio + trait_anxiety.",
+      "falsification_test": "Re-run Mondrian with separate bins for preparation and TSST phases. If undercoverage disappears, mechanism confirmed; if undercoverage persists identically, mechanism falsified."
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Mondrian's calibration set size per bin is insufficient for subjects with rare physiological profiles, causing high variance in quantile estimation that manifests as apparent undercoverage (finite-sample effect, not systematic bias).",
+      "proposed_mechanism": "Mondrian splits calibration data by condition (4 bins). For rare physiological profiles (e.g., high HRV + low EDA reactivity), few calibration samples fall in the same bin with similar features. The empirical quantile of nonconformity scores has high sampling variance, leading to intervals that are too narrow by chance for these subjects.",
+      "causal_path": "Rare physiological profile → few calibration samples in same Mondrian bin with similar features → high variance in empirical quantile estimate → prediction intervals too narrow by chance → apparent undercoverage for rare-profile subjects",
+      "mechanism_variables": [
+        "calibration_sample_count_per_bin_per_subject_profile",
+        "nonconformity_quantile_variance",
+        "subject_profile_rarity_score",
+        "empirical_coverage_per_subject",
+        "nominal_coverage"
+      ],
+      "possible_confounders": [
+        "total_calibration_set_size",
+        "feature_space_dimensionality",
+        "Mondrian_taxonomy_granularity",
+        "subject_distribution_in_calibration_vs_test"
+      ],
+      "control_variables": [
+        "fix calibration set size across experiments",
+        "use same feature set for all subjects",
+        "compare only subjects with similar calibration representation",
+        "control for taxonomy granularity"
+      ],
+      "rival_explanation": "Undercoverage is systematic bias from model misspecification for rare profiles, not finite-sample variance.",
+      "rival_prediction": "Coverage deficit for rare-profile subjects persists and is consistent across different random calibration/test splits (systematic). Finite-sample mechanism predicts deficit varies randomly across splits.",
+      "distinguishing_test": "Repeat Mondrian with 100 different random calibration/test splits. Compute variance of per-subject coverage across splits. Finite-sample mechanism predicts high variance for rare-profile subjects; systematic bias predicts low variance (consistently low coverage).",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Depends on calibration set size, feature dimensionality, and rarity distribution. Need to compute effective sample size per bin per profile cluster from WESAD data to estimate.",
+      "minimum_data_needed": [
+        "WESAD full dataset with subject IDs",
+        "Feature vectors used for Mondrian taxonomy",
+        "Calibration/test split indices",
+        "Nonconformity scores per split",
+        "Subject physiological profile clustering"
+      ],
+      "testable_prediction": "Subjects in bottom 20% of calibration bin representation will show coverage variance across splits > 2x that of well-represented subjects.",
+      "failure_condition": "Coverage variance across splits does not correlate with calibration bin representation (p > 0.05).",
+      "statistical_test_plan": "For each subject, compute coverage across 100 splits. Regress coverage_variance ~ calibration_bin_count + profile_rarity. Test calibration_bin_count coefficient < 0.",
+      "falsification_test": "Increase calibration set size by 5x (via data augmentation or pooling). If undercoverage for rare profiles persists with same magnitude, finite-sample mechanism falsified."
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Chest respiration belt slippage during TSST introduces non-stationary noise in RESP features that disproportionately affects subjects with high respiratory sinus arrhythmia (RSA), causing Mondrian's condition-level bins to miss subject-specific feature degradation.",
+      "proposed_mechanism": "High RSA subjects have stronger ECG-RESP coupling. When the chest belt slips during TSST movement, RESP signal degrades, breaking the ECG-RESP coupling features the model relies on. Prediction errors increase specifically for high-RSA subjects, but Mondrian bins don't stratify by RSA or belt quality.",
+      "causal_path": "High baseline RSA → strong ECG-RESP coupling reliance → TSST movement → chest belt slippage → RESP feature degradation → prediction error increase for high-RSA subjects → undercoverage",
+      "mechanism_variables": [
+        "baseline_RSA_index",
+        "chest_RESP_signal_quality_TSST",
+        "chest_ACC_magnitude_TSST",
+        "ECG_RESP_coupling_feature_importance",
+        "nonconformity_score_stress",
+        "empirical_coverage_per_subject"
+      ],
+      "possible_confounders": [
+        "chest_circumference",
+        "belt_tightness_protocol",
+        "body_mass_index",
+        "breathing_pattern_variability",
+        "sensor_adhesive_quality"
+      ],
+      "control_variables": [
+        "control for chest circumference",
+        "verify belt tightness protocol",
+        "include BMI as covariate",
+        "exclude subjects with RESP quality < 0.7 at baseline",
+        "control for breathing pattern variability"
+      ],
+      "rival_explanation": "Undercoverage for high-RSA subjects is due to their inherently more variable cardiovascular dynamics, not sensor artifacts.",
+      "rival_prediction": "Coverage deficit correlates with baseline RSA even when restricting to subjects with perfect RESP signal quality throughout TSST.",
+      "distinguishing_test": "Restrict analysis to subjects with chest RESP signal quality index > 0.95 during entire TSST. If coverage deficit for high-RSA subjects disappears, sensor mechanism confirmed; if persists, intrinsic variability mechanism confirmed.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "RSA varies 3-5x across population. Belt slippage affects ~20-30% of TSST trials. Interaction effect expects 10-15% coverage gap.",
+      "minimum_data_needed": [
+        "WESAD chest ECG and RESP during baseline and TSST",
+        "RSA computation (e.g., peak-valley method)",
+        "Chest RESP signal quality metrics",
+        "Chest ACC during TSST",
+        "Mondrian nonconformity scores and coverage per subject"
+      ],
+      "testable_prediction": "Among subjects with high RSA (top quartile), those with chest RESP quality drop > 30% during TSST will show coverage < 75% for 90% nominal; high-RSA subjects with stable RESP quality will achieve nominal coverage.",
+      "failure_condition": "No significant interaction between baseline RSA and RESP quality drop in predicting coverage deficit (p > 0.05).",
+      "statistical_test_plan": "Linear model: coverage_deficit ~ baseline_RSA * RESP_quality_drop + chest_ACC_TSST + BMI. Test interaction coefficient ≠ 0.",
+      "falsification_test": "Replace chest RESP features with wrist ACC-derived respiration estimates (which don't slip) and re-run Mondrian. If undercoverage for high-RSA subjects disappears, mechanism confirmed; if persists, mechanism falsified."
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "The nonconformity measure (e.g., 1 - predicted_probability) is miscalibrated for subjects with low stress reactivity because the model's predicted probabilities are overconfident near 0.5, and Mondrian's binning by condition doesn't correct for this subject-specific miscalibration.",
+      "proposed_mechanism": "Low-reactivity subjects have true stress probabilities near 0.5 (ambiguous). The model outputs overconfident predictions (near 0 or 1) due to regularization or feature limitations. Nonconformity scores (1 - p) are systematically too small for these subjects. Mondrian bins by condition, not by reactivity, so the miscalibration persists within bins.",
+      "causal_path": "Low stress reactivity → true P(stress) ≈ 0.5 → model overconfidence (predicted P near 0 or 1) → nonconformity scores too small → empirical quantile too low → prediction intervals too narrow → undercoverage",
+      "mechanism_variables": [
+        "stress_reactivity_index",
+        "predicted_probability_stress",
+        "true_stress_probability",
+        "nonconformity_score",
+        "Mondrian_bin_stress",
+        "empirical_coverage_per_subject"
+      ],
+      "possible_confounders": [
+        "model_architecture",
+        "regularization_strength",
+        "feature_set_completeness",
+        "class_imbalance_in_training",
+        "label_noise"
+      ],
+      "control_variables": [
+        "use same model architecture for all subjects",
+        "control for training class balance",
+        "include label noise estimate",
+        "match feature set",
+        "stratify by model confidence bins"
+      ],
+      "rival_explanation": "Low-reactivity subjects have genuinely lower variance in nonconformity scores, so nominal coverage is achieved but intervals are efficiently narrow (not undercoverage).",
+      "rival_prediction": "Empirical coverage for low-reactivity subjects matches nominal level; intervals are just narrower. Undercoverage mechanism predicts empirical coverage < nominal.",
+      "distinguishing_test": "Compare empirical coverage vs nominal for low-reactivity subjects. Also compare interval width. Miscalibration mechanism predicts coverage < nominal; efficiency mechanism predicts coverage = nominal with narrower intervals.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Miscalibration near 0.5 is typically modest (5-10% overconfidence). Mondrian partially corrects via binning. Expect 3-8% coverage deficit.",
+      "minimum_data_needed": [
+        "Per-subject stress reactivity index (e.g., EDA/HR difference stress-baseline)",
+        "Model predicted probabilities per window",
+        "Nonconformity scores per window",
+        "Mondrian bin assignments",
+        "Empirical coverage per subject"
+      ],
+      "testable_prediction": "Subjects in bottom quartile of stress reactivity will show empirical coverage 5-10 percentage points below nominal, with mean predicted probability for stress condition farther from 0.5 than their empirical stress frequency.",
+      "failure_condition": "Low-reactivity subjects achieve nominal coverage (within 2 percentage points) OR their predicted probabilities are well-calibrated (reliability diagram slope ≈ 1).",
+      "statistical_test_plan": "Reliability diagram per reactivity quartile. Test calibration slope ≠ 1 for bottom quartile (logistic regression: outcome ~ logit(predicted_prob)). Compare empirical vs nominal coverage via binomial test.",
+      "falsification_test": "Apply temperature scaling or isotonic regression to calibrate predicted probabilities per subject, then re-run Mondrian. If undercoverage disappears, miscalibration mechanism confirmed; if persists, mechanism falsified."
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Circadian phase at time of TSST interacts with subject chronotype to create systematic prediction errors for evening-types tested in morning (or vice versa), which Mondrian's condition bins fail to capture because condition order is fixed but circadian alignment varies.",
+      "proposed_mechanism": "WESAD collects data at different times of day. Evening-types tested in morning have elevated baseline cortisol and blunted stress reactivity (circadian misalignment). The model learns stress patterns from circadian-aligned subjects. Mondrian bins by condition, not circadian alignment, so misaligned subjects have shifted residual distributions.",
+      "causal_path": "Subject chronotype × test time-of-day → circadian misalignment → altered baseline physiology and stress reactivity → residual distribution shift within stress bin → undercoverage for misaligned subjects",
+      "mechanism_variables": [
+        "subject_chronotype_MEQ",
+        "test_time_of_day",
+        "circadian_phase_angle",
+        "baseline_cortisol_if_available",
+        "stress_reactivity_index",
+        "nonconformity_score_stress",
+        "empirical_coverage_per_subject"
+      ],
+      "possible_confounders": [
+        "sleep_duration_prior_night",
+        "caffeine_intake",
+        "light_exposure",
+        "shift_work_history",
+        "season"
+      ],
+      "control_variables": [
+        "control for prior sleep duration (actigraphy or self-report)",
+        "exclude high caffeine consumers",
+        "control for season",
+        "match light exposure protocol",
+        "exclude shift workers"
+      ],
+      "rival_explanation": "Undercoverage is due to time-of-day effects on sensor noise (e.g., morning humidity affecting EDA), not circadian physiology.",
+      "rival_prediction": "Coverage deficit correlates with ambient humidity/temperature at test time, not with chronotype-time interaction.",
+      "distinguishing_test": "Test interaction: coverage_deficit ~ chronotype * time_of_day. Circadian mechanism predicts significant interaction; sensor mechanism predicts main effect of time-of-day only.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Circadian misalignment can shift cortisol by 50% and HRV by 20-30%. WESAD has ~3h time range. Expect 8-15% coverage gap for misaligned vs aligned.",
+      "minimum_data_needed": [
+        "WESAD timestamps for each condition",
+        "Subject chronotype (MEQ score or proxy)",
+        "Baseline cortisol if available (WESAD doesn't have it; need proxy: baseline HRV, TEMP)",
+        "Mondrian coverage per subject",
+        "Ambient conditions if logged"
+      ],
+      "testable_prediction": "Evening-types (MEQ < 42) tested before 10 AM will show coverage < 80% for 90% nominal; morning-types tested after 2 PM will show similar deficit. Aligned subjects achieve nominal coverage.",
+      "failure_condition": "No significant chronotype × time-of-day interaction on coverage deficit (p > 0.05) after controlling for ambient conditions.",
+      "statistical_test_plan": "Linear model: coverage_deficit ~ chronotype * time_of_day + ambient_temp + humidity + sleep_duration. Test interaction term ≠ 0.",
+      "falsification_test": "Add circadian phase features (time-of-day, chronotype, interaction) to Mondrian taxonomy. If undercoverage disappears for misaligned subjects, mechanism confirmed; if persists, mechanism falsified."
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Mondrian's taxonomy uses experimental condition as the sole binning variable, but the WESAD stress condition contains a hidden sub-stratification: subjects who believed the TSST cover story vs those who were suspicious, creating two distinct nonconformity distributions within the stress bin.",
+      "proposed_mechanism": "TSST cover story (fake job interview) credibility varies across subjects. Suspicious subjects show blunted physiological stress response (lower EDA, HR) but same 'stress' label. Model trained on believers overpredicts stress for skeptics. Nonconformity scores differ systematically between believers and skeptics within the stress bin, causing undercoverage for the minority group.",
+      "causal_path": "Cover story belief → genuine vs blunted stress physiology → same stress label → model learns believer physiology → prediction error for skeptics → distinct nonconformity distribution for skeptics within stress bin → undercoverage for skeptics",
+      "mechanism_variables": [
+        "post_experiment_debriefing_belief_score",
+        "stress_reactivity_index",
+        "predicted_stress_probability",
+        "nonconformity_score_stress",
+        "Mondrian_bin_stress",
+        "empirical_coverage_per_subject"
+      ],
+      "possible_confounders": [
+        "trait_suspiciousness",
+        "prior_psychology_experience",
+        "experimenter_credibility",
+        "language_barrier",
+        "cognitive_load_during_TSST"
+      ],
+      "control_variables": [
+        "control for trait suspiciousness (if measured)",
+        "exclude psychology students",
+        "standardize experimenter",
+        "control for language proficiency",
+        "include cognitive load measure"
+      ],
+      "rival_explanation": "Undercoverage for low-reactivity subjects is due to physiological non-response (biological), not psychological disbelief.",
+      "rival_prediction": "Low-reactivity subjects with high cover story belief show same undercoverage as low-reactivity skeptics. Belief mechanism predicts only skeptics show undercoverage.",
+      "distinguishing_test": "Compare coverage between low-reactivity believers vs low-reactivity skeptics. Belief mechanism predicts skeptics undercovered, believers well-covered. Non-response mechanism predicts both undercovered.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Cover story disbelief can reduce stress response by 40-60%. If ~20% of subjects are skeptics, their nonconformity distribution shifts substantially. Expect 20-35% coverage deficit for skeptics.",
+      "minimum_data_needed": [
+        "WESAD post-experiment debriefing data (belief/suspicion ratings)",
+        "Per-subject stress reactivity index",
+        "Mondrian nonconformity scores and coverage per subject",
+        "Ground truth stress labels"
+      ],
+      "testable_prediction": "Subjects reporting low cover story belief (bottom quartile) will show empirical coverage < 70% for 90% nominal intervals, while high-belief subjects achieve nominal coverage, matched on stress reactivity.",
+      "failure_condition": "No significant difference in coverage between low-belief and high-belief subjects after matching on stress reactivity (p > 0.05).",
+      "statistical_test_plan": "Propensity score matching on stress reactivity, then paired t-test: coverage_believers vs coverage_skeptics. Or ANCOVA: coverage ~ belief_group + stress_reactivity.",
+      "falsification_test": "Re-run Mondrian with separate bins for believers vs skeptics (using debriefing data). If undercoverage disappears for skeptics, mechanism confirmed; if persists, mechanism falsified."
+    }
+  ],
+  "total_tokens": 8183,
+  "completion_tokens": 7631
+}

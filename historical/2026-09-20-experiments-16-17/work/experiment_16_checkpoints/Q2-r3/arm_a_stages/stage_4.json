@@ -1,0 +1,84 @@
+{
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Inter-subject heterogeneity in autonomic regulation causes non-exchangeable residuals across segments, violating conformal prediction's exchangeability assumption.",
+      "proposed_mechanism": "Individual-specific heart rate variability patterns and baroreflex sensitivity create segment-wise residual distributions that differ systematically between subjects, making calibration on pooled data invalid for new subjects.",
+      "core_assumption": "Physiological control parameters (e.g., sympathetic/parasympathetic balance) vary sufficiently across individuals to induce distributional shifts in prediction residuals that are not captured by observed covariates.",
+      "knowledge_gap_addressed": "Lack of quantitative characterization of how inter-individual autonomic differences map to conformal prediction coverage instability in physiological time series.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Time-varying sensor impedance and motion artifacts induce segment-dependent noise distributions that break the identical distribution assumption of conformal prediction.",
+      "proposed_mechanism": "Electrode-skin interface impedance drifts and movement artifacts create heteroscedastic, non-stationary noise processes whose statistical properties change across recording segments, causing prediction intervals calibrated on clean segments to undercover on noisy ones.",
+      "core_assumption": "Sensor noise characteristics are not stationary across segments and correlate with physiological state (e.g., movement during stress), violating the i.i.d. assumption for calibration residuals.",
+      "knowledge_gap_addressed": "Insufficient understanding of how real-world wearable sensor degradation and artifact patterns specifically degrade conformal coverage guarantees across signal segments.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Transitions between discrete physiological states (e.g., sleep stages, arousal levels) create abrupt distributional shifts in residuals that conformal prediction cannot adapt to without state-aware calibration.",
+      "proposed_mechanism": "Autonomic nervous system state transitions produce step-changes in signal dynamics (e.g., heart rate complexity, respiratory sinus arrhythmia) that alter residual distributions faster than sliding-window recalibration can track.",
+      "core_assumption": "Physiological state changes occur at timescales shorter than the conformal calibration window, and state labels are unavailable or inaccurate for stratification.",
+      "knowledge_gap_addressed": "Unknown relationship between autonomic state transition dynamics and the minimum calibration window size needed for stable conformal coverage in physiological signals.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Circadian and ultradian rhythms induce periodic non-stationarity in both signal characteristics and prediction difficulty, causing coverage to oscillate with time-of-day.",
+      "proposed_mechanism": "Endogenous rhythms modulate baseline physiology (e.g., core body temperature, cortisol) and signal-to-noise ratios, creating predictable but unmodeled periodic shifts in residual distributions that fixed calibration sets fail to capture.",
+      "core_assumption": "Rhythmic physiological variations are not fully mediated by observed covariates and have periods comparable to or longer than typical calibration windows.",
+      "knowledge_gap_addressed": "Absence of studies quantifying how circadian/ultradian phase affects conformal prediction coverage stability in continuous physiological monitoring.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Inconsistent or noisy ground truth annotations across segments (e.g., sleep stage scoring variability) introduce label noise that corrupts conformal calibration and invalidates coverage guarantees.",
+      "proposed_mechanism": "Inter-rater variability and intra-rater drift in physiological event labeling create segment-dependent label noise distributions, causing the conformity scores to reflect annotation artifacts rather than true prediction uncertainty.",
+      "core_assumption": "Label noise is heteroscedastic across segments and correlates with signal characteristics (e.g., noisier segments receive less reliable annotations), violating the assumption that calibration labels are ground truth.",
+      "knowledge_gap_addressed": "Limited theory on how structured label noise in physiological annotations propagates to conformal prediction coverage failures across data segments.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Improper stratification by activity context (e.g., rest vs. exercise) leaves hidden covariate shift between calibration and test segments, causing systematic undercoverage during high-dynamic states.",
+      "proposed_mechanism": "Physical activity fundamentally alters cardiovascular dynamics (e.g., heart rate turbulence, blood pressure variability) and sensor noise, creating distinct residual regimes. Without activity-stratified calibration, intervals calibrated on rest data fail during exercise.",
+      "core_assumption": "Activity context is a strong effect modifier for residual distributions but is either unobserved or not used for stratified conformal prediction.",
+      "knowledge_gap_addressed": "Unknown minimum granularity of activity stratification required for stable conformal coverage across free-living physiological signal segments.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Hidden confounding by unmeasured physiological variables (e.g., hydration, medication timing) creates spurious correlations that break exchangeability across segments with different confounder distributions.",
+      "proposed_mechanism": "Unobserved factors simultaneously influence both the physiological signal and the prediction target, inducing segment-wise residual dependencies that conformal prediction's marginal coverage guarantee does not protect against.",
+      "core_assumption": "Key physiological confounders vary systematically across recording sessions/segments and are not captured in the feature set, violating the exchangeability assumption conditional on observed covariates.",
+      "knowledge_gap_addressed": "No established method to detect or quantify hidden confounding effects on conformal prediction coverage in physiological time series without randomized interventions.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Variable sampling rates and missing data patterns across segments (e.g., due to Bluetooth dropout) distort residual distributions in ways that conformal prediction's i.i.d. assumption cannot accommodate.",
+      "proposed_mechanism": "Non-random missingness correlated with signal quality (e.g., dropout during motion) creates selection bias in calibration residuals. Imputation or downsampling alters residual distributions differently across segments.",
+      "core_assumption": "Missing data mechanisms are not missing completely at random (MCAR) and vary across segments, inducing distributional shifts in conformity scores that are not accounted for.",
+      "knowledge_gap_addressed": "Lack of conformal prediction theory for irregularly sampled, missing-not-at-random physiological time series with segment-varying observation processes.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Finite-sample effects interact with segment length heterogeneity: short segments yield high-variance conformity scores, causing coverage instability that worsens with model complexity.",
+      "proposed_mechanism": "When calibration segments are short relative to model complexity, the empirical quantile of conformity scores becomes a noisy estimator of the true quantile. This noise is amplified for segments with fewer samples, creating segment-length-dependent coverage.",
+      "core_assumption": "Segment lengths vary substantially (e.g., due to event-triggered recording), and the model's effective degrees of freedom are large relative to the shortest segments.",
+      "knowledge_gap_addressed": "No finite-sample coverage bounds for conformal prediction that explicitly account for heterogeneous segment lengths and model complexity in physiological applications.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Model misspecification error correlates with physiological signal morphology (e.g., waveform shape), causing residual distributions to shift with morphology changes across segments.",
+      "proposed_mechanism": "The predictive model (e.g., for blood pressure from PPG) has systematic errors that depend on pulse wave morphology. As morphology changes across segments (due to vascular tone, aging, pathology), the residual distribution shifts, breaking coverage.",
+      "core_assumption": "Model error is not independent of signal morphology features that vary across segments, and these morphology features are not included as covariates in the conformal prediction framework.",
+      "knowledge_gap_addressed": "Unknown how morphological variability in physiological waveforms maps to conformal prediction coverage degradation when morphology is not explicitly modeled.",
+      "status": "SPECULATIVE"
+    }
+  ]
+}

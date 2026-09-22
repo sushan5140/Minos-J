@@ -1,0 +1,398 @@
+{
+  "sample_index": 2,
+  "valid": true,
+  "error": null,
+  "cards": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Inter-subject variability in autonomic nervous system baseline tone causes conformal prediction intervals calibrated on population data to under-cover for subjects with atypical heart rate variability profiles.",
+      "proposed_mechanism": "Subjects with low baseline heart rate variability (HRV) exhibit reduced beat-to-beat interval variance, causing the nonconformity scores computed on population calibration data to systematically underestimate the true dispersion for these individuals, leading to prediction intervals that are too narrow.",
+      "causal_path": "Low baseline HRV (RMSSD < 20ms) → reduced physiological variability in RR intervals → nonconformity scores from population calibration exceed subject-specific scores → prediction intervals too narrow → coverage drops below nominal level",
+      "mechanism_variables": [
+        "baseline_RMSSD_ms",
+        "subject_specific_nonconformity_score_distribution",
+        "population_calibration_nonconformity_quantile",
+        "empirical_coverage_per_subject"
+      ],
+      "possible_confounders": [
+        "age",
+        "beta_blocker_use",
+        "cardiovascular_fitness_level",
+        "recording_duration"
+      ],
+      "control_variables": [
+        "stratify calibration by RMSSD tertiles",
+        "include age and medication as covariates in nonconformity score model",
+        "match recording duration across subjects"
+      ],
+      "rival_explanation": "Coverage failure is driven by sensor noise floor differences across subjects rather than physiological variability differences.",
+      "rival_prediction": "Subjects with low HRV but high signal quality (SNR > 20dB) will show nominal coverage; coverage drops only when both low HRV and low SNR co-occur.",
+      "distinguishing_test": "Compare coverage in four groups: (low HRV, high SNR), (low HRV, low SNR), (high HRV, high SNR), (high HRV, low SNR). If H1 is correct, low HRV groups show low coverage regardless of SNR. If rival is correct, only low HRV + low SNR shows low coverage.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Prior work shows HRV explains 15-30% of variance in RR interval dispersion; expected coverage drop of 5-15 percentage points for lowest HRV tertile vs population calibration.",
+      "minimum_data_needed": [
+        "Per-subject RR interval time series ≥ 5 minutes",
+        "Ground truth annotations for target variable (e.g., blood pressure, arrhythmia labels)",
+        "Concurrent ECG for HRV computation",
+        "Sensor signal quality metrics (SNR, motion artifact flags)"
+      ],
+      "testable_prediction": "Empirical coverage for subjects in lowest RMSSD tertile will be ≥ 5 percentage points below nominal level (e.g., < 85% for 90% target) when using population calibration, while highest tertile maintains nominal coverage.",
+      "failure_condition": "No significant difference in coverage across RMSSD tertiles (p > 0.05, ANOVA) or coverage deficit < 2 percentage points for lowest tertile.",
+      "statistical_test_plan": "One-way ANOVA comparing empirical coverage across RMSSD tertiles; post-hoc Tukey HSD for pairwise comparisons; linear regression of coverage on continuous RMSSD controlling for age, medication, SNR.",
+      "falsification_test": "Re-calibrate conformal predictor using only low-HRV subjects' data; if coverage normalizes for low-HRV subjects but drops for high-HRV subjects, the mechanism is confirmed. If coverage remains low for low-HRV subjects even with subject-specific calibration, the mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Electrode-skin impedance drift during long recordings causes non-stationary noise characteristics that violate the exchangeability assumption between calibration and test segments.",
+      "proposed_mechanism": "As electrode-skin impedance increases over hours due to sweat evaporation and gel drying, the signal-to-noise ratio degrades non-uniformly across frequency bands, altering the distribution of nonconformity scores in test segments relative to the calibration segment recorded earlier.",
+      "causal_path": "Time since electrode application → increasing electrode-skin impedance (kΩ) → frequency-dependent SNR degradation (especially 0.5-40 Hz band) → altered morphology of physiological signal features → nonconformity score distribution shift → coverage degradation in later segments",
+      "mechanism_variables": [
+        "electrode_impedance_kohm",
+        "signal_to_noise_ratio_db",
+        "nonconformity_score_ks_statistic_cal_vs_test",
+        "segment_empirical_coverage"
+      ],
+      "possible_confounders": [
+        "ambient_temperature",
+        "subject_sweat_rate",
+        "electrode_type",
+        "movement_artifact_frequency"
+      ],
+      "control_variables": [
+        "measure impedance at start of each segment",
+        "include impedance as covariate in nonconformity function",
+        "use impedance-matched calibration subsets"
+      ],
+      "rival_explanation": "Coverage drift is caused by physiological non-stationarity (e.g., circadian blood pressure changes) rather than sensor degradation.",
+      "rival_prediction": "Coverage will correlate with time-of-day and physiological markers (core temperature, cortisol) but not with measured electrode impedance when both are included in a joint model.",
+      "distinguishing_test": "Fit a mixed-effects model: coverage ~ time + impedance + time_of_day + (1|subject). If H2 is correct, impedance remains significant (p < 0.01) after controlling for time-of-day. If rival is correct, time-of-day dominates and impedance becomes non-significant.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Impedance can increase 3-10x over 24h; prior studies show SNR drops of 10-20dB correspond to 15-30% coverage degradation in conformal predictors for ECG.",
+      "minimum_data_needed": [
+        "Continuous electrode impedance measurements per segment",
+        "Segmented physiological signals with ground truth",
+        "Time-stamped impedance logs synchronized to signal segments",
+        "Ambient temperature and humidity logs"
+      ],
+      "testable_prediction": "Segments with impedance > 2x baseline will show coverage ≥ 10 percentage points below nominal; coverage will correlate with impedance (r < -0.5) after controlling for segment order.",
+      "failure_condition": "Impedance change explains < 5% of coverage variance in mixed model (marginal R² < 0.05) or correlation between impedance and coverage is non-significant (p > 0.05).",
+      "statistical_test_plan": "Linear mixed model: empirical_coverage ~ impedance_kohm + segment_index + time_of_day + (1|subject); likelihood ratio test comparing full vs no-impedance model; mediation analysis testing impedance as mediator of time→coverage.",
+      "falsification_test": "Actively maintain constant impedance via automated gel rehydration system in a subset of recordings; if coverage stabilizes despite time passing, H2 is confirmed. If coverage still drifts with time despite stable impedance, H2 is falsified."
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Abrupt physiological state transitions (e.g., sleep stage changes, orthostatic stress) create non-exchangeable segments because the conditional distribution of the target given features shifts faster than the calibration window can adapt.",
+      "proposed_mechanism": "During state transitions (e.g., NREM to REM sleep, supine to standing), the feature-target relationship undergoes a step change. Conformal prediction assumes exchangeability within the calibration set, but if calibration spans pre- and post-transition data while test is purely post-transition, the nonconformity scores are miscalibrated.",
+      "causal_path": "Physiological state transition (e.g., sleep stage change) → step change in feature-target conditional distribution P(Y|X) → calibration set mixes pre/post distributions → nonconformity quantile reflects mixture not test distribution → prediction intervals miscalibrated for test segment",
+      "mechanism_variables": [
+        "state_transition_indicator",
+        "pre_transition_nonconformity_distribution",
+        "post_transition_nonconformity_distribution",
+        "calibration_window_composition_ratio",
+        "test_segment_coverage"
+      ],
+      "possible_confounders": [
+        "transition_duration",
+        "calibration_window_size",
+        "number_of_transitions_per_recording",
+        "autonomic_reactivity"
+      ],
+      "control_variables": [
+        "detect transitions via hidden Markov model on HRV/spectral features",
+        "restrict calibration to post-transition data only",
+        "use adaptive windowing triggered by transition detection"
+      ],
+      "rival_explanation": "Coverage drops during transitions because of increased signal noise/motion artifacts during body movements, not because of distributional shift in P(Y|X).",
+      "rival_prediction": "Coverage will correlate with motion artifact amplitude (accelerometer RMS) during transition windows but not with the magnitude of the physiological state change (e.g., HRV spectral shift) when both are modeled.",
+      "distinguishing_test": "Identify transitions with and without concurrent motion artifacts. Compare coverage in: (transition + motion), (transition + no motion), (no transition + motion), (no transition + no motion). H3 predicts low coverage in both transition groups; rival predicts low coverage only in motion groups.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Sleep stage transitions occur ~20-30 times/night; each transition affects ~2-5 min of data. Expected coverage drop of 8-12% during transition-affected segments based on known BP/HR dynamics.",
+      "minimum_data_needed": [
+        "Continuous physiological signals with ground truth labels",
+        "Validated sleep stage or physiological state annotations (PSG, tilt-table protocol)",
+        "High-resolution timestamps for transition detection",
+        "Motion artifact measurements (accelerometer)"
+      ],
+      "testable_prediction": "Test segments within 2 minutes post-transition will have coverage ≥ 8 percentage points below nominal; coverage deficit will correlate with transition magnitude (e.g., LF/HF ratio change) not motion magnitude.",
+      "failure_condition": "No significant coverage difference between transition-adjacent and stable segments (p > 0.05) or motion artifact magnitude explains more variance in coverage than transition magnitude.",
+      "statistical_test_plan": "Paired t-test comparing coverage in transition-adjacent vs stable segments per subject; linear regression: coverage ~ transition_magnitude + motion_rms + segment_duration; mediation analysis for transition→feature_shift→coverage.",
+      "falsification_test": "Use an oracle transition detector to restrict calibration to only post-transition data for each test segment; if coverage normalizes, H3 is confirmed. If coverage remains low despite pure post-transition calibration, H3 is falsified (suggesting within-segment non-stationarity)."
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Inconsistent ground truth labeling across annotators or devices for physiological events (e.g., arrhythmia beats, blood pressure readings) introduces label noise that differentially affects calibration vs test segments.",
+      "proposed_mechanism": "If calibration segments are labeled by a high-quality reference (e.g., arterial line BP) but test segments use a noisier reference (e.g., cuff BP), or if different annotators label calibration vs test with different criteria, the nonconformity scores measure deviation from different ground truths, breaking coverage guarantees.",
+      "causal_path": "Labeling protocol difference between calibration and test segments → systematic label bias (offset) or increased label variance in test segments → nonconformity scores computed against mismatched labels → prediction intervals centered on wrong target or wrong dispersion → coverage failure",
+      "mechanism_variables": [
+        "labeling_protocol_cal",
+        "labeling_protocol_test",
+        "label_bias_mmHg",
+        "label_variance_ratio_test_over_cal",
+        "nonconformity_score_mean_shift",
+        "empirical_coverage"
+      ],
+      "possible_confounders": [
+        "annotator_experience_level",
+        "device_calibration_drift",
+        "physiological_signal_quality",
+        "target_variable_type"
+      ],
+      "control_variables": [
+        "use same labeling protocol for cal and test",
+        "quantify inter-annotator agreement (Cohen's kappa)",
+        "include label uncertainty in nonconformity function"
+      ],
+      "rival_explanation": "Coverage differences are due to genuine physiological distribution shifts between segments, not labeling artifacts.",
+      "rival_prediction": "When the same labeling protocol is applied to both segments, coverage differences persist and correlate with physiological covariates (e.g., HR, activity level).",
+      "distinguishing_test": "Re-label a subset of test segments using the calibration protocol (or vice versa) and recompute coverage. If H4 is correct, coverage normalizes after re-labeling. If rival is correct, coverage remains low.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Inter-annotator variability for arrhythmia detection can reach kappa=0.6; cuff vs arterial line BP differences show 5-10 mmHg bias with 8-12 mmHg SD. Expected coverage impact: 10-25 percentage points.",
+      "minimum_data_needed": [
+        "Dual-labeled segments (same data, two labeling protocols)",
+        "Inter-annotator agreement metrics",
+        "Device calibration logs for reference measurements",
+        "Segment-level coverage computations"
+      ],
+      "testable_prediction": "Segments labeled with noisier protocol will show coverage ≥ 10 percentage points below nominal; re-labeling test segments with calibration protocol will restore coverage to within 3 percentage points of nominal.",
+      "failure_condition": "Re-labeling does not improve coverage by > 3 percentage points; or label bias/variance explains < 10% of coverage variance across segments.",
+      "statistical_test_plan": "Paired comparison of coverage before/after re-labeling (Wilcoxon signed-rank); regression of coverage on label_variance_ratio and label_bias; Bland-Altman analysis of label differences vs nonconformity scores.",
+      "falsification_test": "Simulate label noise by adding calibrated noise to calibration labels matching test-label distribution; if coverage drops to match test-segment coverage, H4 is confirmed. If simulated noise doesn't reproduce the coverage gap, H4 is falsified."
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Improper stratification during calibration—pooling segments across distinct activity types (sleep, exercise, rest)—creates nonconformity quantiles that are too wide for low-variability states and too narrow for high-variability states.",
+      "proposed_mechanism": "When calibration pools data from heterogeneous physiological states (e.g., sleep + exercise), the nonconformity score distribution becomes a mixture. The resulting quantile is dominated by high-variability states, yielding over-wide intervals for low-variability states (wasted efficiency) and under-wide intervals for high-variability states (under-coverage).",
+      "causal_path": "Heterogeneous activity states in calibration set → mixture nonconformity distribution with heavy tails → high quantile driven by high-variability states → test segments from low-variability states get over-wide intervals (over-coverage) → test segments from high-variability states get under-wide intervals (under-coverage)",
+      "mechanism_variables": [
+        "activity_type_per_segment",
+        "state_specific_nonconformity_variance",
+        "mixture_quantile_vs_state_quantile_gap",
+        "state_specific_empirical_coverage"
+      ],
+      "possible_confounders": [
+        "state_duration",
+        "transition_frequency",
+        "subject_fitness_level",
+        "time_of_day"
+      ],
+      "control_variables": [
+        "stratify calibration by activity type using ground truth or unsupervised clustering",
+        "use state-conditional conformal prediction",
+        "weight calibration samples by state prevalence in test"
+      ],
+      "rival_explanation": "Coverage variation across states is due to model misspecification (poor feature representation for certain states) rather than calibration pooling.",
+      "rival_prediction": "Even with state-stratified calibration, coverage will remain low for states where the base predictor has high error (e.g., exercise with motion artifacts), and model error will correlate with coverage more than state variance.",
+      "distinguishing_test": "Compare three calibration schemes: (1) pooled, (2) state-stratified, (3) oracle (state-known). If H5 is correct, (2) matches (3) and both dominate (1). If rival is correct, (2) still shows state-dependent coverage gaps correlated with base predictor RMSE.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Exercise vs sleep RR interval variance ratio can exceed 10:1; pooled quantile typically overshoots sleep quantile by 2-3x and undershoots exercise quantile by 30-50%. Expected coverage spread: 70-95% across states for 90% target.",
+      "minimum_data_needed": [
+        "Activity-labeled segments (ground truth or validated classifier)",
+        "Per-segment nonconformity scores and coverage",
+        "Base predictor errors per segment",
+        "State prevalence in calibration and test sets"
+      ],
+      "testable_prediction": "Pooled calibration will yield coverage < 80% for high-variability states and > 95% for low-variability states (for 90% target); state-stratified calibration will bring all states within 3 percentage points of nominal.",
+      "failure_condition": "State-stratified calibration does not reduce coverage variance across states by > 50% compared to pooled; or coverage gaps persist and correlate with base predictor error (r > 0.6) not state variance.",
+      "statistical_test_plan": "Levene's test for equality of coverage variances across states between pooled vs stratified; paired t-test of per-state coverage deviation from nominal; ANOVA: coverage_deviation ~ calibration_scheme * activity_state.",
+      "falsification_test": "Construct a synthetic mixture where state-conditional distributions are known; if stratified conformal prediction on the mixture recovers nominal coverage per state, the mechanism is validated. If real data shows persistent gaps despite perfect stratification, H5 is falsified."
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Temporal autocorrelation in physiological signals violates the exchangeability assumption, causing conformal prediction to underestimate the effective sample size of the calibration set and produce overconfident intervals.",
+      "proposed_mechanism": "Physiological signals (e.g., RR intervals, BP waveforms) exhibit strong autocorrelation (AR(1) coefficient > 0.8). Standard conformal prediction treats calibration samples as independent, but the effective sample size is n_eff = n * (1-ρ)/(1+ρ). Using the nominal quantile with inflated n yields intervals that are too narrow.",
+      "causal_path": "High temporal autocorrelation (ρ) in residuals → effective calibration sample size n_eff << n → nominal quantile index ceil((n+1)(1-α)) is too aggressive → prediction intervals too narrow → empirical coverage < 1-α",
+      "mechanism_variables": [
+        "autocorrelation_coefficient_rho",
+        "effective_sample_size_n_eff",
+        "nominal_quantile_index",
+        "adjusted_quantile_index",
+        "empirical_coverage"
+      ],
+      "possible_confounders": [
+        "signal_preprocessing_filtering",
+        "downsampling_rate",
+        "nonlinear_autocorrelation",
+        "segment_length"
+      ],
+      "control_variables": [
+        "estimate ρ from calibration residuals",
+        "apply block conformal prediction with block size > correlation length",
+        "thin calibration set by correlation length"
+      ],
+      "rival_explanation": "Coverage failure is due to non-stationarity (distribution drift) not autocorrelation; exchangeability fails because distribution changes, not because samples are dependent.",
+      "rival_prediction": "Block conformal prediction (which preserves dependence structure) will not fix coverage if non-stationarity is the cause; coverage will still drift over time. Thinning (which reduces dependence but not non-stationarity) will fix coverage if autocorrelation is the cause.",
+      "distinguishing_test": "Apply three methods: (1) standard conformal, (2) block conformal (block size = 5*correlation_length), (3) thinned conformal (keep every k-th sample where k = correlation_length). If H6 is correct, (2) and (3) restore coverage. If rival is correct, only methods addressing drift (e.g., weighted conformal) work.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Typical RR interval autocorrelation ρ ≈ 0.85-0.95 at 1Hz; n_eff/n ≈ 0.05-0.15. For n=1000, effective n ≈ 50-150. Expected coverage drop: 5-15 percentage points for 90% target.",
+      "minimum_data_needed": [
+        "High-resolution physiological time series (≥ 1000 samples per segment)",
+        "Residuals from base predictor on calibration set",
+        "Autocorrelation function estimates",
+        "Block/ thinned conformal prediction implementations"
+      ],
+      "testable_prediction": "Standard conformal coverage will be ≤ 80% for 90% target when ρ > 0.8; block conformal with appropriate block size will restore coverage to 88-92%; coverage deficit will correlate with ρ (r < -0.6).",
+      "failure_condition": "Block conformal and thinned conformal do not improve coverage by > 3 percentage points; or coverage deficit does not correlate with autocorrelation strength.",
+      "statistical_test_plan": "Compare coverage across three methods via Friedman test; post-hoc Wilcoxon signed-rank with Bonferroni correction; regression: coverage_deficit ~ rho + segment_length + signal_type.",
+      "falsification_test": "Generate synthetic data with known autocorrelation but stationary distribution; apply standard conformal. If coverage matches theoretical deficit predicted by n_eff formula, mechanism is confirmed. If real data deficit exceeds synthetic prediction, additional mechanisms (non-stationarity) dominate and H6 is insufficient."
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Morphological heterogeneity in the physiological signal (e.g., ectopic beats, T-wave alternans, bundle branch block patterns) creates subpopulations with distinct feature-target relationships that are not captured by a single nonconformity function.",
+      "proposed_mechanism": "Different morphological phenotypes (e.g., PVCs vs normal beats, wide vs narrow QRS) have systematically different prediction errors for the same features. A single nonconformity function averages across these, yielding intervals that are miscalibrated for each subpopulation—typically under-covering the higher-error morphology.",
+      "causal_path": "Morphological phenotype (e.g., QRS_width > 120ms) → distinct feature-target conditional distribution → base predictor error distribution differs by phenotype → pooled nonconformity quantile dominated by prevalent phenotype → rare high-error phenotype gets under-wide intervals → coverage failure for that phenotype",
+      "mechanism_variables": [
+        "morphology_class_label",
+        "phenotype_specific_rmse",
+        "phenotype_prevalence_in_cal",
+        "pooled_quantile_vs_phenotype_quantile",
+        "phenotype_specific_coverage"
+      ],
+      "possible_confounders": [
+        "phenotype_prevalence_imbalance",
+        "base_predictor_architecture",
+        "feature_set_adequacy_for_phenotype",
+        "segment_length_per_phenotype"
+      ],
+      "control_variables": [
+        "stratify calibration by morphology class",
+        "use phenotype-aware nonconformity function (e.g., weighted by phenotype)",
+        "ensure minimum calibration samples per phenotype"
+      ],
+      "rival_explanation": "Coverage differences across morphologies are due to signal quality differences (noise, baseline wander) that co-occur with morphology, not the morphology itself.",
+      "rival_prediction": "When controlling for signal quality metrics (SNR, baseline wander index), morphology class will no longer predict coverage; SNR will be the dominant predictor.",
+      "distinguishing_test": "Match high-SNR segments across morphologies and compare coverage. If H7 is correct, morphology differences persist at matched SNR. If rival is correct, coverage equalizes at matched SNR.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "PVC beats can have 3-5x higher BP estimation error than sinus beats; prevalence of PVCs ~1-10%. Pooled calibration dominated by sinus rhythm. Expected coverage for PVC segments: 50-70% for 90% target.",
+      "minimum_data_needed": [
+        "Beat-level morphology annotations (validated by cardiologist or algorithm)",
+        "Beat-level predictions and ground truth",
+        "Signal quality metrics per beat",
+        "Sufficient rare morphology samples (≥ 50 beats per class)"
+      ],
+      "testable_prediction": "Rare high-error morphologies (prevalence < 5%) will show coverage ≤ 70% for 90% target; morphology-stratified calibration will restore coverage to 85-95% for all morphologies with ≥ 30 calibration samples.",
+      "failure_condition": "Morphology-stratified calibration does not improve coverage for rare morphologies by > 10 percentage points; or coverage gaps disappear when matching on SNR.",
+      "statistical_test_plan": "Chi-square test of coverage homogeneity across morphologies; logistic regression: covered ~ morphology_class + SNR + baseline_wander; compare pooled vs stratified via McNemar's test on per-beat coverage.",
+      "falsification_test": "Train base predictor with morphology as explicit input feature; if coverage gaps close without conformal stratification, the issue is base predictor misspecification, not conformal calibration (H7 falsified). If gaps persist despite morphology-aware predictor, H7 is confirmed."
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Segment-length-dependent nonconformity score distributions cause coverage instability when calibration and test segments have different durations, because the aggregation statistic (e.g., mean absolute error over segment) has variance that scales with 1/√L.",
+      "proposed_mechanism": "Nonconformity scores are computed as segment-level aggregates (e.g., mean absolute error over 30s windows). The variance of this aggregate scales inversely with segment length L. If calibration uses long segments (low variance) but test uses short segments (high variance), the calibration quantile underestimates test dispersion.",
+      "causal_path": "Calibration segment length L_cal >> test segment length L_test → Var(aggregate_score) ∝ 1/L → calibration nonconformity distribution narrower than test distribution → calibration quantile too low → test intervals too narrow → under-coverage",
+      "mechanism_variables": [
+        "calibration_segment_length_sec",
+        "test_segment_length_sec",
+        "aggregate_score_variance",
+        "calibration_quantile",
+        "test_empirical_coverage"
+      ],
+      "possible_confounders": [
+        "signal_stationarity_within_segment",
+        "aggregation_function_choice",
+        "base_predictor_error_autocorrelation",
+        "physiological_state_homogeneity"
+      ],
+      "control_variables": [
+        "match calibration and test segment lengths",
+        "use length-normalized nonconformity scores",
+        "model variance as function of length explicitly"
+      ],
+      "rival_explanation": "Coverage differences are due to physiological state differences that happen to correlate with segment length (e.g., short segments during transitions), not the length itself.",
+      "rival_prediction": "When segment length is matched but physiological state differs, coverage gaps persist. When state is matched but length differs, coverage equalizes.",
+      "distinguishing_test": "Create matched pairs: (long_cal, short_test) vs (short_cal, short_test) vs (long_cal, long_test) within same physiological state. If H8 is correct, coverage depends on length match, not absolute length. If rival is correct, coverage depends on state.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Variance ratio = L_cal/L_test. For 60s vs 10s segments, variance ratio = 6, SD ratio ≈ 2.45. Quantile inflation factor ~1.5-2x. Expected coverage drop: 8-15 percentage points for 90% target.",
+      "minimum_data_needed": [
+        "Variable-length segments from same recording/states",
+        "Per-segment nonconformity scores and coverage",
+        "Ground truth for target variable per segment",
+        "Physiological state labels for matching"
+      ],
+      "testable_prediction": "Test segments 5x shorter than calibration segments will show coverage ≤ 75% for 90% target; matching lengths restores coverage to 88-92%; coverage deficit scales with √(L_cal/L_test).",
+      "failure_condition": "Length-matched calibration does not improve coverage by > 5 percentage points; or coverage deficit does not correlate with length ratio (r < 0.3).",
+      "statistical_test_plan": "Linear regression: coverage ~ log(L_test/L_cal) + state + SNR; ANOVA comparing coverage across length-matched vs mismatched pairs; variance ratio test (F-test) of nonconformity scores.",
+      "falsification_test": "Use a length-invariant nonconformity score (e.g., median absolute error instead of mean, or studentized residuals). If coverage stabilizes across lengths, H8 is confirmed. If coverage still varies with length, the mechanism is not the aggregation statistic variance."
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Circadian rhythmicity in physiological variability causes time-of-day-dependent coverage when calibration data is not representative of the test time distribution, because the marginal distribution of the target shifts systematically.",
+      "proposed_mechanism": "Core physiological variables (BP, HR, HRV) exhibit circadian patterns with 10-20% amplitude. If calibration over-represents daytime (high variability) and test occurs at night (low variability), the nonconformity quantile is inflated, yielding over-wide intervals at night (over-coverage) but if reversed, under-coverage at night.",
+      "causal_path": "Time of day → circadian phase → marginal distribution of target variable (mean and variance) → nonconformity score distribution shifts → calibration quantile reflects over-represented phase → test intervals miscalibrated for under-represented phase",
+      "mechanism_variables": [
+        "circadian_phase_radians",
+        "target_marginal_mean",
+        "target_marginal_variance",
+        "calibration_phase_distribution",
+        "test_phase_distribution",
+        "phase_specific_coverage"
+      ],
+      "possible_confounders": [
+        "sleep_wake_schedule",
+        "shift_work_status",
+        "medication_timing",
+        "activity_level_by_time"
+      ],
+      "control_variables": [
+        "stratify calibration by circadian phase (e.g., 4-hour bins)",
+        "use time-weighted conformal prediction",
+        "include time-of-day as feature in nonconformity function"
+      ],
+      "rival_explanation": "Time-of-day coverage effects are mediated by sleep/wake state and activity, not circadian phase per se; a subject awake at 3AM will have daytime-like coverage.",
+      "rival_prediction": "Coverage will correlate with behavioral state (sleep vs wake, activity level) but not with circadian phase when behavioral state is controlled. Shift workers will show coverage aligned to their behavioral schedule, not clock time.",
+      "distinguishing_test": "Compare coverage in: (night + sleep), (night + wake), (day + sleep), (day + wake). If H9 is correct, night segments show distinct coverage regardless of sleep. If rival is correct, sleep segments cluster together regardless of clock time.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Circadian BP amplitude ~10-15 mmHg (10-15% of mean); HRV amplitude ~30-50%. Expected coverage variation: 3-8 percentage points across phases for 90% target, detectable only with large N.",
+      "minimum_data_needed": [
+        "24+ hour continuous recordings with ground truth",
+        "Time-stamped segments with circadian phase computation",
+        "Sleep/wake and activity annotations",
+        "Sufficient segments per 4-hour phase bin (≥ 30)"
+      ],
+      "testable_prediction": "Coverage will vary sinusoidally with circadian phase (p < 0.01 for cos/sin terms); phase-stratified calibration reduces coverage variance across phases by > 50%; shift workers' coverage aligns to internal phase not clock time.",
+      "failure_condition": "No significant circadian phase effect in mixed model (p > 0.05 for phase terms); or behavioral state explains > 80% of time-of-day coverage variance.",
+      "statistical_test_plan": "Cosinor analysis: coverage ~ mesor + amplitude*cos(2πt/24) + amplitude*sin(2πt/24) + (1|subject); compare AIC of models with/without phase terms; mediation analysis for phase→physiology→coverage.",
+      "falsification_test": "In forced desynchrony protocol (subjects on 28h day), if coverage follows the 24h circadian phase rather than the 28h behavioral cycle, H9 is confirmed. If coverage follows behavioral cycle, H9 is falsified."
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "The conformal prediction coverage guarantee holds only marginally, but conditional coverage given physiological covariates (e.g., HR, respiration rate) can deviate substantially due to heterogeneous error distributions across the covariate space.",
+      "proposed_mechanism": "Conformal prediction guarantees marginal coverage P(Y ∈ C(X)) ≥ 1-α, but not conditional coverage P(Y ∈ C(X) | X=x). If the base predictor's error variance changes with covariates (e.g., higher error at high HR), the prediction intervals will have correct average coverage but systematically under-cover in high-error regions of the covariate space.",
+      "causal_path": "Covariate value (e.g., heart_rate_bpm) → conditional error variance Var(ε|X) → nonconformity score distribution conditional on X → marginal quantile ignores conditional heterogeneity → intervals too narrow where Var(ε|X) high → conditional coverage < 1-α in those regions",
+      "mechanism_variables": [
+        "conditioning_covariate_value",
+        "conditional_error_variance",
+        "conditional_nonconformity_quantile",
+        "marginal_quantile",
+        "conditional_empirical_coverage"
+      ],
+      "possible_confounders": [
+        "covariate_measurement_error",
+        "covariate_range_overlap_cal_test",
+        "base_predictor_form",
+        "sample_size_per_covariate_bin"
+      ],
+      "control_variables": [
+        "use locally adaptive conformal prediction (e.g., k-NN weighting)",
+        "stratify calibration by covariate bins",
+        "include covariate in nonconformity function as scaling factor"
+      ],
+      "rival_explanation": "Conditional coverage gaps are artifacts of finite sample size in covariate bins; with infinite data, marginal coverage guarantee would imply conditional coverage everywhere.",
+      "rival_prediction": "Conditional coverage gaps will shrink as calibration size increases and vanish asymptotically; the gap magnitude will scale as 1/√n_bin.",
+      "distinguishing_test": "Vary calibration set size and measure conditional coverage gap (max |conditional_coverage - marginal_coverage|) across covariate bins. If H10 is correct, gap persists even at large n (structural heteroscedasticity). If rival is correct, gap decays as 1/√n.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Known heteroscedasticity in BP estimation: error SD increases 2-3x from rest to exercise. For 90% target, conditional coverage at high HR can drop to 70-75% while marginal is 90%. Gap of 15-20 percentage points.",
+      "minimum_data_needed": [
+        "Continuous covariate measurements (HR, respiration, etc.)",
+        "Per-sample predictions and ground truth",
+        "Large calibration set (≥ 5000 samples) for subsampling analysis",
+        "Base predictor with known heteroscedastic errors"
+      ],
+      "testable_prediction": "Conditional coverage given HR > 100 bpm will be ≤ 75% for 90% target; locally adaptive conformal prediction restores conditional coverage to 85-95% across all HR bins; gap persists at n=10000 calibration samples.",
+      "failure_condition": "Conditional coverage gaps < 5 percentage points across all covariate bins; or gaps decay as 1/√n and vanish at n > 5000.",
+      "statistical_test_plan": "Bin covariate space (e.g., HR deciles); compute conditional coverage per bin; test homogeneity via chi-square; fit local conformal (k-NN weighted) and compare conditional coverage via paired test; subsampling analysis of gap vs n.",
+      "falsification_test": "Use a perfectly calibrated probabilistic predictor (e.g., Gaussian process with known heteroscedastic noise) as base model; if conformal prediction still shows conditional coverage gaps, the mechanism is inherent to conformal marginal guarantee. If gaps disappear, H10 is falsified (gaps were due to base predictor misspecification)."
+    }
+  ],
+  "total_tokens": 8888,
+  "completion_tokens": 8341
+}

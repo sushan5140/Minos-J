@@ -1,0 +1,194 @@
+{
+  "confounder_rival_builds": [
+    {
+      "hypothesis_id": "H1",
+      "possible_confounders": [
+        "age",
+        "fitness level (VO2max)",
+        "medication use"
+      ],
+      "control_variables": [
+        "age",
+        "fitness level",
+        "baseline stress reactivity"
+      ],
+      "boring_rival_explanations": [
+        "Subjects with high HRV have longer stable calibration segments, leading to more accurate quantile estimates and thus higher coverage."
+      ],
+      "rival_prediction": "Higher baseline HRV leads to higher empirical coverage (positive direction) or no change.",
+      "distinguishing_condition": "After matching subjects on fitness level and stress reactivity, the association between baseline HRV and coverage disappears.",
+      "confounder_rival_notes": "Need to measure fitness via VO2max test and baseline stress reactivity via task-evoked HRV change."
+    },
+    {
+      "hypothesis_id": "H2",
+      "possible_confounders": [
+        "sensor attachment quality",
+        "subject BMI",
+        "activity type (walking vs stationary)"
+      ],
+      "control_variables": [
+        "attachment quality",
+        "BMI",
+        "activity type"
+      ],
+      "boring_rival_explanations": [
+        "Motion artifact periods are automatically excluded from analysis, leaving only clean data that yields nominal coverage."
+      ],
+      "rival_prediction": "Increased motion artifact leads to higher empirical coverage (or no change) because the nonconformity score captures increased error, widening intervals.",
+      "distinguishing_condition": "When artifact-contaminated segments are retained and analyzed, coverage rises with artifact level; after removing them, coverage returns to baseline.",
+      "confounder_rival_notes": "Attachment quality can be assessed via impedance; BMI from metadata; activity type from accelerometer magnitude."
+    },
+    {
+      "hypothesis_id": "H3",
+      "possible_confounders": [
+        "time of day",
+        "subject fatigue (self-reported)",
+        "label annotator fatigue"
+      ],
+      "control_variables": [
+        "time of day",
+        "fatigue score",
+        "annotator experience"
+      ],
+      "boring_rival_explanations": [
+        "Later segments have more data for quantile estimation, reducing sampling error and increasing coverage."
+      ],
+      "rival_prediction": "Later recording time leads to higher empirical coverage (or no change) due to improved quantile estimation or reduced physiological variance from habituation.",
+      "distinguishing_condition": "If calibration is performed with a sliding window matched to test time, coverage does not decline with time; if using fixed early calibration, coverage declines only when confounding fatigue is present.",
+      "confounder_rival_notes": "Fatigue can be measured via psychomotor vigilance task; time of day from timestamps."
+    },
+    {
+      "hypothesis_id": "H4",
+      "possible_confounders": [
+        "hardware latency jitter",
+        "signal quality index",
+        "subject movement causing cable tug"
+      ],
+      "control_variables": [
+        "hardware latency measured via ping",
+        "signal quality index (SQI)",
+        "movement artifact level"
+      ],
+      "boring_rival_explanations": [
+        "Timestamp offsets correlate with poor signal quality, leading to automatic exclusion of those segments and biasing the sample toward higher coverage."
+      ],
+      "rival_prediction": "Larger timestamp offset leads to higher empirical coverage (or no change) because misalignment adds noise that inflates residuals, widening intervals.",
+      "distinguishing_condition": "After applying a data-driven time-warping alignment, coverage remains unchanged across offset levels; if offsets are merely a proxy for low SQI, controlling for SQI removes the effect.",
+      "confounder_rival_notes": "Latency jitter can be assessed by comparing simultaneous trigger signals; SQI from peak detection success rates."
+    },
+    {
+      "hypothesis_id": "H5",
+      "possible_confounders": [
+        "annotator expertise level",
+        "stimulus ambiguity (e.g., neutral vs stressor)",
+        "inter-annotator agreement variability"
+      ],
+      "control_variables": [
+        "annotator expertise score",
+        "stimulus clarity rating",
+        "inter-annotator agreement (Cohen's kappa)"
+      ],
+      "boring_rival_explanations": [
+        "Noisy labels arise primarily during low-signal-quality intervals, which are filtered out, leaving a cleaner subset with nominal coverage."
+      ],
+      "rival_prediction": "Higher label noise entropy leads to higher empirical coverage (or no change) because the model receives more uncertain targets, increasing conformity scores and widening intervals.",
+      "distinguishing_condition": "When using a loss function robust to label noise (e.g., label smoothing), coverage does not deteriorate with increasing label entropy; if the effect is due to exclusion of low-quality segments, controlling for signal quality removes the association.",
+      "confounder_rival_notes": "Expertise can be scored via years of experience; stimulus clarity from protocol notes."
+    },
+    {
+      "hypothesis_id": "H6",
+      "possible_confounders": [
+        "baseline measurement noise",
+        "number of stress episodes per subject",
+        "subject-specific skin conductance baseline variability"
+      ],
+      "control_variables": [
+        "baseline measurement duration",
+        "stress episode count",
+        "baseline GSR variability"
+      ],
+      "boring_rival_explanations": [
+        "Low-baseline subjects tend to have fewer stress episodes, resulting in smaller calibration sets that actually drive undercoverage; the apparent baseline effect is confounded by calibration size."
+      ],
+      "rival_prediction": "Lower baseline arousal leads to higher empirical coverage (or no change) because low baseline subjects exhibit less physiological variability, yielding more stable residuals.",
+      "distinguishing_condition": "After stratifying by calibration set size, the relationship between baseline arousal and coverage vanishes; if baseline truly matters, adjusting for baseline via subject-specific centering equalizes coverage across baseline groups.",
+      "confounder_rival_notes": "Baseline noise estimated from test-retest reliability of pre-stimulus period; episode count from annotation."
+    },
+    {
+      "hypothesis_id": "H7",
+      "possible_confounders": [
+        "number of stress episodes",
+        "labeling consistency",
+        "overall recording length"
+      ],
+      "control_variables": [
+        "stress episode count",
+        "label consistency (kappa)",
+        "total recording duration"
+      ],
+      "boring_rival_explanations": [
+        "Subjects with few calibration samples also have shorter recordings, which exhibit less temporal drift, thus showing nominal or higher coverage despite small sample size."
+      ],
+      "rival_prediction": "Smaller calibration set size leads to higher empirical coverage (or no change) due to the conservative bias of the standard split conformal quantile for small n.",
+      "distinguishing_condition": "When using an unbiased quantile estimator (e.g., smoothed or exact binomial), coverage does not increase with decreasing calibration size; if the effect is due to shorter recordings, controlling for total duration removes the association.",
+      "confounder_rival_notes": "Recording length from timestamps; labeling consistency from inter-annotator agreement."
+    },
+    {
+      "hypothesis_id": "H8",
+      "possible_confounders": [
+        "overall GSR amplitude",
+        "temperature range",
+        "motion artifact level"
+      ],
+      "control_variables": [
+        "GSR amplitude (std)",
+        "temperature range (max-min)",
+        "artifact level (accelerometer RMS)"
+      ],
+      "boring_rival_explanations": [
+        "Subjects with strong GSR-temperature coupling also exhibit higher motion artifacts, which independently cause undercoverage; the interaction effect is confounded by motion."
+      ],
+      "rival_prediction": "Stronger GSR-temperature interaction leads to higher empirical coverage (or no change) because the linear scoring function already captures sufficient variance, and adding interaction would overfit, widening intervals.",
+      "distinguishing_condition": "After adding the interaction term to the scoring function, coverage does not improve (or worsens) for high-interaction subjects; if motion is the true driver, controlling for artifact level abolishes the interaction-coverage link.",
+      "confounder_rival_notes": "GSR amplitude from std of phasic component; temperature range from min-max during stress; artifact level as in H2."
+    },
+    {
+      "hypothesis_id": "H9",
+      "possible_confounders": [
+        "time of day",
+        "baseline stress level",
+        "subject age"
+      ],
+      "control_variables": [
+        "time of day (circadian phase)",
+        "baseline stress (pre-task HRV)",
+        "age"
+      ],
+      "boring_rival_explanations": [
+        "Substance users are more likely to be younger and have higher baseline HRV, which independently affect coverage; the substance effect is confounded by age and baseline physiology."
+      ],
+      "rival_prediction": "Presence of caffeine/medication leads to higher empirical coverage (or no change) because substances stabilize autonomic responses, reducing variance and improving calibration.",
+      "distinguishing_condition": "After adjusting for baseline physiological state (e.g., subtracting substance-induced baseline shift) and age, the association between substance intake and coverage disappears; if substances truly alter error distribution, controlling for baseline will not remove the effect.",
+      "confounder_rival_notes": "Time of day from timestamps; baseline stress from first 5 min; age from metadata."
+    },
+    {
+      "hypothesis_id": "H10",
+      "possible_confounders": [
+        "label ambiguity for short bouts",
+        "subject-specific stress bout duration distribution",
+        "feature extraction method (e.g., mean vs percentile)"
+      ],
+      "control_variables": [
+        "label ambiguity score (inter-annotator disagreement)",
+        "bout duration variance",
+        "feature method type"
+      ],
+      "boring_rival_explanations": [
+        "Short stress bouts are more often ambiguously labeled, leading to label noise that drives undercoverage; the window edge effect is confounded by label quality."
+      ],
+      "rival_prediction": "Shorter bout length relative to window leads to higher empirical coverage (or no change) because windowed features are smoothed, reducing variance and widening intervals.",
+      "distinguishing_condition": "When using variable-length windows matched to each bout duration, coverage does not differ across bout lengths; if label ambiguity is the true cause, controlling for label ambiguity removes the bout-length-coverage association.",
+      "confounder_rival_notes": "Label ambiguity from entropy of multiple annotators; bout duration from annotation epochs; feature method from pipeline config."
+    }
+  ]
+}

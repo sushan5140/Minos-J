@@ -1,0 +1,244 @@
+{
+  "confounder_rival_builds": [
+    {
+      "hypothesis_id": "H1",
+      "possible_confounders": [
+        "Age",
+        "Cardiovascular fitness (resting HR)",
+        "Medication affecting autonomic function (beta-blockers, anticholinergics)",
+        "Baseline anxiety level",
+        "Time of day of TSST",
+        "Sensor placement variability"
+      ],
+      "control_variables": [
+        "Age",
+        "Sex",
+        "BMI",
+        "Resting heart rate",
+        "Medication status",
+        "Time of day"
+      ],
+      "boring_rival_explanations": [
+        "Undercoverage is caused by general model misspecification (e.g., inadequate feature set) affecting all subjects equally, not specifically high-reactivity individuals.",
+        "The calibration set is simply too small to reliably estimate quantiles for any subgroup, making reactivity a spurious correlate."
+      ],
+      "rival_prediction": "If model misspecification is the primary driver, coverage will not systematically correlate with sympathetic reactivity index after controlling for per-subject model accuracy (e.g., classification error).",
+      "distinguishing_condition": "Compute per-subject coverage and sympathetic reactivity index; regress coverage on reactivity while including per-subject classification accuracy as a covariate. A significant reactivity coefficient supports the proposed mechanism; a non-significant coefficient supports the rival.",
+      "confounder_rival_notes": "Control for fitness via resting HR; medication via self-report. The rival test directly pits reactivity-specific miscalibration against general model failure."
+    },
+    {
+      "hypothesis_id": "H2",
+      "possible_confounders": [
+        "Skin tone (affects BVP signal quality)",
+        "Ambient temperature (affects vascular tone and motion)",
+        "Sensor placement tightness (distinct from watch fit)",
+        "Non-gestural movement (postural shifts, fidgeting)",
+        "Electrode-skin impedance for EDA"
+      ],
+      "control_variables": [
+        "Skin tone (Fitzpatrick scale if available)",
+        "Ambient temperature",
+        "Baseline ACC variance (proxy for fit)",
+        "Gesture frequency (ACC peaks >0.5g/min)",
+        "BVP signal quality index (SQI)"
+      ],
+      "boring_rival_explanations": [
+        "Undercoverage is driven by general BVP signal degradation (low SQI) regardless of gesture-specific motion patterns.",
+        "The model simply performs poorly on all subjects with high overall movement, not specifically those with gesture-artifact interaction."
+      ],
+      "rival_prediction": "If general signal quality is the culprit, coverage will correlate with BVP SQI but not with the gesture frequency × watch-fit interaction after conditioning on SQI.",
+      "distinguishing_condition": "Stratify subjects by gesture frequency (high/low) and BVP SQI (high/low). If undercoverage is specific to high-gesture/low-SQI group, the proposed mechanism wins; if all low-SQI groups show similar undercoverage regardless of gesture, the rival wins.",
+      "confounder_rival_notes": "Watch fit not directly in WESAD; baseline ACC variance serves as proxy. The interaction term isolates gesture-specific artifact from general noise."
+    },
+    {
+      "hypothesis_id": "H3",
+      "possible_confounders": [
+        "Task order (TSST always before recovery in WESAD)",
+        "Fatigue accumulation across protocol",
+        "Habituation to sensor or lab environment",
+        "Time since last meal/caffeine",
+        "Menstrual cycle phase (affects autonomic recovery)"
+      ],
+      "control_variables": [
+        "Time since TSST onset (calibration sample index)",
+        "Caffeine intake (binary)",
+        "Fatigue self-report (if available)",
+        "Menstrual phase (if available)",
+        "Baseline HRV"
+      ],
+      "boring_rival_explanations": [
+        "Temporal non-stationarity affects all subjects uniformly (e.g., sensor drift, global fatigue), not selectively slow recoverers.",
+        "The calibration window is too short to capture any recovery dynamics, making the drift a universal problem."
+      ],
+      "rival_prediction": "If non-stationarity is universal, coverage will decline over calibration time for both fast and slow recoverers with similar slopes.",
+      "distinguishing_condition": "Fit a mixed-effects model: coverage ~ recovery_phenotype * calibration_time_half + (1|subject). A significant interaction (steeper decline for slow recoverers in late half) supports the proposed mechanism; a non-significant interaction with a main effect of time supports the rival.",
+      "confounder_rival_notes": "WESAD protocol fixes task order, so time is confounded with task phase. The interaction test isolates phenotype-specific drift."
+    },
+    {
+      "hypothesis_id": "H4",
+      "possible_confounders": [
+        "Current mood state (PANAS)",
+        "Demand characteristics / social desirability",
+        "Language/comprehension of VAS scale",
+        "Cultural differences in scale usage",
+        "Recent stressful life events"
+      ],
+      "control_variables": [
+        "Baseline mood (PANAS negative affect)",
+        "VAS comprehension check",
+        "Alexithymia score (TAS-20) if available",
+        "Interoceptive accuracy (heartbeat counting) if available",
+        "Physiological arousal index (EDA tonic + HR z-score)"
+      ],
+      "boring_rival_explanations": [
+        "VAS noise is random and uncorrelated with interoceptive traits; coverage failures are due to inherent label unreliability affecting all subjects.",
+        "The model's predictions are noisy for all subjects, making any label noise appear consequential."
+      ],
+      "rival_prediction": "If label noise is random, the label-physiology mismatch magnitude will not correlate with interoceptive accuracy (where measured) and coverage will not correlate with mismatch after controlling for physiology.",
+      "distinguishing_condition": "On a dataset with interoceptive accuracy measures (e.g., WESAD+), compute partial correlation between coverage and label-physiology mismatch controlling for physiological arousal. A significant partial correlation supports the proposed mechanism; a non-significant correlation supports the rival.",
+      "confounder_rival_notes": "WESAD lacks interoceptive measures; this test requires external data or simulation. The rival is distinguished by the systematic trait-dependence of mismatch."
+    },
+    {
+      "hypothesis_id": "H5",
+      "possible_confounders": [
+        "Model calibration quality (predicted probabilities not reflecting true frequencies)",
+        "Feature selection bias (intensity-relevant features omitted)",
+        "Class imbalance in calibration set",
+        "Nonconformity score function choice (1-p vs. margin-based)"
+      ],
+      "control_variables": [
+        "Model calibration error (ECE) per subject",
+        "Predicted probability of true class",
+        "Stress intensity latent variable (PC1 of physiological features)",
+        "Calibration set size per predicted probability bin",
+        "Nonconformity score function type"
+      ],
+      "boring_rival_explanations": [
+        "Undercoverage at extreme intensities is caused by the model's poor probability calibration at the extremes, not by the binary taxonomy itself.",
+        "The nonconformity score (1-p) is inherently poorly suited for extreme probabilities, regardless of taxonomy."
+      ],
+      "rival_prediction": "If model calibration is the root cause, recalibrating the model (e.g., Platt scaling) will restore coverage across intensities even with the binary taxonomy.",
+      "distinguishing_condition": "Apply temperature scaling to the model's predicted probabilities, then compute coverage per intensity decile using the same binary Mondrian taxonomy. If coverage gaps persist, the taxonomy is the bottleneck (proposed mechanism); if gaps close, model calibration was the driver (rival).",
+      "confounder_rival_notes": "The test directly isolates taxonomy granularity from probability calibration. Use the same nonconformity score (1-p) throughout."
+    },
+    {
+      "hypothesis_id": "H6",
+      "possible_confounders": [
+        "Skin hydration level",
+        "Electrode gel degradation over session",
+        "Ambient humidity",
+        "Skin temperature",
+        "Sensor placement location (wrist vs. palm)"
+      ],
+      "control_variables": [
+        "Ambient humidity",
+        "Skin temperature (from TEMP sensor)",
+        "EDA tonic level (µS)",
+        "EDA phasic driver amplitude (µS)",
+        "WESAD signal quality flag"
+      ],
+      "boring_rival_explanations": [
+        "EDA tonic level variations reflect true sympathetic tone differences, not sensor-skin impedance artifacts.",
+        "The existing WESAD signal quality flags already capture impedance-related degradation."
+      ],
+      "rival_prediction": "If EDA tonic shifts reflect true sympathetic differences, coverage will correlate with tonic level only when HR and other sympathetic markers are not controlled for.",
+      "distinguishing_condition": "Regress coverage on EDA tonic level (quadratic term for U-shape) while including HR max, HRV, and respiration rate as covariates. A significant quadratic tonic effect after controlling for other sympathetic markers supports the impedance mechanism; a non-significant effect supports the rival.",
+      "confounder_rival_notes": "Skin impedance not directly measured; tonic/phasic ratio serves as proxy. The covariate control isolates impedance-specific variance."
+    },
+    {
+      "hypothesis_id": "H7",
+      "possible_confounders": [
+        "Sleep duration and quality prior to session",
+        "Wake time (hours since awakening)",
+        "Caffeine consumption timing and dose",
+        "Light exposure before session",
+        "Menstrual cycle phase"
+      ],
+      "control_variables": [
+        "Time of TSST start (hours since midnight)",
+        "Sleep duration (self-report)",
+        "Caffeine intake (binary, within 4h)",
+        "Wake time",
+        "Baseline cortisol (nmol/L)"
+      ],
+      "boring_rival_explanations": [
+        "Time-of-day effects are mediated entirely by sleep deprivation or caffeine, not endogenous circadian rhythm.",
+        "The model is simply better calibrated for the majority time-of-day group due to calibration set composition."
+      ],
+      "rival_prediction": "If sleep/caffeine mediate the effect, controlling for them will eliminate the coverage difference between morning and afternoon groups.",
+      "distinguishing_condition": "Fit a logistic regression: coverage ~ time_of_day_group + sleep_duration + caffeine + time_of_day_group:sleep_duration. If the time_of_day_group coefficient remains significant after adding sleep/caffeine, circadian mechanism wins; if it becomes non-significant, the rival wins.",
+      "confounder_rival_notes": "WESAD has timestamps but not sleep/caffeine logs; this test requires augmented metadata. The interaction term checks for moderation."
+    },
+    {
+      "hypothesis_id": "H8",
+      "possible_confounders": [
+        "Model architecture and hyperparameters",
+        "Training set composition (leave-one-out subject)",
+        "Feature engineering choices (e.g., time-domain vs. frequency-domain HRV)",
+        "Outlier influence in training data",
+        "Regularization strength"
+      ],
+      "control_variables": [
+        "Model type (fixed across tests)",
+        "Training set size (LOOCV)",
+        "Feature set (fixed)",
+        "Mahalanobis distance from training population mean",
+        "Subject phenotype label (athlete, high HRV, etc.)"
+      ],
+      "boring_rival_explanations": [
+        "Miscalibration for atypical subjects is due to general model overfitting to the training population, not a specific failure of class-conditional nonconformity scores.",
+        "The nonconformity score function (1-p) is inherently inadequate for any out-of-distribution sample, regardless of taxonomy."
+      ],
+      "rival_prediction": "If overfitting is the cause, a feature-aware taxonomy (e.g., k-NN based on training features) will not improve coverage over class-conditional taxonomy for high-Mahalanobis subjects, because the model's probabilities are fundamentally unreliable.",
+      "distinguishing_condition": "Compare coverage for high-Mahalanobis subjects (top 5%) using class-conditional Mondrian vs. k-NN Mondrian (k=10) with the same model. If k-NN taxonomy restores coverage to nominal, the proposed mechanism wins; if both taxonomies undercover equally, the rival wins.",
+      "confounder_rival_notes": "The test directly evaluates whether feature-conditional calibration can be rescued by taxonomy design. Mahalanobis distance computed on training set covariance."
+    },
+    {
+      "hypothesis_id": "H9",
+      "possible_confounders": [
+        "Phenotype definition criteria (arbitrary thresholds)",
+        "Calibration set sampling strategy (LOOCV vs. random split)",
+        "Nonconformity score distribution skewness",
+        "Correlation between phenotype rarity and inherent predictability"
+      ],
+      "control_variables": [
+        "Phenotype frequency in calibration set (n_bin)",
+        "Calibration set size (n=14 LOOCV)",
+        "Nonconformity score distribution parameters (mean, variance, skew)",
+        "Target coverage level (1-α)",
+        "Quantile estimation method (empirical vs. bootstrap-corrected)"
+      ],
+      "boring_rival_explanations": [
+        "Rare phenotypes are inherently harder to predict (higher irreducible error), so undercoverage reflects model bias not quantile estimation variance.",
+        "The empirical quantile bias is negligible; the real issue is that the nonconformity score distribution for rare phenotypes has heavier tails."
+      ],
+      "rival_prediction": "If model bias drives undercoverage, increasing calibration set size (via synthetic augmentation or external data) will not fully restore coverage for rare phenotypes.",
+      "distinguishing_condition": "Simulate increasing calibration set size for a rare phenotype by adding synthetic samples drawn from the same phenotype distribution (using bootstrap or generative model). Plot coverage vs. n_bin. If coverage converges to 1-α as n_bin grows, finite-sample mechanism wins; if coverage plateaus below 1-α, model bias rival wins.",
+      "confounder_rival_notes": "The simulation isolates quantile estimation variance from model bias. Use the same nonconformity scores; only vary calibration set composition."
+    },
+    {
+      "hypothesis_id": "H10",
+      "possible_confounders": [
+        "State anxiety (STAI-S) at baseline",
+        "Baseline duration (insufficient habituation)",
+        "Prior stress exposure (e.g., previous TSST experience)",
+        "Neuroticism personality trait",
+        "General physiological arousal propensity"
+      ],
+      "control_variables": [
+        "Trait anxiety (STAI-T) if available",
+        "State anxiety (STAI-S) if available",
+        "Baseline duration (fixed in WESAD ~5min)",
+        "Baseline EDA tonic (µS)",
+        "Baseline HR (bpm)"
+      ],
+      "boring_rival_explanations": [
+        "Baseline contamination occurs for all subjects because the 5-minute rest is insufficient for physiological habituation, not specifically high-trait-anxiety individuals.",
+        "The model learns a shifted decision boundary due to baseline contamination, but this affects all subjects equally."
+      ],
+      "rival_prediction": "If baseline protocol is universally insufficient, coverage will be low for all subjects and will not correlate with trait anxiety after controlling for baseline physiology.",
+      "distinguishing_condition": "Regress per-subject coverage on trait anxiety while including baseline EDA tonic and HR as covariates. A significant trait anxiety coefficient supports the proposed mechanism; a non-significant coefficient supports the rival.",
+      "confounder_rival_notes": "Trait anxiety not in WESAD; requires external data. The covariate control tests whether anxiety has an effect beyond baseline physiology."
+    }
+  ]
+}

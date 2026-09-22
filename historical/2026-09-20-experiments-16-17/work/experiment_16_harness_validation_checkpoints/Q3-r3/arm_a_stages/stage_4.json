@@ -1,0 +1,84 @@
+{
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Fake hypothesis 1 (n662) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 1 (n603) with a specific variable relation.",
+      "core_assumption": "Fake assumption 1 (n497) with a specific variable relation.",
+      "knowledge_gap_addressed": "Fake gap 1 (n259) with a specific variable relation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Fake hypothesis 2 (n182) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 2 (n767) with a specific variable relation.",
+      "core_assumption": "Fake assumption 2 (n93) with a specific variable relation.",
+      "knowledge_gap_addressed": "Fake gap 2 (n856) with a specific variable relation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Fake hypothesis 3 (n6) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 3 (n661) with a specific variable relation.",
+      "core_assumption": "Fake assumption 3 (n79) with a specific variable relation.",
+      "knowledge_gap_addressed": "Fake gap 3 (n438) with a specific variable relation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Fake hypothesis 4 (n478) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 4 (n343) with a specific variable relation.",
+      "core_assumption": "Fake assumption 4 (n560) with a specific variable relation.",
+      "knowledge_gap_addressed": "Fake gap 4 (n861) with a specific variable relation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Fake hypothesis 5 (n202) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 5 (n473) with a specific variable relation.",
+      "core_assumption": "Fake assumption 5 (n271) with a specific variable relation.",
+      "knowledge_gap_addressed": "Fake gap 5 (n804) with a specific variable relation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Fake hypothesis 6 (n627) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 6 (n770) with a specific variable relation.",
+      "core_assumption": "Fake assumption 6 (n604) with a specific variable relation.",
+      "knowledge_gap_addressed": "Fake gap 6 (n790) with a specific variable relation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Fake hypothesis 7 (n494) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 7 (n407) with a specific variable relation.",
+      "core_assumption": "Fake assumption 7 (n6) with a specific variable relation.",
+      "knowledge_gap_addressed": "Fake gap 7 (n241) with a specific variable relation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Fake hypothesis 8 (n701) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 8 (n625) with a specific variable relation.",
+      "core_assumption": "Fake assumption 8 (n275) with a specific variable relation.",
+      "knowledge_gap_addressed": "Fake gap 8 (n216) with a specific variable relation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Fake hypothesis 9 (n697) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 9 (n675) with a specific variable relation.",
+      "core_assumption": "Fake assumption 9 (n635) with a specific variable relation.",
+      "knowledge_gap_addressed": "Fake gap 9 (n953) with a specific variable relation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Fake hypothesis 10 (n99) with a specific variable relation.",
+      "proposed_mechanism": "Fake mechanism 10 (n186) with a specific variable relation.",
+      "core_assumption": "Fake assumption 10 (n244) with a specific variable relation.",
+      "knowledge_gap_addressed": "Fake gap 10 (n524) with a specific variable relation.",
+      "status": "SPECULATIVE"
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "rival_prediction_matrix": [
+    {
+      "hypothesis_id": "H1",
+      "meno_j_hypothesis": "Fake h H1 (n155) with a specific variable relation.",
+      "meno_j_prediction": "Fake p H1 (n25) with a specific variable relation.",
+      "rival_explanation": "Fake rival H1 (n127) with a specific variable relation.",
+      "rival_prediction": "Fake rp H1 (n520) with a specific variable relation.",
+      "distinguishing_test": "Fake dt H1 (n185) with a specific variable relation.",
+      "what_result_supports_meno_j": "Fake s H1 (n345) with a specific variable relation.",
+      "what_result_supports_rival": "Fake sr H1 (n781) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H2",
+      "meno_j_hypothesis": "Fake h H2 (n937) with a specific variable relation.",
+      "meno_j_prediction": "Fake p H2 (n884) with a specific variable relation.",
+      "rival_explanation": "Fake rival H2 (n364) with a specific variable relation.",
+      "rival_prediction": "Fake rp H2 (n921) with a specific variable relation.",
+      "distinguishing_test": "Fake dt H2 (n674) with a specific variable relation.",
+      "what_result_supports_meno_j": "Fake s H2 (n662) with a specific variable relation.",
+      "what_result_supports_rival": "Fake sr H2 (n621) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H5",
+      "meno_j_hypothesis": "Fake h H5 (n237) with a specific variable relation.",
+      "meno_j_prediction": "Fake p H5 (n956) with a specific variable relation.",
+      "rival_explanation": "Fake rival H5 (n696) with a specific variable relation.",
+      "rival_prediction": "Fake rp H5 (n722) with a specific variable relation.",
+      "distinguishing_test": "Fake dt H5 (n611) with a specific variable relation.",
+      "what_result_supports_meno_j": "Fake s H5 (n489) with a specific variable relation.",
+      "what_result_supports_rival": "Fake sr H5 (n963) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H6",
+      "meno_j_hypothesis": "Fake h H6 (n395) with a specific variable relation.",
+      "meno_j_prediction": "Fake p H6 (n315) with a specific variable relation.",
+      "rival_explanation": "Fake rival H6 (n42) with a specific variable relation.",
+      "rival_prediction": "Fake rp H6 (n420) with a specific variable relation.",
+      "distinguishing_test": "Fake dt H6 (n981) with a specific variable relation.",
+      "what_result_supports_meno_j": "Fake s H6 (n174) with a specific variable relation.",
+      "what_result_supports_rival": "Fake sr H6 (n489) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H8",
+      "meno_j_hypothesis": "Fake h H8 (n965) with a specific variable relation.",
+      "meno_j_prediction": "Fake p H8 (n381) with a specific variable relation.",
+      "rival_explanation": "Fake rival H8 (n300) with a specific variable relation.",
+      "rival_prediction": "Fake rp H8 (n601) with a specific variable relation.",
+      "distinguishing_test": "Fake dt H8 (n519) with a specific variable relation.",
+      "what_result_supports_meno_j": "Fake s H8 (n596) with a specific variable relation.",
+      "what_result_supports_rival": "Fake sr H8 (n475) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H9",
+      "meno_j_hypothesis": "Fake h H9 (n977) with a specific variable relation.",
+      "meno_j_prediction": "Fake p H9 (n740) with a specific variable relation.",
+      "rival_explanation": "Fake rival H9 (n802) with a specific variable relation.",
+      "rival_prediction": "Fake rp H9 (n273) with a specific variable relation.",
+      "distinguishing_test": "Fake dt H9 (n142) with a specific variable relation.",
+      "what_result_supports_meno_j": "Fake s H9 (n339) with a specific variable relation.",
+      "what_result_supports_rival": "Fake sr H9 (n816) with a specific variable relation."
+    },
+    {
+      "hypothesis_id": "H10",
+      "meno_j_hypothesis": "Fake h H10 (n924) with a specific variable relation.",
+      "meno_j_prediction": "Fake p H10 (n284) with a specific variable relation.",
+      "rival_explanation": "Fake rival H10 (n873) with a specific variable relation.",
+      "rival_prediction": "Fake rp H10 (n345) with a specific variable relation.",
+      "distinguishing_test": "Fake dt H10 (n709) with a specific variable relation.",
+      "what_result_supports_meno_j": "Fake s H10 (n595) with a specific variable relation.",
+      "what_result_supports_rival": "Fake sr H10 (n688) with a specific variable relation."
+    }
+  ]
+}

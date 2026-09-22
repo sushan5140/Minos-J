@@ -1,0 +1,194 @@
+{
+  "experiment_name": "Minos-J Experiment 17-C: Claude-Based Replication of Experiment 17 (Matched-Compute Architecture Falsification)",
+  "protocol_status": "FROZEN_BEFORE_ANY_EXPERIMENT_17C_COMPLETION_CALL",
+  "frozen_on": "2026-09-23",
+  "naming_note": "Experiment 17-C is the Claude-based replication of Experiment 17. Experiment 17 (OpenRouter, nvidia/nemotron-3-super-120b-a12b:free + nex-agi/nex-n2.5-pro:free) was interrupted by the OpenRouter free-tier daily quota and is preserved unchanged as an incomplete run.",
+  "research_question": "If a multi-stage reasoning pipeline performs better than a simpler baseline, does the architecture itself deserve the credit once inference budget, sampling, retries, and evaluator passes are controlled?",
+  "task_set": {
+    "questions": {
+      "Q1": "Why does Mondrian conformal prediction show undercoverage for some physiological stress subjects in WESAD?",
+      "Q2": "Why might conformal prediction fail to maintain stable coverage across different physiological signal segments?",
+      "Q3": "What mechanisms could explain subject-level variation in wearable stress-detection uncertainty?"
+    },
+    "source": "Identical Q1-Q3 used by Experiments 1, 2 and 7 (run_v4_architecture_ablation.QUESTIONS).",
+    "replicates_per_question": 3,
+    "unit_of_analysis": "(question, replicate) pair; both arms run fresh on every unit"
+  },
+  "arms": {
+    "A_minos_j_v4": {
+      "implementation": "historical pipeline.run_v4_pipeline, unchanged, fresh Stage 4 (no reuse of historical checkpoints)",
+      "stages": [
+        "4 Dreamer",
+        "4.1 Mechanism Builder",
+        "4.2 Confounder/Rival Builder",
+        "4.3 Statistical Testability Builder (auto-splits into 2 batches on failure)",
+        "5 Strict Auditor (evaluator)",
+        "6 Rival Matrix (PASS only)",
+        "7 Falsification (PASS only)"
+      ],
+      "final_deliverable": "hypotheses the Stage 5 auditor marked PASS, with their builds, rival row and falsification test"
+    },
+    "B_matched_budget_sample_and_select": {
+      "implementation": "K independent one-shot calls, each producing 10 complete hypothesis cards with every field Arm A ends up with, then ONE selector/verifier call applying the same strict audit checklist and decision rules to the pooled candidates",
+      "final_deliverable": "up to 10 distinct selected cards that the selector marked PASS",
+      "not_handicapped_because": [
+        "same model, temperature, max_tokens, system message, client and retry policy",
+        "asked for the same final fields and the same quality requirements as Arm A's builders",
+        "receives the same total token budget as Arm A on the same unit (K chosen by the budget controller)",
+        "receives the same number of evaluator/verifier calls (1)",
+        "gets to choose among 10*K sampled candidates, versus 10 for Arm A"
+      ]
+    }
+  },
+  "held_constant": {
+    "underlying_model": "Exact frozen generator model claude-sonnet-5 for both arms.",
+    "model_settings": "claude -p with provider-default temperature, effort medium, max output 12000 tokens, identical system message, identical strict JSON schema per task type, identical retry policy for both arms",
+    "retrieval_evidence": "none in either arm (the v4 pipeline has no retrieval stage); both arms receive only the research question",
+    "task_inputs": "identical research question text"
+  },
+  "matched_compute_rule": {
+    "budget_currency": "total tokens = provider-reported prompt_tokens + completion_tokens over every successful HTTP request of the arm, including JSON-repair requests; chars/4 estimate only if the provider omits usage (flagged)",
+    "order": "Arm A runs first on a unit; its realized total T_A becomes Arm B's budget for that unit",
+    "evaluator_parity": "Arm B makes exactly as many evaluator/verifier calls as Arm A made (1 per unit)",
+    "controller": "Arm B keeps adding one-shot samples while the projected total (samples spent + estimated selector cost) after one more sample is closer to T_A than the projected total without it; at least 1 sample; hard cap K <= 2 * L_A",
+    "selector_cost_estimate": "selector prompt template chars/4 + sum of sample completion tokens + Arm A's realized Stage 5 completion tokens",
+    "tolerance": "a unit is budget-matched iff 0.85 <= T_B / T_A <= 1.15 and E_B == E_A",
+    "reported_not_matched": [
+      "logical calls",
+      "HTTP attempts",
+      "timeout/network/429 retries",
+      "JSON repair requests",
+      "sampled candidates",
+      "cost (if provider returns it)",
+      "wall-clock latency"
+    ],
+    "failed_requests": "HTTP attempts that failed carry no token usage; they are counted as attempts in both arms",
+    "judge_calls": "excluded from both arms' budgets (measurement, not inference) and reported separately"
+  },
+  "evaluation": {
+    "judge": "blinded LLM judge claude-opus-5-5; different model from the generator (same vendor family)",
+    "normalization": "every final deliverable is converted to the identical 16-field card schema; arm-specific field names and IDs are removed",
+    "blinding": "cards from both arms of a unit are pooled, given random opaque IDs, shuffled with a seed derived from the unit ID, and judged in mixed batches of 10; the card->arm key never enters a prompt; prompts are scanned for arm-revealing strings",
+    "judge_checklist": [
+      "variables_measurable",
+      "causal_chain_valid",
+      "base_rate_plausible",
+      "confounders_identified",
+      "effect_size_plausible",
+      "data_requirements_clear",
+      "mechanism_is_non_generic",
+      "prediction_is_testable",
+      "rival_prediction_diverges",
+      "failure_condition_operational"
+    ],
+    "judge_validated_card": "all six historical CRITICAL_AUDIT_FIELDS true AND rival_prediction_diverges AND failure_condition_operational",
+    "judge_retry": "one retry per judge batch on invalid output across the lifetime of the unit, including resumed processes; otherwise terminal JUDGE_FAILED"
+  },
+  "metrics": {
+    "primary": "V = number of judge-validated cards in an arm's final deliverable (0-10); paired difference D = V_A - V_B per unit",
+    "secondary": [
+      "precision = V / reported survivors",
+      "mean judge checklist fraction over reported cards",
+      "within-arm near-duplicate rate (word-set Jaccard >= 0.6 on hypothesis text)",
+      "mean card length in characters (verbosity confound)",
+      "arm failure rate (pipeline or validation failure)",
+      "per-question paired differences"
+    ]
+  },
+  "falsification_criterion": {
+    "statement": "If the matched-budget simple baseline performs similarly to or better than Minos-J within reasonable experimental variation, Experiment 17-C does NOT support the claim that the Minos-J architecture itself is responsible for the gain.",
+    "analysis_set": "units where both arms completed, the judge completed, and the budget was matched",
+    "statistics": "mean D; paired bootstrap 95% CI (10000 resamples, seed 16); exact two-sided sign test on non-zero D",
+    "practical_margin_delta": 1.0,
+    "minimum_analysable_units": 6,
+    "decisions": {
+      "ARCHITECTURE_ADVANTAGE_SURVIVED": "mean D >= 1.0 AND bootstrap CI lower bound > 0",
+      "BASELINE_SUPERIOR_ARCHITECTURE_NOT_SUPPORTED": "bootstrap CI upper bound < 0",
+      "ARCHITECTURE_ADVANTAGE_NOT_SUPPORTED": "any other outcome (CI includes 0, or mean D below the margin)",
+      "INCONCLUSIVE_INSUFFICIENT_MATCHED_UNITS": "fewer than 6 analysable units, or more than one third of attempted units unmatched/failed"
+    },
+    "negative_results": "reported with the same prominence as positive results"
+  },
+  "seeds": {
+    "bootstrap_seed": 16,
+    "blinding_seed_derivation": "sha256('E17|' + unit_id)"
+  },
+  "models": {
+    "generator": "claude-sonnet-5",
+    "blinded_judge": "claude-opus-5-5",
+    "separation_rule": "Generator and judge are different exact model IDs, frozen before execution. Both are Anthropic Claude models, so the Experiment 17 different-family requirement cannot be met (see deviations).",
+    "transport": "Claude Code CLI headless mode (`claude -p`), authenticated by the operator's Claude subscription (OAuth, authMethod=claude.ai)",
+    "structured_output": "`--json-schema` with the identical strict stage-specific schema used by Experiment 17",
+    "effort": "medium",
+    "max_output_tokens": 12000,
+    "paid_api_dependency": "none; API-key and base-URL variables are stripped from the CLI environment"
+  },
+  "engineering_reliability_contract": {
+    "transient_network_retries": "At most four retries for timeout, IncompleteRead, remote disconnect/reset, URLError, and HTTP 429/500/502/503/504; failed attempts remain in accounting.",
+    "invalid_response_shape": "One retry, recorded in the ledger and diagnostic archive.",
+    "invalid_json": "Exactly one schema-constrained repair request; no further semantic repair loop.",
+    "structured_output": "Every completion request carries the strict Experiment 17 stage-specific JSON schema via --json-schema.",
+    "resume": "Ledger sequences continue from the maximum existing value. Judge state is checkpointed after every attempt, including terminal failure, so resume never creates extra judge opportunities.",
+    "serialization": "All Experiment 17 JSON uses UTF-8, allow_nan=false; non-finite statistics are represented as null.",
+    "diagnostics": "Every CLI JSON result (including errors) is retained in a diagnostic archive with exit code and stderr tail. No credentials are read or stored by the harness. Diagnostics are not scientific outcomes."
+  },
+  "changes_from_experiment_16": [
+    "Changed generator and blinded-judge models because the Experiment 16 free endpoints did not advertise structured outputs.",
+    "Added strict response_format/json_schema requests and provider capability enforcement.",
+    "Added IncompleteRead and remote-disconnect retry coverage.",
+    "Made ledger sequences unique across resumed processes.",
+    "Made failed judge attempts durable and terminal after the preregistered two-attempt limit.",
+    "Made all JSON serialization RFC-compliant and replaced non-finite values with null.",
+    "Added sanitized response-body retention for reconstruction of parser and validator failures.",
+    "No change to questions, arms, matched-compute tolerance, primary/secondary outcomes, analysis set, or falsification criterion."
+  ],
+  "relation_to_experiment_17": {
+    "base_protocol": "outputs/meno_j_experiment_17_preregistered_protocol.json",
+    "base_protocol_sha256": "76ae7d0ae043fab1e0a34f0f34ed0380473d725cad689260d15b0f44125d5b8b",
+    "reuse_of_experiment_17_state": "none; all nine units run fresh under separate checkpoints",
+    "pooling": "Experiment 17-C units are never pooled with Experiment 17 units",
+    "experiment_17_state_at_handover": {
+      "Q1-r1": "Arm A stages 4-4.3 checkpointed; Stage 5 auditor failed validation twice; no Arm B",
+      "Q2-r1": "Arms A and B complete; judge attempt 1 invalid, attempt 2 started but never checkpointed (consumed under the E17 rule, so JUDGE_FAILED on resume)",
+      "Q3-r1": "Arm A complete; Arm B samples 1-2 valid, sample 3 recorded invalid by an HTTP 429 before the daily-quota stop",
+      "r2_and_r3_units": "not started"
+    }
+  },
+  "model_substitutions": [
+    {
+      "role": "generator (both arms)",
+      "experiment_17_model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "experiment_17_provider": "OpenRouter free tier",
+      "experiment_17c_model": "claude-sonnet-5",
+      "experiment_17c_provider": "Claude Code CLI on Claude subscription",
+      "reason": "OpenRouter free-tier quota exhausted mid-run; the operator directed continuation without OpenRouter or paid APIs."
+    },
+    {
+      "role": "blinded judge",
+      "experiment_17_model": "nex-agi/nex-n2.5-pro:free",
+      "experiment_17_provider": "OpenRouter free tier",
+      "experiment_17c_model": "claude-opus-5-5",
+      "experiment_17c_provider": "Claude Code CLI on Claude subscription",
+      "reason": "Same as generator; a stronger Claude model than the generator is used as judge."
+    }
+  ],
+  "deviations_from_experiment_17": [
+    "Models substituted as listed in model_substitutions; generator and judge share a vendor family (Anthropic), whereas Experiment 17 required different families. Same-family judge bias is a declared threat to validity.",
+    "Sampling temperature cannot be set through `claude -p`; provider default is used instead of 0.4. It is identical for both arms.",
+    "Output ceiling set with CLAUDE_CODE_MAX_OUTPUT_TOKENS=12000 (Experiment 17: max_tokens=12000). Effort pinned to 'medium' for every call.",
+    "Structured output enforced by Claude Code `--json-schema` instead of OpenRouter response_format/provider.require_parameters.",
+    "Token currency: prompt_tokens = input_tokens + cache_creation_input_tokens + cache_read_input_tokens; completion_tokens = output_tokens (includes any thinking). Applied identically to both arms and the judge.",
+    "Each CLI call carries a fixed overhead of roughly 1k prompt tokens (system prompt plus Claude Code's structured-output tool); it is counted in every request of both arms and the judge. Structured output may use a second internal turn, whose tokens are also counted.",
+    "The single JSON-repair request is sent as one user turn quoting the original request and previous response, because `claude -p` accepts one user message.",
+    "Transient-retry classes map to CLI failures: timeout, non-JSON CLI exit, HTTP 429 (non-quota)/5xx/529, and OAuth-refresh contention. The four-retry ceiling is unchanged.",
+    "A subscription usage-limit stop is treated like Experiment 17's daily-quota stop: the run halts, nothing is charged to an arm as an invalid sample, and the same command resumes later. (Experiment 17's Q3-r1 sample 3 shows the defect this avoids.)",
+    "Persistent OAuth-refresh failure halts the run (infrastructure) instead of failing a stage."
+  ],
+  "estimated_requirements": {
+    "experimental_units": 9,
+    "logical_calls": "approximately 72-234 including judge calls (same design as Experiment 17)",
+    "token_planning_range": "approximately 1.6-2.2M experimental-arm tokens plus 0.3-0.6M judge tokens",
+    "cost": "no per-token charge; consumes Claude subscription usage allowance",
+    "operational_warning": "Subscription usage windows will likely be exhausted several times; the run is resumable."
+  }
+}

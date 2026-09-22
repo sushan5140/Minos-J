@@ -1,0 +1,214 @@
+{
+  "confounder_rival_builds": [
+    {
+      "hypothesis_id": "H1",
+      "possible_confounders": [
+        "age",
+        "medication use",
+        "signal-to-noise ratio"
+      ],
+      "control_variables": [
+        "age",
+        "sex",
+        "signal-to-noise ratio"
+      ],
+      "boring_rival_explanations": [
+        "Variation in segment length across recordings",
+        "Inconsistent labeling accuracy across subjects",
+        "Random sampling variability in conformity score quantile due to limited calibration size"
+      ],
+      "rival_prediction": "Higher subject-specific baseline variability leads to increased empirical coverage (over‑coverage) because the conformity score distribution becomes more spread, raising the quantile.",
+      "distinguishing_condition": "When baseline variability is high, observe whether empirical coverage is above the nominal level (over‑coverage) – if so, the rival explanation is supported; if coverage is below nominal, the proposed mechanism is supported.",
+      "confounder_rival_notes": "Controlling for age, sex, and signal‑to‑noise ratio helps isolate the effect of baseline variability on coverage."
+    },
+    {
+      "hypothesis_id": "H2",
+      "possible_confounders": [
+        "ambient temperature",
+        "subject movement",
+        "battery voltage"
+      ],
+      "control_variables": [
+        "ambient temperature",
+        "subject movement",
+        "battery voltage"
+      ],
+      "boring_rival_explanations": [
+        "Changes in subject physiological state coinciding with sensor drift",
+        "Variations in labeling quality over time",
+        "Gradual drift in algorithm hyperparameters due to software updates"
+      ],
+      "rival_prediction": "Increased electrode impedance or noise variance leads to higher empirical coverage (over‑coverage) because the conformity score quantile shifts upward.",
+      "distinguishing_condition": "During periods of rising impedance, measure whether empirical coverage exceeds the nominal level; excess coverage supports the rival, while reduced coverage supports the proposed mechanism.",
+      "confounder_rival_notes": "Controlling for temperature, movement, and battery voltage isolates the sensor‑drift effect."
+    },
+    {
+      "hypothesis_id": "H3",
+      "possible_confounders": [
+        "time of day",
+        "caffeine intake",
+        "ambient noise"
+      ],
+      "control_variables": [
+        "time of day",
+        "caffeine intake",
+        "ambient noise"
+      ],
+      "boring_rival_explanations": [
+        "Changes in labeling consistency across states",
+        "Variations in signal amplitude unrelated to state",
+        "Fluctuations in calibration set size due to missing data"
+      ],
+      "rival_prediction": "Higher arousal states produce higher empirical coverage (over‑coverage) because the conformity score quantile increases due to larger residuals being trimmed.",
+      "distinguishing_condition": "When subjects are in exercise vs rest, compare empirical coverage; if coverage is above nominal, the rival explanation is favored; if below nominal, the proposed mechanism is favored.",
+      "confounder_rival_notes": "Adjusting for time of day, caffeine, and ambient noise helps isolate the state‑transition effect."
+    },
+    {
+      "hypothesis_id": "H4",
+      "possible_confounders": [
+        "segment length",
+        "sampling rate",
+        "filtering bandwidth"
+      ],
+      "control_variables": [
+        "segment length",
+        "sampling rate",
+        "filtering bandwidth"
+      ],
+      "boring_rival_explanations": [
+        "Variations in signal amplitude causing heteroscedasticity",
+        "Changes in labeling density across segments",
+        "Drifts in model hyperparameters over time"
+      ],
+      "rival_prediction": "Stronger temporal autocorrelation yields higher empirical coverage (over‑coverage) because the conformity score distribution becomes heavier‑tailed, increasing the quantile.",
+      "distinguishing_condition": "During epochs with high lag‑1 autocorrelation, measure whether empirical coverage exceeds the nominal level; excess coverage supports the rival, while reduced coverage supports the proposed mechanism.",
+      "confounder_rival_notes": "Controlling for segment length, sampling rate, and filter bandwidth isolates the autocorrelation effect."
+    },
+    {
+      "hypothesis_id": "H5",
+      "possible_confounders": [
+        "annotator experience",
+        "signal clarity",
+        "event rarity"
+      ],
+      "control_variables": [
+        "annotator experience",
+        "signal clarity",
+        "event rarity"
+      ],
+      "boring_rival_explanations": [
+        "Variations in feature extraction parameters across segments",
+        "Changes in physiological state affecting residuals",
+        "Temporal drift in model performance unrelated to labels"
+      ],
+      "rival_prediction": "Increased label error rate produces higher empirical coverage (over‑coverage) because mislabeled samples generate anomalously small residuals, pulling the conformity score quantile downward.",
+      "distinguishing_condition": "When the proportion of mislabeled annotations rises, check whether empirical coverage moves above the nominal level; an increase indicates the rival explanation, whereas a decrease indicates the proposed mechanism.",
+      "confounder_rival_notes": "Adjusting for annotator experience, signal clarity, and event rarity isolates the impact of label noise."
+    },
+    {
+      "hypothesis_id": "H6",
+      "possible_confounders": [
+        "overall calibration set size",
+        "class imbalance in training data",
+        "signal quality for rare events"
+      ],
+      "control_variables": [
+        "overall calibration set size",
+        "class imbalance in training data",
+        "signal quality for rare events"
+      ],
+      "boring_rival_explanations": [
+        "Variations in feature rarity definitions across segments",
+        "Changes in labeling consistency for common events",
+        "Fluctuations in model confidence due to optimizer stochasticity"
+      ],
+      "rival_prediction": "When rare physiological events are scarce in the calibration set, the empirical coverage for those segments becomes higher than nominal (over‑coverage) because the conformity score quantile shifts downward.",
+      "distinguishing_condition": "For segments containing rare events, compare empirical coverage to the nominal level; coverage above nominal supports the rival, while coverage below nominal supports the proposed mechanism.",
+      "confounder_rival_notes": "Controlling for calibration size, overall class imbalance, and signal quality isolates the rarity effect."
+    },
+    {
+      "hypothesis_id": "H7",
+      "possible_confounders": [
+        "baseline noise level",
+        "filtering cutoff",
+        "subject movement"
+      ],
+      "control_variables": [
+        "baseline noise level",
+        "filtering cutoff",
+        "subject movement"
+      ],
+      "boring_rival_explanations": [
+        "Changes in model architecture across amplitude ranges",
+        "Variations in label density with amplitude",
+        "Temporal shifts in calibration set composition"
+      ],
+      "rival_prediction": "Greater signal amplitude produces higher empirical coverage (over‑coverage) because the conformity score distribution spreads, increasing the quantile used for interval construction.",
+      "distinguishing_condition": "During high‑amplitude epochs, measure whether empirical coverage exceeds the nominal level; excess coverage indicates the rival explanation, while reduced coverage indicates the proposed mechanism.",
+      "confounder_rival_notes": "Adjusting for baseline noise, filter cutoff, and movement helps isolate the heteroscedasticity effect."
+    },
+    {
+      "hypothesis_id": "H8",
+      "possible_confounders": [
+        "subject activity level",
+        "electrode contact quality",
+        "recording duration"
+      ],
+      "control_variables": [
+        "subject activity level",
+        "electrode contact quality",
+        "recording duration"
+      ],
+      "boring_rival_explanations": [
+        "Variations in signal amplitude unrelated to artifacts",
+        "Changes in labeling consistency across artifact periods",
+        "Fluctuations in model hyperparameters due to batch normalization"
+      ],
+      "rival_prediction": "Increased motion or muscle artifact rate leads to lower empirical coverage (under‑coverage) because extreme residuals are trimmed or receive low weight, pulling the conformity score quantile downward.",
+      "distinguishing_condition": "When artifact occurrence rises, check whether empirical coverage falls below the nominal level; a decrease supports the rival, while an increase supports the proposed mechanism.",
+      "confounder_rival_notes": "Controlling for activity level, electrode contact, and recording duration isolates the artifact effect."
+    },
+    {
+      "hypothesis_id": "H9",
+      "possible_confounders": [
+        "subject demographics",
+        "signal condition",
+        "experimenter"
+      ],
+      "control_variables": [
+        "subject demographics",
+        "signal condition",
+        "experimenter"
+      ],
+      "boring_rival_explanations": [
+        "Variations in physiological state across protocol changes",
+        "Differences in labeling quality between protocols",
+        "Temporal drift in model performance unrelated to protocol"
+      ],
+      "rival_prediction": "Adopting a lower sampling rate or stronger low‑pass filter yields higher empirical coverage (over‑coverage) because the conformity score distribution becomes narrower, decreasing the quantile.",
+      "distinguishing_condition": "When recordings are down‑sampled or more heavily filtered, measure whether empirical coverage exceeds the nominal level; excess coverage indicates the rival explanation, while a deficit indicates the proposed mechanism.",
+      "confounder_rival_notes": "Adjusting for subject demographics, signal condition, and experimenter helps isolate the protocol‑shift effect."
+    },
+    {
+      "hypothesis_id": "H10",
+      "possible_confounders": [
+        "latency of feedback loop",
+        "baseline signal stability",
+        "adaptive filter type"
+      ],
+      "control_variables": [
+        "latency of feedback loop",
+        "baseline signal stability",
+        "adaptive filter type"
+      ],
+      "boring_rival_explanations": [
+        "Variations in external noise unrelated to feedback",
+        "Changes in subject state coinciding with feedback activation",
+        "Drifts in calibration set due to data accumulation"
+      ],
+      "rival_prediction": "Strong feedback influence (high adaptive‑filter coefficient) results in higher empirical coverage (over‑coverage) because the model’s action suppresses signal variability, tightening the conformity score distribution.",
+      "distinguishing_condition": "During periods of high feedback gain, check whether empirical coverage is above the nominal level; excess coverage supports the rival, while reduced coverage supports the proposed mechanism.",
+      "confounder_rival_notes": "Controlling for loop latency, baseline stability, and filter type isolates the feedback effect."
+    }
+  ]
+}

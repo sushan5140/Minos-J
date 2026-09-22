@@ -1,0 +1,1070 @@
+{
+  "experiment_name": "Meno-J Experiment 7: v4 Architecture Upgrade and Ablation",
+  "version": "v4_mechanism_confounder_testability",
+  "research_question": "Why might conformal prediction fail to maintain stable coverage across different physiological signal segments?",
+  "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "stage_4_hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Inter-subject physiological heterogeneity violates the exchangeability assumption required for marginal coverage guarantees.",
+      "proposed_mechanism": "Conformal prediction assumes data points are exchangeable, but physiological signals exhibit subject-specific autonomic tone, vascular compliance, and electrode-skin impedance that create non-identical conditional distributions across individuals, causing coverage to degrade when calibration and test subjects differ.",
+      "core_assumption": "Subject-level covariates (age, BMI, medication, pathology) induce distributional shifts large enough to break finite-sample exchangeability between calibration and deployment populations.",
+      "knowledge_gap_addressed": "Quantifying the minimum calibration set size per subject stratum needed to recover nominal coverage under realistic physiological heterogeneity.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Non-stationary sensor noise and motion artifacts create time-varying conditional coverage that marginal conformal methods cannot capture.",
+      "proposed_mechanism": "Wearable sensors exhibit state-dependent noise (e.g., motion artifacts during activity, electrode detachment during sleep) that correlates with the physiological state being predicted, inducing heteroscedastic prediction errors that violate the homoscedasticity implicit in standard conformal scores.",
+      "core_assumption": "Artifact magnitude and spectral characteristics are predictable from auxiliary sensor streams (accelerometry, impedance) but are ignored by the conformal score function.",
+      "knowledge_gap_addressed": "Whether adaptive conformal scores conditioned on real-time signal quality indices can restore conditional coverage without excessive interval inflation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Circadian and ultradian rhythms induce periodic non-stationarity in physiological signal distributions that violates the i.i.d. assumption across temporal segments.",
+      "proposed_mechanism": "Autonomic regulation follows ~24-hour circadian and ~90-minute ultradian cycles, causing systematic shifts in heart rate variability, blood pressure, and respiratory sinus arrhythmia that make morning calibration sets non-exchangeable with nocturnal test segments.",
+      "core_assumption": "Phase of circadian/ultradian cycle is a latent variable that modulates both the signal distribution and the prediction error distribution, but is unobserved in standard conformal calibration.",
+      "knowledge_gap_addressed": "Whether time-stratified or phase-aware conformal calibration can maintain coverage across sleep-wake transitions without requiring impractical per-phase calibration data.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Ground truth label noise from intermittent reference measurements creates miscalibrated nonconformity scores that propagate coverage failures.",
+      "proposed_mechanism": "Reference standards (e.g., cuff BP, arterial line) are sampled sparsely and asynchronously relative to continuous wearable signals, introducing label noise that correlates with physiological state (e.g., cuff measurements triggered by clinical concern), biasing the empirical quantile estimation in conformal prediction.",
+      "core_assumption": "Label noise is heteroscedastic and state-dependent rather than homoscedastic and independent, violating the assumption that nonconformity scores reflect only model error.",
+      "knowledge_gap_addressed": "Characterizing the bias-variance tradeoff in conformal quantile estimation under asynchronous, state-dependent label noise typical of physiological monitoring.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Pathological subpopulations (e.g., heart failure, sepsis, atrial fibrillation) exhibit fundamentally different error distributions that are masked by marginal coverage averaging.",
+      "proposed_mechanism": "Conformal prediction's marginal coverage guarantee averages over all subpopulations, but pathological states may have systematically higher prediction errors due to altered physiology (e.g., reduced HRV in heart failure), causing dangerous under-coverage precisely for high-risk patients.",
+      "core_assumption": "Disease state is a strong effect modifier of the prediction error distribution, but disease labels are unavailable or unreliable at deployment time for stratification.",
+      "knowledge_gap_addressed": "Whether latent subpopulation discovery via clustering of residuals can enable group-conditional conformal prediction without explicit clinical labels.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Temporal autocorrelation in physiological signals induces effective sample size reduction that invalidates finite-sample coverage guarantees.",
+      "proposed_mechanism": "Physiological time series exhibit strong autocorrelation (e.g., HRV AR(1) coefficients >0.8), meaning calibration sets of nominal size n have effective sample size n_eff << n, causing the empirical quantile to have higher variance than assumed by conformal theory.",
+      "core_assumption": "Standard conformal prediction's finite-sample coverage bound assumes exchangeability, which implies no temporal structure, but physiological signals violate this even after differencing or detrending.",
+      "knowledge_gap_addressed": "Deriving corrected conformal quantile estimators that account for known autocorrelation structure in physiological time series.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Concept drift in the signal-to-label mapping occurs due to physiological adaptation (e.g., vascular remodeling, medication titration) that is not captured by static model retraining schedules.",
+      "proposed_mechanism": "The conditional distribution P(Y|X) shifts gradually as patients' physiology adapts (e.g., beta-blocker up-titration reduces HR, vascular stiffening alters pulse wave velocity), but conformal calibration sets are typically fixed or updated on rigid schedules, creating a growing mismatch between calibration and deployment distributions.",
+      "core_assumption": "The rate of physiological concept drift exceeds the recalibration frequency, and drift magnitude correlates with clinical trajectory (worsening patients drift faster).",
+      "knowledge_gap_addressed": "Designing drift-aware conformal prediction that triggers recalibration based on detected distributional shifts in residuals rather than fixed time intervals.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Multimodal sensor fusion creates hidden stratification where coverage fails for specific sensor modality combinations.",
+      "proposed_mechanism": "When PPG, ECG, and accelerometry are fused, certain modality dropouts (e.g., PPG loss during vasoconstriction, ECG noise during electrosurgery) create distinct error regimes. Marginal conformal prediction averages over these regimes, yielding nominal overall coverage but near-zero coverage during critical modality-loss events.",
+      "core_assumption": "Sensor availability patterns are non-random and clinically meaningful (e.g., PPG failure indicates peripheral hypoperfusion), but the conformal score function does not condition on modality presence/absence.",
+      "knowledge_gap_addressed": "Developing modality-aware conformal scores that maintain conditional coverage given the active sensor subset at prediction time.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "The choice of nonconformity score function interacts with physiological signal skewness to produce asymmetric coverage errors across signal segments.",
+      "proposed_mechanism": "Physiological signals (e.g., BP, ICP) often have skewed, heavy-tailed distributions. Standard absolute residual scores |y - ŷ| produce intervals that are too narrow in the heavy tail and too wide in the bulk, causing segment-dependent under/over-coverage that correlates with physiological state (e.g., hypertensive crisis vs. normotension).",
+      "core_assumption": "The optimal nonconformity score for physiological data should be distribution-aware (e.g., quantile-based, normalized by local scale), but current practice uses generic scores developed for symmetric errors.",
+      "knowledge_gap_addressed": "Whether learned or adaptive nonconformity scores (e.g., via quantile regression forests) can achieve uniform conditional coverage across physiological regimes without overfitting.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Stratification by clinical context (ICU vs. ward vs. home) creates distribution shifts that marginal conformal prediction cannot resolve without context labels.",
+      "proposed_mechanism": "The same physiological signal pattern may map to different clinical outcomes depending on context (e.g., tachycardia in sepsis vs. post-operative pain vs. exercise), but context labels are often missing or coarse-grained at deployment, causing the conformal predictor to average over fundamentally different conditional distributions.",
+      "core_assumption": "Clinical context is a strong confounder of the X→Y relationship that is systematically unobserved or mislabeled in real-world deployment, violating the assumption that calibration and test data share the same conditional distribution.",
+      "knowledge_gap_addressed": "Whether context-invariant representation learning combined with conformal prediction can recover stable coverage across care settings without explicit context labels.",
+      "status": "SPECULATIVE"
+    }
+  ],
+  "stage_4_1_mechanism_builder": [
+    {
+      "hypothesis_id": "H1",
+      "mechanism_variables": [
+        "subject_age",
+        "subject_BMI",
+        "medication_class",
+        "pathology_label",
+        "autonomic_tone_index",
+        "vascular_compliance_index",
+        "electrode_skin_impedance"
+      ],
+      "causal_path": "Subject-level covariates (age, BMI, medication, pathology) → induce non-identical conditional distributions of physiological signals across individuals → calibration set from one subject stratum fails to represent test subject stratum → exchangeability assumption violated → marginal coverage guarantee fails",
+      "expected_direction": "Increased inter-subject heterogeneity (measured by covariate distance) leads to decreased empirical coverage on test subjects relative to nominal level",
+      "domain_specific_boundary_conditions": [
+        "Calibration and test subjects differ in age >10 years, BMI >5 kg/m², or medication class",
+        "Calibration set size per stratum <30",
+        "Signal segment duration <5 minutes"
+      ],
+      "measurable_outcomes": [
+        "Empirical coverage probability per subject stratum",
+        "Conditional coverage given covariate bins",
+        "Interval width inflation factor",
+        "Effective sample size per stratum"
+      ],
+      "mechanism_builder_notes": "The mechanism is strongest when calibration data lacks representation of test subject covariates; finite-sample exchangeability breaks when covariate shift exceeds a threshold quantifiable via Wasserstein distance between subject-level feature distributions."
+    },
+    {
+      "hypothesis_id": "H2",
+      "mechanism_variables": [
+        "accelerometer_magnitude",
+        "electrode_impedance",
+        "signal_quality_index",
+        "motion_artifact_amplitude",
+        "prediction_error_variance",
+        "physiological_state"
+      ],
+      "causal_path": "Physiological state (activity) → increases motion artifacts and electrode impedance changes → induces heteroscedastic prediction errors (error variance correlates with signal quality) → standard conformal scores assume homoscedasticity → marginal quantile underestimates tail errors during high-artifact segments → conditional coverage drops during motion",
+      "expected_direction": "Higher accelerometer magnitude and lower signal quality index lead to larger prediction error variance and lower conditional coverage",
+      "domain_specific_boundary_conditions": [
+        "Motion artifact amplitude >20% of signal amplitude",
+        "Signal quality index <0.7",
+        "Calibration set lacks high-artifact segments",
+        "Conformal score function does not condition on signal quality"
+      ],
+      "measurable_outcomes": [
+        "Conditional coverage given signal quality index bins",
+        "Prediction error variance as function of accelerometer magnitude",
+        "Interval width vs. signal quality",
+        "Coverage drop during artifact episodes"
+      ],
+      "mechanism_builder_notes": "Adaptive scores using real-time signal quality indices (e.g., normalized residuals by estimated noise standard deviation) can restore conditional coverage if noise model is well-calibrated."
+    },
+    {
+      "hypothesis_id": "H3",
+      "mechanism_variables": [
+        "circadian_phase",
+        "ultradian_phase",
+        "heart_rate_variability_rmssd",
+        "blood_pressure_mean",
+        "respiratory_sinus_arrhythmia_amplitude",
+        "time_of_day",
+        "sleep_stage"
+      ],
+      "causal_path": "Circadian/ultradian phase → modulates autonomic tone → shifts distribution of HRV, BP, RSA → prediction error distribution shifts with phase → calibration set from one phase (e.g., morning) non-exchangeable with test phase (e.g., nocturnal) → marginal coverage fails at phase transitions",
+      "expected_direction": "Coverage decreases when calibration and test segments differ in circadian phase >π/2 radians (6 hours) or ultradian phase >π/2; coverage lowest during sleep-wake transitions",
+      "domain_specific_boundary_conditions": [
+        "Calibration data collected only during daytime",
+        "Test segments include sleep",
+        "No phase labels in calibration",
+        "Segment length <90 minutes (ultradian cycle)"
+      ],
+      "measurable_outcomes": [
+        "Conditional coverage per circadian phase bin",
+        "Coverage at sleep-wake transitions vs. stable sleep",
+        "Interval width variation across 24h",
+        "Phase prediction error correlation"
+      ],
+      "mechanism_builder_notes": "Time-stratified calibration (e.g., separate quantiles per 4-hour block) or phase-aware scores (including time-of-day as feature) can mitigate if sufficient per-phase data exists."
+    },
+    {
+      "hypothesis_id": "H4",
+      "mechanism_variables": [
+        "reference_measurement_interval",
+        "label_noise_std",
+        "asynchrony_delay",
+        "clinical_concern_flag",
+        "prediction_error",
+        "nonconformity_score"
+      ],
+      "causal_path": "Sparse asynchronous reference measurements → label noise correlated with clinical concern (e.g., cuff triggered by alarm) → nonconformity scores biased upward during high-concern states → empirical quantile overestimates typical error → intervals too wide during routine states, but label noise heteroscedasticity causes under-coverage during high-concern states if noise distribution skewed",
+      "expected_direction": "Higher label noise variance and stronger state-dependence (correlation between clinical_concern_flag and label noise) lead to larger bias in empirical quantile and worse conditional coverage",
+      "domain_specific_boundary_conditions": [
+        "Reference interval >30 minutes",
+        "Asynchrony >60 seconds",
+        "Clinical concern triggers >20% of references",
+        "Label noise distribution skewed (e.g., heavy-tailed)"
+      ],
+      "measurable_outcomes": [
+        "Bias of empirical quantile vs. true quantile",
+        "Conditional coverage given clinical concern flag",
+        "Interval width vs. reference interval",
+        "Coverage under simulated label noise"
+      ],
+      "mechanism_builder_notes": "Modeling label noise as heteroscedastic (e.g., via replicate measurements) and using noise-aware nonconformity scores can reduce bias."
+    },
+    {
+      "hypothesis_id": "H5",
+      "mechanism_variables": [
+        "disease_label",
+        "prediction_error",
+        "residual_cluster_id",
+        "subpopulation_prevalence",
+        "conditional_coverage_per_cluster"
+      ],
+      "causal_path": "Disease state alters physiology (e.g., reduced HRV in HF) → increases prediction error variance for that subpopulation → marginal conformal averages over subpopulations → nominal coverage achieved overall but conditional coverage for high-risk subpopulation far below nominal → dangerous under-coverage for those needing it most",
+      "expected_direction": "Subpopulations with higher prediction error variance (e.g., HF, sepsis) have lower conditional coverage; severity of under-coverage correlates with disease severity score",
+      "domain_specific_boundary_conditions": [
+        "Disease prevalence <10% in calibration",
+        "Disease labels unavailable at deployment",
+        "Prediction error variance ratio between subpopulations >2"
+      ],
+      "measurable_outcomes": [
+        "Conditional coverage per disease label (if known)",
+        "Conditional coverage per residual cluster",
+        "Worst-case subpopulation coverage",
+        "Interval width inflation needed to achieve group-conditional coverage"
+      ],
+      "mechanism_builder_notes": "Latent clustering of residuals (e.g., Gaussian mixture on residuals) can identify high-error regimes; group-conditional conformal on clusters can improve worst-case coverage."
+    },
+    {
+      "hypothesis_id": "H6",
+      "mechanism_variables": [
+        "autocorrelation_coefficient",
+        "effective_sample_size",
+        "nominal_calibration_size",
+        "empirical_quantile_variance",
+        "coverage_probability"
+      ],
+      "causal_path": "Strong autocorrelation in physiological time series (phi >0.8) → reduces effective sample size n_eff = n * (1-phi)/(1+phi) → empirical quantile variance inflated by factor n/n_eff → finite-sample coverage guarantee (which assumes n_eff = n) becomes anti-conservative → actual coverage below nominal",
+      "expected_direction": "Higher autocorrelation (phi) leads to lower effective sample size, higher quantile variance, and lower empirical coverage for fixed nominal n",
+      "domain_specific_boundary_conditions": [
+        "AR1 coefficient >0.7",
+        "Calibration segment length <1000 samples",
+        "No decorrelation (e.g., block bootstrap) applied",
+        "Conformal method uses standard i.i.d. quantile"
+      ],
+      "measurable_outcomes": [
+        "Effective sample size estimated via autocorrelation",
+        "Empirical coverage vs. nominal across phi values",
+        "Quantile variance vs. theoretical i.i.d. variance",
+        "Coverage after block bootstrap correction"
+      ],
+      "mechanism_builder_notes": "Corrected quantile estimators using block bootstrap or autoregressive model-based effective sample size can restore coverage."
+    },
+    {
+      "hypothesis_id": "H7",
+      "mechanism_variables": [
+        "days_since_calibration",
+        "medication_dose_change",
+        "vascular_stiffness_index",
+        "heart_rate_trend",
+        "prediction_error_drift",
+        "recalibration_trigger_threshold"
+      ],
+      "causal_path": "Physiological adaptation (medication titration, vascular remodeling) → gradual shift in P(Y|X) → prediction error distribution drifts → fixed calibration set becomes outdated → coverage degrades over time until recalibration → drift rate correlates with clinical trajectory (worsening patients drift faster)",
+      "expected_direction": "Coverage decreases monotonically with days since calibration; slope of coverage decline steeper for patients with medication changes or worsening clinical scores",
+      "domain_specific_boundary_conditions": [
+        "Recalibration interval >7 days",
+        "Medication dose change >20%",
+        "Clinical deterioration (e.g., SOFA increase >2)",
+        "Drift magnitude >0.5 mmHg/day"
+      ],
+      "measurable_outcomes": [
+        "Coverage as function of days since calibration",
+        "Drift detection delay using residual distribution tests",
+        "Coverage after drift-triggered recalibration vs. fixed schedule"
+      ],
+      "mechanism_builder_notes": "Drift-aware conformal using sequential tests on residuals (e.g., KS test, CUSUM) can trigger recalibration adaptively."
+    },
+    {
+      "hypothesis_id": "H8",
+      "mechanism_variables": [
+        "active_modality_set",
+        "modality_dropout_indicator",
+        "perfusion_index",
+        "error_regime_label",
+        "conditional_coverage_per_modality_set"
+      ],
+      "causal_path": "Clinical state (e.g., hypoperfusion) → causes modality dropout (PPG loss) → creates distinct error regime with higher prediction error → marginal conformal averages over regimes → overall coverage nominal but coverage during dropout near zero → critical failures when sensor loss indicates clinical deterioration",
+      "expected_direction": "Coverage conditional on modality dropout (e.g., PPG missing) significantly lower than nominal; dropout probability correlates with clinical severity",
+      "domain_specific_boundary_conditions": [
+        "PPG dropout rate >5% during hypoperfusion",
+        "ECG noise during electrosurgery >50 µV",
+        "Conformal score does not include modality presence features"
+      ],
+      "measurable_outcomes": [
+        "Conditional coverage per active modality combination",
+        "Interval width per modality set",
+        "Dropout detection latency",
+        "Coverage after modality-aware score adaptation"
+      ],
+      "mechanism_builder_notes": "Modality-aware nonconformity scores (e.g., separate quantiles per modality subset) can maintain conditional coverage if dropout regimes are identifiable."
+    },
+    {
+      "hypothesis_id": "H9",
+      "mechanism_variables": [
+        "signal_skewness",
+        "heavy_tail_index",
+        "nonconformity_score_type",
+        "conditional_coverage_per_quantile_bin",
+        "interval_asymmetry_ratio"
+      ],
+      "causal_path": "Physiological signal distribution skewed/heavy-tailed → absolute residual score produces symmetric intervals → intervals too narrow in heavy tail (under-coverage during extremes) and too wide in bulk (over-coverage) → coverage varies systematically with signal magnitude (e.g., hypertensive crisis under-covered)",
+      "expected_direction": "For skewed signals, absolute residual score yields lower coverage in high-magnitude tail quantiles (e.g., top 10%) and higher coverage in central quantiles; distribution-aware scores (e.g., quantile regression) equalize conditional coverage across quantiles",
+      "domain_specific_boundary_conditions": [
+        "Signal skewness >1.0 or kurtosis >5",
+        "Calibration set size <500",
+        "Nonconformity score not adapted to distribution"
+      ],
+      "measurable_outcomes": [
+        "Conditional coverage per decile of predicted value",
+        "Interval width ratio (upper/lower)",
+        "Coverage improvement with quantile-based scores",
+        "Calibration of prediction intervals via PIT histogram"
+      ],
+      "mechanism_builder_notes": "Learned nonconformity scores (e.g., via quantile regression forests) can adapt to local scale and skewness but require sufficient data to avoid overfitting."
+    },
+    {
+      "hypothesis_id": "H10",
+      "mechanism_variables": [
+        "clinical_context_label",
+        "context_confounder_strength",
+        "context_missing_rate",
+        "prediction_error_by_context",
+        "conditional_coverage_per_context"
+      ],
+      "causal_path": "Clinical context (ICU vs. ward vs. home) confounds X→Y relationship (same tachycardia means different things) → context labels missing at deployment → conformal predictor averages over contexts → marginal coverage nominal but conditional coverage per context varies widely → dangerous under-coverage in high-stakes contexts (ICU)",
+      "expected_direction": "Coverage conditional on ICU context lower than ward/home if calibration dominated by ward data; coverage gap increases with context confounder strength and missingness",
+      "domain_specific_boundary_conditions": [
+        "Context label missing rate >30%",
+        "Calibration data from single context (e.g., only ward)",
+        "Outcome distribution differs significantly across contexts (e.g., BP mean shift >10 mmHg)"
+      ],
+      "measurable_outcomes": [
+        "Conditional coverage per context (if labels available)",
+        "Worst-case context coverage",
+        "Coverage after context-invariant representation learning",
+        "Interval width per context"
+      ],
+      "mechanism_builder_notes": "Context-invariant representation learning (e.g., domain adversarial training) combined with conformal prediction can recover stable coverage if context-invariant features exist."
+    }
+  ],
+  "stage_4_2_confounder_rival_builder": [
+    {
+      "hypothesis_id": "H1",
+      "possible_confounders": [
+        "unmeasured genetic factors",
+        "environmental exposures (e.g., altitude, temperature)",
+        "data acquisition site differences (device model, electrode type)",
+        "comorbidity burden not captured by pathology_label"
+      ],
+      "control_variables": [
+        "subject_age",
+        "subject_BMI",
+        "medication_class",
+        "pathology_label",
+        "site_id",
+        "device_model",
+        "electrode_type"
+      ],
+      "boring_rival_explanations": [
+        "Coverage failure is driven by insufficient calibration sample size per subject rather than fundamental distributional heterogeneity; increasing n per subject restores coverage without stratification.",
+        "Model misspecification (e.g., linear predictor for nonlinear physiology) correlates with subject covariates, creating apparent heterogeneity that is actually a modeling artifact."
+      ],
+      "rival_prediction": "If the rival (insufficient per-subject sample size) is true, then pooling calibration data across subjects and simply increasing the number of calibration samples per test subject will restore nominal coverage, even without covariate stratification.",
+      "distinguishing_condition": "Compare empirical coverage when (a) calibration size per subject is increased 5x with pooled data vs. (b) stratified calibration with same total samples but balanced across covariate bins. If (a) restores coverage, rival wins; if (b) is required, proposed mechanism wins.",
+      "confounder_rival_notes": "Site and device confounders can mimic inter-subject heterogeneity; controlling for them isolates true physiological variation. Genetic and environmental confounders are typically unmeasured but can be partially proxied by ancestry PCs and geolocation."
+    },
+    {
+      "hypothesis_id": "H2",
+      "possible_confounders": [
+        "sensor type and placement variability",
+        "skin condition (hydration, hair, scars)",
+        "ambient temperature affecting electrode impedance",
+        "wireless transmission artifacts"
+      ],
+      "control_variables": [
+        "accelerometer_magnitude",
+        "electrode_impedance",
+        "signal_quality_index",
+        "activity_label",
+        "sensor_type",
+        "placement_site"
+      ],
+      "boring_rival_explanations": [
+        "Coverage drops during motion because the underlying physiological state (e.g., heart rate, blood pressure) changes rapidly and the predictor is not trained on those states, not because of sensor noise.",
+        "The conformal score function assumes Gaussian noise but motion artifacts produce heavy-tailed errors; a robust score (e.g., Huberized residuals) would fix coverage without explicit signal quality conditioning."
+      ],
+      "rival_prediction": "If the rival (physiological state change) is true, then conditioning on the true physiological state (e.g., heart rate bins) will equalize conditional coverage across activity levels, even without signal quality indices.",
+      "distinguishing_condition": "Stratify test segments by both signal quality index (SQI) and physiological state (e.g., HR bins). If coverage equalizes within SQI bins but not within HR bins, proposed mechanism wins; if coverage equalizes within HR bins but not SQI bins, rival wins.",
+      "confounder_rival_notes": "Sensor type and skin condition affect both artifact magnitude and signal quality indices; controlling for them prevents misattribution. Wireless artifacts can correlate with motion but have different spectral signatures."
+    },
+    {
+      "hypothesis_id": "H3",
+      "possible_confounders": [
+        "sleep disorders (apnea, insomnia)",
+        "shift work or irregular schedules",
+        "medication timing (e.g., beta-blockers at night)",
+        "light exposure and melatonin suppression"
+      ],
+      "control_variables": [
+        "time_of_day",
+        "sleep_stage",
+        "circadian_phase_estimate",
+        "ultradian_phase_estimate",
+        "melatonin_level",
+        "core_body_temperature"
+      ],
+      "boring_rival_explanations": [
+        "Coverage fails at night because calibration data lacks nighttime examples (sample selection bias), not because of inherent circadian non-stationarity; adding night data fixes it.",
+        "Nighttime coverage drop is due to different noise characteristics (less motion, different electrode contact) rather than shifts in the physiological signal distribution itself."
+      ],
+      "rival_prediction": "If the rival (sample selection bias) is true, then augmenting the calibration set with nighttime segments will restore uniform coverage across phases without requiring phase-aware nonconformity scores.",
+      "distinguishing_condition": "Train conformal predictor on combined day+night calibration data (matched sample sizes per phase) and evaluate conditional coverage per circadian phase bin. If coverage equalizes, rival wins; if coverage still varies by phase, proposed mechanism wins.",
+      "confounder_rival_notes": "Shift workers and sleep disorder patients have shifted or fragmented circadian phases; controlling for schedule and diagnosed disorders isolates endogenous rhythm effects. Medication timing can phase-shift autonomic rhythms."
+    },
+    {
+      "hypothesis_id": "H4",
+      "possible_confounders": [
+        "reference device calibration drift",
+        "clinician bias in triggering measurements (e.g., only when values look abnormal)",
+        "patient movement during reference measurement",
+        "different reference devices (cuff vs. arterial line)"
+      ],
+      "control_variables": [
+        "reference_measurement_interval",
+        "asynchrony_delay",
+        "clinical_concern_flag",
+        "reference_device_type",
+        "patient_movement_during_reference"
+      ],
+      "boring_rival_explanations": [
+        "Coverage failure is due to heteroscedastic model error (larger errors during extreme physiological states), not label noise; a heteroscedastic conformal score would fix it.",
+        "Asynchronous references introduce a systematic time-lag bias (predicting current state from past reference), not random label noise; aligning timestamps would fix it."
+      ],
+      "rival_prediction": "If the rival (model heteroscedasticity) is true, then using a variance-normalized nonconformity score (e.g., residual divided by predicted standard deviation) will restore conditional coverage even with noisy, asynchronous labels.",
+      "distinguishing_condition": "Simulate label noise with known heteroscedasticity and state-dependence on top of a perfectly calibrated predictor. Compare coverage of (a) standard absolute residual score, (b) variance-normalized score, (c) label-noise-aware score. If (c) uniquely restores coverage, proposed mechanism wins.",
+      "confounder_rival_notes": "Reference device drift and clinician triggering bias create label noise that correlates with the true state; controlling for device type and concern flag isolates the noise mechanism. Movement during reference adds extra variance."
+    },
+    {
+      "hypothesis_id": "H5",
+      "possible_confounders": [
+        "comorbidity burden (e.g., diabetes + heart failure)",
+        "disease severity within label (e.g., NYHA class)",
+        "concurrent treatments (e.g., vasopressors, dialysis)",
+        "demographic factors correlated with disease (age, sex)"
+      ],
+      "control_variables": [
+        "disease_label",
+        "severity_score",
+        "medication_list",
+        "comorbidity_index",
+        "residual_cluster_id",
+        "age",
+        "sex"
+      ],
+      "boring_rival_explanations": [
+        "Under-coverage in pathological subpopulations is due to their underrepresentation in the calibration set (small n), not fundamentally different error distributions; oversampling would fix it.",
+        "The predictor is misspecified for pathological physiology (e.g., linear model for nonlinear dynamics in heart failure), causing larger errors that are a modeling problem, not a conformal problem."
+      ],
+      "rival_prediction": "If the rival (underrepresentation) is true, then balancing the calibration set across subpopulations (e.g., via oversampling or stratified sampling) will equalize conditional coverage without needing group-conditional conformal prediction.",
+      "distinguishing_condition": "Compare conditional coverage for high-risk subpopulation when (a) calibration is balanced 1:1 across subpopulations using standard marginal conformal vs. (b) calibration is imbalanced but group-conditional conformal is applied. If (a) equalizes coverage, rival wins; if (b) is needed, proposed mechanism wins.",
+      "confounder_rival_notes": "Comorbidities and severity create gradients within disease labels; controlling for severity scores and comorbidity indices refines subpopulation definition. Treatment effects (e.g., vasopressors) can acutely alter physiology and error distributions."
+    },
+    {
+      "hypothesis_id": "H6",
+      "possible_confounders": [
+        "signal preprocessing (filtering, downsampling) altering autocorrelation",
+        "non-stationarity in mean/variance within calibration segment",
+        "sampling rate variability across devices",
+        "missing data imputation inducing artificial correlation"
+      ],
+      "control_variables": [
+        "autocorrelation_coefficient",
+        "segment_length",
+        "sampling_rate",
+        "filter_parameters",
+        "missing_data_rate"
+      ],
+      "boring_rival_explanations": [
+        "Coverage failure is due to non-stationarity (changing mean/variance) within the calibration segment, not autocorrelation per se; using shorter stationary segments would fix it.",
+        "The conformal quantile estimator is biased for small samples regardless of autocorrelation; the finite-sample correction is simply inadequate for n<100."
+      ],
+      "rival_prediction": "If the rival (non-stationarity) is true, then applying standard conformal prediction to shorter, verified-stationary segments (e.g., 5-min windows) will achieve nominal coverage without any autocorrelation correction.",
+      "distinguishing_condition": "Generate stationary AR(1) physiological surrogates with known phi (0.2 to 0.9) and fixed n. Compare coverage of (a) standard conformal, (b) block bootstrap conformal, (c) standard conformal on shorter stationary segments. If (b) restores coverage across all phi while (a) and (c) fail at high phi, proposed mechanism wins.",
+      "confounder_rival_notes": "Preprocessing filters can reduce but not eliminate physiological autocorrelation; controlling for filter parameters ensures fair comparison. Non-stationarity and autocorrelation often co-occur; segmenting by stationarity tests (e.g., KPSS) separates them."
+    },
+    {
+      "hypothesis_id": "H7",
+      "possible_confounders": [
+        "sensor degradation (electrode drying, optical coupling loss)",
+        "changes in measurement protocol or device firmware",
+        "acute illness events (sepsis, hemorrhage) causing abrupt shifts",
+        "patient adherence to medication regimen"
+      ],
+      "control_variables": [
+        "days_since_calibration",
+        "medication_dose_change",
+        "vascular_stiffness_index",
+        "heart_rate_trend",
+        "clinical_deterioration_score",
+        "sensor_age_days"
+      ],
+      "boring_rival_explanations": [
+        "Coverage degradation over time is due to sensor degradation (e.g., electrode impedance drift, PPG optical coupling loss), not physiological adaptation; replacing sensors restores coverage.",
+        "The drift is a general concept drift (e.g., new medications introduced, protocol changes) not specific to gradual physiological adaptation; any drift detection method would work."
+      ],
+      "rival_prediction": "If the rival (sensor degradation) is true, then recalibrating with a fresh sensor on the same patient (same physiological state) will restore coverage, whereas recalibrating with the same sensor after a medication change will not.",
+      "distinguishing_condition": "In a cohort with scheduled sensor replacements, compare coverage before/after sensor replacement (same physiology) vs. before/after medication titration (same sensor). If coverage drops only after medication change, proposed mechanism wins; if drops after sensor replacement, rival wins.",
+      "confounder_rival_notes": "Sensor age and clinical deterioration scores help disentangle sensor vs. physiological drift. Acute events cause abrupt shifts distinct from gradual adaptation; controlling for deterioration score isolates gradual drift."
+    },
+    {
+      "hypothesis_id": "H8",
+      "possible_confounders": [
+        "sensor quality differences across patients (e.g., PPG signal strength varies with skin tone)",
+        "patient-specific sensor fit (e.g., chest strap tightness)",
+        "environmental electromagnetic interference (e.g., electrosurgery, MRI)",
+        "clinical interventions causing modality loss (e.g., vasopressors causing PPG loss)"
+      ],
+      "control_variables": [
+        "active_modality_set",
+        "modality_dropout_indicator",
+        "perfusion_index",
+        "signal_quality_per_modality",
+        "clinical_severity_score",
+        "interference_flag"
+      ],
+      "boring_rival_explanations": [
+        "Coverage fails during modality dropout because the predictor relies on that modality and its predictions degrade (model problem), not because of a distinct error regime requiring separate conformal calibration.",
+        "The conformal score is not adapted to the reduced feature set during dropout, causing miscalibration; retraining the predictor on dropout data would fix it without modality-aware conformal scores."
+      ],
+      "rival_prediction": "If the rival (model degradation) is true, then training separate predictors for each modality subset and applying standard conformal prediction per subset will equalize conditional coverage across modality combinations.",
+      "distinguishing_condition": "Train modality-specific predictors (e.g., PPG+ECG, ECG-only, PPG-only) and evaluate conditional coverage per active modality set using marginal conformal per predictor. If coverage equalizes, rival wins; if coverage still varies and requires modality-aware nonconformity scores, proposed mechanism wins.",
+      "confounder_rival_notes": "Perfusion index and interference flags distinguish physiological dropout (clinically meaningful) from technical dropout. Skin tone and sensor fit affect baseline modality quality; controlling for them prevents confounding of dropout effects."
+    },
+    {
+      "hypothesis_id": "H9",
+      "possible_confounders": [
+        "signal preprocessing (log transform, winsorization) altering skewness",
+        "outlier removal during calibration biasing tail quantiles",
+        "distribution estimation error in learned nonconformity scores",
+        "heteroscedasticity correlated with signal magnitude"
+      ],
+      "control_variables": [
+        "signal_skewness",
+        "heavy_tail_index",
+        "nonconformity_score_type",
+        "calibration_set_size",
+        "preprocessing_pipeline"
+      ],
+      "boring_rival_explanations": [
+        "Asymmetric coverage is due to systematic prediction bias (under/over-prediction) in certain signal ranges, not the conformal score; recalibrating the predictor (e.g., isotonic regression) would equalize coverage.",
+        "The calibration set has insufficient samples in the distribution tails, causing quantile estimation error; increasing calibration size or using parametric tail extrapolation would fix it."
+      ],
+      "rival_prediction": "If the rival (predictor bias) is true, then applying a post-hoc predictor recalibration (e.g., quantile mapping) to remove bias will equalize conditional coverage across signal magnitude bins when using the standard absolute residual score.",
+      "distinguishing_condition": "Use an oracle predictor that outputs true conditional quantiles (eliminating predictor bias) on skewed physiological data. Compare conditional coverage per decile of true value for (a) absolute residual score vs. (b) quantile-based score. If (b) equalizes coverage while (a) does not, proposed mechanism wins.",
+      "confounder_rival_notes": "Preprocessing can artificially reduce skewness; controlling for pipeline ensures the mechanism is tested on raw-like distributions. Outlier removal biases tail quantiles; winsorization thresholds must be reported."
+    },
+    {
+      "hypothesis_id": "H10",
+      "possible_confounders": [
+        "patient acuity and case-mix differences across settings",
+        "staffing ratios and monitoring intensity",
+        "equipment differences (e.g., invasive vs. non-invasive BP)",
+        "documentation practices affecting label availability"
+      ],
+      "control_variables": [
+        "clinical_context_label",
+        "context_missing_rate",
+        "patient_acuity_score",
+        "monitoring_intensity",
+        "measurement_device_type",
+        "care_setting"
+      ],
+      "boring_rival_explanations": [
+        "Coverage differences across contexts are due to different patient populations (case-mix) rather than context itself; matching patients on covariates across contexts equalizes coverage.",
+        "The model is trained on one context (e.g., ward) and fails to generalize to another (e.g., ICU) due to domain shift in X distribution, not because context confounds X->Y; domain adaptation would fix it."
+      ],
+      "rival_prediction": "If the rival (case-mix) is true, then matching patients on observed covariates (age, diagnosis, acuity) across contexts will equalize conditional coverage, even without context labels or context-invariant representations.",
+      "distinguishing_condition": "Propensity-score match patients across contexts (e.g., ICU vs. ward) on all observed covariates. Evaluate conditional coverage in matched cohorts. If coverage equalizes, rival wins; if coverage still differs by context, proposed mechanism wins.",
+      "confounder_rival_notes": "Acuity scores and monitoring intensity are proxies for case-mix and measurement density; controlling for them isolates context-specific X->Y shifts. Equipment differences (invasive vs. non-invasive) change the measurement target itself."
+    }
+  ],
+  "stage_4_3_statistical_testability_builder": [
+    {
+      "hypothesis_id": "H1",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the magnitude of covariate shift between calibration and test subject strata, which varies across populations. Need empirical data on Wasserstein distance between subject-level feature distributions and resulting coverage degradation to quantify.",
+      "minimum_data_needed": [
+        "Multi-subject physiological dataset with ≥50 subjects spanning diverse age, BMI, medication, pathology",
+        "Subject-level covariates: age, BMI, medication class, pathology label",
+        "Continuous physiological signals (ECG, PPG, ABP) with ≥5-minute segments per subject",
+        "Ground truth labels for target variable (e.g., blood pressure) synchronized with signals",
+        "Calibration and test splits with controlled covariate shift (e.g., leave-one-subject-out, stratified by covariate bins)"
+      ],
+      "testable_prediction": "Empirical coverage on test subjects decreases monotonically with increasing covariate distance (Wasserstein distance on subject-level features) between calibration and test strata, falling below nominal level (e.g., 90%) when distance exceeds a threshold.",
+      "failure_condition": "Coverage remains at nominal level across all covariate distances, or coverage degradation is fully explained by per-subject calibration sample size (rival: insufficient n per subject).",
+      "statistical_test_plan": "1. Compute subject-level feature vectors (age, BMI, medication one-hot, pathology one-hot, autonomic tone index, vascular compliance index, electrode-skin impedance). 2. For each test subject, define calibration set as all other subjects. 3. Calculate Wasserstein distance between test subject's feature vector and calibration set's empirical distribution. 4. Fit conformal predictor (split conformal with absolute residual score) on calibration set, evaluate coverage on test subject's segments. 5. Regress empirical coverage on Wasserstein distance using logistic regression (coverage ~ distance + calibration_size_per_stratum). 6. Compare model with and without distance term via likelihood ratio test. 7. Validate rival by repeating with pooled calibration of equal total size but balanced across covariate bins.",
+      "statistical_testability_notes": "Requires sufficient subjects per covariate bin to estimate distance reliably. Autonomic tone and vascular compliance indices must be derived from signals (e.g., HRV metrics, pulse wave analysis). Electrode-skin impedance from device metadata. If these are unavailable, proxy with signal quality metrics."
+    },
+    {
+      "hypothesis_id": "H2",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Motion artifacts can increase prediction error variance by 2-5x during high-activity segments based on wearable literature. Signal quality index (SQI) bins typically show coverage drops of 15-30 percentage points in low-SQI regimes.",
+      "minimum_data_needed": [
+        "Wearable multi-sensor dataset (ECG, PPG, 3-axis accelerometer) with synchronized reference labels",
+        "Signal quality indices per segment (e.g., SQI for PPG/ECG, electrode impedance)",
+        "Accelerometer magnitude per segment",
+        "Activity labels (rest, walk, run, sleep) or continuous activity intensity",
+        "Calibration and test segments spanning full activity range, with ≥20% high-artifact segments"
+      ],
+      "testable_prediction": "Conditional coverage given SQI < 0.7 is at least 15 percentage points lower than coverage given SQI ≥ 0.7 when using standard absolute residual conformal score. Adaptive score (residual normalized by SQI-dependent noise estimate) restores coverage to within 5 points of nominal in low-SQI bins.",
+      "failure_condition": "Conditional coverage does not differ significantly across SQI bins (p > 0.05, chi-square test of independence), or adaptive score fails to improve low-SQI coverage.",
+      "statistical_test_plan": "1. Bin test segments by SQI (e.g., <0.5, 0.5-0.7, 0.7-0.9, ≥0.9). 2. Compute conditional coverage per bin for standard conformal predictor (calibrated on all data). 3. Test homogeneity of coverage across bins via chi-square test. 4. Train noise model: predict residual variance from SQI and accelerometer magnitude on calibration set. 5. Construct adaptive nonconformity score = |residual| / sqrt(predicted_variance). 6. Re-evaluate conditional coverage per SQI bin with adaptive score. 7. Compare coverage improvement in lowest SQI bin using McNemar's test on interval inclusion indicators. 8. Control for physiological state by stratifying on heart rate bins and repeating.",
+      "statistical_testability_notes": "SQI must be computed from raw signals (e.g., PPG SQI via template matching, ECG SQI via kurtosis). Accelerometer magnitude = sqrt(ax^2+ay^2+az^2). Noise model can be simple (e.g., linear regression of log residual variance on SQI). Rival test: stratify by HR bins and check if coverage equalizes within HR bins but not SQI bins."
+    },
+    {
+      "hypothesis_id": "H3",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Circadian shifts in HRV and BP can alter prediction error distributions by 20-40% in standard deviation. Coverage drops of 10-20 percentage points at sleep-wake transitions are reported in time-series forecasting literature.",
+      "minimum_data_needed": [
+        "Longitudinal physiological dataset ≥48 hours per subject with continuous signals and reference labels",
+        "Time-of-day timestamps for all segments",
+        "Sleep stage annotations (polysomnography or validated algorithm)",
+        "Circadian phase estimates (e.g., dim light melatonin onset, core body temperature minimum, or actigraphy-derived phase)",
+        "Calibration data restricted to daytime (e.g., 8am-8pm) and test data spanning 24h"
+      ],
+      "testable_prediction": "Coverage on nocturnal test segments (sleep) is ≥10 percentage points lower than on daytime segments when calibrated only on daytime data. Coverage is lowest during sleep-wake transition windows (±2 hours of sleep onset/offset). Time-stratified calibration (separate quantiles per 4-hour block) restores coverage to within 5 points of nominal across all phases.",
+      "failure_condition": "No significant coverage difference across circadian phases (p > 0.05, logistic regression of coverage on phase), or daytime-only calibration already yields uniform coverage.",
+      "statistical_test_plan": "1. Assign circadian phase to each segment (radians 0-2π) using time-of-day and/or melatonin/temperature if available. 2. Bin phases into 6 bins (4-hour each). 3. Calibrate conformal predictor on daytime-only segments (8am-8pm). 4. Evaluate conditional coverage per phase bin on full 24h test set. 5. Test coverage homogeneity across bins via chi-square. 6. Fit logistic regression: coverage ~ sin(phase) + cos(phase) + sleep_stage. 7. Implement time-stratified conformal: separate calibration quantiles per 4-hour block using combined day+night calibration data (matched n per block). 8. Compare coverage uniformity (max-min coverage across bins) between standard and time-stratified methods via paired bootstrap. 9. Rival test: augment calibration with night data (matched n) and re-evaluate; if coverage equalizes, rival wins.",
+      "statistical_testability_notes": "Circadian phase estimation is critical; if gold-standard markers unavailable, use validated actigraphy algorithms. Ultradian phase (90-min cycles) can be derived from HRV spectral analysis. Sleep stage annotations needed for transition windows. Minimum 20 subjects to estimate phase effects."
+    },
+    {
+      "hypothesis_id": "H4",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Magnitude of label noise bias depends on reference measurement frequency, asynchrony distribution, and clinical triggering bias, which are dataset-specific. Need empirical characterization of label noise distribution (variance, skew, state-dependence) in target clinical setting.",
+      "minimum_data_needed": [
+        "Dataset with continuous wearable signals and sparse reference measurements (e.g., cuff BP, arterial line)",
+        "Exact timestamps for reference measurements and wearable signals",
+        "Clinical concern flags (e.g., alarm-triggered vs. scheduled measurements)",
+        "Reference device type and calibration records",
+        "Replicate reference measurements (if available) to estimate label noise variance"
+      ],
+      "testable_prediction": "Bias of empirical conformal quantile (vs. true quantile from replicate measurements) correlates with clinical concern flag and asynchrony delay. Label-noise-aware nonconformity score (incorporating estimated noise variance per segment) reduces quantile bias by ≥50% compared to standard score.",
+      "failure_condition": "Quantile bias is not significantly associated with concern flag or asynchrony (p > 0.05), or label-noise-aware score does not improve coverage conditional on concern flag.",
+      "statistical_test_plan": "1. Identify segments with replicate reference measurements (within 5 min) to estimate true label noise distribution per segment. 2. Compute noise variance and skew per segment, regress on concern flag, asynchrony, reference interval. 3. Simulate conformal calibration: add estimated noise to true labels, compute empirical quantile, compare to true quantile (from noiseless labels). 4. Measure bias as function of concern flag and asynchrony. 5. Develop label-noise-aware score: |residual| / sqrt(model_error_variance + estimated_label_noise_variance). 6. Compare conditional coverage given concern flag for standard vs. noise-aware score. 7. Rival test: use variance-normalized score (residual / predicted_model_std) without label noise term; if it matches noise-aware score, rival wins.",
+      "statistical_testability_notes": "Replicate measurements are rare; if unavailable, use simulation with noise parameters estimated from literature. Asynchrony delay = |wearable_timestamp - reference_timestamp|. Clinical concern flag from EHR alarm logs or manual annotation. Reference device type (cuff vs. arterial line) as covariate."
+    },
+    {
+      "hypothesis_id": "H5",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Pathological subpopulations (e.g., heart failure, sepsis) can have prediction error variances 3-10x higher than healthy populations. Marginal coverage averaging can mask conditional coverage near 0% for high-risk groups while overall coverage is nominal.",
+      "minimum_data_needed": [
+        "Multi-center physiological dataset with ≥500 patients, including diagnosed pathological subpopulations (HF, sepsis, AFib) with prevalence ≥5% each",
+        "Disease labels and severity scores (e.g., NYHA class, SOFA score)",
+        "Continuous signals and reference labels for target variable",
+        "Calibration and test splits with known disease labels in test set for evaluation",
+        "Residuals from base predictor on calibration set for clustering"
+      ],
+      "testable_prediction": "Conditional coverage for highest-severity subpopulation (e.g., NYHA IV HF) is ≤50% when nominal is 90%, while overall coverage is 90%. Latent clustering of residuals (Gaussian mixture, 3-5 components) identifies high-error cluster overlapping with pathological labels. Group-conditional conformal on clusters achieves ≥85% coverage for all clusters.",
+      "failure_condition": "Conditional coverage per disease label does not differ significantly (p > 0.05, chi-square), or residual clustering does not separate high-error regimes, or balanced calibration (rival) equalizes coverage without group-conditional conformal.",
+      "statistical_test_plan": "1. Compute conditional coverage per disease label and severity stratum on test set using marginal conformal. 2. Test coverage equality across strata via chi-square. 3. Fit Gaussian mixture model on calibration residuals (1D or multivariate with features). 4. Assign cluster labels to test segments. 5. Compute conditional coverage per cluster. 6. Apply group-conditional conformal: separate quantile per cluster. 7. Compare worst-case cluster coverage between marginal and group-conditional. 8. Rival test: balance calibration set 1:1 across disease labels (oversample minority) and re-evaluate marginal conformal coverage per label. 9. If balanced marginal achieves equal coverage, rival wins; else proposed mechanism wins.",
+      "statistical_testability_notes": "Disease labels may be noisy; use severity scores as continuous modifiers. Clustering on residuals alone may not align with clinical labels; include physiological features (HRV, BP variability) in clustering. Minimum 30 test samples per subpopulation for coverage estimation."
+    },
+    {
+      "hypothesis_id": "H6",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Physiological AR(1) coefficients often exceed 0.8, reducing effective sample size by factor >5. This inflates quantile variance by >5x, causing coverage drops of 15-30 percentage points for nominal n=100.",
+      "minimum_data_needed": [
+        "Long physiological time series (≥10,000 samples per subject) with known autocorrelation structure",
+        "Stationary segments verified by KPSS/ADF tests",
+        "Ground truth labels for target variable",
+        "Multiple subjects to estimate population-level autocorrelation distribution",
+        "Ability to subsample calibration sets of varying nominal n (50, 100, 200, 500)"
+      ],
+      "testable_prediction": "For AR(1) coefficient φ > 0.7, empirical coverage of standard conformal predictor falls below nominal by ≥15 percentage points. Block bootstrap conformal (block length ~ 1/(1-φ)) restores coverage to within 3 points of nominal. Effective sample size n_eff = n*(1-φ)/(1+φ) predicts coverage degradation accurately.",
+      "failure_condition": "Standard conformal coverage does not degrade with increasing φ (p > 0.05, regression of coverage on φ), or block bootstrap fails to restore coverage.",
+      "statistical_test_plan": "1. Estimate φ per subject/segment via AR(1) fit on residuals. 2. Generate stationary surrogates with known φ (0.2 to 0.95) using fitted AR model on real residuals. 3. For each φ, subsample calibration sets of nominal n=100, 200, 500. 4. Apply standard conformal and block bootstrap conformal (block length = ceil(1/(1-φ))). 5. Evaluate empirical coverage on independent test set. 6. Regress coverage on φ, n, and method. 7. Compare coverage of standard vs. block bootstrap via paired test across φ values. 8. Rival test: apply standard conformal to shorter stationary segments (5-min windows) with same total n; if coverage restored, rival wins.",
+      "statistical_testability_notes": "Stationarity verification essential; use sliding window KPSS test. Block bootstrap: moving block bootstrap with block length selected via autocorrelation decay. Surrogate generation preserves marginal distribution and autocorrelation. Minimum 20 surrogate datasets per φ for stable coverage estimates."
+    },
+    {
+      "hypothesis_id": "H7",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Medication titration (e.g., beta-blocker up-titration) can shift HR by 10-20 bpm over weeks. Vascular remodeling shifts PWV by 0.5-1 m/s per year. Coverage degradation of 5-15 percentage points per week without recalibration is plausible.",
+      "minimum_data_needed": [
+        "Longitudinal dataset ≥30 days per patient with daily calibration updates possible",
+        "Medication dose records with timestamps",
+        "Clinical trajectory scores (e.g., daily SOFA, NEWS)",
+        "Vascular stiffness indices (e.g., PWV, augmentation index) measured periodically",
+        "Continuous signals and reference labels throughout period"
+      ],
+      "testable_prediction": "Coverage declines linearly with days since calibration (slope ≤ -1% per day). Slope is steeper (≤ -2% per day) for patients with medication dose change >20% or SOFA increase >2. Drift-triggered recalibration (KS test on residuals, p<0.01) maintains coverage ≥88% with ≤50% fewer recalibrations than fixed 7-day schedule.",
+      "failure_condition": "Coverage does not decline significantly with days since calibration (p > 0.05), or drift-triggered recalibration does not outperform fixed schedule.",
+      "statistical_test_plan": "1. Fit conformal predictor on day 0 calibration. 2. Evaluate coverage daily for 30 days. 3. Fit linear mixed model: coverage ~ days_since_cal + medication_change_flag + SOFA_change + (1|patient). 4. Implement drift detection: daily KS test on residuals vs. calibration residuals; trigger recalibration when p<0.01. 5. Simulate fixed schedule (recalibrate every 7 days) and drift-triggered schedule. 6. Compare average coverage and number of recalibrations. 7. Rival test: replace sensors at day 15 (same physiology) and compare coverage before/after vs. medication change at day 15 (same sensor).",
+      "statistical_testability_notes": "Drift detection on residuals requires sufficient daily samples (≥50). KS test sensitive to sample size; consider CUSUM or MMD for higher power. Medication change flag from pharmacy records. Sensor age tracked via device logs."
+    },
+    {
+      "hypothesis_id": "H8",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Modality dropout (e.g., PPG loss during vasoconstriction) can increase prediction error variance 5-10x. Marginal coverage may be 90% overall but <20% during dropout regimes, which are clinically critical.",
+      "minimum_data_needed": [
+        "Multimodal wearable dataset (PPG, ECG, accelerometer) with synchronized reference labels",
+        "Modality availability indicators per segment (PPG present/absent, ECG present/absent)",
+        "Perfusion index (from PPG) or clinical severity score",
+        "Interference flags (electrosurgery, MRI, etc.)",
+        "Calibration and test sets with ≥5% dropout segments per modality combination"
+      ],
+      "testable_prediction": "Conditional coverage during PPG dropout (PPG absent, ECG present) is ≤30% when nominal is 90%. Modality-aware conformal (separate quantiles per active modality set) restores coverage to ≥85% for all modality combinations. Dropout probability correlates with perfusion index (r < -0.5).",
+      "failure_condition": "Coverage does not differ significantly across modality combinations (p > 0.05), or modality-specific predictors (rival) equalize coverage without modality-aware conformal scores.",
+      "statistical_test_plan": "1. Define modality combinations: {PPG+ECG}, {ECG-only}, {PPG-only}, {none}. 2. Compute conditional coverage per combination using marginal conformal. 3. Test homogeneity via chi-square. 4. Train modality-specific predictors (separate models per combination). 5. Apply marginal conformal per predictor (rival). 6. Apply modality-aware conformal: single predictor with modality indicators as features, separate quantile per combination. 7. Compare worst-case combination coverage across three methods. 8. Regress dropout probability on perfusion index and severity score. 9. If modality-specific predictors equalize coverage, rival wins; else proposed mechanism wins.",
+      "statistical_testability_notes": "Modality dropout detection: PPG absent if signal quality index <0.3 or perfusion index <0.5%. ECG absent if noise >50μV. Interference flags from device logs. Minimum 100 dropout segments per combination for coverage estimation."
+    },
+    {
+      "hypothesis_id": "H9",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Physiological signals like BP have skewness 1-2 and kurtosis 5-10. Absolute residual scores produce interval asymmetry ratios (upper/lower width) near 1.0, while optimal ratios should match distribution skew (1.5-2.5). Coverage in top decile can be 20-30 points lower than central deciles.",
+      "minimum_data_needed": [
+        "Physiological signal dataset with skewed target distribution (skewness >1, kurtosis >5)",
+        "Base predictor predictions and residuals on calibration and test sets",
+        "Calibration set size ≥500 to estimate tail quantiles",
+        "Multiple nonconformity score implementations: absolute residual, quantile regression, normalized residual"
+      ],
+      "testable_prediction": "For absolute residual score, conditional coverage in top decile of predicted values is ≥20 percentage points lower than in central deciles (40-60th percentile). Quantile-based nonconformity score (using quantile regression forest) equalizes conditional coverage across deciles to within 5 points of nominal.",
+      "failure_condition": "Conditional coverage does not vary significantly across predicted value deciles (p > 0.05, chi-square), or quantile-based score fails to equalize coverage.",
+      "statistical_test_plan": "1. Bin test segments by predicted value deciles. 2. Compute conditional coverage per decile for absolute residual score. 3. Test coverage homogeneity across deciles. 4. Train quantile regression forest (or gradient boosting) to predict conditional 5th and 95th percentiles. 5. Define quantile-based nonconformity score: max( (y - q95)/scale, (q05 - y)/scale ) where scale = q95 - q05. 6. Evaluate conditional coverage per decile with quantile-based score. 7. Compare max-min coverage range between scores via bootstrap. 8. Rival test: apply isotonic regression to calibrate base predictor (remove bias), then use absolute residual score; if coverage equalizes, rival wins.",
+      "statistical_testability_notes": "Quantile regression forest requires sufficient data; minimum 500 calibration samples. Scale estimation in tails unstable; use cross-validated quantile predictions. PIT histogram for overall calibration assessment. Skewness/kurtosis computed on target variable in calibration set."
+    },
+    {
+      "hypothesis_id": "H10",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Context effect size depends on degree of X→Y confounding across settings, which varies by clinical question. Need data from multiple care settings with matched patient covariates to quantify coverage gap.",
+      "minimum_data_needed": [
+        "Multi-setting physiological dataset (ICU, ward, home) with ≥200 patients per setting",
+        "Clinical context labels for all segments",
+        "Patient covariates for matching: age, diagnosis, acuity score, medications",
+        "Continuous signals and reference labels",
+        "Context missingness mechanism (e.g., random vs. systematic missing)"
+      ],
+      "testable_prediction": "Conditional coverage in ICU is ≥15 percentage points lower than in ward/home when calibration data dominated by ward (≥80%). Context-invariant representation learning (domain adversarial neural net) + conformal prediction reduces ICU coverage gap to ≤5 points without context labels at deployment.",
+      "failure_condition": "Coverage does not differ significantly across contexts after propensity-score matching on observed covariates (rival: case-mix), or context-invariant representation fails to improve worst-context coverage.",
+      "statistical_test_plan": "1. Propensity-score match patients across contexts on all observed covariates (age, diagnosis, acuity, medications). 2. Evaluate conditional coverage per context in matched cohorts using marginal conformal. 3. If coverage equalizes, rival wins; else proceed. 4. Train domain adversarial network: feature extractor + predictor + context discriminator (gradient reversal). 5. Apply conformal prediction on learned features. 6. Evaluate conditional coverage per context (using true context labels for evaluation only). 7. Compare worst-context coverage before/after representation learning. 8. Simulate missing context labels: randomly mask 30% of context labels in calibration, evaluate if method still works.",
+      "statistical_testability_notes": "Matching requires overlap in propensity scores; check standardized mean differences <0.1. Domain adversarial training needs sufficient data per context; consider simpler methods (CORAL, MMD) if data limited. Context missingness: if systematic (e.g., home context never labeled), method must be robust. Minimum 50 matched patients per context for coverage estimation."
+    }
+  ],
+  "stage_5_audits": [
+    {
+      "hypothesis_id": "H1",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism specifies concrete physiological covariates (autonomic tone, vascular compliance, electrode-skin impedance) that induce non-identical conditional distributions, a domain-specific causal path violating exchangeability. Variables are measurable, confounders (genetics, environment, site) are identified, data requirements are clear (multi-subject dataset with covariate-stratified splits), and the prediction (coverage decreases with Wasserstein distance) is testable via the proposed regression plan.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H2",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism names wearable-specific variables (accelerometer magnitude, electrode impedance, signal quality index) and a causal path where motion artifacts induce heteroscedastic errors that standard conformal scores cannot capture. Effect size (2-5x variance increase, 15-30pp coverage drop) is plausible per wearable literature. Confounders (sensor type, skin condition, temperature) are identified. The test plan (conditional coverage by SQI bins, adaptive score comparison) is concrete and distinguishes from the physiological-state rival.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H3",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism specifies circadian/ultradian phase as a latent variable modulating autonomic tone (HRV, BP, RSA), a domain-specific physiological process. Boundary conditions (daytime-only calibration, sleep-wake transitions) are concrete. Effect size (20-40% error distribution shift, 10-20pp coverage drop) is plausible. Confounders (sleep disorders, shift work, medication timing) are identified. The test plan (phase-binned coverage, time-stratified calibration, rival test with night data augmentation) is well-specified.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H4",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism identifies a clinical-physiological process: sparse, asynchronous reference measurements (cuff BP, arterial line) with state-dependent triggering (clinical concern) creating heteroscedastic label noise that biases conformal quantile estimation. Variables (reference interval, asynchrony, concern flag) are measurable. Confounders (device drift, clinician bias, movement) are listed. The test plan (replicate-based noise estimation, label-noise-aware score, simulation with oracle predictor) is concrete and distinguishes from model-heteroscedasticity and time-lag rivals.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H5",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism specifies pathological subpopulations (HF, sepsis, AFib) with fundamentally altered physiology (e.g., reduced HRV) causing higher prediction error variance, a domain-specific effect modifier. Effect size (3-10x variance ratio, conditional coverage near 0% for high-risk) is large and plausible. Confounders (comorbidity, severity, treatments) are identified. The test plan (conditional coverage by disease label, residual clustering, group-conditional conformal, balanced-calibration rival test) is rigorous and feasible with multi-center data.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H6",
+      "audit_decision": "REJECT",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": false,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "mechanism_is_non_generic"
+      ],
+      "decision_reason": "The mechanism is domain-generic: the argument that temporal autocorrelation reduces effective sample size (n_eff = n*(1-φ)/(1+φ)), inflating quantile variance and breaking finite-sample coverage, applies identically to any autocorrelated time series (financial, EEG, environmental) without modification. It does not name a specific physiological causal path or boundary condition unique to physiological signals; HRV AR(1) >0.8 is merely an example parameter value, not a domain-specific process. Per the non-generic mechanism rule, this fails mechanism_is_non_generic.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H7",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism specifies physiological adaptation processes (medication titration, vascular remodeling) that gradually shift P(Y|X), a domain-specific concept drift source. Variables (days since calibration, medication dose change, vascular stiffness index) are measurable. Confounders (sensor degradation, acute events, protocol changes) are identified. Effect size (5-15pp coverage degradation per week) is plausible. The test plan (longitudinal coverage tracking, drift-triggered vs fixed recalibration, sensor-replacement rival test) is concrete and distinguishes physiological from sensor drift.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H8",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism identifies multimodal sensor fusion dropout regimes (PPG loss during vasoconstriction, ECG noise during electrosurgery) with clinical meaning, a domain-specific hidden stratification. Variables (active modality set, perfusion index, dropout indicators) are measurable. Confounders (skin tone, sensor fit, EMI, interventions) are identified. Effect size (5-10x error variance increase, coverage <20% during dropout) is large and plausible. The test plan (conditional coverage per modality combination, modality-aware vs modality-specific predictor rival test) is well-specified.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H9",
+      "audit_decision": "REJECT",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": false,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "mechanism_is_non_generic"
+      ],
+      "decision_reason": "The mechanism is domain-generic: the argument that skewed, heavy-tailed distributions cause symmetric conformal intervals to under-cover in tails and over-cover in the bulk applies identically to any skewed data (financial returns, insurance claims, environmental extremes) without modification. Physiological signals (BP, ICP) are merely cited as examples; the causal path (skewness → symmetric intervals → asymmetric coverage) does not invoke a specific physiological process or boundary condition unique to this domain. Per the non-generic mechanism rule, this fails mechanism_is_non_generic.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H10",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism specifies clinical context (ICU vs ward vs home) as a confounder of the X→Y relationship with concrete physiological examples (tachycardia meaning differs by context), a domain-specific distribution shift. Variables (context label, confounder strength, missingness) are measurable. Confounders (acuity, staffing, equipment, documentation) are identified. Data requirements (multi-setting dataset with propensity matching) are clear. The test plan (propensity-matched coverage comparison, context-invariant representation learning, missing-context simulation) is rigorous and distinguishes from case-mix and domain-shift rivals.",
+      "salvage_note": ""
+    }
+  ],
+  "diagnostics": {
+    "generated_count": 10,
+    "passed_count": 8,
+    "rejected_count": 2,
+    "salvageable_count": 0,
+    "pass_survival_rate": 0.8,
+    "salvageable_rate": 0.0,
+    "rejection_reason_diversity": 1,
+    "top_failed_checklist_fields": {
+      "mechanism_is_non_generic": 2
+    },
+    "failure_points_consistency": true,
+    "rubber_stamp_red_flags": [],
+    "mechanism_builder_count": 10,
+    "confounder_rival_builder_count": 10,
+    "statistical_testability_builder_count": 10,
+    "avg_mechanism_variables_per_hypothesis": 5.7,
+    "avg_confounders_per_hypothesis": 4.0,
+    "avg_rivals_per_hypothesis": 2.0,
+    "hypotheses_with_effect_size_expectation": 10,
+    "hypotheses_with_failure_condition": 10,
+    "hypotheses_with_testable_prediction": 10
+  },
+  "stage_6_rival_prediction_matrix": [
+    {
+      "hypothesis_id": "H1",
+      "meno_j_hypothesis": "Inter-subject physiological heterogeneity violates the exchangeability assumption required for marginal coverage guarantees.",
+      "meno_j_prediction": "Empirical coverage on test subjects decreases monotonically with increasing covariate distance (Wasserstein distance on subject-level features) between calibration and test strata, falling below nominal level (e.g., 90%) when distance exceeds a threshold.",
+      "rival_explanation": "Coverage failure is driven by insufficient calibration sample size per subject rather than fundamental distributional heterogeneity; increasing n per subject restores coverage without stratification.",
+      "rival_prediction": "If the rival (insufficient per-subject sample size) is true, then pooling calibration data across subjects and simply increasing the number of calibration samples per test subject will restore nominal coverage, even without covariate stratification.",
+      "distinguishing_test": "Compare empirical coverage when (a) calibration size per subject is increased 5x with pooled data vs. (b) stratified calibration with same total samples but balanced across covariate bins. If (a) restores coverage, rival wins; if (b) is required, proposed mechanism wins.",
+      "what_result_supports_meno_j": "Stratified calibration (b) restores coverage while pooled calibration (a) does not, indicating covariate shift not just sample size drives failure.",
+      "what_result_supports_rival": "Pooled calibration with increased per-subject sample size (a) restores nominal coverage, indicating sample size not distributional heterogeneity is the primary cause."
+    },
+    {
+      "hypothesis_id": "H2",
+      "meno_j_hypothesis": "Non-stationary sensor noise and motion artifacts create time-varying conditional coverage that marginal conformal methods cannot capture.",
+      "meno_j_prediction": "Conditional coverage given SQI < 0.7 is at least 15 percentage points lower than coverage given SQI ≥ 0.7 when using standard absolute residual conformal score. Adaptive score (residual normalized by SQI-dependent noise estimate) restores coverage to within 5 points of nominal in low-SQI bins.",
+      "rival_explanation": "Coverage drops during motion because the underlying physiological state (e.g., heart rate, blood pressure) changes rapidly and the predictor is not trained on those states, not because of sensor noise.",
+      "rival_prediction": "If the rival (physiological state change) is true, then conditioning on the true physiological state (e.g., heart rate bins) will equalize conditional coverage across activity levels, even without signal quality indices.",
+      "distinguishing_test": "Stratify test segments by both signal quality index (SQI) and physiological state (e.g., HR bins). If coverage equalizes within SQI bins but not within HR bins, proposed mechanism wins; if coverage equalizes within HR bins but not SQI bins, rival wins.",
+      "what_result_supports_meno_j": "Coverage equalizes within SQI bins but remains unequal across HR bins, indicating signal quality not physiological state drives coverage failure.",
+      "what_result_supports_rival": "Coverage equalizes within HR bins but remains unequal across SQI bins, indicating physiological state change not sensor noise drives coverage failure."
+    },
+    {
+      "hypothesis_id": "H3",
+      "meno_j_hypothesis": "Circadian and ultradian rhythms induce periodic non-stationarity in physiological signal distributions that violates the i.i.d. assumption across temporal segments.",
+      "meno_j_prediction": "Coverage on nocturnal test segments (sleep) is ≥10 percentage points lower than on daytime segments when calibrated only on daytime data. Coverage is lowest during sleep-wake transition windows (±2 hours of sleep onset/offset). Time-stratified calibration (separate quantiles per 4-hour block) restores coverage to within 5 points of nominal across all phases.",
+      "rival_explanation": "Coverage fails at night because calibration data lacks nighttime examples (sample selection bias), not because of inherent circadian non-stationarity; adding night data fixes it.",
+      "rival_prediction": "If the rival (sample selection bias) is true, then augmenting the calibration set with nighttime segments will restore uniform coverage across phases without requiring phase-aware nonconformity scores.",
+      "distinguishing_test": "Train conformal predictor on combined day+night calibration data (matched sample sizes per phase) and evaluate conditional coverage per circadian phase bin. If coverage equalizes, rival wins; if coverage still varies by phase, proposed mechanism wins.",
+      "what_result_supports_meno_j": "Coverage still varies significantly by circadian phase even with balanced day+night calibration data, indicating inherent non-stationarity not just sample bias.",
+      "what_result_supports_rival": "Coverage equalizes across all circadian phases when calibration includes matched nighttime data, indicating sample selection bias was the cause."
+    },
+    {
+      "hypothesis_id": "H4",
+      "meno_j_hypothesis": "Ground truth label noise from intermittent reference measurements creates miscalibrated nonconformity scores that propagate coverage failures.",
+      "meno_j_prediction": "Bias of empirical conformal quantile (vs. true quantile from replicate measurements) correlates with clinical concern flag and asynchrony delay. Label-noise-aware nonconformity score (incorporating estimated noise variance per segment) reduces quantile bias by ≥50% compared to standard score.",
+      "rival_explanation": "Coverage failure is due to heteroscedastic model error (larger errors during extreme physiological states), not label noise; a heteroscedastic conformal score would fix it.",
+      "rival_prediction": "If the rival (model heteroscedasticity) is true, then using a variance-normalized nonconformity score (e.g., residual divided by predicted standard deviation) will restore conditional coverage even with noisy, asynchronous labels.",
+      "distinguishing_test": "Simulate label noise with known heteroscedasticity and state-dependence on top of a perfectly calibrated predictor. Compare coverage of (a) standard absolute residual score, (b) variance-normalized score, (c) label-noise-aware score. If (c) uniquely restores coverage, proposed mechanism wins.",
+      "what_result_supports_meno_j": "Only the label-noise-aware score (c) restores coverage under simulated state-dependent label noise, while variance-normalized score (b) fails.",
+      "what_result_supports_rival": "Variance-normalized score (b) restores coverage as well as label-noise-aware score (c), indicating model heteroscedasticity not label noise is the primary issue."
+    },
+    {
+      "hypothesis_id": "H5",
+      "meno_j_hypothesis": "Pathological subpopulations (e.g., heart failure, sepsis, atrial fibrillation) exhibit fundamentally different error distributions that are masked by marginal coverage averaging.",
+      "meno_j_prediction": "Conditional coverage for highest-severity subpopulation (e.g., NYHA IV HF) is ≤50% when nominal is 90%, while overall coverage is 90%. Latent clustering of residuals (Gaussian mixture, 3-5 components) identifies high-error cluster overlapping with pathological labels. Group-conditional conformal on clusters achieves ≥85% coverage for all clusters.",
+      "rival_explanation": "Under-coverage in pathological subpopulations is due to their underrepresentation in the calibration set (small n), not fundamentally different error distributions; oversampling would fix it.",
+      "rival_prediction": "If the rival (underrepresentation) is true, then balancing the calibration set across subpopulations (e.g., via oversampling or stratified sampling) will equalize conditional coverage without needing group-conditional conformal prediction.",
+      "distinguishing_test": "Compare conditional coverage for high-risk subpopulation when (a) calibration is balanced 1:1 across subpopulations using standard marginal conformal vs. (b) calibration is imbalanced but group-conditional conformal is applied. If (a) equalizes coverage, rival wins; if (b) is needed, proposed mechanism wins.",
+      "what_result_supports_meno_j": "Balanced marginal conformal (a) fails to equalize coverage for high-risk subpopulation, while group-conditional conformal (b) succeeds, indicating fundamentally different error distributions.",
+      "what_result_supports_rival": "Balanced marginal conformal (a) equalizes conditional coverage across subpopulations, indicating underrepresentation not different error distributions was the cause."
+    },
+    {
+      "hypothesis_id": "H7",
+      "meno_j_hypothesis": "Concept drift in the signal-to-label mapping occurs due to physiological adaptation (e.g., vascular remodeling, medication titration) that is not captured by static model retraining schedules.",
+      "meno_j_prediction": "Coverage declines linearly with days since calibration (slope ≤ -1% per day). Slope is steeper (≤ -2% per day) for patients with medication dose change >20% or SOFA increase >2. Drift-triggered recalibration (KS test on residuals, p<0.01) maintains coverage ≥88% with ≤50% fewer recalibrations than fixed 7-day schedule.",
+      "rival_explanation": "Coverage degradation over time is due to sensor degradation (e.g., electrode impedance drift, PPG optical coupling loss), not physiological adaptation; replacing sensors restores coverage.",
+      "rival_prediction": "If the rival (sensor degradation) is true, then recalibrating with a fresh sensor on the same patient (same physiological state) will restore coverage, whereas recalibrating with the same sensor after a medication change will not.",
+      "distinguishing_test": "In a cohort with scheduled sensor replacements, compare coverage before/after sensor replacement (same physiology) vs. before/after medication titration (same sensor). If coverage drops only after medication change, proposed mechanism wins; if drops after sensor replacement, rival wins.",
+      "what_result_supports_meno_j": "Coverage drops significantly after medication titration but not after sensor replacement, indicating physiological adaptation drives drift.",
+      "what_result_supports_rival": "Coverage drops after sensor replacement but not after medication titration, indicating sensor degradation drives drift."
+    },
+    {
+      "hypothesis_id": "H8",
+      "meno_j_hypothesis": "Multimodal sensor fusion creates hidden stratification where coverage fails for specific sensor modality combinations.",
+      "meno_j_prediction": "Conditional coverage during PPG dropout (PPG absent, ECG present) is ≤30% when nominal is 90%. Modality-aware conformal (separate quantiles per active modality set) restores coverage to ≥85% for all modality combinations. Dropout probability correlates with perfusion index (r < -0.5).",
+      "rival_explanation": "Coverage fails during modality dropout because the predictor relies on that modality and its predictions degrade (model problem), not because of a distinct error regime requiring separate conformal calibration.",
+      "rival_prediction": "If the rival (model degradation) is true, then training separate predictors for each modality subset and applying standard conformal prediction per subset will equalize conditional coverage across modality combinations.",
+      "distinguishing_test": "Train modality-specific predictors (e.g., PPG+ECG, ECG-only, PPG-only) and evaluate conditional coverage per active modality set using marginal conformal per predictor. If coverage equalizes, rival wins; if coverage still varies and requires modality-aware nonconformity scores, proposed mechanism wins.",
+      "what_result_supports_meno_j": "Modality-specific predictors fail to equalize coverage across modality combinations, while modality-aware conformal scores succeed, indicating distinct error regimes not just model degradation.",
+      "what_result_supports_rival": "Modality-specific predictors equalize conditional coverage across all modality combinations, indicating model degradation not distinct error regimes was the cause."
+    },
+    {
+      "hypothesis_id": "H10",
+      "meno_j_hypothesis": "Stratification by clinical context (ICU vs. ward vs. home) creates distribution shifts that marginal conformal prediction cannot resolve without context labels.",
+      "meno_j_prediction": "Conditional coverage in ICU is ≥15 percentage points lower than in ward/home when calibration data dominated by ward (≥80%). Context-invariant representation learning (domain adversarial neural net) + conformal prediction reduces ICU coverage gap to ≤5 points without context labels at deployment.",
+      "rival_explanation": "Coverage differences across contexts are due to different patient populations (case-mix) rather than context itself; matching patients on covariates across contexts equalizes coverage.",
+      "rival_prediction": "If the rival (case-mix) is true, then matching patients on observed covariates (age, diagnosis, acuity) across contexts will equalize conditional coverage, even without context labels or context-invariant representations.",
+      "distinguishing_test": "Propensity-score match patients across contexts (e.g., ICU vs. ward) on all observed covariates. Evaluate conditional coverage in matched cohorts. If coverage equalizes, rival wins; if coverage still differs by context, proposed mechanism wins.",
+      "what_result_supports_meno_j": "Conditional coverage still differs significantly by context after propensity-score matching on all observed covariates, indicating context-specific X→Y confounding not case-mix.",
+      "what_result_supports_rival": "Conditional coverage equalizes across contexts after propensity-score matching, indicating case-mix differences not context confounding drove coverage gaps."
+    }
+  ],
+  "stage_7_falsification_tests": [
+    {
+      "hypothesis_id": "H1",
+      "strongest_falsification_test": "Increase per-subject calibration sample size 5x using pooled data across all subjects (no covariate stratification) and evaluate empirical coverage on test subjects across the full range of covariate distances. If coverage is restored to nominal level (e.g., 90%) uniformly across all covariate distances, the proposed mechanism (exchangeability violation due to inter-subject heterogeneity) is falsified; the rival (insufficient per-subject sample size) is supported.",
+      "failure_condition": "Empirical coverage remains at nominal level (≥90%) for all test subjects regardless of Wasserstein distance between calibration and test subject feature distributions when per-subject calibration size is increased 5x with pooled data.",
+      "minimum_data_needed": "Multi-subject physiological dataset with ≥50 subjects spanning diverse age, BMI, medication, pathology; subject-level covariates; continuous physiological signals (ECG, PPG, ABP) with ≥5-minute segments per subject; ground truth labels synchronized with signals; calibration and test splits with controlled covariate shift (e.g., leave-one-subject-out, stratified by covariate bins).",
+      "most_likely_false_positive_risk": "Site or device differences (e.g., electrode type, device model) confound with subject covariates, creating apparent heterogeneity that is actually a technical artifact; controlling for site_id and device_model mitigates but may not eliminate if unmeasured.",
+      "most_likely_false_negative_risk": "Insufficient statistical power to detect coverage degradation if the effect size of covariate shift is small relative to sampling variability, or if the Wasserstein distance metric does not capture the relevant physiological heterogeneity dimensions."
+    },
+    {
+      "hypothesis_id": "H2",
+      "strongest_falsification_test": "Stratify test segments by both signal quality index (SQI) bins and physiological state (e.g., heart rate bins). Fit a standard conformal predictor on all calibration data. If conditional coverage equalizes within heart rate bins but remains heterogeneous across SQI bins, the proposed mechanism (sensor noise heteroscedasticity) is falsified; the rival (physiological state change) is supported.",
+      "failure_condition": "Conditional coverage does not differ significantly across SQI bins (p > 0.05, chi-square test) after stratifying on heart rate bins, or coverage equalizes within heart rate bins but not SQI bins.",
+      "minimum_data_needed": "Wearable multi-sensor dataset (ECG, PPG, 3-axis accelerometer) with synchronized reference labels; signal quality indices per segment; accelerometer magnitude per segment; activity labels or continuous activity intensity; calibration and test segments spanning full activity range with ≥20% high-artifact segments.",
+      "most_likely_false_positive_risk": "Sensor type, placement, or skin condition affect both artifact magnitude and SQI, creating a spurious association between SQI and coverage; controlling for sensor_type and placement_site reduces but may not eliminate this confounding.",
+      "most_likely_false_negative_risk": "SQI does not accurately capture the true artifact severity (e.g., motion artifacts with normal SQI), or the physiological state bins are too coarse to reveal the true conditional coverage pattern."
+    },
+    {
+      "hypothesis_id": "H3",
+      "strongest_falsification_test": "Augment the daytime-only calibration set with nighttime segments matched in sample size per circadian phase bin (e.g., equal number of segments per 4-hour block). Re-evaluate conditional coverage across all phase bins using standard marginal conformal prediction. If coverage equalizes across all circadian phases without phase-aware nonconformity scores, the proposed mechanism (inherent circadian non-stationarity) is falsified; the rival (sample selection bias) is supported.",
+      "failure_condition": "Coverage is homogeneous across all circadian phase bins (p > 0.05, chi-square test) when calibration data includes matched day and night segments, and the maximum coverage difference across bins is ≤5 percentage points.",
+      "minimum_data_needed": "Longitudinal physiological dataset ≥48 hours per subject with continuous signals and reference labels; time-of-day timestamps; sleep stage annotations; circadian phase estimates (e.g., dim light melatonin onset, core body temperature minimum, or actigraphy-derived phase); calibration data restricted to daytime (8am-8pm) and test data spanning 24h.",
+      "most_likely_false_positive_risk": "Shift work, sleep disorders, or medication timing alter circadian phase independently of time-of-day, making phase estimates noisy and masking true non-stationarity; controlling for schedule and diagnosed disorders helps but residual confounding likely.",
+      "most_likely_false_negative_risk": "Circadian phase estimation error (e.g., using only time-of-day without physiological markers) dilutes the phase-coverage relationship, or the ultradian component (90-min cycles) drives coverage variation that is not captured by 4-hour circadian bins."
+    },
+    {
+      "hypothesis_id": "H4",
+      "strongest_falsification_test": "On a dataset with replicate reference measurements, simulate label noise with known heteroscedasticity and state-dependence (correlated with clinical concern flag). Compare three nonconformity scores on a perfectly calibrated predictor: (a) standard absolute residual, (b) variance-normalized score (residual / predicted model standard deviation), (c) label-noise-aware score (residual / sqrt(model variance + estimated label noise variance)). If (b) matches (c) in restoring conditional coverage given concern flag, the proposed mechanism (label noise as distinct cause) is falsified; the rival (model heteroscedasticity) is supported.",
+      "failure_condition": "Variance-normalized nonconformity score (b) achieves conditional coverage within 5 percentage points of the label-noise-aware score (c) for high-concern segments, and both significantly outperform standard score (a).",
+      "minimum_data_needed": "Dataset with continuous wearable signals and sparse reference measurements (e.g., cuff BP, arterial line); exact timestamps for references and signals; clinical concern flags; reference device type and calibration records; replicate reference measurements (within 5 min) to estimate label noise variance.",
+      "most_likely_false_positive_risk": "Reference device calibration drift or clinician triggering bias creates label noise that correlates with true state, mimicking state-dependent heteroscedasticity; controlling for device_type and concern_flag isolates but may not fully separate.",
+      "most_likely_false_negative_risk": "Replicate measurements are too sparse to reliably estimate label noise distribution per segment, or the simulation assumptions (e.g., noise distribution shape) do not match reality, leading to incorrect conclusion about score performance."
+    },
+    {
+      "hypothesis_id": "H5",
+      "strongest_falsification_test": "Balance the calibration set 1:1 across disease labels (e.g., heart failure, sepsis, atrial fibrillation) via oversampling minority subpopulations. Apply standard marginal conformal prediction and evaluate conditional coverage per disease label and severity stratum on the test set. If coverage equalizes across all subpopulations (max-min coverage difference ≤5 points), the proposed mechanism (fundamentally different error distributions requiring group-conditional conformal) is falsified; the rival (underrepresentation) is supported.",
+      "failure_condition": "Conditional coverage per disease label does not differ significantly (p > 0.05, chi-square test) after calibration balancing, and worst-case subpopulation coverage is ≥85% when nominal is 90%.",
+      "minimum_data_needed": "Multi-center physiological dataset with ≥500 patients including diagnosed pathological subpopulations (HF, sepsis, AFib) with prevalence ≥5% each; disease labels and severity scores (NYHA, SOFA); continuous signals and reference labels; calibration and test splits with known disease labels in test set; residuals from base predictor on calibration set for clustering.",
+      "most_likely_false_positive_risk": "Comorbidity burden and disease severity create gradients within labels, so balancing on coarse labels does not address finer heterogeneity; controlling for severity_score and comorbidity_index refines but may not capture all.",
+      "most_likely_false_negative_risk": "Residual clustering does not align with clinical labels, or the base predictor is so misspecified for pathological physiology that even balanced calibration cannot equalize coverage without model improvement."
+    },
+    {
+      "hypothesis_id": "H7",
+      "strongest_falsification_test": "In a cohort with scheduled sensor replacements, compare coverage degradation before/after sensor replacement (same physiology, new sensor) versus before/after medication titration (same sensor, changed physiology). If coverage drops significantly only after sensor replacement and not after medication change, the proposed mechanism (physiological adaptation drift) is falsified; the rival (sensor degradation) is supported.",
+      "failure_condition": "Coverage decline correlates with sensor age (days since sensor placement) but not with medication dose changes >20% or clinical deterioration (SOFA increase >2); drift-triggered recalibration based on residuals does not outperform fixed schedule when sensor age is controlled.",
+      "minimum_data_needed": "Longitudinal dataset ≥30 days per patient with daily calibration updates possible; medication dose records with timestamps; clinical trajectory scores (daily SOFA, NEWS); vascular stiffness indices (PWV, augmentation index) measured periodically; continuous signals and reference labels throughout; sensor replacement logs.",
+      "most_likely_false_positive_risk": "Sensor degradation and physiological adaptation occur simultaneously and are confounded by time; sensor age and medication changes may be correlated (e.g., sicker patients get more medication changes and longer sensor use).",
+      "most_likely_false_negative_risk": "Drift detection on residuals lacks power (insufficient daily samples) to distinguish gradual physiological drift from sensor drift, or the recalibration trigger threshold is misspecified, leading to false conclusion that drift-triggered recalibration fails."
+    },
+    {
+      "hypothesis_id": "H8",
+      "strongest_falsification_test": "Train separate predictors for each active modality combination (e.g., PPG+ECG, ECG-only, PPG-only) and apply standard marginal conformal prediction per predictor. Evaluate conditional coverage per modality combination on test data. If coverage equalizes across all combinations (max-min difference ≤5 points), the proposed mechanism (hidden stratification requiring modality-aware conformal scores) is falsified; the rival (model degradation during dropout) is supported.",
+      "failure_condition": "Conditional coverage is homogeneous across modality combinations (p > 0.05, chi-square) when using modality-specific predictors with marginal conformal, and worst-case combination coverage ≥85% at nominal 90%.",
+      "minimum_data_needed": "Multimodal wearable dataset (PPG, ECG, accelerometer) with synchronized reference labels; modality availability indicators per segment; perfusion index or clinical severity score; interference flags (electrosurgery, MRI); calibration and test sets with ≥5% dropout segments per modality combination.",
+      "most_likely_false_positive_risk": "Skin tone, sensor fit, or environmental interference affect baseline modality quality and dropout probability, creating spurious modality-coverage associations; controlling for signal_quality_per_modality and interference_flag mitigates but residual confounding possible.",
+      "most_likely_false_negative_risk": "Insufficient dropout segments per modality combination (especially rare combinations like PPG-only) to estimate coverage reliably, or the modality-specific predictors are themselves poorly calibrated due to limited training data per subset."
+    },
+    {
+      "hypothesis_id": "H10",
+      "strongest_falsification_test": "Propensity-score match patients across clinical contexts (ICU, ward, home) on all observed covariates (age, diagnosis, acuity, medications). Evaluate conditional coverage per context in the matched cohorts using standard marginal conformal prediction. If coverage equalizes across contexts (max-min difference ≤5 points), the proposed mechanism (context as unobserved confounder of X→Y) is falsified; the rival (case-mix differences) is supported.",
+      "failure_condition": "Conditional coverage does not differ significantly across contexts (p > 0.05, logistic regression of coverage on context after matching) in propensity-score matched cohorts, and standardized mean differences for all covariates <0.1.",
+      "minimum_data_needed": "Multi-setting physiological dataset (ICU, ward, home) with ≥200 patients per setting; clinical context labels for all segments; patient covariates for matching (age, diagnosis, acuity score, medications); continuous signals and reference labels; context missingness mechanism (random vs systematic).",
+      "most_likely_false_positive_risk": "Equipment differences (invasive vs non-invasive BP) change the measurement target itself across contexts, not just the X→Y relationship; matching on device_type may not fully resolve if the target construct differs.",
+      "most_likely_false_negative_risk": "Insufficient overlap in propensity scores across contexts (e.g., ICU patients systematically sicker) prevents adequate matching, or unmeasured confounders (e.g., nursing intensity, undocumented interventions) remain after matching on observed covariates."
+    }
+  ]
+}

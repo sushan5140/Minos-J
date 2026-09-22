@@ -1,0 +1,412 @@
+{
+  "sample_index": 4,
+  "valid": true,
+  "error": null,
+  "cards": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Inter-subject variability in autonomic nervous system dynamics causes conformal prediction coverage to degrade for subjects with high heart rate variability during non-stationary segments",
+      "proposed_mechanism": "Subjects with high baseline heart rate variability (HRV) exhibit greater non-stationarity in RR interval distributions during physiological state transitions, violating the exchangeability assumption of conformal prediction and causing prediction intervals to undercover during transition segments",
+      "causal_path": "High baseline HRV (RMSSD > 50ms) -> Increased non-stationarity during state transitions (quantified by sliding-window KL divergence > 0.3) -> Violation of exchangeability assumption -> Conformal prediction interval undercoverage (empirical coverage < 1-alpha - 0.05)",
+      "mechanism_variables": [
+        "baseline_RMSSD_ms",
+        "sliding_window_KL_divergence",
+        "empirical_coverage",
+        "nominal_coverage_level"
+      ],
+      "possible_confounders": [
+        "age",
+        "medication_use_beta_blockers",
+        "sensor_type",
+        "recording_duration"
+      ],
+      "control_variables": [
+        "stratify_by_age_decade",
+        "exclude_beta_blocker_users",
+        "use_same_sensor_model",
+        "minimum_30min_recording"
+      ],
+      "rival_explanation": "Coverage instability is driven by signal noise floor differences across subjects rather than autonomic dynamics",
+      "rival_prediction": "Subjects with low signal-to-noise ratio (SNR < 10dB) show coverage degradation regardless of HRV level",
+      "distinguishing_test": "Compare coverage stability in high-HRV/high-SNR vs low-HRV/low-SNR subjects; mechanism predicts high-HRV drives instability even with high SNR",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Prior work shows HRV correlates with non-stationarity magnitude (r~0.4-0.6); conformal coverage drops of 5-15% observed in non-stationary settings",
+      "minimum_data_needed": [
+        "ECG recordings >=30min from >=50 subjects",
+        "RR interval annotations",
+        "simultaneous respiration or activity labels for state transition identification",
+        "baseline RMSSD computed from first 5min"
+      ],
+      "testable_prediction": "Empirical coverage during high-KL-divergence segments will be at least 5 percentage points below nominal for high-HRV subjects (RMSSD>50ms) but within 2 points for low-HRV subjects",
+      "failure_condition": "No significant difference in coverage degradation between high-HRV and low-HRV subjects during high-KL-divergence segments (p>0.05, paired test)",
+      "statistical_test_plan": "Linear mixed model: coverage_gap ~ HRV_group * KL_divergence_bin + (1|subject) + age + SNR; test interaction term",
+      "falsification_test": "Induce artificial non-stationarity via synthetic distribution shifts in low-HRV subjects' data; if coverage remains stable, mechanism is falsified because non-stationarity alone doesn't explain the effect"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Sensor electrode-skin impedance drift during long recordings causes progressive miscalibration of conformal prediction intervals specifically in segments with high motion artifact density",
+      "proposed_mechanism": "Increasing electrode-skin impedance alters the amplitude distribution of ECG signals, which shifts the residual distribution of the underlying predictor; conformal prediction calibrated on early low-impedance segments produces intervals that are too narrow for later high-impedance segments with motion artifacts",
+      "causal_path": "Electrode-skin impedance increase (>20% from baseline) -> ECG amplitude attenuation and baseline wander -> Increased predictor residual variance in motion-contaminated segments -> Conformal quantile underestimation -> Coverage below nominal",
+      "mechanism_variables": [
+        "electrode_impedance_kohm",
+        "ECG_amplitude_mV",
+        "motion_artifact_density_percent",
+        "predictor_residual_std",
+        "conformal_quantile",
+        "empirical_coverage"
+      ],
+      "possible_confounders": [
+        "skin_preparation_quality",
+        "ambient_temperature",
+        "subject_sweating",
+        "electrode_gel_drying_rate"
+      ],
+      "control_variables": [
+        "standardized_skin_prep_protocol",
+        "temperature_controlled_room",
+        "exclude_sessions_with_excessive_sweating",
+        "impedance_monitored_every_5min"
+      ],
+      "rival_explanation": "Coverage degradation is caused by physiological non-stationarity that coincidentally correlates with recording duration",
+      "rival_prediction": "Coverage drops equally in clean and motion-contaminated segments as recording progresses",
+      "distinguishing_test": "Compare coverage trajectories in high-motion vs low-motion segments; mechanism predicts divergence only in high-motion segments",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Impedance changes of 20-50% are common in >30min recordings; motion artifacts amplify residual variance 2-3x; conformal quantiles can underestimate by 30-50% under distribution shift",
+      "minimum_data_needed": [
+        "Continuous impedance measurements throughout recording",
+        "ECG with motion artifact annotations (accelerometer-based)",
+        "Ground truth labels for prediction task",
+        "Minimum 60min recordings from >=20 subjects"
+      ],
+      "testable_prediction": "Coverage in high-motion segments (artifact density >15%) will decline by >10 percentage points over 60min while low-motion segments remain within 3 points of nominal",
+      "failure_condition": "Coverage decline is similar magnitude in high-motion and low-motion segments (difference <3 percentage points)",
+      "statistical_test_plan": "Segmented regression with breakpoint at impedance threshold; test slope difference between high/low motion segments using bootstrap CI",
+      "falsification_test": "Re-calibrate conformal predictor every 10min using only recent data; if coverage stabilizes, the mechanism (static calibration on drifting distribution) is confirmed; if coverage still degrades, mechanism is falsified"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Circadian variation in QT interval dynamics violates the exchangeability assumption when conformal prediction is trained on daytime data but applied to nighttime segments",
+      "proposed_mechanism": "QT-RR hysteresis and circadian autonomic shifts cause the conditional distribution of QT given RR to differ systematically between day and night; conformal prediction intervals calibrated on pooled data achieve nominal coverage overall but undercover specifically in nighttime segments due to unmodeled distributional shift",
+      "causal_path": "Circadian phase (melatonin onset) -> Autonomic balance shift (LF/HF ratio decrease >30%) -> Altered QT-RR relationship (hysteresis loop area change >20%) -> Conditional distribution shift P(QT|RR) -> Conformal prediction interval miscalibration in night segments",
+      "mechanism_variables": [
+        "circadian_phase_hours_from_DLMO",
+        "LF_HF_ratio",
+        "QT_RR_hysteresis_area_ms2",
+        "conditional_KL_divergence_day_night",
+        "night_segment_coverage",
+        "day_segment_coverage"
+      ],
+      "possible_confounders": [
+        "sleep_stage_distribution",
+        "age",
+        "sex",
+        "QT-prolonging_medications",
+        "electrolyte_levels"
+      ],
+      "control_variables": [
+        "polysomnography-verified sleep staging",
+        "exclude_QT_medication_users",
+        "age_matched_cohort",
+        "sex_balanced_sampling"
+      ],
+      "rival_explanation": "Nighttime coverage drop is due to increased motion artifacts during sleep rather than circadian physiology",
+      "rival_prediction": "Coverage degradation correlates with actigraphy-measured movement, not circadian phase",
+      "distinguishing_test": "Compare coverage in quiet wakefulness at night vs daytime; mechanism predicts nighttime degradation persists without motion",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "QT-RR hysteresis changes of 15-25% documented across circadian cycle; conformal coverage gaps of 5-10% observed under conditional distribution shift",
+      "minimum_data_needed": [
+        "24h Holter ECG with QT annotations",
+        "Dim light melatonin onset (DLMO) measurement",
+        "Continuous HRV for LF/HF",
+        "Actigraphy for movement",
+        ">=30 subjects"
+      ],
+      "testable_prediction": "Nighttime segments (2-6h post-DLMO) will show coverage 5-10 percentage points below nominal while daytime segments maintain nominal coverage, after controlling for motion",
+      "failure_condition": "No significant coverage difference between circadian phases after adjusting for motion artifact density (p>0.05)",
+      "statistical_test_plan": "Generalized additive model: coverage ~ s(circadian_phase) + motion_density + (1|subject); test significance of smooth term",
+      "falsification_test": "Train separate conformal predictors for day and night segments; if both achieve nominal coverage within their domains, the mechanism (single predictor across phases) is confirmed; if nighttime predictor still undercovers, mechanism is falsified"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Inconsistent R-peak annotation quality across physiological segments introduces label noise that differentially biases conformal prediction residuals",
+      "proposed_mechanism": "Automated R-peak detectors have lower sensitivity during high-motion or arrhythmic segments, causing systematic under-detection of beats; this creates a segment-dependent label noise pattern where residual distributions become skewed, violating the symmetry assumption of split conformal prediction",
+      "causal_path": "Segment type (motion/arrhythmia) -> R-peak detection sensitivity drop (>10% below baseline) -> Systematic label omission -> Asymmetric residual distribution (skewness >1.5) -> Split conformal prediction interval asymmetry -> Conditional coverage violation",
+      "mechanism_variables": [
+        "R_peak_detection_sensitivity",
+        "segment_type",
+        "residual_skewness",
+        "conformal_interval_lower_width",
+        "conformal_interval_upper_width",
+        "conditional_coverage_by_segment"
+      ],
+      "possible_confounders": [
+        "ECG_lead_configuration",
+        "sampling_rate",
+        "detector_algorithm",
+        "baseline_heart_rate"
+      ],
+      "control_variables": [
+        "fixed_lead_II",
+        "sampling_rate_>=500Hz",
+        "same_detector_algorithm",
+        "stratify_by_baseline_HR"
+      ],
+      "rival_explanation": "Coverage instability stems from true physiological variability in the prediction target, not annotation errors",
+      "rival_prediction": "Residual distributions remain symmetric (skewness <0.5) even in segments with coverage degradation",
+      "distinguishing_test": "Compare residual skewness and coverage in segments with manually verified vs automated annotations; mechanism predicts skewness only in automated",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "R-peak detection sensitivity drops 10-30% in motion/arrhythmia; skewness >1.5 can cause 5-15% conditional coverage violations in split conformal",
+      "minimum_data_needed": [
+        "ECG with expert-verified R-peak annotations for >=100 segments",
+        "Automated detector outputs",
+        "Segment labels (motion, arrhythmia, clean)",
+        "Prediction target ground truth"
+      ],
+      "testable_prediction": "Segments with detection sensitivity <90% will show residual skewness >1.5 and conditional coverage deviation >5% from nominal, while verified segments maintain symmetry and coverage",
+      "failure_condition": "Residual skewness <0.5 in low-sensitivity segments, or coverage deviation <2% despite high skewness",
+      "statistical_test_plan": "Quantile regression of coverage_gap on detection_sensitivity and skewness; test if skewness mediates the sensitivity-coverage relationship (Sobel test)",
+      "falsification_test": "Replace automated annotations with expert annotations in low-sensitivity segments and re-run conformal prediction; if coverage stabilizes, mechanism confirmed; if coverage remains unstable, mechanism falsified"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Improper stratification by physiological state during calibration causes conformal prediction to undercover during rare but critical states (e.g., atrial fibrillation episodes)",
+      "proposed_mechanism": "Standard conformal prediction calibrates on pooled data dominated by normal sinus rhythm; the resulting prediction intervals are too narrow for rare states with higher residual variance (e.g., AFib), causing severe undercoverage specifically during those clinically critical segments",
+      "causal_path": "Rare state prevalence (<5% of data) -> Pooled calibration quantile dominated by common state -> Prediction interval width insufficient for rare state residual variance -> Rare state coverage << nominal (e.g., <70% at 90% nominal)",
+      "mechanism_variables": [
+        "state_prevalence_percent",
+        "state_residual_variance",
+        "pooled_conformal_quantile",
+        "state_specific_coverage",
+        "nominal_coverage"
+      ],
+      "possible_confounders": [
+        "state_duration",
+        "state_transition_frequency",
+        "comorbidity_burden",
+        "medication_effects_on_residuals"
+      ],
+      "control_variables": [
+        "minimum_state_duration_30sec",
+        "exclude_frequent_transition_subjects",
+        "medication_washout_or_documentation"
+      ],
+      "rival_explanation": "Undercoverage in rare states is due to inherent unpredictability of those states, not calibration strategy",
+      "rival_prediction": "Even state-specific conformal predictors (trained only on that state) fail to achieve nominal coverage for rare states",
+      "distinguishing_test": "Train state-stratified conformal predictors; mechanism predicts rare-state coverage recovers to nominal with stratified calibration",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "AFib residual variance can be 3-5x sinus rhythm; pooled 90% quantile may cover only 60-70% of AFib residuals; stratified calibration should recover to ~90%",
+      "minimum_data_needed": [
+        "ECG with beat-level rhythm annotations (sinus, AFib, other)",
+        ">=50 subjects with AFib episodes",
+        "Minimum 10min AFib per subject",
+        "Prediction target with ground truth"
+      ],
+      "testable_prediction": "Pooled conformal coverage during AFib segments <75% at 90% nominal; state-stratified conformal coverage during AFib 85-95%",
+      "failure_condition": "State-stratified conformal coverage for AFib remains <80% at 90% nominal",
+      "statistical_test_plan": "McNemar's test comparing coverage indicator (covered/not) between pooled and stratified methods within AFib segments; binomial test for nominal coverage achievement",
+      "falsification_test": "Generate synthetic data where rare state has same residual distribution as common state; if pooled conformal still undercovers rare state, mechanism falsified (it's a prevalence artifact, not variance difference)"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Temporal autocorrelation in prediction residuals violates the i.i.d. assumption of conformal prediction, causing coverage to degrade during prolonged physiological states",
+      "proposed_mechanism": "Physiological signals exhibit long-range temporal correlations (Hurst exponent H>0.7); prediction residuals inherit this autocorrelation, causing consecutive residuals to be similar. Conformal prediction assumes exchangeability, so during prolonged states the effective sample size for calibration is much smaller than nominal, leading to quantile estimation error and coverage instability",
+      "causal_path": "Long-range temporal correlation in physiology (Hurst H>0.7) -> Autocorrelated predictor residuals (lag-1 ACF >0.5) -> Reduced effective calibration sample size (n_eff << n) -> Conformal quantile estimation variance inflation -> Coverage oscillation around nominal with period matching state duration",
+      "mechanism_variables": [
+        "Hurst_exponent",
+        "residual_lag1_ACF",
+        "effective_sample_size_ratio",
+        "conformal_quantile_variance",
+        "coverage_stability_index"
+      ],
+      "possible_confounders": [
+        "segment_length",
+        "state_change_frequency",
+        "predictor_model_complexity",
+        "sampling_rate"
+      ],
+      "control_variables": [
+        "fixed_segment_length_5min",
+        "minimum_3_state_changes_per_recording",
+        "same_predictor_architecture",
+        "resampling_to_250Hz"
+      ],
+      "rival_explanation": "Coverage instability is due to non-stationary mean shifts, not autocorrelation",
+      "rival_prediction": "Residuals show mean shifts but low autocorrelation (lag-1 ACF <0.2) during unstable coverage periods",
+      "distinguishing_test": "Compute effective sample size from residual ACF; mechanism predicts n_eff/n <0.3 correlates with coverage instability",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Physiological signals show H=0.7-0.9; n_eff can be 5-10x smaller than n; conformal quantile variance scales with 1/n_eff causing coverage std dev of 3-8%",
+      "minimum_data_needed": [
+        "Long continuous recordings >=2h from >=30 subjects",
+        "Beat-level predictions and residuals",
+        "Physiological state annotations",
+        "Hurst exponent estimation capability"
+      ],
+      "testable_prediction": "Segments with residual lag-1 ACF >0.5 will show coverage standard deviation >5% across bootstrap resamples, while segments with ACF <0.2 show <2%",
+      "failure_condition": "No correlation between residual ACF and coverage instability (Spearman rho <0.2, p>0.05)",
+      "statistical_test_plan": "Bootstrap conformal quantile estimation 1000x per segment; regress coverage_std on residual_ACF using beta regression; test slope significance",
+      "falsification_test": "Apply block conformal prediction with block size matched to autocorrelation decay; if coverage stabilizes, mechanism confirmed; if instability persists, mechanism falsified"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Respiratory sinus arrhythmia amplitude modulation creates periodic coverage oscillations in conformal prediction for RR interval forecasting",
+      "proposed_mechanism": "RSA causes cyclic variation in RR interval predictability (high predictability at end-expiration, low at end-inspiration); conformal prediction calibrated on full respiratory cycles produces intervals that are too wide during high-predictability phases and too narrow during low-predictability phases, creating periodic coverage oscillations",
+      "causal_path": "Respiratory phase (inspiration/expiration) -> RSA amplitude (peak-trough RR difference) -> Conditional residual variance modulation (expiration variance < inspiration variance) -> Fixed conformal quantile mismatch -> Periodic coverage oscillation (expiration coverage > nominal, inspiration coverage < nominal)",
+      "mechanism_variables": [
+        "respiratory_phase_radians",
+        "RSA_amplitude_ms",
+        "conditional_residual_variance_by_phase",
+        "phase_specific_coverage",
+        "nominal_coverage"
+      ],
+      "possible_confounders": [
+        "breathing_rate",
+        "breathing_depth",
+        "vagal_tone",
+        "supine_vs_upright"
+      ],
+      "control_variables": [
+        "paced_breathing_0.25Hz",
+        "supine_position",
+        "exclude_subjects_with_RSA_amplitude<20ms",
+        "simultaneous_respiration_belt"
+      ],
+      "rival_explanation": "Coverage oscillations are caused by cardiac cycle length effects, not respiratory modulation",
+      "rival_prediction": "Coverage oscillates at heart rate frequency (~1Hz), not respiratory frequency (~0.25Hz)",
+      "distinguishing_test": "Spectral analysis of coverage time series; mechanism predicts peak at respiratory frequency, rival predicts peak at cardiac frequency",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "RSA amplitude 20-100ms; residual variance ratio inspiration/expiration ~1.5-2x; coverage oscillation amplitude ~3-8% at 90% nominal",
+      "minimum_data_needed": [
+        "ECG + simultaneous respiration signal",
+        "Paced breathing protocol",
+        "RR interval predictions with residuals",
+        ">=20 subjects with RSA amplitude >20ms"
+      ],
+      "testable_prediction": "Coverage during expiration phases will exceed nominal by 3-8%; coverage during inspiration will fall below nominal by 3-8%; oscillation frequency matches respiratory rate",
+      "failure_condition": "No significant coverage difference between respiratory phases (paired t-test p>0.05) or oscillation frequency != respiratory frequency",
+      "statistical_test_plan": "Circular-linear regression: coverage ~ sin(respiratory_phase) + cos(respiratory_phase); test amplitude significance via permutation test",
+      "falsification_test": "Stratify calibration by respiratory phase (inspiration vs expiration); if phase-stratified conformal eliminates oscillations, mechanism confirmed; if oscillations persist, mechanism falsified"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Non-exchangeability induced by abrupt physiological state transitions (e.g., sleep stage changes) causes conformal prediction to fail specifically at transition boundaries",
+      "proposed_mechanism": "Sleep stage transitions (e.g., NREM to REM) create abrupt distributional shifts in HRV features; conformal prediction calibrated on pre-transition data produces intervals that fail to cover post-transition residuals because the calibration set contains no examples from the new regime",
+      "causal_path": "Sleep stage transition (hypnogram change) -> Abrupt HRV feature distribution shift (Wasserstein distance >0.5) -> Calibration set lacks post-transition examples -> Conformal quantile based on pre-transition residuals -> Transition boundary coverage collapse (<50% at 90% nominal)",
+      "mechanism_variables": [
+        "sleep_stage_transition_indicator",
+        "HRV_Wasserstein_distance_pre_post",
+        "transition_boundary_coverage",
+        "steady_state_coverage",
+        "nominal_coverage"
+      ],
+      "possible_confounders": [
+        "transition_duration",
+        "arousal_co-occurrence",
+        "apnea_events",
+        "age"
+      ],
+      "control_variables": [
+        "PSG-verified staging",
+        "exclude_transitions_with_arousals",
+        "minimum_5min_steady_state_each_side",
+        "age_18-65"
+      ],
+      "rival_explanation": "Coverage drop at transitions is due to movement artifacts during body position changes, not physiological state change",
+      "rival_prediction": "Coverage drops only at transitions accompanied by actigraphy movement >threshold",
+      "distinguishing_test": "Compare coverage at spontaneous transitions without movement vs movement-matched non-transition periods",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Sleep stage transitions cause HRV distribution shifts (Wasserstein >0.5); conformal coverage at boundaries can drop to 40-60% at 90% nominal in similar regime-shift settings",
+      "minimum_data_needed": [
+        "Overnight PSG with ECG and hypnogram",
+        ">=30 subjects with >=5 clear stage transitions each",
+        "HRV features computed in 30s windows",
+        "RR interval prediction task"
+      ],
+      "testable_prediction": "Coverage in 60s windows centered on stage transitions <60% at 90% nominal; coverage in matched steady-state windows >85%",
+      "failure_condition": "Transition boundary coverage >80% at 90% nominal, or no difference from steady-state",
+      "statistical_test_plan": "Generalized estimating equations: coverage_indicator ~ transition_window + (1|subject); test transition_window coefficient",
+      "falsification_test": "Use online conformal prediction with adaptive calibration window (only post-transition data); if coverage recovers at boundaries, mechanism confirmed; if not, mechanism falsified"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Conformal prediction coverage fails during ectopic beat sequences because the predictor's error distribution becomes bimodal, violating the unimodal assumption of quantile estimation",
+      "proposed_mechanism": "Ectopic beats (PVCs/PACs) create a mixture residual distribution: correctly predicted sinus beats (low error) and mispredicted ectopic beats (high error). The conformal quantile estimated from this mixture falls in the valley between modes, causing simultaneous overcoverage for sinus beats and undercoverage for ectopic beats",
+      "causal_path": "Ectopic beat density >10% -> Bimodal residual distribution (Hartigan's dip test p<0.01) -> Conformal quantile falls between modes -> Sinus beat coverage > nominal + 10%, ectopic beat coverage < nominal - 20%",
+      "mechanism_variables": [
+        "ectopic_density_percent",
+        "residual_dip_statistic",
+        "sinus_beat_coverage",
+        "ectopic_beat_coverage",
+        "nominal_coverage",
+        "conformal_quantile"
+      ],
+      "possible_confounders": [
+        "ectopic_morphology_variability",
+        "bigeminy_vs_isolated",
+        "underlying_heart_rate",
+        "electrolyte_status"
+      ],
+      "control_variables": [
+        "exclude_bigeminy_runs>5",
+        "stratify_by_ectopic_morphology",
+        "control_heart_rate_range_50-100bpm"
+      ],
+      "rival_explanation": "Ectopic beats simply have higher variance but unimodal residuals; conformal quantile appropriately covers the mixture",
+      "rival_prediction": "Residual distribution passes unimodality test (dip test p>0.05) even at high ectopic density",
+      "distinguishing_test": "Test residual distribution unimodality separately for high-ectopic vs low-ectopic segments",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Ectopic prediction errors can be 5-10x sinus errors; bimodal mixtures cause quantile estimation bias of 20-40% coverage gap between components",
+      "minimum_data_needed": [
+        "ECG with beat-type annotations (sinus, PVC, PAC)",
+        "Beat-level predictions and residuals",
+        ">=20 subjects with ectopic density range 0-30%",
+        "Minimum 1000 beats per subject"
+      ],
+      "testable_prediction": "At ectopic density >15%, residual dip test p<0.01; sinus beat coverage >95% at 90% nominal; ectopic beat coverage <70%",
+      "failure_condition": "Residual distribution unimodal (dip test p>0.05) at high ectopic density, or ectopic beat coverage >80%",
+      "statistical_test_plan": "Hartigan's dip test for unimodality per segment; beta-binomial regression for coverage by beat type; interaction test ectopic_density * beat_type",
+      "falsification_test": "Train separate conformal predictors for sinus and ectopic beats (using morphology features); if both achieve nominal coverage, mechanism confirmed; if ectopic predictor still undercovers, mechanism falsified"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Finite-sample conformal prediction coverage guarantees fail when calibration set size per physiological stratum is below the threshold required for valid quantile estimation",
+      "proposed_mechanism": "When data is stratified by physiological state (e.g., 5 sleep stages x 4 activity levels = 20 strata), some strata have very few calibration points (n<30). The conformal quantile estimator has high variance at small n, causing coverage to randomly fluctuate above/below nominal across strata, creating apparent instability that is actually estimation noise",
+      "causal_path": "High-dimensional stratification (>=15 strata) -> Small calibration n per stratum (median n<30) -> Conformal quantile estimation variance inflation (Var(q_hat) ~ 1/n) -> Stratum-specific coverage variance > (0.05)^2 -> Apparent coverage instability across segments",
+      "mechanism_variables": [
+        "num_strata",
+        "calibration_n_per_stratum",
+        "conformal_quantile_variance",
+        "stratum_coverage_variance",
+        "nominal_coverage"
+      ],
+      "possible_confounders": [
+        "stratum_prevalence_imbalance",
+        "predictor_performance_heterogeneity",
+        "total_calibration_size",
+        "stratification_variable_choice"
+      ],
+      "control_variables": [
+        "fixed_total_calibration_n=1000",
+        "balanced_strata_design",
+        "same_predictor",
+        "predefined_stratification_scheme"
+      ],
+      "rival_explanation": "Coverage instability reflects true physiological differences in predictability across strata, not estimation noise",
+      "rival_prediction": "Coverage variance across strata exceeds binomial sampling variance even when calibration n per stratum >100",
+      "distinguishing_test": "Subsample calibration sets to vary n_per_stratum; mechanism predicts coverage variance scales as 1/n",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Conformal quantile variance ~ p(1-p)/n * (1/f(q)^2); at n=20, coverage std dev ~5-8%; at n=100, ~2-3%; physiological predictability differences typically cause <5% coverage spread",
+      "minimum_data_needed": [
+        "Large calibration pool >=5000 samples",
+        "Predefined physiological strata (>=10)",
+        "Ability to subsample calibration sets",
+        "Multiple random splits for variance estimation"
+      ],
+      "testable_prediction": "Stratum coverage variance inversely proportional to calibration n per stratum (slope ~ -1 on log-log); at n>100 per stratum, coverage variance <0.001",
+      "failure_condition": "Coverage variance does not decrease with increasing n_per_stratum (slope > -0.5 on log-log)",
+      "statistical_test_plan": "Simulate subsampling: for each n in [10,20,30,50,100,200], compute coverage variance across strata over 100 random calibration draws; fit log(variance) ~ log(n); test slope = -1",
+      "falsification_test": "Use conformal prediction with regularization (e.g., smoothed quantile estimation); if coverage variance decreases without increasing n, mechanism confirmed as finite-sample artifact; if variance persists, mechanism falsified"
+    }
+  ],
+  "total_tokens": 7417,
+  "completion_tokens": 6870
+}

@@ -1,0 +1,84 @@
+{
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Inter-subject variability in autonomic nervous system reactivity causes non-exchangeable conformity scores for high-reactivity individuals.",
+      "proposed_mechanism": "Subjects with exaggerated sympathetic responses produce EDA and HRV trajectories that fall outside the calibration distribution's support, violating the exchangeability assumption required for valid conformal prediction intervals.",
+      "core_assumption": "Autonomic reactivity magnitude is a latent variable that systematically shifts the conditional distribution of physiological features given stress labels.",
+      "knowledge_gap_addressed": "Whether Mondrian stratification by coarse stress labels adequately captures continuous autonomic reactivity spectra that determine conformity score distributions.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Wrist-worn sensor displacement during movement artifacts creates subject-specific non-stationarity in PPG and ACC signals that degrades calibration coverage.",
+      "proposed_mechanism": "Subjects with higher movement variability during stress tasks experience greater sensor-skin interface disruption, introducing structured noise that shifts feature distributions between calibration and test phases in a subject-dependent manner.",
+      "core_assumption": "Sensor displacement correlates with individual movement patterns during stress induction, and this correlation differs across subjects.",
+      "knowledge_gap_addressed": "The extent to which motion artifact profiles are subject-specific and whether they violate the i.i.d. assumption within Mondrian strata.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Delayed physiological recovery kinetics in certain subjects create temporal leakage where post-stress calibration samples contaminate stress-class conformity scores.",
+      "proposed_mechanism": "Slow HRV/EDA recovery causes calibration samples labeled 'baseline' to retain residual stress physiology, inflating conformity scores for the baseline class and narrowing prediction intervals for the stress class during subsequent test windows.",
+      "core_assumption": "Recovery half-life varies significantly across subjects and exceeds the inter-trial interval in the WESAD protocol for a subset of participants.",
+      "knowledge_gap_addressed": "Whether the temporal spacing of WESAD conditions permits full physiological reset for all subjects, and how incomplete recovery biases Mondrian's class-conditional calibration.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Self-report labeling errors in the WESAD protocol disproportionately affect subjects with low interoceptive awareness, creating mislabeled calibration points.",
+      "proposed_mechanism": "Subjects who poorly discriminate internal states provide inaccurate stress/baseline labels during calibration, causing Mondrian to compute conformity scores against incorrect class-conditional distributions.",
+      "core_assumption": "Interoceptive accuracy varies across subjects and correlates with physiological stress reactivity patterns.",
+      "knowledge_gap_addressed": "The impact of subjective label noise on conformal prediction validity when labels are treated as ground truth in Mondrian stratification.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Mondrian's fixed stratification by protocol-defined conditions ignores continuous stress intensity gradients that vary within-condition across subjects.",
+      "proposed_mechanism": "Subjects experiencing the same protocol condition (e.g., TSST) exhibit different stress intensities due to trait anxiety or prior exposure, but Mondrian pools them into identical strata, violating the assumption that conformity scores are identically distributed within strata.",
+      "core_assumption": "Within-condition stress intensity is a continuous latent variable with subject-specific distributions that affect feature-conformity relationships.",
+      "knowledge_gap_addressed": "Whether discrete protocol-based stratification suffices for conformal validity when physiological stress response is a continuous, subject-varying quantity.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Subject-specific circadian phase at recording time modulates baseline autonomic tone, shifting feature distributions between calibration and test sets for evening-recorded subjects.",
+      "proposed_mechanism": "WESAD recordings occurred at different times of day; subjects recorded in late afternoon/evening have higher baseline sympathetic tone, causing their 'baseline' calibration samples to resemble 'stress' samples from morning-recorded subjects, breaking stratum-wise exchangeability.",
+      "core_assumption": "Circadian variation in autonomic balance is large enough to cause distributional overlap between baseline and stress classes across recording times.",
+      "knowledge_gap_addressed": "The effect of uncontrolled recording time on Mondrian's assumption that class-conditional distributions are stable within strata.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Non-linear feature interactions in high-dimensional physiological space create subject-specific conformity score distributions that Mondrian's marginal stratification cannot capture.",
+      "proposed_mechanism": "Mondrian stratification conditions only on discrete stress labels, but the true conformity score distribution depends on high-order interactions (e.g., EDA×HRV×respiration phase) that vary idiosyncratically across subjects, making calibration scores non-representative for test samples from the same stratum.",
+      "core_assumption": "The conditional distribution of conformity scores given stress label has subject-specific higher-order moments not captured by marginal stratification.",
+      "knowledge_gap_addressed": "Whether label-only stratification is sufficient for conformal validity when feature interactions governing conformity scores are subject-heterogeneous.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Calibration set size per stratum is insufficient for subjects with rare physiological response phenotypes, leading to high-variance quantile estimates.",
+      "proposed_mechanism": "Subjects exhibiting atypical stress response patterns (e.g., parasympathetic-dominant reactivity) form small effective calibration subsets within their assigned strata, causing the empirical quantile used for prediction intervals to have high sampling variability and systematic downward bias.",
+      "core_assumption": "Physiological stress response phenotypes follow a long-tailed distribution where some phenotypes are underrepresented in WESAD's 15-subject cohort.",
+      "knowledge_gap_addressed": "The finite-sample behavior of Mondrian conformal prediction when calibration strata contain very few samples from certain physiological subpopulations.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Temperature-induced sensor drift affects EDA measurements differently across subjects due to individual thermoregulatory responses to stress.",
+      "proposed_mechanism": "Stress-induced peripheral vasoconstriction/vasodilation changes skin temperature at the wrist sensor site, altering EDA baseline and gain in a subject-specific manner that shifts feature distributions between calibration (cooler) and test (warmer) phases.",
+      "core_assumption": "Cutaneous blood flow responses to stress vary significantly across individuals and systematically bias EDA-derived features used in the conformity score.",
+      "knowledge_gap_addressed": "Whether thermoregulatory physiology confounds EDA-based stress detection in a subject-heterogeneous way that violates conformal exchangeability.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Anticipatory anxiety during the pre-stress baseline period creates a continuum of physiological states that Mondrian's binary stratification forces into a single 'baseline' stratum.",
+      "proposed_mechanism": "Subjects with high trait anxiety exhibit elevated sympathetic activity during the nominal 'baseline' period due to anticipation of upcoming stressors, making their baseline conformity scores resemble stress scores and causing the stress-class prediction interval to be miscalibrated for these individuals.",
+      "core_assumption": "Anticipatory physiological activation correlates with trait anxiety and is present during WESAD's baseline recordings for a subset of subjects.",
+      "knowledge_gap_addressed": "The validity of discrete stress/baseline labels when anticipatory effects create a physiological gradient that crosses label boundaries in a subject-dependent manner.",
+      "status": "SPECULATIVE"
+    }
+  ]
+}

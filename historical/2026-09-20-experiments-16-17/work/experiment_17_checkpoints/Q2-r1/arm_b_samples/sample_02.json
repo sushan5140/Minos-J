@@ -1,0 +1,387 @@
+{
+  "sample_index": 2,
+  "valid": true,
+  "error": null,
+  "cards": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Subject-specific autonomic nervous system state drives non-exchangeability in physiological signal segments, causing conformal prediction coverage to drift.",
+      "proposed_mechanism": "Changes in LF/HF ratio cause shifts in the conditional distribution of R-peak amplitudes, which modifies the nonconformity scores used by conformal prediction, resulting in coverage deviation.",
+      "causal_path": "LF/HF_ratio -> R_peak_amplitude_distribution_shift -> Nonconformity_score_distribution_shift -> Coverage_error",
+      "mechanism_variables": [
+        "LF/HF_ratio",
+        "R_peak_amplitude_distribution",
+        "Nonconformity_score",
+        "Coverage_error"
+      ],
+      "possible_confounders": [
+        "Subject_age",
+        "Medication_use",
+        "Signal_quality_index"
+      ],
+      "control_variables": [
+        "Subject_age",
+        "Medication_use",
+        "Signal_quality_index"
+      ],
+      "rival_explanation": "Coverage instability is due to random fluctuations in the size of the calibration set across segments.",
+      "rival_prediction": "Segments with smaller calibration sets will exhibit lower coverage regardless of LF/HF ratio.",
+      "distinguishing_test": "If coverage differences persist after equalizing calibration set size across segments, the rival explanation is refuted.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Prior studies show moderate effect sizes (Cohen's d ~0.5) for autonomic state on ECG feature distribution.",
+      "minimum_data_needed": [
+        "Multi-lead ECG recordings",
+        "Time-resolved LF/HF ratio estimates",
+        "Segmented conformal prediction coverage metrics",
+        "Calibration set sizes per segment"
+      ],
+      "testable_prediction": "Higher LF/HF ratio predicts lower coverage (under-coverage) of 90% prediction intervals.",
+      "failure_condition": "No significant association between LF/HF ratio and coverage error after controlling for confounds.",
+      "statistical_test_plan": "Linear mixed-effects regression of coverage error on LF/HF ratio with random intercepts for subject, controlling for age, medication, signal quality.",
+      "falsification_test": "Pharmacological manipulation that reduces LF/HF ratio fails to increase coverage as predicted, indicating the causal path is not operative."
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Gradual increase in electrode-skin impedance during recording introduces heteroscedastic noise that changes the error distribution of physiological signals, breaking the i.i.d. assumption required for conformal prediction and causing coverage instability.",
+      "proposed_mechanism": "Rising impedance amplifies high-frequency noise disproportionately, increasing variance of signal features and altering nonconformity score thresholds, leading to segment-wise coverage drift.",
+      "causal_path": "Electrode_impedance -> Noise_variance_increase -> Feature_variance_shift -> Nonconformity_score_threshold_shift -> Coverage_error",
+      "mechanism_variables": [
+        "Electrode_impedance",
+        "Noise_variance",
+        "Feature_variance",
+        "Nonconformity_score_threshold",
+        "Coverage_error"
+      ],
+      "possible_confounders": [
+        "Subject_movement",
+        "Ambient_temperature",
+        "Skin_preparation_quality"
+      ],
+      "control_variables": [
+        "Subject_movement",
+        "Ambient_temperature",
+        "Skin_preparation_quality"
+      ],
+      "rival_explanation": "Coverage instability stems from batch effects in the machine-learning model used to compute nonconformity scores, not from sensor impedance.",
+      "rival_prediction": "If the model is retrained on each segment using the same impedance-affected data, coverage will remain stable.",
+      "distinguishing_test": "Retraining the model per segment does not rescue coverage when impedance is high, supporting the sensor-drift mechanism.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Impedance changes can double noise variance, which prior work shows yields large shifts in prediction interval width.",
+      "minimum_data_needed": [
+        "Impedance measurements per electrode per time window",
+        "Segment-wise noise variance estimates",
+        "Conformal prediction coverage per segment",
+        "Movement accelerometer data"
+      ],
+      "testable_prediction": "Increasing electrode impedance predicts decreasing coverage (over-dispersion) of prediction intervals.",
+      "failure_condition": "No monotonic relationship between impedance and coverage error after adjusting for movement and temperature.",
+      "statistical_test_plan": "Spearman correlation between impedance and coverage error within subjects, with mixed-effects model to account for repeated measures.",
+      "falsification_test": "Artificially clamping impedance to a constant value via active circuitry eliminates the coverage-impedance relationship; if coverage still varies with impedance, the mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Transitions between sleep stages (e.g., wake to N2) produce abrupt changes in the morphology of EEG spikes, causing concept drift in the label-noise process that conformal prediction assumes stationary, resulting in coverage loss.",
+      "proposed_mechanism": "Sleep-stage-dependent changes in spike shape modify the conditional distribution of features given the true label, shifting the nonconformity scores and breaking exchangeability.",
+      "causal_path": "Sleep_stage -> EEG_spike_shape_distribution -> Conditional_feature_distribution_given_label -> Nonconformity_score_distribution -> Coverage_error",
+      "mechanism_variables": [
+        "Sleep_stage",
+        "EEG_spike_shape",
+        "Conditional_feature_distribution_given_label",
+        "Nonconformity_score",
+        "Coverage_error"
+      ],
+      "possible_confounders": [
+        "Subject_age",
+        "Medication_use",
+        "Epoch_length"
+      ],
+      "control_variables": [
+        "Subject_age",
+        "Medication_use",
+        "Epoch_length"
+      ],
+      "rival_explanation": "Coverage loss is due to unequal numbers of labeled examples per sleep stage in the calibration set.",
+      "rival_prediction": "Stages with fewer calibration examples will show lower coverage regardless of spike shape changes.",
+      "distinguishing_test": "After balancing calibration set sizes across stages, coverage differences persist, implicating concept drift rather than sample size.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Sleep stage transitions are known to cause moderate effect sizes (η²≈0.06) on EEG spectral features.",
+      "minimum_data_needed": [
+        "Polysomnography EEG recordings",
+        "Sleep stage annotations per 30-s epoch",
+        "Spike shape metrics (e.g., width, amplitude)",
+        "Segment-wise conformal prediction coverage"
+      ],
+      "testable_prediction": "Segments classified as N2 exhibit lower coverage than wake segments, after adjusting for calibration set size.",
+      "failure_condition": "No significant difference in coverage between sleep stages after controlling for calibration set size and confounds.",
+      "statistical_test_plan": "ANOVA of coverage error with sleep stage as fixed effect, subject as random effect, covariates for age, medication, epoch length.",
+      "falsification_test": "If experimentally enforcing identical spike shapes across stages (via signal processing) does not eliminate coverage differences, the mechanism is not supported."
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Strong short-term temporal autocorrelation within physiological signal segments violates the exchangeability assumption underlying conformal prediction, causing the empirical coverage to deviate from the nominal level, especially when segment length changes.",
+      "proposed_mechanism": "Autocorrelation induces dependence among consecutive nonconformity scores, making the calibration set not i.i.d.; the resulting quantile estimate is biased, leading to segment-specific coverage bias.",
+      "causal_path": "Temporal_autocorrelation_lag1 -> Dependence_among_nonconformity_scores -> Biased_quantile_estimate -> Coverage_error",
+      "mechanism_variables": [
+        "Temporal_autocorrelation_lag1",
+        "Nonconformity_score_dependence",
+        "Quantile_estimate_bias",
+        "Coverage_error"
+      ],
+      "possible_confounders": [
+        "Segment_length",
+        "Sampling_rate",
+        "Filter_cutoff"
+      ],
+      "control_variables": [
+        "Segment_length",
+        "Sampling_rate",
+        "Filter_cutoff"
+      ],
+      "rival_explanation": "Coverage instability arises from non-stationary mean shifts rather than autocorrelation.",
+      "rival_prediction": "If means are detrended, coverage will stabilize even if autocorrelation remains high.",
+      "distinguishing_test": "Detrending the signal does not rescue coverage when autocorrelation is high, supporting the autocorrelation mechanism.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Autocorrelation effects on quantile bias are typically modest unless lag-1 correlation exceeds 0.7.",
+      "minimum_data_needed": [
+        "Lag-1 autocorrelation coefficient per segment",
+        "Nonconformity scores per segment",
+        "Empirical coverage per segment",
+        "Segment length and sampling rate"
+      ],
+      "testable_prediction": "Higher lag-1 autocorrelation predicts lower coverage (under-coverage) for fixed nominal level.",
+      "failure_condition": "No significant negative correlation between lag-1 autocorrelation and coverage error after controlling for confounds.",
+      "statistical_test_plan": "Linear regression of coverage error on lag-1 autocorrelation with robust standard errors, controlling for segment length, sampling rate, filter cutoff.",
+      "falsification_test": "If shuffling the temporal order within each segment (destroying autocorrelation but preserving distribution) restores coverage to nominal, the mechanism is confirmed; if coverage remains off, the mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Inter-annotator variability in labeling physiological events (e.g., arrhythmia beats) creates heterogeneous label noise across segments, which conformal prediction treats as uniform, leading to miscalibrated intervals and unstable coverage.",
+      "proposed_mechanism": "Differing label error rates change the true conditional distribution of features given the observed label, shifting nonconformity scores and breaking the assumption that calibration and test sets share the same label-noise process.",
+      "causal_path": "Label_error_rate -> Conditional_feature_distribution_given_observed_label -> Nonconformity_score_distribution -> Coverage_error",
+      "mechanism_variables": [
+        "Label_error_rate",
+        "Conditional_feature_distribution_given_observed_label",
+        "Nonconformity_score",
+        "Coverage_error"
+      ],
+      "possible_confounders": [
+        "Signal_quality",
+        "Annotator_experience",
+        "Event_rarity"
+      ],
+      "control_variables": [
+        "Signal_quality",
+        "Annotator_experience",
+        "Event_rarity"
+      ],
+      "rival_explanation": "Coverage drift is due to changes in class prevalence across segments, not label noise.",
+      "rival_prediction": "Segments with higher prevalence of the positive class will show lower coverage regardless of label error rate.",
+      "distinguishing_test": "After adjusting for class prevalence (e.g., via stratified calibration), coverage differences persist, implicating label noise.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Label error rates of 10-20% have been shown to cause moderate miscalibration in conformal predictors.",
+      "minimum_data_needed": [
+        "Multiple annotator labels per segment to estimate label error rate",
+        "Estimated label error rate per segment",
+        "Segment-wise conformal prediction coverage",
+        "Class prevalence per segment"
+      ],
+      "testable_prediction": "Higher estimated label error rate predicts lower coverage (over-dispersion) of prediction intervals.",
+      "failure_condition": "No significant association between label error rate and coverage error after controlling for prevalence and confounds.",
+      "statistical_test_plan": "Mixed-effects logistic regression of coverage indicator (covered/not) on label error rate with random intercepts for subject, adjusting for prevalence, signal quality, annotator experience.",
+      "falsification_test": "If replacing observed labels with a consensus gold standard eliminates the coverage-label error relationship, the mechanism is supported; if the relationship persists, it is falsified."
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Failure to stratify calibration and test sets by sleep stage leads to distribution shift between stages, causing conformal prediction intervals calibrated on one stage to miscover when applied to another, producing segment-wise coverage instability.",
+      "proposed_mechanism": "Each sleep stage has a distinct baseline power spectrum; mixing stages in calibration shifts the estimated quantile, so intervals are too wide/narrow for certain stages.",
+      "causal_path": "Sleep_stage_mix_in_calibration -> Misestimated_quantile -> Stage_specific_coverage_bias -> Coverage_error",
+      "mechanism_variables": [
+        "Sleep_stage_proportion_in_calibration",
+        "Estimated_quantile",
+        "Stage_specific_coverage_bias",
+        "Coverage_error"
+      ],
+      "possible_confounders": [
+        "Overall_signal_variance",
+        "Subject_age",
+        "Recording_duration"
+      ],
+      "control_variables": [
+        "Overall_signal_variance",
+        "Subject_age",
+        "Recording_duration"
+      ],
+      "rival_explanation": "Coverage instability is due to random variation in the size of the calibration set per segment.",
+      "rival_prediction": "Segments with smaller calibration sets will have lower coverage irrespective of sleep stage composition.",
+      "distinguishing_test": "After equalizing calibration set size across segments, coverage differences linked to sleep stage composition remain, supporting the stratification mechanism.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Mixing wake and N3 sleep can shift EEG power by >50%, which prior work shows yields large quantile misestimation.",
+      "minimum_data_needed": [
+        "Sleep stage label per segment",
+        "Proportion of each stage in calibration set per segment",
+        "Segment-wise conformal prediction coverage",
+        "Overall signal variance per segment"
+      ],
+      "testable_prediction": "Higher proportion of N3 in the calibration set predicts lower coverage for wake segments (over-coverage) and higher coverage for N3 segments (under-coverage).",
+      "failure_condition": "No interaction between calibration set sleep-stage composition and segment stage on coverage error after controlling for confounds.",
+      "statistical_test_plan": "Linear mixed-effects model with coverage error as outcome, fixed effects for calibration stage proportions, segment stage, and their interaction, random intercept for subject.",
+      "falsification_test": "If constructing separate stage-specific conformal predictors (calibrated within each stage) eliminates coverage differences across stages, the mechanism is confirmed; if differences persist, the mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Using a fixed-parameter nonconformity score (e.g., absolute residual from a linear model) that does not adapt to amplitude scaling of physiological signals leads to miscalibrated intervals when signal gain changes across segments.",
+      "proposed_mechanism": "Changes in signal gain (e.g., due to electrode contact) scale residuals proportionally, causing the nonconformity score distribution to shift; the fixed quantile threshold no longer matches the true error distribution.",
+      "causal_path": "Signal_gain_change -> Residual_scaling -> Nonconformity_score_distribution_shift -> Quantile_misestimation -> Coverage_error",
+      "mechanism_variables": [
+        "Signal_gain",
+        "Residual_scaling",
+        "Nonconformity_score_distribution",
+        "Quantile_estimate",
+        "Coverage_error"
+      ],
+      "possible_confounders": [
+        "Baseline_noise_level",
+        "Subject_movement",
+        "Filter_settings"
+      ],
+      "control_variables": [
+        "Baseline_noise_level",
+        "Subject_movement",
+        "Filter_settings"
+      ],
+      "rival_explanation": "Coverage instability stems from non-linear relationships that the linear model cannot capture, not from gain changes.",
+      "rival_prediction": "If a flexible model (e.g., neural net) is used, coverage will stabilize even with gain fluctuations.",
+      "distinguishing_test": "Switching to a gain-invariant score (e.g., normalized residual) restores stable coverage, supporting the gain-scaling mechanism.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Gain variations of 20-30% are common and have been shown to cause moderate miscalibration in residual-based conformal methods.",
+      "minimum_data_needed": [
+        "Estimated signal gain per segment (ratio of RMS to baseline)",
+        "Residuals from the prediction model per segment",
+        "Nonconformity scores per segment",
+        "Segment-wise conformal prediction coverage"
+      ],
+      "testable_prediction": "Higher signal gain predicts lower coverage (under-coverage) when using absolute residual scores.",
+      "failure_condition": "No significant relationship between signal gain and coverage error after adjusting for noise level and movement.",
+      "statistical_test_plan": "Linear mixed-effects regression of coverage error on signal gain with random subject intercepts, controlling for baseline noise, movement, filter settings.",
+      "falsification_test": "If normalizing residuals by estimated gain removes the gain-coverage relationship, the mechanism is supported; if the relationship remains, it is falsified."
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Transient motion artifacts produce outlier spikes that inflate nonconformity scores in a subset of segments, causing the empirical quantile to be overly conservative and leading to segment-specific over-coverage (intervals too wide).",
+      "proposed_mechanism": "Motion-induced outliers increase the magnitude of nonconformity scores, shifting the upper tail of their distribution; the conformal quantile (e.g., 90th percentile) moves upward, widening intervals and reducing predictive efficiency.",
+      "causal_path": "Motion_artifact_magnitude -> Outlier_nonconformity_score_increase -> Upper_tail_shift_of_nonconformity_scores -> Quantile_increase -> Interval_width_increase -> Coverage_error (over-coverage)",
+      "mechanism_variables": [
+        "Motion_artifact_magnitude",
+        "Outlier_nonconformity_score",
+        "Upper_tail_shift",
+        "Quantile",
+        "Interval_width",
+        "Coverage_error"
+      ],
+      "possible_confounders": [
+        "Subject_activity_level",
+        "Ambient_vibration",
+        "Electrode_adhesion_quality"
+      ],
+      "control_variables": [
+        "Subject_activity_level",
+        "Ambient_vibration",
+        "Electrode_adhesion_quality"
+      ],
+      "rival_explanation": "Coverage changes are due to systematic shifts in signal mean rather than outliers.",
+      "rival_prediction": "Detrending the signal will remove coverage differences even if motion artifacts persist.",
+      "distinguishing_test": "After removing detected outliers (e.g., via median filtering), coverage returns to nominal while mean shifts remain, supporting the outlier mechanism.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Single large outliers can shift the 90th percentile by several units, which prior simulations show yields large coverage deviations.",
+      "minimum_data_needed": [
+        "Motion artifact magnitude per segment (e.g., accelerometer-based jerk)",
+        "Flag for outlier presence in nonconformity scores",
+        "Segment-wise conformal prediction interval width and coverage",
+        "Activity level and vibration measures"
+      ],
+      "testable_prediction": "Segments with higher motion artifact magnitude exhibit higher coverage (over-coverage) and wider intervals.",
+      "failure_condition": "No positive correlation between motion artifact magnitude and coverage error or interval width after controlling for activity and vibration.",
+      "statistical_test_plan": "Mixed-effects linear model of coverage error on motion artifact magnitude with random intercepts for subject, adjusting for activity level, ambient vibration, electrode adhesion.",
+      "falsification_test": "If applying a robust outlier-resistant nonconformity score (e.g., based on median absolute deviation) eliminates the motion-coverage relationship, the mechanism is confirmed; if the relationship persists, it is falsified."
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Circadian-driven slow shifts in baseline physiological signal levels (e.g., core temperature-related EEG drift) produce gradual non-stationarity that violates the exchangeability assumption over longer recording sessions, causing coverage to drift over time.",
+      "proposed_mechanism": "Slow baseline drift changes the location parameter of the signal distribution, shifting nonconformity scores uniformly; the fixed quantile no longer matches the error distribution, leading to progressive under- or over-coverage.",
+      "causal_path": "Circadian_time -> Baseline_drift -> Location_shift_of_signal_distribution -> Uniform_shift_of_nonconformity_scores -> Quantile_misestimation -> Coverage_error",
+      "mechanism_variables": [
+        "Circadian_time (hours since wake)",
+        "Baseline_drift",
+        "Location_shift",
+        "Nonconformity_score_shift",
+        "Quantile_estimate",
+        "Coverage_error"
+      ],
+      "possible_confounders": [
+        "Sleep_deprivation",
+        "Caffeine_intake",
+        "Ambient_light"
+      ],
+      "control_variables": [
+        "Sleep_deprivation",
+        "Caffeine_intake",
+        "Ambient_light"
+      ],
+      "rival_explanation": "Coverage drift is due to accumulating fatigue effects on model performance, not circadian baseline shifts.",
+      "rival_prediction": "If performance metrics (e.g., prediction error) worsen over time but baseline drift is removed (via detrending), coverage will still deteriorate.",
+      "distinguishing_test": "Detrending the signal to remove baseline drift restores stable coverage despite time-on-task effects, supporting the circadian mechanism.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Baseline drifts of 5-10% of signal range are typical over 8 h and have been shown to cause moderate miscalibration in location-based conformal methods.",
+      "minimum_data_needed": [
+        "Time-of-day timestamp per segment",
+        "Estimated baseline drift (e.g., median signal per hour)",
+        "Segment-wise conformal prediction coverage",
+        "Sleep deprivation, caffeine, ambient light logs"
+      ],
+      "testable_prediction": "Later circadian time predicts decreasing coverage (under-coverage) if drift is positive, or increasing coverage if drift is negative.",
+      "failure_condition": "No significant association between circadian time and coverage error after adjusting for deprivation, caffeine, light.",
+      "statistical_test_plan": "Linear mixed-effects regression of coverage error on circadian time with random subject intercepts, controlling for sleep deprivation, caffeine intake, ambient light.",
+      "falsification_test": "If applying a baseline-removal preprocessing step (e.g., high-pass filter at 0.01 Hz) eliminates the circadian-coverage relationship, the mechanism is supported; if the relationship remains, it is falsified."
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Acute administration of medications that affect autonomic tone (e.g., beta-blockers) alters the statistical structure of heart-rate variability, inducing a shift in the feature distribution used by conformal prediction and causing segment-wise coverage instability.",
+      "proposed_mechanism": "Medication-induced changes in HRV parameters (e.g., reduced SDNN) modify the distribution of RR-interval features, shifting nonconformity scores and breaking exchangeability between calibration (pre-dose) and test (post-dose) segments.",
+      "causal_path": "Medication_dose -> HRV_parameter_change (SDNN) -> RR_interval_feature_distribution_shift -> Nonconformity_score_distribution_shift -> Coverage_error",
+      "mechanism_variables": [
+        "Medication_dose",
+        "HRV_parameter_SDNN",
+        "RR_interval_feature_distribution",
+        "Nonconformity_score_distribution",
+        "Coverage_error"
+      ],
+      "possible_confounders": [
+        "Baseline_HRV",
+        "Age",
+        "Concurrent_medications"
+      ],
+      "control_variables": [
+        "Baseline_HRV",
+        "Age",
+        "Concurrent_medications"
+      ],
+      "rival_explanation": "Coverage instability is due to random fluctuations in the calibration set size after medication administration.",
+      "rival_prediction": "Segments with smaller post-dose calibration sets will show lower coverage regardless of medication effect on HRV.",
+      "distinguishing_test": "After equalizing pre- and post-dose calibration set sizes, coverage differences linked to medication persist, supporting the medication-HRV mechanism.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Beta-blocker-induced SDNN reductions of ~20% have been associated with moderate changes in prediction interval calibration in prior work.",
+      "minimum_data_needed": [
+        "Timestamped medication administration logs",
+        "Pre- and post-dose HRV metrics (SDNN) per segment",
+        "RR-interval feature distributions per segment",
+        "Segment-wise conformal prediction coverage"
+      ],
+      "testable_prediction": "Post-dose segments with reduced SDNN exhibit lower coverage (under-coverage) relative to pre-dose segments.",
+      "failure_condition": "No significant difference in coverage between pre- and post-dose segments after adjusting for baseline HRV, age, and concurrent medications.",
+      "statistical_test_plan": "Linear mixed-effects model of coverage error on post-dose SDNN change with random intercepts for subject, controlling for baseline HRV, age, concurrent medications.",
+      "falsification_test": "If experimentally normalizing RR-interval features to pre-dose distribution post-dose eliminates the coverage difference, the mechanism is supported; if coverage remains off, the mechanism is falsified."
+    }
+  ],
+  "total_tokens": 24349,
+  "completion_tokens": 17918
+}

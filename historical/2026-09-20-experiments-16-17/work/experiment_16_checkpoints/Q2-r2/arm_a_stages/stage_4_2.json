@@ -1,0 +1,243 @@
+{
+  "confounder_rival_builds": [
+    {
+      "hypothesis_id": "H1",
+      "possible_confounders": [
+        "unmeasured genetic factors",
+        "environmental exposures (e.g., altitude, temperature)",
+        "data acquisition site differences (device model, electrode type)",
+        "comorbidity burden not captured by pathology_label"
+      ],
+      "control_variables": [
+        "subject_age",
+        "subject_BMI",
+        "medication_class",
+        "pathology_label",
+        "site_id",
+        "device_model",
+        "electrode_type"
+      ],
+      "boring_rival_explanations": [
+        "Coverage failure is driven by insufficient calibration sample size per subject rather than fundamental distributional heterogeneity; increasing n per subject restores coverage without stratification.",
+        "Model misspecification (e.g., linear predictor for nonlinear physiology) correlates with subject covariates, creating apparent heterogeneity that is actually a modeling artifact."
+      ],
+      "rival_prediction": "If the rival (insufficient per-subject sample size) is true, then pooling calibration data across subjects and simply increasing the number of calibration samples per test subject will restore nominal coverage, even without covariate stratification.",
+      "distinguishing_condition": "Compare empirical coverage when (a) calibration size per subject is increased 5x with pooled data vs. (b) stratified calibration with same total samples but balanced across covariate bins. If (a) restores coverage, rival wins; if (b) is required, proposed mechanism wins.",
+      "confounder_rival_notes": "Site and device confounders can mimic inter-subject heterogeneity; controlling for them isolates true physiological variation. Genetic and environmental confounders are typically unmeasured but can be partially proxied by ancestry PCs and geolocation."
+    },
+    {
+      "hypothesis_id": "H2",
+      "possible_confounders": [
+        "sensor type and placement variability",
+        "skin condition (hydration, hair, scars)",
+        "ambient temperature affecting electrode impedance",
+        "wireless transmission artifacts"
+      ],
+      "control_variables": [
+        "accelerometer_magnitude",
+        "electrode_impedance",
+        "signal_quality_index",
+        "activity_label",
+        "sensor_type",
+        "placement_site"
+      ],
+      "boring_rival_explanations": [
+        "Coverage drops during motion because the underlying physiological state (e.g., heart rate, blood pressure) changes rapidly and the predictor is not trained on those states, not because of sensor noise.",
+        "The conformal score function assumes Gaussian noise but motion artifacts produce heavy-tailed errors; a robust score (e.g., Huberized residuals) would fix coverage without explicit signal quality conditioning."
+      ],
+      "rival_prediction": "If the rival (physiological state change) is true, then conditioning on the true physiological state (e.g., heart rate bins) will equalize conditional coverage across activity levels, even without signal quality indices.",
+      "distinguishing_condition": "Stratify test segments by both signal quality index (SQI) and physiological state (e.g., HR bins). If coverage equalizes within SQI bins but not within HR bins, proposed mechanism wins; if coverage equalizes within HR bins but not SQI bins, rival wins.",
+      "confounder_rival_notes": "Sensor type and skin condition affect both artifact magnitude and signal quality indices; controlling for them prevents misattribution. Wireless artifacts can correlate with motion but have different spectral signatures."
+    },
+    {
+      "hypothesis_id": "H3",
+      "possible_confounders": [
+        "sleep disorders (apnea, insomnia)",
+        "shift work or irregular schedules",
+        "medication timing (e.g., beta-blockers at night)",
+        "light exposure and melatonin suppression"
+      ],
+      "control_variables": [
+        "time_of_day",
+        "sleep_stage",
+        "circadian_phase_estimate",
+        "ultradian_phase_estimate",
+        "melatonin_level",
+        "core_body_temperature"
+      ],
+      "boring_rival_explanations": [
+        "Coverage fails at night because calibration data lacks nighttime examples (sample selection bias), not because of inherent circadian non-stationarity; adding night data fixes it.",
+        "Nighttime coverage drop is due to different noise characteristics (less motion, different electrode contact) rather than shifts in the physiological signal distribution itself."
+      ],
+      "rival_prediction": "If the rival (sample selection bias) is true, then augmenting the calibration set with nighttime segments will restore uniform coverage across phases without requiring phase-aware nonconformity scores.",
+      "distinguishing_condition": "Train conformal predictor on combined day+night calibration data (matched sample sizes per phase) and evaluate conditional coverage per circadian phase bin. If coverage equalizes, rival wins; if coverage still varies by phase, proposed mechanism wins.",
+      "confounder_rival_notes": "Shift workers and sleep disorder patients have shifted or fragmented circadian phases; controlling for schedule and diagnosed disorders isolates endogenous rhythm effects. Medication timing can phase-shift autonomic rhythms."
+    },
+    {
+      "hypothesis_id": "H4",
+      "possible_confounders": [
+        "reference device calibration drift",
+        "clinician bias in triggering measurements (e.g., only when values look abnormal)",
+        "patient movement during reference measurement",
+        "different reference devices (cuff vs. arterial line)"
+      ],
+      "control_variables": [
+        "reference_measurement_interval",
+        "asynchrony_delay",
+        "clinical_concern_flag",
+        "reference_device_type",
+        "patient_movement_during_reference"
+      ],
+      "boring_rival_explanations": [
+        "Coverage failure is due to heteroscedastic model error (larger errors during extreme physiological states), not label noise; a heteroscedastic conformal score would fix it.",
+        "Asynchronous references introduce a systematic time-lag bias (predicting current state from past reference), not random label noise; aligning timestamps would fix it."
+      ],
+      "rival_prediction": "If the rival (model heteroscedasticity) is true, then using a variance-normalized nonconformity score (e.g., residual divided by predicted standard deviation) will restore conditional coverage even with noisy, asynchronous labels.",
+      "distinguishing_condition": "Simulate label noise with known heteroscedasticity and state-dependence on top of a perfectly calibrated predictor. Compare coverage of (a) standard absolute residual score, (b) variance-normalized score, (c) label-noise-aware score. If (c) uniquely restores coverage, proposed mechanism wins.",
+      "confounder_rival_notes": "Reference device drift and clinician triggering bias create label noise that correlates with the true state; controlling for device type and concern flag isolates the noise mechanism. Movement during reference adds extra variance."
+    },
+    {
+      "hypothesis_id": "H5",
+      "possible_confounders": [
+        "comorbidity burden (e.g., diabetes + heart failure)",
+        "disease severity within label (e.g., NYHA class)",
+        "concurrent treatments (e.g., vasopressors, dialysis)",
+        "demographic factors correlated with disease (age, sex)"
+      ],
+      "control_variables": [
+        "disease_label",
+        "severity_score",
+        "medication_list",
+        "comorbidity_index",
+        "residual_cluster_id",
+        "age",
+        "sex"
+      ],
+      "boring_rival_explanations": [
+        "Under-coverage in pathological subpopulations is due to their underrepresentation in the calibration set (small n), not fundamentally different error distributions; oversampling would fix it.",
+        "The predictor is misspecified for pathological physiology (e.g., linear model for nonlinear dynamics in heart failure), causing larger errors that are a modeling problem, not a conformal problem."
+      ],
+      "rival_prediction": "If the rival (underrepresentation) is true, then balancing the calibration set across subpopulations (e.g., via oversampling or stratified sampling) will equalize conditional coverage without needing group-conditional conformal prediction.",
+      "distinguishing_condition": "Compare conditional coverage for high-risk subpopulation when (a) calibration is balanced 1:1 across subpopulations using standard marginal conformal vs. (b) calibration is imbalanced but group-conditional conformal is applied. If (a) equalizes coverage, rival wins; if (b) is needed, proposed mechanism wins.",
+      "confounder_rival_notes": "Comorbidities and severity create gradients within disease labels; controlling for severity scores and comorbidity indices refines subpopulation definition. Treatment effects (e.g., vasopressors) can acutely alter physiology and error distributions."
+    },
+    {
+      "hypothesis_id": "H6",
+      "possible_confounders": [
+        "signal preprocessing (filtering, downsampling) altering autocorrelation",
+        "non-stationarity in mean/variance within calibration segment",
+        "sampling rate variability across devices",
+        "missing data imputation inducing artificial correlation"
+      ],
+      "control_variables": [
+        "autocorrelation_coefficient",
+        "segment_length",
+        "sampling_rate",
+        "filter_parameters",
+        "missing_data_rate"
+      ],
+      "boring_rival_explanations": [
+        "Coverage failure is due to non-stationarity (changing mean/variance) within the calibration segment, not autocorrelation per se; using shorter stationary segments would fix it.",
+        "The conformal quantile estimator is biased for small samples regardless of autocorrelation; the finite-sample correction is simply inadequate for n<100."
+      ],
+      "rival_prediction": "If the rival (non-stationarity) is true, then applying standard conformal prediction to shorter, verified-stationary segments (e.g., 5-min windows) will achieve nominal coverage without any autocorrelation correction.",
+      "distinguishing_condition": "Generate stationary AR(1) physiological surrogates with known phi (0.2 to 0.9) and fixed n. Compare coverage of (a) standard conformal, (b) block bootstrap conformal, (c) standard conformal on shorter stationary segments. If (b) restores coverage across all phi while (a) and (c) fail at high phi, proposed mechanism wins.",
+      "confounder_rival_notes": "Preprocessing filters can reduce but not eliminate physiological autocorrelation; controlling for filter parameters ensures fair comparison. Non-stationarity and autocorrelation often co-occur; segmenting by stationarity tests (e.g., KPSS) separates them."
+    },
+    {
+      "hypothesis_id": "H7",
+      "possible_confounders": [
+        "sensor degradation (electrode drying, optical coupling loss)",
+        "changes in measurement protocol or device firmware",
+        "acute illness events (sepsis, hemorrhage) causing abrupt shifts",
+        "patient adherence to medication regimen"
+      ],
+      "control_variables": [
+        "days_since_calibration",
+        "medication_dose_change",
+        "vascular_stiffness_index",
+        "heart_rate_trend",
+        "clinical_deterioration_score",
+        "sensor_age_days"
+      ],
+      "boring_rival_explanations": [
+        "Coverage degradation over time is due to sensor degradation (e.g., electrode impedance drift, PPG optical coupling loss), not physiological adaptation; replacing sensors restores coverage.",
+        "The drift is a general concept drift (e.g., new medications introduced, protocol changes) not specific to gradual physiological adaptation; any drift detection method would work."
+      ],
+      "rival_prediction": "If the rival (sensor degradation) is true, then recalibrating with a fresh sensor on the same patient (same physiological state) will restore coverage, whereas recalibrating with the same sensor after a medication change will not.",
+      "distinguishing_condition": "In a cohort with scheduled sensor replacements, compare coverage before/after sensor replacement (same physiology) vs. before/after medication titration (same sensor). If coverage drops only after medication change, proposed mechanism wins; if drops after sensor replacement, rival wins.",
+      "confounder_rival_notes": "Sensor age and clinical deterioration scores help disentangle sensor vs. physiological drift. Acute events cause abrupt shifts distinct from gradual adaptation; controlling for deterioration score isolates gradual drift."
+    },
+    {
+      "hypothesis_id": "H8",
+      "possible_confounders": [
+        "sensor quality differences across patients (e.g., PPG signal strength varies with skin tone)",
+        "patient-specific sensor fit (e.g., chest strap tightness)",
+        "environmental electromagnetic interference (e.g., electrosurgery, MRI)",
+        "clinical interventions causing modality loss (e.g., vasopressors causing PPG loss)"
+      ],
+      "control_variables": [
+        "active_modality_set",
+        "modality_dropout_indicator",
+        "perfusion_index",
+        "signal_quality_per_modality",
+        "clinical_severity_score",
+        "interference_flag"
+      ],
+      "boring_rival_explanations": [
+        "Coverage fails during modality dropout because the predictor relies on that modality and its predictions degrade (model problem), not because of a distinct error regime requiring separate conformal calibration.",
+        "The conformal score is not adapted to the reduced feature set during dropout, causing miscalibration; retraining the predictor on dropout data would fix it without modality-aware conformal scores."
+      ],
+      "rival_prediction": "If the rival (model degradation) is true, then training separate predictors for each modality subset and applying standard conformal prediction per subset will equalize conditional coverage across modality combinations.",
+      "distinguishing_condition": "Train modality-specific predictors (e.g., PPG+ECG, ECG-only, PPG-only) and evaluate conditional coverage per active modality set using marginal conformal per predictor. If coverage equalizes, rival wins; if coverage still varies and requires modality-aware nonconformity scores, proposed mechanism wins.",
+      "confounder_rival_notes": "Perfusion index and interference flags distinguish physiological dropout (clinically meaningful) from technical dropout. Skin tone and sensor fit affect baseline modality quality; controlling for them prevents confounding of dropout effects."
+    },
+    {
+      "hypothesis_id": "H9",
+      "possible_confounders": [
+        "signal preprocessing (log transform, winsorization) altering skewness",
+        "outlier removal during calibration biasing tail quantiles",
+        "distribution estimation error in learned nonconformity scores",
+        "heteroscedasticity correlated with signal magnitude"
+      ],
+      "control_variables": [
+        "signal_skewness",
+        "heavy_tail_index",
+        "nonconformity_score_type",
+        "calibration_set_size",
+        "preprocessing_pipeline"
+      ],
+      "boring_rival_explanations": [
+        "Asymmetric coverage is due to systematic prediction bias (under/over-prediction) in certain signal ranges, not the conformal score; recalibrating the predictor (e.g., isotonic regression) would equalize coverage.",
+        "The calibration set has insufficient samples in the distribution tails, causing quantile estimation error; increasing calibration size or using parametric tail extrapolation would fix it."
+      ],
+      "rival_prediction": "If the rival (predictor bias) is true, then applying a post-hoc predictor recalibration (e.g., quantile mapping) to remove bias will equalize conditional coverage across signal magnitude bins when using the standard absolute residual score.",
+      "distinguishing_condition": "Use an oracle predictor that outputs true conditional quantiles (eliminating predictor bias) on skewed physiological data. Compare conditional coverage per decile of true value for (a) absolute residual score vs. (b) quantile-based score. If (b) equalizes coverage while (a) does not, proposed mechanism wins.",
+      "confounder_rival_notes": "Preprocessing can artificially reduce skewness; controlling for pipeline ensures the mechanism is tested on raw-like distributions. Outlier removal biases tail quantiles; winsorization thresholds must be reported."
+    },
+    {
+      "hypothesis_id": "H10",
+      "possible_confounders": [
+        "patient acuity and case-mix differences across settings",
+        "staffing ratios and monitoring intensity",
+        "equipment differences (e.g., invasive vs. non-invasive BP)",
+        "documentation practices affecting label availability"
+      ],
+      "control_variables": [
+        "clinical_context_label",
+        "context_missing_rate",
+        "patient_acuity_score",
+        "monitoring_intensity",
+        "measurement_device_type",
+        "care_setting"
+      ],
+      "boring_rival_explanations": [
+        "Coverage differences across contexts are due to different patient populations (case-mix) rather than context itself; matching patients on covariates across contexts equalizes coverage.",
+        "The model is trained on one context (e.g., ward) and fails to generalize to another (e.g., ICU) due to domain shift in X distribution, not because context confounds X->Y; domain adaptation would fix it."
+      ],
+      "rival_prediction": "If the rival (case-mix) is true, then matching patients on observed covariates (age, diagnosis, acuity) across contexts will equalize conditional coverage, even without context labels or context-invariant representations.",
+      "distinguishing_condition": "Propensity-score match patients across contexts (e.g., ICU vs. ward) on all observed covariates. Evaluate conditional coverage in matched cohorts. If coverage equalizes, rival wins; if coverage still differs by context, proposed mechanism wins.",
+      "confounder_rival_notes": "Acuity scores and monitoring intensity are proxies for case-mix and measurement density; controlling for them isolates context-specific X->Y shifts. Equipment differences (invasive vs. non-invasive) change the measurement target itself."
+    }
+  ]
+}

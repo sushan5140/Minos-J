@@ -1,0 +1,176 @@
+[
+  {
+    "audit_decision": "REJECT",
+    "variables_measurable": false,
+    "causal_chain_valid": false,
+    "base_rate_plausible": true,
+    "confounders_identified": false,
+    "effect_size_plausible": true,
+    "data_requirements_clear": true,
+    "mechanism_is_non_generic": true,
+    "prediction_is_testable": true,
+    "failure_points": [
+      "variables_measurable",
+      "causal_chain_valid",
+      "confounders_identified"
+    ],
+    "decision_reason": "Fake audit reason for S3-H10.",
+    "salvage_note": "",
+    "hypothesis_id": "S3-H10"
+  },
+  {
+    "audit_decision": "REJECT",
+    "variables_measurable": false,
+    "causal_chain_valid": false,
+    "base_rate_plausible": true,
+    "confounders_identified": false,
+    "effect_size_plausible": true,
+    "data_requirements_clear": true,
+    "mechanism_is_non_generic": true,
+    "prediction_is_testable": true,
+    "failure_points": [
+      "variables_measurable",
+      "causal_chain_valid",
+      "confounders_identified"
+    ],
+    "decision_reason": "Fake audit reason for S4-H1.",
+    "salvage_note": "",
+    "hypothesis_id": "S4-H1"
+  },
+  {
+    "audit_decision": "REJECT",
+    "variables_measurable": false,
+    "causal_chain_valid": false,
+    "base_rate_plausible": true,
+    "confounders_identified": false,
+    "effect_size_plausible": true,
+    "data_requirements_clear": true,
+    "mechanism_is_non_generic": true,
+    "prediction_is_testable": true,
+    "failure_points": [
+      "variables_measurable",
+      "causal_chain_valid",
+      "confounders_identified"
+    ],
+    "decision_reason": "Fake audit reason for S5-H8.",
+    "salvage_note": "",
+    "hypothesis_id": "S5-H8"
+  },
+  {
+    "audit_decision": "PASS",
+    "variables_measurable": true,
+    "causal_chain_valid": true,
+    "base_rate_plausible": true,
+    "confounders_identified": true,
+    "effect_size_plausible": true,
+    "data_requirements_clear": true,
+    "mechanism_is_non_generic": true,
+    "prediction_is_testable": true,
+    "failure_points": [],
+    "decision_reason": "Fake audit reason for S1-H7.",
+    "salvage_note": "",
+    "hypothesis_id": "S1-H7"
+  },
+  {
+    "audit_decision": "REJECT",
+    "variables_measurable": false,
+    "causal_chain_valid": false,
+    "base_rate_plausible": true,
+    "confounders_identified": false,
+    "effect_size_plausible": true,
+    "data_requirements_clear": true,
+    "mechanism_is_non_generic": true,
+    "prediction_is_testable": true,
+    "failure_points": [
+      "variables_measurable",
+      "causal_chain_valid",
+      "confounders_identified"
+    ],
+    "decision_reason": "Fake audit reason for S3-H9.",
+    "salvage_note": "",
+    "hypothesis_id": "S3-H9"
+  },
+  {
+    "audit_decision": "REJECT",
+    "variables_measurable": false,
+    "causal_chain_valid": false,
+    "base_rate_plausible": true,
+    "confounders_identified": false,
+    "effect_size_plausible": true,
+    "data_requirements_clear": true,
+    "mechanism_is_non_generic": true,
+    "prediction_is_testable": true,
+    "failure_points": [
+      "variables_measurable",
+      "causal_chain_valid",
+      "confounders_identified"
+    ],
+    "decision_reason": "Fake audit reason for S5-H6.",
+    "salvage_note": "",
+    "hypothesis_id": "S5-H6"
+  },
+  {
+    "audit_decision": "PASS",
+    "variables_measurable": true,
+    "causal_chain_valid": true,
+    "base_rate_plausible": true,
+    "confounders_identified": true,
+    "effect_size_plausible": true,
+    "data_requirements_clear": true,
+    "mechanism_is_non_generic": true,
+    "prediction_is_testable": true,
+    "failure_points": [],
+    "decision_reason": "Fake audit reason for S5-H7.",
+    "salvage_note": "",
+    "hypothesis_id": "S5-H7"
+  },
+  {
+    "audit_decision": "PASS",
+    "variables_measurable": true,
+    "causal_chain_valid": true,
+    "base_rate_plausible": true,
+    "confounders_identified": true,
+    "effect_size_plausible": true,
+    "data_requirements_clear": true,
+    "mechanism_is_non_generic": true,
+    "prediction_is_testable": true,
+    "failure_points": [],
+    "decision_reason": "Fake audit reason for S1-H6.",
+    "salvage_note": "",
+    "hypothesis_id": "S1-H6"
+  },
+  {
+    "audit_decision": "PASS",
+    "variables_measurable": true,
+    "causal_chain_valid": true,
+    "base_rate_plausible": true,
+    "confounders_identified": true,
+    "effect_size_plausible": true,
+    "data_requirements_clear": true,
+    "mechanism_is_non_generic": true,
+    "prediction_is_testable": true,
+    "failure_points": [],
+    "decision_reason": "Fake audit reason for S4-H4.",
+    "salvage_note": "",
+    "hypothesis_id": "S4-H4"
+  },
+  {
+    "audit_decision": "REJECT",
+    "variables_measurable": false,
+    "causal_chain_valid": false,
+    "base_rate_plausible": true,
+    "confounders_identified": false,
+    "effect_size_plausible": true,
+    "data_requirements_clear": true,
+    "mechanism_is_non_generic": true,
+    "prediction_is_testable": true,
+    "failure_points": [
+      "variables_measurable",
+      "causal_chain_valid",
+      "confounders_identified"
+    ],
+    "decision_reason": "Fake audit reason for S3-H6.",
+    "salvage_note": "",
+    "hypothesis_id": "S3-H6"
+  }
+]

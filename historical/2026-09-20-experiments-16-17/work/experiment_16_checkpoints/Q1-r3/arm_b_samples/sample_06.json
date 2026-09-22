@@ -1,0 +1,401 @@
+{
+  "sample_index": 6,
+  "valid": true,
+  "error": null,
+  "cards": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Subjects with blunted cortisol reactivity exhibit systematically lower EDA amplitude during stress, causing their nonconformity scores to fall outside the calibration distribution used by Mondrian categories.",
+      "proposed_mechanism": "Blunted HPA-axis reactivity reduces sympathetic arousal magnitude, producing EDA responses that are statistically indistinguishable from baseline in the feature space, leading Mondrian taxonomy to assign them to incorrect strata.",
+      "causal_path": "Low cortisol reactivity -> reduced EDA phasic amplitude -> feature vector proximity to baseline cluster -> Mondrian category misassignment -> calibration quantile mismatch -> undercoverage",
+      "mechanism_variables": [
+        "cortisol_reactivity_auc",
+        "eda_phasic_amplitude_stress",
+        "mondrian_category_assignment",
+        "nonconformity_score",
+        "coverage_indicator"
+      ],
+      "possible_confounders": [
+        "baseline_eda_level",
+        "medication_use",
+        "circadian_phase",
+        "hydration_level"
+      ],
+      "control_variables": [
+        "age",
+        "sex",
+        "bmi",
+        "time_of_day",
+        "sensor_location"
+      ],
+      "rival_explanation": "Undercoverage stems from random calibration set variability rather than systematic physiological differences.",
+      "rival_prediction": "Undercoverage subjects will not show consistently blunted cortisol or EDA responses across repeated stress exposures.",
+      "distinguishing_test": "Measure cortisol and EDA reactivity in a second stress session; blunted responders should replicate undercoverage while random variability should not.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Literature reports ~30% of population shows blunted cortisol reactivity; effect on EDA amplitude is well-documented (r ~ 0.4-0.5).",
+      "minimum_data_needed": [
+        "WESAD EDA and cortisol measures per subject",
+        "Mondrian category assignments per trial",
+        "Per-subject coverage rates at nominal 90%"
+      ],
+      "testable_prediction": "Subjects in lowest cortisol reactivity tertile will have coverage rates <80% at nominal 90% level.",
+      "failure_condition": "No correlation between cortisol reactivity tertile and per-subject coverage rate (Spearman rho > -0.2).",
+      "statistical_test_plan": "Spearman correlation between cortisol_reactivity_auc and per-subject coverage rate; logistic regression predicting undercoverage (binary) from cortisol tertile controlling for age/sex.",
+      "falsification_test": "Re-run Mondrian with cortisol-reactivity-stratified taxonomy; if undercoverage persists in blunted responders, mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Wrist-worn sensor contact quality varies systematically across subjects due to wrist circumference and skin properties, causing EDA signal attenuation that distorts feature extraction for specific individuals.",
+      "proposed_mechanism": "Poor sensor-skin contact increases impedance, attenuating high-frequency EDA components used in feature extraction, shifting feature vectors toward baseline and causing systematic miscalibration for affected subjects.",
+      "causal_path": "Large wrist circumference / dry skin -> increased electrode impedance -> EDA signal attenuation -> reduced feature discriminability -> Mondrian category misassignment -> undercoverage",
+      "mechanism_variables": [
+        "wrist_circumference",
+        "skin_impedance_baseline",
+        "eda_signal_snr",
+        "feature_vector_norm",
+        "mondrian_category",
+        "coverage_indicator"
+      ],
+      "possible_confounders": [
+        "ambient_humidity",
+        "sensor_tightness",
+        "hair_density",
+        "sweat_rate"
+      ],
+      "control_variables": [
+        "sensor_model",
+        "placement_protocol",
+        "subject_age",
+        "sex"
+      ],
+      "rival_explanation": "Undercoverage is driven by physiological differences, not sensor artifacts.",
+      "rival_prediction": "Signal quality metrics (SNR, impedance) will not correlate with coverage rates after controlling for physiological reactivity.",
+      "distinguishing_test": "Correlate baseline impedance and SNR with per-subject coverage; sensor artifact hypothesis predicts strong negative correlation.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Impedance can vary 10x across subjects; EDA amplitude attenuation directly scales with impedance. Prior work shows >50% feature degradation at high impedance.",
+      "minimum_data_needed": [
+        "Per-subject baseline impedance measurements",
+        "EDA signal SNR estimates",
+        "Wrist circumference measurements",
+        "Per-subject coverage rates"
+      ],
+      "testable_prediction": "Subjects with baseline impedance >75th percentile will have coverage rates at least 15 percentage points lower than those <25th percentile.",
+      "failure_condition": "No significant difference in coverage between high and low impedance groups (p > 0.05, two-sample t-test).",
+      "statistical_test_plan": "Linear regression: coverage_rate ~ baseline_impedance + wrist_circumference + skin_type; mediation analysis testing SNR as mediator.",
+      "falsification_test": "Re-process raw EDA with impedance-corrected feature extraction; if undercoverage disappears for high-impedance subjects, original mechanism confirmed; if persists, falsified."
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Subjects exhibiting delayed stress recovery show non-stationary nonconformity scores within the calibration window, violating the exchangeability assumption for their Mondrian stratum.",
+      "proposed_mechanism": "Prolonged physiological arousal after stressor offset creates a temporal trend in nonconformity scores during calibration, causing the empirical quantile to underestimate true variability for subsequent test points.",
+      "causal_path": "Delayed recovery -> positive temporal trend in nonconformity scores during calibration -> empirical quantile too low -> test points exceed quantile -> undercoverage",
+      "mechanism_variables": [
+        "recovery_time_constant",
+        "nonconformity_score_trend_slope",
+        "calibration_window_length",
+        "empirical_quantile",
+        "test_coverage"
+      ],
+      "possible_confounders": [
+        "stressor_intensity",
+        "baseline_anxiety",
+        "fitness_level",
+        "caffeine_intake"
+      ],
+      "control_variables": [
+        "stress_protocol_type",
+        "calibration_set_size",
+        "nominal_coverage_level"
+      ],
+      "rival_explanation": "Undercoverage reflects inherent subject difficulty, not temporal non-stationarity.",
+      "rival_prediction": "Nonconformity scores will show no systematic temporal trend within calibration windows for undercovered subjects.",
+      "distinguishing_test": "Fit linear trend to nonconformity scores within each subject's calibration window; test if slope predicts coverage deficit.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Recovery time constants vary 2-3x across individuals; simulation studies show 10-20% coverage deficit from moderate trends (slope ~0.01 per trial).",
+      "minimum_data_needed": [
+        "Per-trial nonconformity scores with temporal ordering",
+        "Per-subject recovery time estimates (EDA/HR decay)",
+        "Calibration/test split timestamps"
+      ],
+      "testable_prediction": "Subjects with recovery time constant > median will show positive nonconformity score trends (slope > 0) and coverage deficits >10%.",
+      "failure_condition": "No correlation between recovery time constant and nonconformity score trend slope (p > 0.05).",
+      "statistical_test_plan": "Mixed-effects model: nonconformity_score ~ trial_index + (trial_index | subject); extract per-subject slopes; correlate with coverage deficit.",
+      "falsification_test": "Use online conformal prediction with adaptive windowing; if undercoverage persists for slow-recovery subjects, mechanism falsified."
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Self-reported stress labels (VAS) for certain subjects systematically diverge from physiological ground truth due to interoceptive awareness differences, creating label noise that corrupts Mondrian category calibration.",
+      "proposed_mechanism": "Low interoceptive accuracy causes subjects to under-report stress during high physiological arousal, assigning 'low stress' labels to high-arousal states; Mondrian taxonomy learns incorrect category-conditional distributions.",
+      "causal_path": "Low interoceptive_accuracy -> VAS_rating < physiological_arousal -> label_noise_in_calibration -> Mondrian_category_distribution_shift -> test_coverage_deficit",
+      "mechanism_variables": [
+        "interoceptive_accuracy_score",
+        "vas_stress_rating",
+        "physiological_arousal_index",
+        "label_discrepancy",
+        "mondrian_category_purity",
+        "coverage_rate"
+      ],
+      "possible_confounders": [
+        "alexithymia",
+        "pain_sensitivity",
+        "attention_to_task",
+        "language_comprehension"
+      ],
+      "control_variables": [
+        "age",
+        "education",
+        "native_language",
+        "stress_protocol"
+      ],
+      "rival_explanation": "Physiological features are simply non-predictive for some subjects, not mislabeled.",
+      "rival_prediction": "Label discrepancy will not correlate with coverage; feature predictive power (AUC) will be low for undercovered subjects regardless of labels.",
+      "distinguishing_test": "Compute label discrepancy = |VAS - physiological_arousal|; test if it predicts coverage deficit better than feature AUC.",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "No prior work quantifies label noise impact on Mondrian coverage; would need pilot data estimating interoceptive accuracy distribution and label discrepancy magnitude in WESAD.",
+      "minimum_data_needed": [
+        "Per-trial VAS ratings",
+        "Per-trial physiological arousal index (EDA+HR composite)",
+        "Interoceptive accuracy measure (heartbeat counting task)",
+        "Per-subject coverage rates"
+      ],
+      "testable_prediction": "Subjects in lowest interoceptive accuracy quartile will have coverage rates <75% at nominal 90%.",
+      "failure_condition": "Interoceptive accuracy shows no association with coverage deficit (Spearman rho > -0.15).",
+      "statistical_test_plan": "Quantile regression: coverage_rate ~ interoceptive_accuracy + physiological_arousal_mean; test interaction with label_discrepancy.",
+      "falsification_test": "Re-train Mondrian using only physiological labels (unsupervised clustering); if undercoverage persists for low-interoception subjects, mechanism falsified."
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "The Mondrian taxonomy (based on stress condition labels) fails to capture subject-specific physiological response phenotypes, causing heterogeneous subjects to share categories with incompatible nonconformity distributions.",
+      "proposed_mechanism": "Taxonomy categories (baseline/stress/amusement/meditation) pool physiologically distinct responders (e.g., 'high reactors' vs 'low reactors') into same stratum, violating category-conditional exchangeability.",
+      "causal_path": "Coarse taxonomy -> within-category physiological heterogeneity -> bimodal nonconformity distribution -> empirical quantile misses tail -> undercoverage for minority phenotype",
+      "mechanism_variables": [
+        "taxonomy_category",
+        "physiological_phenotype_cluster",
+        "nonconformity_distribution_modality",
+        "category_conditional_quantile",
+        "per_phenotype_coverage"
+      ],
+      "possible_confounders": [
+        "category_sample_size_imbalance",
+        "feature_selection_bias",
+        "calibration_set_composition"
+      ],
+      "control_variables": [
+        "nominal_coverage",
+        "nonconformity_function",
+        "base_classifier"
+      ],
+      "rival_explanation": "Taxonomy is adequate; undercoverage stems from finite-sample variability in small categories.",
+      "rival_prediction": "Coverage deficits will be symmetric across phenotypes within categories and shrink with larger calibration sets.",
+      "distinguishing_test": "Cluster subjects by physiological response pattern; test if coverage varies significantly across clusters within same taxonomy category.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Phenotype misalignment can cause >30% coverage gaps; Mondrian theory guarantees coverage only under category-conditional exchangeability.",
+      "minimum_data_needed": [
+        "Per-trial taxonomy category labels",
+        "Physiological response features for clustering",
+        "Per-subject per-category coverage rates",
+        "Nonconformity scores per trial"
+      ],
+      "testable_prediction": "At least one taxonomy category will contain >2 physiological clusters with coverage difference >20 percentage points.",
+      "failure_condition": "All physiological clusters within each taxonomy category have coverage within 5% of nominal level.",
+      "statistical_test_plan": "Gaussian mixture modeling on stress-response features; ANOVA of coverage_rate ~ cluster * taxonomy_category; post-hoc Tukey HSD.",
+      "falsification_test": "Refine taxonomy using physiological clusters as categories; if undercoverage eliminated, original taxonomy was cause; if persists, mechanism falsified."
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Calibration sets for certain subjects are contaminated by anticipatory arousal during baseline periods, shifting the nonconformity distribution and causing undercoverage during actual stress.",
+      "proposed_mechanism": "Subjects with high trait anxiety show elevated physiology during 'baseline' due to anticipation, making baseline nonconformity scores resemble stress; Mondrian learns inflated baseline quantile, causing stress trials to exceed it.",
+      "causal_path": "High_trait_anxiety -> anticipatory_arousal_during_baseline -> elevated_baseline_nonconformity -> inflated_baseline_quantile -> stress_trials_exceed_quantile -> undercoverage",
+      "mechanism_variables": [
+        "trait_anxiety_score",
+        "baseline_eda_mean",
+        "baseline_nonconformity_mean",
+        "baseline_quantile_90",
+        "stress_nonconformity",
+        "coverage_indicator"
+      ],
+      "possible_confounders": [
+        "state_anxiety_day",
+        "experimenter_presence",
+        "prior_stress_exposure",
+        "instruction_clarity"
+      ],
+      "control_variables": [
+        "baseline_duration",
+        "stress_protocol_order",
+        "age",
+        "sex"
+      ],
+      "rival_explanation": "Undercoverage reflects true stress response variability, not baseline contamination.",
+      "rival_prediction": "Baseline nonconformity scores will not correlate with trait anxiety or predict stress coverage deficit.",
+      "distinguishing_test": "Correlate baseline nonconformity mean with trait anxiety and with stress coverage deficit; mediation analysis.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Trait anxiety explains ~15% variance in anticipatory arousal; simulation suggests 10-15% coverage deficit from 0.5 SD baseline shift.",
+      "minimum_data_needed": [
+        "Trait anxiety scores (STAI-T)",
+        "Per-trial baseline nonconformity scores",
+        "Per-subject stress coverage rates",
+        "Baseline period physiological data"
+      ],
+      "testable_prediction": "Subjects with STAI-T > 75th percentile will have baseline nonconformity scores >0.5 SD above mean and stress coverage <80%.",
+      "failure_condition": "No correlation between trait anxiety and baseline nonconformity (p > 0.05).",
+      "statistical_test_plan": "Linear regression: baseline_nonconformity_mean ~ trait_anxiety; logistic regression: undercoverage ~ baseline_nonconformity_mean + trait_anxiety.",
+      "falsification_test": "Exclude first baseline period from calibration; if undercoverage disappears for high-anxiety subjects, mechanism confirmed; if persists, falsified."
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Strong temporal autocorrelation in physiological residuals violates the exchangeability assumption for subjects with high autonomic stability, causing Mondrian's i.i.d.-based quantiles to be anticonservative.",
+      "proposed_mechanism": "High autonomic stability produces highly predictable physiological trajectories (low innovation variance), creating long-range dependence in nonconformity scores that makes empirical quantiles underestimate future variability.",
+      "causal_path": "High_autonomic_stability -> low_residual_innovation_variance -> high_nonconformity_autocorrelation -> effective_sample_size_reduction -> quantile_underestimation -> undercoverage",
+      "mechanism_variables": [
+        "autonomic_stability_index",
+        "nonconformity_ar1_coefficient",
+        "effective_sample_size",
+        "empirical_quantile_90",
+        "actual_coverage"
+      ],
+      "possible_confounders": [
+        "breathing_rate_regularity",
+        "movement_artifact_structure",
+        "circadian_rhythm_strength"
+      ],
+      "control_variables": [
+        "calibration_set_size",
+        "nominal_level",
+        "nonconformity_function"
+      ],
+      "rival_explanation": "Undercoverage is due to distributional shift, not autocorrelation.",
+      "rival_prediction": "Block bootstrap coverage estimates will match nominal levels if distributional shift is absent.",
+      "distinguishing_test": "Compare standard conformal coverage vs. block bootstrap coverage estimates per subject; autocorrelation hypothesis predicts block bootstrap reveals true undercoverage.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "AR(1) coefficients >0.7 reduce effective sample size by ~50%; coverage deficit scales with sqrt(n_eff/n) ~ 10-15% for n=100.",
+      "minimum_data_needed": [
+        "Per-trial nonconformity scores in temporal order",
+        "Per-subject autonomic stability metric (HRV RMSSD consistency)",
+        "Block bootstrap coverage estimates"
+      ],
+      "testable_prediction": "Subjects with AR(1) coefficient >0.7 will have actual coverage <85% at nominal 90% while block bootstrap estimates match nominal.",
+      "failure_condition": "No correlation between AR(1) coefficient and coverage deficit (Spearman rho < 0.2).",
+      "statistical_test_plan": "Fit AR(1) to nonconformity scores per subject; compute effective n; regression: coverage_deficit ~ 1/sqrt(effective_n) + autonomic_stability.",
+      "falsification_test": "Apply conformal prediction with block-calibration (using blocks matching autocorrelation length); if undercoverage eliminated, mechanism confirmed; if persists, falsified."
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Subjects with high movement artifact burden during stress have corrupted EDA/ACC features that systematically bias nonconformity scores downward, creating false confidence in predictions.",
+      "proposed_mechanism": "Movement artifacts introduce structured noise that the base classifier misinterprets as signal patterns, producing spuriously low nonconformity scores for contaminated stress trials that fall within calibration quantiles despite being unreliable.",
+      "causal_path": "High_movement_during_stress -> ACC_artifact_contamination -> corrupted_EDA_features -> spuriously_low_nonconformity -> false_coverage -> actual_undercoverage_when_evaluated_on_clean_data",
+      "mechanism_variables": [
+        "movement_artifact_index",
+        "eda_acc_correlation",
+        "nonconformity_score_stress",
+        "artifact_flag",
+        "clean_vs_contaminated_coverage"
+      ],
+      "possible_confounders": [
+        "stress_task_movement_demand",
+        "sensor_attachment_quality",
+        "body_composition",
+        "dominant_hand"
+      ],
+      "control_variables": [
+        "stress_protocol_type",
+        "sensor_sampling_rate",
+        "artifact_detection_threshold"
+      ],
+      "rival_explanation": "Movement artifacts increase nonconformity scores (making coverage conservative), not decrease them.",
+      "rival_prediction": "Artifact-contaminated trials will have higher nonconformity scores than clean trials.",
+      "distinguishing_test": "Compare nonconformity score distributions for artifact-flagged vs clean stress trials; test direction of shift.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Artifact contamination affects ~20-40% of stress trials in wrist-worn data; feature corruption can reduce nonconformity by 0.5-1 SD in classifier output space.",
+      "minimum_data_needed": [
+        "ACC magnitude per trial",
+        "Artifact detection labels per trial",
+        "Per-trial nonconformity scores",
+        "Clean/artifact-stratified coverage rates"
+      ],
+      "testable_prediction": "Artifact-contaminated stress trials will show nonconformity scores 0.3+ SD lower than clean trials and coverage >95% (false coverage).",
+      "failure_condition": "Artifact-contaminated trials have equal or higher nonconformity scores than clean trials (p > 0.05, one-sided).",
+      "statistical_test_plan": "Two-sample t-test: nonconformity_clean vs nonconformity_artifact; logistic regression: artifact_flag ~ nonconformity_score; coverage comparison by artifact status.",
+      "falsification_test": "Re-run Mondrian after removing artifact-contaminated trials from calibration; if undercoverage pattern reverses, mechanism confirmed; if unchanged, falsified."
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Individual baseline drift in skin conductance level (SCL) across the experimental session causes feature distribution shift that disproportionately affects subjects with high tonic EDA variability.",
+      "proposed_mechanism": "Progressive SCL drift (due to hydration, temperature, or habituation) shifts the feature distribution for late-session trials relative to early-session calibration data, causing miscalibration for subjects with steep drift slopes.",
+      "causal_path": "High_tonic_eda_variability -> steep_SCL_drift_slope -> feature_distribution_shift_over_time -> calibration_test_mismatch -> undercoverage_for_late_trials",
+      "mechanism_variables": [
+        "scl_drift_slope_per_session",
+        "tonic_eda_variability_cv",
+        "trial_index",
+        "feature_vector_shift_magnitude",
+        "early_vs_late_coverage"
+      ],
+      "possible_confounders": [
+        "room_temperature_change",
+        "hydration_changes",
+        "electrode_polarization",
+        "session_duration"
+      ],
+      "control_variables": [
+        "session_length",
+        "baseline_duration",
+        "stress_trial_order",
+        "sensor_type"
+      ],
+      "rival_explanation": "Undercoverage is uniform across trial order, not concentrated in late trials.",
+      "rival_prediction": "Coverage will not differ between early and late stress trials for any subject group.",
+      "distinguishing_test": "Split stress trials into early/late halves; test interaction between drift slope and trial half on coverage.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "SCL drift typically 0.01-0.05 µS/min; feature shift accumulates to ~0.5 SD over 30min; expected coverage deficit 5-10% for high-drift subjects.",
+      "minimum_data_needed": [
+        "Continuous SCL measurements per subject",
+        "Trial timestamps and order",
+        "Per-trial coverage indicators",
+        "Tonic EDA variability metric"
+      ],
+      "testable_prediction": "Subjects in top SCL drift quartile will show >10% coverage difference between early and late stress trials.",
+      "failure_condition": "No interaction between drift slope and trial half on coverage (p > 0.05).",
+      "statistical_test_plan": "Mixed logistic regression: coverage ~ trial_half * drift_slope + (1|subject); test interaction term.",
+      "falsification_test": "Re-calibrate Mondrian using sliding window (last 20 trials); if undercoverage eliminated for high-drift subjects, mechanism confirmed; if persists, falsified."
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Rare subject-condition combinations (e.g., specific subject x meditation condition) have insufficient calibration samples, causing high variance in empirical quantiles and sporadic undercoverage.",
+      "proposed_mechanism": "Mondrian categories with few calibration points per subject produce noisy quantile estimates; by chance, some subject-category pairs get underestimated quantiles, leading to undercoverage that appears subject-specific but is actually a small-sample artifact.",
+      "causal_path": "Small_calibration_n_per_subject_category -> high_quantile_estimation_variance -> downward_quantile_errors -> undercoverage_for_affected_pairs -> apparent_subject_specific_pattern",
+      "mechanism_variables": [
+        "calibration_count_per_subject_category",
+        "quantile_estimation_se",
+        "empirical_quantile",
+        "nominal_quantile",
+        "coverage_indicator"
+      ],
+      "possible_confounders": [
+        "category_imbalance_in_design",
+        "subject_dropout",
+        "trial_exclusion_artifacts"
+      ],
+      "control_variables": [
+        "nominal_coverage_level",
+        "nonconformity_function",
+        "total_calibration_size"
+      ],
+      "rival_explanation": "Undercoverage reflects true physiological differences, not sampling variability.",
+      "rival_prediction": "Undercoverage will persist with increased calibration data; it will not correlate with calibration count.",
+      "distinguishing_test": "Simulate coverage as function of calibration n via subsampling; test if observed undercoverage matches small-sample variance prediction.",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Depends on actual calibration counts per subject-category in WESAD; need to compute empirical distribution of n_per_cell to estimate quantile SE.",
+      "minimum_data_needed": [
+        "Calibration set sizes per subject per Mondrian category",
+        "Per-subject per-category coverage rates",
+        "Nonconformity score distributions per cell"
+      ],
+      "testable_prediction": "Subject-category cells with calibration n < 15 will show coverage variance >2x that of cells with n > 30.",
+      "failure_condition": "No correlation between calibration count and coverage variance across subject-category cells (p > 0.05).",
+      "statistical_test_plan": "Levene's test for equality of coverage variance across calibration count bins; beta-binomial model for coverage ~ calibration_n.",
+      "falsification_test": "Pool calibration data across similar subjects (hierarchical Mondrian); if undercoverage disappears for low-n cells, mechanism confirmed; if persists, falsified."
+    }
+  ],
+  "total_tokens": 6705,
+  "completion_tokens": 6153
+}

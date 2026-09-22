@@ -1,0 +1,84 @@
+{
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Individual differences in autonomic nervous system (ANS) baseline reactivity cause systematic variation in wearable stress-detection uncertainty because subjects with blunted ANS responses produce weaker physiological signals that fall below sensor noise floors.",
+      "proposed_mechanism": "Low tonic vagal tone and reduced phasic sympathetic reactivity diminish heart rate variability (HRV) and electrodermal activity (EDA) signal amplitude during stressors, causing feature extraction algorithms to misclassify stress epochs as non-stress due to insufficient signal-to-noise ratio.",
+      "core_assumption": "ANS baseline reactivity is a stable trait-like characteristic that varies substantially across individuals and directly modulates the magnitude of wearable-captured physiological stress signatures.",
+      "knowledge_gap_addressed": "No large-scale studies have quantified how inter-individual ANS baseline variability maps to wearable stress-detection confidence intervals or false-negative rates.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Skin phenotype (thickness, hydration, melanin content, hair density) introduces systematic sensor-level artifacts that disproportionately degrade photoplethysmography (PPG) and EDA signal quality in specific demographic subgroups, inflating uncertainty estimates for those subjects.",
+      "proposed_mechanism": "Darker skin tones and thicker stratum corneum attenuate green-light PPG penetration and increase contact impedance for EDA electrodes, causing motion-artifact-like noise that stress classifiers interpret as physiological variability rather than sensor degradation.",
+      "core_assumption": "Wearable optical and electrical sensor signal quality varies non-randomly across skin phenotypes in ways that correlate with demographic variables, and current algorithms do not adequately model or correct for this.",
+      "knowledge_gap_addressed": "Existing validation cohorts underrepresent skin phenotype diversity, leaving unknown the extent to which sensor physics—not physiology—drives subject-level uncertainty heterogeneity.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Circadian phase at stressor onset interacts with individual chronotype to modulate the detectability of physiological stress responses, creating time-of-day-dependent uncertainty that varies across subjects.",
+      "proposed_mechanism": "Morning-types exhibit amplified cortisol awakening response and sympathetic reactivity to morning stressors but blunted responses in evening; evening-types show the reverse pattern. Wearable classifiers trained on pooled data misestimate stress probability when circadian alignment mismatches training distribution.",
+      "core_assumption": "Chronotype-stressor timing interaction effects on autonomic stress signatures are large enough to shift feature distributions across classification decision boundaries in a subject-specific manner.",
+      "knowledge_gap_addressed": "No studies have modeled subject-level uncertainty as a function of circadian phase × chronotype interaction in free-living wearable stress detection.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Subject-specific emotion regulation strategies (suppression, reappraisal, acceptance) produce divergent peripheral physiological signatures for equivalent subjective stress levels, causing label-physiology mismatches that inflate uncertainty for high-regulators.",
+      "proposed_mechanism": "Expressive suppression amplifies sympathetic cardiovascular reactivity while dampening facial EDA; cognitive reappraisal attenuates both. Self-report labels capture subjective experience, but wearable features capture peripheral physiology, creating systematic divergence that appears as classification uncertainty.",
+      "core_assumption": "Emotion regulation strategy use is stable within individuals, varies across individuals, and systematically decouples subjective stress reports from wearable-captured autonomic features.",
+      "knowledge_gap_addressed": "Current ground-truth labeling assumes a monotonic mapping between subjective stress and peripheral physiology; the moderating role of regulation strategy on this mapping is unquantified in wearable contexts.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Non-wear time patterns correlated with stress exposure (e.g., removing device during high-stress social conflicts) induce informative missingness that biases uncertainty estimates downward for high-stress subjects and upward for low-stress subjects.",
+      "proposed_mechanism": "Subjects systematically remove wearables during acutely stressful activities (showers after arguments, device charging during work crises). Imputation or exclusion of these epochs creates a survivorship bias where observed data underrepresents peak stress, making model uncertainty appear lower than true uncertainty for those subjects.",
+      "core_assumption": "Non-wear compliance is not missing at random but is systematically associated with the unobserved stress intensity, and this association varies across individuals.",
+      "knowledge_gap_addressed": "Wearable stress studies typically treat missing data as ignorable; the extent and direction of bias from stress-correlated non-wear at the subject level is unknown.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Inter-individual variation in respiratory sinus arrhythmia (RSA) coupling strength causes HRV-based stress features to have subject-specific sensitivity, making fixed-threshold classifiers systematically uncertain for weak-coupling individuals.",
+      "proposed_mechanism": "RSA magnitude depends on vagal efferent traffic AND respiratory parameters (rate, depth). Subjects with naturally shallow/fast breathing exhibit low RSA despite high vagal tone, causing HRV features to underestimate parasympathetic withdrawal during stress. Classifiers trained on population averages miscalibrate for these subjects.",
+      "core_assumption": "Respiratory pattern variation across individuals is sufficient to decouple HRV metrics from underlying vagal state in a trait-like manner that persists across recording sessions.",
+      "knowledge_gap_addressed": "Wearable stress models rarely incorporate respiration; the subject-level uncertainty attributable to unmeasured respiratory confounding of HRV is unquantified.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Subject-specific sensor placement variability (wrist circumference, bone prominence, device tightness preference) creates systematic differences in PPG/EDA contact quality that manifest as heteroscedastic uncertainty across the cohort.",
+      "proposed_mechanism": "Looser wear increases motion artifact and reduces PPG perfusion signal; tighter wear causes venous congestion altering pulse waveform morphology. Each subject's habitual wear tightness creates a personalized noise floor and feature bias that the population-level model cannot disentangle from true stress physiology.",
+      "core_assumption": "Wear tightness is a stable behavioral preference varying across individuals, and its effect on signal quality is large enough to shift feature distributions across subjects in a way that mimics or masks stress responses.",
+      "knowledge_gap_addressed": "No studies have quantified subject-level wear behavior as a source of heteroscedastic uncertainty in wearable stress detection, nor developed personalized calibration for it.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Cumulative allostatic load alters the dynamic range of physiological stress responses, causing high-load individuals to exhibit compressed feature ranges that increase classification uncertainty near decision boundaries.",
+      "proposed_mechanism": "Chronic stress exposure downregulates receptor sensitivity and reduces autonomic flexibility, producing blunted but more variable physiological responses to acute stressors. The resulting feature distributions have lower separation between stress/non-stress classes and higher within-class variance, inflating predictive entropy for these subjects.",
+      "core_assumption": "Allostatic load is measurable (e.g., via hair cortisol, clinical markers) and its effect on acute stress response dynamic range is monotonic and sufficient to degrade classifier calibration at the individual level.",
+      "knowledge_gap_addressed": "Wearable stress models assume stationary feature distributions; the impact of trait-like allostatic load on subject-specific feature distributional shift and uncertainty is unstudied.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Labeling protocol reactivity—where the act of self-reporting stress alters subsequent physiology—varies across subjects due to differences in interoceptive awareness, creating subject-specific label contamination that masquerades as model uncertainty.",
+      "proposed_mechanism": "High interoceptive awareness individuals show amplified physiological responses immediately after ecological momentary assessment (EMA) prompts due to attention-to-body effects; low awareness individuals show no change. This creates a subject-specific temporal confound where labels and features are spuriously coupled for some but not others.",
+      "core_assumption": "Interoceptive awareness is a stable trait that moderates EMA reactivity, and the resulting label-physiology coupling artifact is large enough to bias uncertainty estimates in a subject-dependent way.",
+      "knowledge_gap_addressed": "EMA reactivity effects on wearable stress labels are assumed negligible or uniform; subject-level variation in this reactivity as a source of uncertainty heterogeneity is unexplored.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Statistical model misspecification from ignoring subject-level random effects in hierarchical stress-response processes produces miscalibrated uncertainty estimates that are anti-conservative for high-variability subjects and over-conservative for low-variability subjects.",
+      "proposed_mechanism": "Population-level classifiers (e.g., pooled logistic regression, random forests) assume exchangeable residuals, but true stress-response processes have subject-specific intercepts, slopes, and autocorrelation structures. Ignoring this hierarchy forces the model to attribute between-subject variance to within-subject noise, distorting per-subject predictive distributions.",
+      "core_assumption": "Between-subject heterogeneity in stress-response dynamics (baseline, reactivity, recovery) exceeds within-subject variability, and current wearable stress models do not account for this hierarchical structure.",
+      "knowledge_gap_addressed": "Nearly all wearable stress detection uses flat classification/regression; the calibration consequences of ignoring subject-level random effects on per-subject uncertainty quantification are unknown.",
+      "status": "SPECULATIVE"
+    }
+  ]
+}

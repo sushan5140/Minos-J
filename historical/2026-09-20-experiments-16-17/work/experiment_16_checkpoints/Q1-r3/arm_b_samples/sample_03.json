@@ -1,0 +1,392 @@
+{
+  "sample_index": 3,
+  "valid": true,
+  "error": null,
+  "cards": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Subjects with high baseline heart rate variability (HRV) exhibit non-exchangeable residuals under Mondrian binning by stress condition, causing conditional coverage failure",
+      "proposed_mechanism": "High baseline HRV subjects have wider residual distributions within each Mondrian bin (stress condition), but the conformal quantile is computed globally per bin, leading to systematic undercoverage for these subjects",
+      "causal_path": "High baseline HRV → increased within-bin residual variance → fixed per-bin quantile too narrow → undercoverage",
+      "mechanism_variables": [
+        "baseline_rmssd",
+        "residual_variance_per_bin",
+        "mondrian_bin_id",
+        "coverage_indicator"
+      ],
+      "possible_confounders": [
+        "age",
+        "fitness_level",
+        "medication_use",
+        "sensor_placement_quality"
+      ],
+      "control_variables": [
+        "stratify by baseline_rmssd tertiles",
+        "include age and fitness as covariates in residual modeling",
+        "verify sensor contact quality scores"
+      ],
+      "rival_explanation": "Undercoverage is driven by sensor noise artifacts during stress transitions, not baseline HRV",
+      "rival_prediction": "Undercoverage correlates with motion artifact magnitude during condition transitions, not with baseline HRV",
+      "distinguishing_test": "Regress per-subject coverage deficit on baseline_rmssd controlling for transition_artifact_index; significant baseline_rmssd coefficient supports H1",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Prior WESAD analyses show baseline HRV explains ~15-20% variance in stress reactivity; expect similar magnitude for coverage deficit",
+      "minimum_data_needed": [
+        "per-subject baseline RMSSD from 5-min rest",
+        "per-subject per-condition conformal residuals",
+        "Mondrian bin assignments",
+        "motion artifact labels from ACC"
+      ],
+      "testable_prediction": "Subjects in top baseline_rmssd tertile show coverage deficit >5% vs nominal; bottom tertile shows deficit <2%",
+      "failure_condition": "No significant correlation between baseline_rmssd and per-subject coverage deficit after controlling for transition artifacts",
+      "statistical_test_plan": "Linear mixed model: coverage_deficit ~ baseline_rmssd + transition_artifact_index + (1|subject), test baseline_rmssd coefficient",
+      "falsification_test": "Re-run Mondrian with subject-specific quantiles per bin; if undercoverage persists for high-HRV subjects, mechanism is falsified"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Wrist EDA sensor drift during prolonged stress condition creates non-stationary residuals that violate exchangeability within Mondrian bins",
+      "proposed_mechanism": "EDA baseline wander accumulates over the 10-min stress task, shifting residual distribution rightward within the stress bin; early-calibration quantiles undercover late-task predictions",
+      "causal_path": "Prolonged stress → EDA baseline drift → residual distribution shift within stress bin → fixed quantile too low for late windows → undercoverage",
+      "mechanism_variables": [
+        "eda_baseline_slope",
+        "window_index_within_stress",
+        "residual_magnitude",
+        "mondrian_bin_stress"
+      ],
+      "possible_confounders": [
+        "ambient_temperature_change",
+        "sweat_accumulation",
+        "wrist_movement",
+        "initial_skin_conductance_level"
+      ],
+      "control_variables": [
+        "detrend EDA per subject per condition",
+        "include window_index as covariate",
+        "control for temperature via TEMP sensor"
+      ],
+      "rival_explanation": "Undercoverage stems from individual differences in stress recovery speed, not sensor drift",
+      "rival_prediction": "Coverage deficit correlates with post-stress recovery time constant, not with within-stress EDA drift rate",
+      "distinguishing_test": "Compare coverage in first vs last stress window; H2 predicts deficit increases with window_index, rival predicts no within-condition trend",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "EDA drift can shift baseline by 0.5-2 µS over 10 min; residual SD ~0.3 µS; expect coverage drop from 90% to <70% in late windows",
+      "minimum_data_needed": [
+        "per-window EDA values with timestamps",
+        "Mondrian bin assignments per window",
+        "conformal residuals per window",
+        "TEMP sensor for ambient control"
+      ],
+      "testable_prediction": "Coverage in last stress window <80% while first window >88% for drifted subjects; drift_slope >0.05 µS/min predicts deficit",
+      "failure_condition": "No significant within-stress coverage decline; coverage deficit uncorrelated with eda_baseline_slope",
+      "statistical_test_plan": "Logistic regression: coverage_indicator ~ window_index + eda_baseline_slope + window_index:eda_baseline_slope, cluster by subject",
+      "falsification_test": "Apply online drift correction (Kalman filter) to EDA before conformal prediction; if undercoverage eliminated, H2 confirmed; if persists, falsified"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Subjects with delayed cortisol response (slow HPA axis) have mislabeled stress windows during early stress condition, contaminating Mondrian calibration",
+      "proposed_mechanism": "Slow cortisol responders show low physiological arousal in first 3 min of stress task; these windows labeled 'stress' but resemble baseline, inflating stress-bin residual variance and widening quantile, yet coverage fails for truly aroused windows",
+      "causal_path": "Slow HPA axis → low early-stress arousal → mislabeled low-arousal windows in stress bin → inflated stress-bin quantile → undercoverage for high-arousal windows",
+      "mechanism_variables": [
+        "cortisol_aucg",
+        "early_stress_eda_mean",
+        "stress_bin_residual_variance",
+        "coverage_by_arousal_level"
+      ],
+      "possible_confounders": [
+        "time_of_day",
+        "caffeine_intake",
+        "oral_contraceptive_use",
+        "chronic_stress_level"
+      ],
+      "control_variables": [
+        "exclude first 3 min of stress condition",
+        "use cortisol_aucg as continuous moderator",
+        "control for time_of_day"
+      ],
+      "rival_explanation": "Undercoverage reflects genuine physiological heterogeneity in stress response patterns, not labeling error",
+      "rival_prediction": "Coverage deficit correlates with response pattern cluster membership, not with cortisol_aucg or early_stress_eda",
+      "distinguishing_test": "Train separate Mondrian models with/without first 3 min of stress; H3 predicts coverage improves for slow responders when early windows excluded",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "~30% of WESAD subjects show blunted early stress response; excluding 3/10 min windows reduces stress-bin n by 30%, expect 5-8% coverage recovery",
+      "minimum_data_needed": [
+        "salivary cortisol AUCg per subject",
+        "per-window EDA/HR during stress",
+        "Mondrian bin assignments",
+        "ground truth stress labels"
+      ],
+      "testable_prediction": "Subjects with cortisol_aucg < median show >10% coverage improvement when first 3 min excluded; fast responders show <2% change",
+      "failure_condition": "Excluding early stress windows does not differentially improve coverage for low-cortisol subjects",
+      "statistical_test_plan": "Paired t-test per subject: coverage_full vs coverage_excl_early; regress improvement on cortisol_aucg",
+      "falsification_test": "Relabel early stress windows as 'baseline' using physiological clustering; retrain Mondrian; if undercoverage persists for slow responders, H3 falsified"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Mondrian taxonomy based solely on condition label ignores circadian phase, causing undercoverage for subjects tested at non-optimal circadian times",
+      "proposed_mechanism": "Cortisol and HRV follow circadian rhythms; subjects tested at circadian trough have compressed dynamic range, residuals cluster near zero but with heavy tails; fixed per-condition quantile misses tail events",
+      "causal_path": "Circadian trough testing → compressed physiological dynamic range → heavy-tailed residuals within condition bin → fixed quantile misses tails → undercoverage",
+      "mechanism_variables": [
+        "circadian_phase_proxy",
+        "residual_kurtosis_per_bin",
+        "dynamic_range_eda",
+        "coverage_indicator"
+      ],
+      "possible_confounders": [
+        "sleep_duration_prior",
+        "shift_work_history",
+        "season",
+        "age"
+      ],
+      "control_variables": [
+        "include time_of_day as Mondrian stratification variable",
+        "control for sleep_duration",
+        "use dim_light_melatonin_onset if available"
+      ],
+      "rival_explanation": "Undercoverage is due to inter-subject variability in stress reactivity, not circadian phase",
+      "rival_prediction": "Coverage deficit correlates with stress_reactivity_score, not with time_of_day or circadian_phase_proxy",
+      "distinguishing_test": "Add time_of_day bins to Mondrian taxonomy; H4 predicts coverage improves specifically for off-peak subjects, rival predicts no change",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Circadian effect on HRV ~10-15% amplitude; WESAD collected 8am-6pm; expect 2-4% coverage gap between peak/trough",
+      "minimum_data_needed": [
+        "exact timestamp per subject session",
+        "per-subject per-window residuals",
+        "Mondrian bin assignments",
+        "sleep_log_or_actigraphy"
+      ],
+      "testable_prediction": "Subjects tested 8-10am show coverage >88%; subjects tested 4-6pm show coverage <82% under current taxonomy; adding time bins equalizes",
+      "failure_condition": "No coverage difference across time_of_day bins; adding time bins does not improve worst-bin coverage",
+      "statistical_test_plan": "Chi-square test of coverage homogeneity across time_of_day bins; logistic regression coverage ~ sin(2π*hour/24) + cos(2π*hour/24)",
+      "falsification_test": "Simulate data with known circadian effect using WESAD parameters; apply Mondrian with/without time bins; if time bins don't recover coverage in simulation, H4 falsified"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Chest RESP sensor displacement during stress-induced movement creates intermittent signal loss, generating outlier residuals that violate Mondrian's exchangeability assumption",
+      "proposed_mechanism": "Stress causes upper body movement → chest band loosens → RESP signal drops out → imputed values create large residuals in stress bin → quantile inflated but coverage fails for clean windows due to contaminated calibration",
+      "causal_path": "Stress movement → chest_band_displacement → RESP_signal_loss → imputation_artifacts → contaminated stress-bin residuals → miscalibrated quantile → undercoverage",
+      "mechanism_variables": [
+        "chest_acc_magnitude",
+        "resp_signal_quality_index",
+        "imputation_flag",
+        "residual_magnitude",
+        "mondrian_bin_stress"
+      ],
+      "possible_confounders": [
+        "body_mass_index",
+        "chest_hair",
+        "sensor_adhesive_quality",
+        "breathing_pattern_variability"
+      ],
+      "control_variables": [
+        "exclude windows with resp_signal_quality < threshold",
+        "use wrist ACC as movement proxy",
+        "weight calibration by signal_quality"
+      ],
+      "rival_explanation": "Undercoverage reflects true physiological variability in breathing patterns under stress, not sensor artifacts",
+      "rival_prediction": "Coverage deficit correlates with breathing_pattern_complexity (entropy), not with chest_acc_magnitude or signal_quality",
+      "distinguishing_test": "Compare coverage in stress windows with high vs low chest_acc_magnitude; H5 predicts deficit only in high-movement windows",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Signal loss events create residuals 3-5× SD; even 10% contaminated windows can drop coverage from 90% to 75%",
+      "minimum_data_needed": [
+        "chest ACC magnitude per window",
+        "RESP signal quality flags",
+        "imputation logs",
+        "per-window residuals",
+        "Mondrian bin assignments"
+      ],
+      "testable_prediction": "Windows with chest_acc_magnitude > 90th percentile show coverage <70%; low-movement windows show coverage >88%",
+      "failure_condition": "Coverage deficit uncorrelated with chest_acc_magnitude and resp_signal_quality",
+      "statistical_test_plan": "Stratified coverage test: binomial test per movement stratum; interaction test coverage ~ movement_stratum * bin",
+      "falsification_test": "Re-run Mondrian using only wrist sensors (EDA, ACC, BVP, TEMP); if undercoverage persists identically, chest RESP artifacts not the cause"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Mondrian's fixed binning by discrete condition labels fails for subjects with graded stress responses, causing undercoverage at intermediate arousal levels",
+      "proposed_mechanism": "Subjects show continuous arousal gradients across conditions; Mondrian forces discrete bins (baseline/stress/amusement); intermediate windows get binned by label not physiology, creating heterogeneous residual distributions",
+      "causal_path": "Graded arousal response → label-physiology mismatch → within-bin residual bimodality → single quantile covers neither mode → undercoverage",
+      "mechanism_variables": [
+        "continuous_arousal_index",
+        "mondrian_bin_label",
+        "residual_distribution_modality",
+        "coverage_by_arousal_quantile"
+      ],
+      "possible_confounders": [
+        "condition_order_effects",
+        "habituation",
+        "individual_differences_in_arousal_range"
+      ],
+      "control_variables": [
+        "compute continuous_arousal_index from physiological PCA",
+        "test adaptive binning by arousal quantiles",
+        "control for condition_order"
+      ],
+      "rival_explanation": "Discrete conditions are physiologically distinct; undercoverage stems from model misspecification, not binning granularity",
+      "rival_prediction": "Residual distributions are unimodal within each condition; coverage deficit uniform across arousal levels",
+      "distinguishing_test": "Fit Gaussian mixture to stress-bin residuals; H6 predicts bimodality (p<0.01 dip test); rival predicts unimodality",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "WESAD shows continuous valence/arousal gradients; expect 2-3 subpopulations in stress bin; coverage gap ~5-8% at mode boundaries",
+      "minimum_data_needed": [
+        "per-window physiological features (EDA, HR, RESP, TEMP)",
+        "Mondrian bin labels",
+        "per-window residuals",
+        "self-report arousal if available"
+      ],
+      "testable_prediction": "Stress-bin residuals show significant bimodality (Hartigan's dip test p<0.01); coverage <80% at arousal quantiles 0.4-0.6",
+      "failure_condition": "Residuals unimodal within bins; coverage deficit not concentrated at intermediate arousal",
+      "statistical_test_plan": "Hartigan's dip test per bin; coverage vs arousal_quantile LOESS; compare fixed vs adaptive (arousal-quantile) binning via paired bootstrap",
+      "falsification_test": "Replace Mondrian bins with 5 arousal-quantile bins; if undercoverage persists at same magnitude, binning granularity not the mechanism"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Subjects taking beta-blockers exhibit attenuated cardiac stress response, causing systematic undercoverage in HR-based predictions due to shifted residual distribution",
+      "proposed_mechanism": "Beta-blockers blunt HR increase during stress → HR residuals in stress bin shifted negative with reduced variance → conformal quantile calibrated on mixed population too wide for beta-blocker subjects → undercoverage",
+      "causal_path": "Beta-blocker use → blunted HR stress response → shifted stress-bin HR residual distribution → population quantile mismatched → undercoverage for medicated subjects",
+      "mechanism_variables": [
+        "beta_blocker_flag",
+        "hr_stress_reactivity",
+        "stress_bin_hr_residual_mean",
+        "coverage_indicator"
+      ],
+      "possible_confounders": [
+        "age",
+        "cardiovascular_fitness",
+        "other_medications",
+        "baseline_hr"
+      ],
+      "control_variables": [
+        "exclude or stratify by beta_blocker_flag",
+        "include hr_stress_reactivity as covariate",
+        "match on age and fitness"
+      ],
+      "rival_explanation": "Undercoverage for medicated subjects reflects comorbid conditions affecting autonomic regulation, not beta-blockers per se",
+      "rival_prediction": "Coverage deficit correlates with comorbidity_count, not with beta_blocker_flag after adjustment",
+      "distinguishing_test": "Compare coverage for beta-blocker vs non-beta-blocker subjects matched on comorbidity_count and fitness; H7 predicts deficit persists",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Beta-blockers reduce HR stress reactivity by 30-50%; residual shift ~15-20 bpm; expect coverage drop from 90% to 60-70%",
+      "minimum_data_needed": [
+        "medication_log_per_subject",
+        "per-window HR during stress",
+        "Mondrian bin assignments",
+        "comorbidity_data",
+        "fitness_estimate"
+      ],
+      "testable_prediction": "Beta-blocker subjects show stress-bin HR residual mean < -10 bpm vs > +5 bpm for controls; coverage <75% vs >88%",
+      "failure_condition": "No coverage difference between beta-blocker and matched controls; residual distributions overlap",
+      "statistical_test_plan": "Propensity score matching on age/fitness/comorbidities; McNemar test for paired coverage difference; quantile regression of residuals on beta_blocker_flag",
+      "falsification_test": "Re-calibrate Mondrian quantiles separately for beta-blocker subgroup; if coverage normalizes, H7 confirmed; if undercoverage persists, falsified"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Temporal autocorrelation in physiological residuals violates Mondrian's exchangeability assumption, causing undercoverage for subjects with high residual autocorrelation",
+      "proposed_mechanism": "Physiological signals show AR(1) structure; Mondrian treats windows as exchangeable within bin; high-autocorrelation subjects have effective sample size << nominal n, quantile estimated with false precision → undercoverage",
+      "causal_path": "High residual AR(1) coefficient → low effective sample size per bin → quantile estimation error → nominal coverage not achieved",
+      "mechanism_variables": [
+        "residual_ar1_coefficient",
+        "effective_sample_size_per_bin",
+        "quantile_estimation_error",
+        "coverage_indicator"
+      ],
+      "possible_confounders": [
+        "window_length",
+        "overlap_between_windows",
+        "signal_filtering_parameters",
+        "subject_movement"
+      ],
+      "control_variables": [
+        "compute effective_n = n * (1-rho)/(1+rho)",
+        "use block bootstrap for quantile estimation",
+        "control for window_overlap"
+      ],
+      "rival_explanation": "Undercoverage is due to heteroscedasticity, not autocorrelation",
+      "rival_prediction": "Coverage deficit correlates with residual_variance_heterogeneity, not with residual_ar1_coefficient",
+      "distinguishing_test": "Re-estimate quantiles using block bootstrap (block size = 1/rho); H8 predicts coverage recovery for high-rho subjects",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Typical physiological AR(1) rho=0.3-0.7; effective_n reduction 30-70%; expect 4-10% coverage deficit for rho>0.5",
+      "minimum_data_needed": [
+        "per-subject per-bin residual time series",
+        "window timestamps and overlap info",
+        "Mondrian bin assignments",
+        "current conformal quantiles"
+      ],
+      "testable_prediction": "Subjects with residual_ar1 > 0.5 show coverage <80%; block bootstrap quantiles restore coverage to >88%",
+      "failure_condition": "Coverage deficit uncorrelated with residual_ar1_coefficient; block bootstrap does not improve coverage",
+      "statistical_test_plan": "Spearman correlation: per-subject coverage vs residual_ar1; paired test: standard vs block-bootstrap coverage per subject",
+      "falsification_test": "Subsample windows to eliminate autocorrelation (keep every k-th window where k > 1/rho); if undercoverage persists, autocorrelation not the cause"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Self-report stress labels in WESAD contain systematic bias for high-alexithymia subjects, contaminating Mondrian calibration bins",
+      "proposed_mechanism": "High alexithymia subjects underreport subjective stress → labeled 'baseline' windows actually contain stress physiology → baseline-bin residuals inflated → quantile too wide → but stress-bin quantile too narrow due to missing high-arousal windows → undercoverage for stress",
+      "causal_path": "High alexithymia → self-report stress underestimation → label-physiology mismatch → contaminated baseline bin + depleted stress bin → asymmetric quantile error → stress undercoverage",
+      "mechanism_variables": [
+        "alexithymia_score_tas20",
+        "self_report_stress",
+        "physiological_arousal_index",
+        "bin_label",
+        "coverage_by_bin"
+      ],
+      "possible_confounders": [
+        "depression_score",
+        "anxiety_trait",
+        "interoceptive_accuracy",
+        "condition_order"
+      ],
+      "control_variables": [
+        "include TAS-20 as covariate",
+        "re-label windows using physiological clustering",
+        "control for depression/anxiety"
+      ],
+      "rival_explanation": "Undercoverage reflects true physiological non-responders, not labeling bias",
+      "rival_prediction": "Physiological arousal during stress condition is genuinely low for low-coverage subjects; re-labeling doesn't change coverage",
+      "distinguishing_test": "Cluster stress-condition windows by physiology; H9 predicts high-alexithymia subjects have 'stress-physiology' windows labeled baseline",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Alexithymia prevalence ~10%; labeling error rate ~15% in high-TAS; expect 2-4% coverage impact at population level, larger in subgroup",
+      "minimum_data_needed": [
+        "TAS-20 scores per subject",
+        "self-report stress ratings per condition",
+        "per-window physiological features",
+        "Mondrian bin assignments",
+        "per-window residuals"
+      ],
+      "testable_prediction": "High-TAS subjects (score>60) show >15% of baseline windows clustering with stress physiology; their stress-bin coverage <80%",
+      "failure_condition": "No label-physiology mismatch in high-TAS subjects; re-labeling by physiology doesn't improve their coverage",
+      "statistical_test_plan": "Gaussian mixture clustering of stress-condition windows; chi-square test of label-cluster association by TAS group; coverage comparison",
+      "falsification_test": "Train Mondrian on physiology-derived labels only; if undercoverage persists for high-TAS subjects, labeling bias not the mechanism"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Mondrian's marginal coverage guarantee fails under covariate shift between calibration and test subjects due to WESAD's small subject pool (n=15)",
+      "proposed_mechanism": "With only 15 subjects, leave-one-subject-out calibration creates covariate shift: test subject's residual distribution differs from calibration pool; Mondrian's marginal guarantee doesn't protect conditional coverage for out-of-distribution subjects",
+      "causal_path": "Small n_subjects → high between-subject residual distribution variability → LOO calibration quantile mismatched for held-out subject → undercoverage for distributional outliers",
+      "mechanism_variables": [
+        "n_calibration_subjects",
+        "between_subject_residual_wasserstein",
+        "heldout_subject_coverage",
+        "marginal_vs_conditional_gap"
+      ],
+      "possible_confounders": [
+        "subject_exclusion_criteria",
+        "condition_balance_per_subject",
+        "sensor_quality_variability"
+      ],
+      "control_variables": [
+        "use leave-one-condition-out instead of leave-one-subject-out",
+        "importance weighting by residual distribution similarity",
+        "hierarchical conformal prediction"
+      ],
+      "rival_explanation": "Undercoverage is due to within-subject non-exchangeability, not between-subject covariate shift",
+      "rival_prediction": "Coverage deficit correlates with within-subject residual non-stationarity, not with between-subject distributional distance",
+      "distinguishing_test": "Compute Wasserstein distance between held-out subject's calibration residuals and pool; H10 predicts coverage deficit correlates with this distance",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "n=15 is extremely small for distributional coverage; expect 10-20% coverage gap for outlier subjects; marginal coverage ~90% but conditional <70%",
+      "minimum_data_needed": [
+        "per-subject per-window residuals",
+        "LOO calibration quantiles",
+        "held-out subject coverage",
+        "subject-level covariate data"
+      ],
+      "testable_prediction": "Top 3 Wasserstein-distance subjects show coverage <75%; bottom 3 show coverage >90%; marginal coverage across all ~90%",
+      "failure_condition": "No correlation between Wasserstein distance and coverage deficit; hierarchical conformal doesn't improve worst-subject coverage",
+      "statistical_test_plan": "Spearman correlation: wasserstein_distance vs coverage_deficit; compare LOO vs hierarchical conformal via paired subject-level coverage",
+      "falsification_test": "Augment calibration with synthetic subjects from fitted hierarchical model; if undercoverage persists for real outliers, covariate shift not the sole mechanism"
+    }
+  ],
+  "total_tokens": 6525,
+  "completion_tokens": 5973
+}

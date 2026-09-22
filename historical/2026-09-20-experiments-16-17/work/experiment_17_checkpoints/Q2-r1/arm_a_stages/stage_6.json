@@ -1,0 +1,104 @@
+{
+  "rival_prediction_matrix": [
+    {
+      "what_result_supports_meno_j": "When baseline variability is high, empirical coverage is below the nominal level (under‑coverage).",
+      "what_result_supports_rival": "When baseline variability is high, empirical coverage is above the nominal level (over‑coverage).",
+      "meno_j_prediction": "Higher subject-specific baseline physiological variability leads to lower empirical coverage (under-coverage) relative to the nominal level.",
+      "distinguishing_test": "When baseline variability is high, observe whether empirical coverage is above the nominal level (over‑coverage) – if so, the rival explanation is supported; if coverage is below nominal, the proposed mechanism is supported.",
+      "meno_j_hypothesis": "Subject-specific baseline physiological variability breaks exchangeability across signal segments, causing coverage drift.",
+      "hypothesis_id": "H1",
+      "rival_explanation": "Variation in segment length across recordings",
+      "rival_prediction": "Higher subject-specific baseline variability leads to increased empirical coverage (over‑coverage) because the conformity score distribution becomes more spread, raising the quantile."
+    },
+    {
+      "what_result_supports_meno_j": "During periods of rising impedance, empirical coverage is below the nominal level (under‑coverage).",
+      "what_result_supports_rival": "During periods of rising impedance, empirical coverage is above the nominal level (over‑coverage).",
+      "meno_j_prediction": "Higher electrode impedance or noise variance leads to lower empirical coverage (under-coverage).",
+      "distinguishing_test": "During periods of rising impedance, measure whether empirical coverage exceeds the nominal level; excess coverage supports the rival, while reduced coverage supports the proposed mechanism.",
+      "meno_j_hypothesis": "Sensor drift or time-varying noise alters feature distributions, leading to miscalibrated conformal intervals.",
+      "hypothesis_id": "H2",
+      "rival_explanation": "Changes in subject physiological state coinciding with sensor drift",
+      "rival_prediction": "Increased electrode impedance or noise variance leads to higher empirical coverage (over‑coverage) because the conformity score quantile shifts upward."
+    },
+    {
+      "what_result_supports_meno_j": "When subjects are in higher arousal states (exercise), empirical coverage is below the nominal level (under‑coverage).",
+      "what_result_supports_rival": "When subjects are in higher arousal states (exercise), empirical coverage is above the nominal level (over‑coverage).",
+      "meno_j_prediction": "Transition to higher arousal states (e.g., exercise) leads to lower empirical coverage (under-coverage).",
+      "distinguishing_test": "When subjects are in exercise vs rest, compare empirical coverage; if coverage is above nominal, the rival explanation is favored; if below nominal, the proposed mechanism is favored.",
+      "meno_j_hypothesis": "Physiological state transitions (e.g., sleep vs wake, rest vs exercise) induce concept drift that violates the i.i.d. assumption.",
+      "hypothesis_id": "H3",
+      "rival_explanation": "Changes in labeling consistency across states",
+      "rival_prediction": "Higher arousal states produce higher empirical coverage (over‑coverage) because the conformity score quantile increases due to larger residuals being trimmed."
+    },
+    {
+      "what_result_supports_meno_j": "During epochs with high lag‑1 autocorrelation, empirical coverage is below the nominal level (under‑coverage).",
+      "what_result_supports_rival": "During epochs with high lag‑1 autocorrelation, empirical coverage is above the nominal level (over‑coverage).",
+      "meno_j_prediction": "Higher lag-1 autocorrelation leads to lower empirical coverage (under-coverage).",
+      "distinguishing_test": "During epochs with high lag‑1 autocorrelation, measure whether empirical coverage exceeds the nominal level; excess coverage supports the rival, while reduced coverage supports the proposed mechanism.",
+      "meno_j_hypothesis": "Strong temporal autocorrelation within physiological signals violates exchangeability, causing underestimation of prediction uncertainty.",
+      "hypothesis_id": "H4",
+      "rival_explanation": "Variations in signal amplitude causing heteroscedasticity",
+      "rival_prediction": "Stronger temporal autocorrelation yields higher empirical coverage (over‑coverage) because the conformity score distribution becomes heavier‑tailed, increasing the quantile."
+    },
+    {
+      "what_result_supports_meno_j": "When the proportion of mislabeled annotations rises, empirical coverage moves below the nominal level (under‑coverage).",
+      "what_result_supports_rival": "When the proportion of mislabeled annotations rises, empirical coverage moves above the nominal level (over‑coverage).",
+      "meno_j_prediction": "Higher label error rate leads to lower empirical coverage (under-coverage) when errors increase residuals.",
+      "distinguishing_test": "When the proportion of mislabeled annotations rises, check whether empirical coverage moves above the nominal level; an increase indicates the rival explanation, whereas a decrease indicates the proposed mechanism.",
+      "meno_j_hypothesis": "Segment-specific label noise or annotation errors bias conformity scores, destabilizing coverage.",
+      "hypothesis_id": "H5",
+      "rival_explanation": "Variations in feature extraction parameters across segments",
+      "rival_prediction": "Increased label error rate produces higher empirical coverage (over‑coverage) because mislabeled samples generate anomalously small residuals, pulling the conformity score quantile downward."
+    },
+    {
+      "what_result_supports_meno_j": "For segments containing rare events, empirical coverage is below the nominal level (under‑coverage).",
+      "what_result_supports_rival": "For segments containing rare events, empirical coverage is above the nominal level (over‑coverage).",
+      "meno_j_prediction": "Lower prevalence of rare events in the calibration set leads to lower empirical coverage for rare-event test segments (under-coverage).",
+      "distinguishing_test": "For segments containing rare events, compare empirical coverage to the nominal level; coverage above nominal supports the rival, while coverage below nominal supports the proposed mechanism.",
+      "meno_j_hypothesis": "Rare physiological events are underrepresented in calibration sets, leading to poor coverage for those segments.",
+      "hypothesis_id": "H6",
+      "rival_explanation": "Variations in feature rarity definitions across segments",
+      "rival_prediction": "When rare physiological events are scarce in the calibration set, the empirical coverage for those segments becomes higher than nominal (over‑coverage) because the conformity score quantile shifts downward."
+    },
+    {
+      "what_result_supports_meno_j": "During high‑amplitude epochs, empirical coverage is below the nominal level (under‑coverage).",
+      "what_result_supports_rival": "During high‑amplitude epochs, empirical coverage is above the nominal level (over‑coverage).",
+      "meno_j_prediction": "Higher signal amplitude leads to lower empirical coverage (under-coverage) when error variance increases with amplitude.",
+      "distinguishing_test": "During high‑amplitude epochs, measure whether empirical coverage exceeds the nominal level; excess coverage indicates the rival explanation, while reduced coverage indicates the proposed mechanism.",
+      "meno_j_hypothesis": "Heteroscedasticity in signal amplitude leads to non-uniform error variance, breaking the assumption of constant conformity score distribution.",
+      "hypothesis_id": "H7",
+      "rival_explanation": "Changes in model architecture across amplitude ranges",
+      "rival_prediction": "Greater signal amplitude produces higher empirical coverage (over‑coverage) because the conformity score distribution spreads, increasing the quantile used for interval construction."
+    },
+    {
+      "what_result_supports_meno_j": "When artifact occurrence rises, empirical coverage is above the nominal level (over‑coverage).",
+      "what_result_supports_rival": "When artifact occurrence rises, empirical coverage is below the nominal level (under‑coverage).",
+      "meno_j_prediction": "Higher artifact occurrence rate leads to increased mean conformal interval width (and thus decreased coverage stability).",
+      "distinguishing_test": "When artifact occurrence rises, check whether empirical coverage falls below the nominal level; a decrease supports the rival, while an increase supports the proposed mechanism.",
+      "meno_j_hypothesis": "Motion or muscle artifacts introduce outlier segments that inflate conformity scores and destabilize coverage.",
+      "hypothesis_id": "H8",
+      "rival_explanation": "Variations in external noise unrelated to feedback",
+      "rival_prediction": "Increased motion or muscle artifact rate leads to lower empirical coverage (under‑coverage) because extreme residuals are trimmed or receive low weight, pulling the conformity score quantile downward."
+    },
+    {
+      "what_result_supports_meno_j": "When recordings are down‑sampled or more heavily filtered, empirical coverage is below the nominal level (under‑coverage).",
+      "what_result_supports_rival": "When recordings are down‑sampled or more heavily filtered, empirical coverage is above the nominal level (over‑coverage).",
+      "meno_j_prediction": "Lower sampling rate or stronger low-pass filtering leads to lower empirical coverage (under-coverage).",
+      "distinguishing_test": "When recordings are down‑sampled or more heavily filtered, measure whether empirical coverage exceeds the nominal level; excess coverage indicates the rival explanation, while a deficit indicates the proposed mechanism.",
+      "meno_j_hypothesis": "Changes in recording protocols (sampling rate, filtering, segmentation) create domain shifts that invalidate calibration.",
+      "hypothesis_id": "H9",
+      "rival_explanation": "Variations in physiological state across protocol changes",
+      "rival_prediction": "Adopting a lower sampling rate or stronger low‑pass filter yields higher empirical coverage (over‑coverage) because the conformity score distribution becomes narrower, decreasing the quantile."
+    },
+    {
+      "what_result_supports_meno_j": "During periods of high feedback gain, empirical coverage is below the nominal level (under‑coverage).",
+      "what_result_supports_rival": "During periods of high feedback gain, empirical coverage is above the nominal level (over‑coverage).",
+      "meno_j_prediction": "Stronger feedback influence (higher adaptive filter gain) leads to lower empirical coverage (under-coverage).",
+      "distinguishing_test": "During periods of high feedback gain, check whether empirical coverage is above the nominal level; excess coverage supports the rival, while reduced coverage supports the proposed mechanism.",
+      "meno_j_hypothesis": "Feedback loops where model predictions influence subsequent signal processing (e.g., adaptive filtering) induce dependence between training and test data.",
+      "hypothesis_id": "H10",
+      "rival_explanation": "Variations in external noise unrelated to feedback",
+      "rival_prediction": "Strong feedback influence (high adaptive‑filter coefficient) results in higher empirical coverage (over‑coverage) because the model’s action suppresses signal variability, tightening the conformity score distribution."
+    }
+  ]
+}

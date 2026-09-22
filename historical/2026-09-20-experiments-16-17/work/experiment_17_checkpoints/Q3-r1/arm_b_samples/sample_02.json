@@ -1,0 +1,397 @@
+{
+  "sample_index": 2,
+  "valid": true,
+  "error": null,
+  "cards": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Subject-level variation in wearable stress-detection uncertainty is driven by individual differences in baseline autonomic tone, specifically resting heart rate variability (HRV), which influences algorithm calibration accuracy.",
+      "proposed_mechanism": "Higher resting HRV improves the calibration of the stress detection algorithm, reducing predictive uncertainty.",
+      "causal_path": "Baseline HRV → algorithm calibration accuracy → stress-detection uncertainty",
+      "mechanism_variables": [
+        "baseline_HRV_ms2",
+        "calibration_error_unitless",
+        "uncertainty_score"
+      ],
+      "possible_confounders": [
+        "age",
+        "fitness_level_VO2max",
+        "beta_blocker_use"
+      ],
+      "control_variables": [
+        "age",
+        "VO2max_ml_kg_min",
+        "beta_blocker_binary"
+      ],
+      "rival_explanation": "Variation in uncertainty is primarily due to inconsistencies in sensor placement across subjects.",
+      "rival_prediction": "Subjects with poorer placement consistency will show higher uncertainty regardless of their baseline HRV.",
+      "distinguishing_test": "After statistically controlling for placement variability (e.g., using accelerometer-derived placement metrics), baseline HRV remains a significant predictor of uncertainty.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Prior studies report moderate correlations (r≈0.3) between resting HRV and stress classification performance.",
+      "minimum_data_needed": [
+        "baseline_HRV_recording",
+        "placement_consistency_metric",
+        "uncertainty_per_subject",
+        "age",
+        "VO2max_measurement",
+        "beta_blocker_status"
+      ],
+      "testable_prediction": "Subjects with higher baseline HRV will exhibit lower uncertainty scores (negative association).",
+      "failure_condition": "No significant negative association between baseline HRV and uncertainty after adjusting for age, VO2max, and beta‑blocker use.",
+      "statistical_test_plan": "Linear mixed‑effects model with uncertainty as the outcome, baseline HRV as a fixed effect, random intercept for subject, and age, VO2max, beta‑blocker use as covariates.",
+      "falsification_test": "Induce a transient change in resting HRV via paced breathing while holding placement constant; if uncertainty does not change in the predicted direction, the mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Individual differences in skin impedance affect PPG signal quality, leading to subject‑level variation in stress‑detection uncertainty.",
+      "proposed_mechanism": "Higher skin impedance reduces PPG signal‑to‑noise ratio, which increases the uncertainty of the stress detection model.",
+      "causal_path": "skin_impedance → PPG_SNR → stress‑detection uncertainty",
+      "mechanism_variables": [
+        "skin_impedance_kOhm",
+        "PPG_SNR_dB",
+        "uncertainty_score"
+      ],
+      "possible_confounders": [
+        "sweat_rate",
+        "motion_artifact_level",
+        "ambient_temperature"
+      ],
+      "control_variables": [
+        "sweat_rate_mg_cm2_min",
+        "accelerometer_variance_g2",
+        "ambient_temp_C"
+      ],
+      "rival_explanation": "Uncertainty differences are mainly caused by non‑individualized algorithm threshold settings.",
+      "rival_prediction": "If thresholds are individualized per subject, skin impedance will no longer predict uncertainty.",
+      "distinguishing_test": "Compare uncertainty before and after applying individualized thresholds; a persistent effect of skin impedance after threshold adjustment supports the mechanism.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Skin impedance can vary by >10 kΩ across individuals, producing >10 dB changes in PPG SNR, which prior work links to large shifts in detection error.",
+      "minimum_data_needed": [
+        "skin_impedance_measurement",
+        "PPG_SNR_estimate",
+        "uncertainty_per_subject",
+        "sweat_rate",
+        "accelerometer_variance",
+        "ambient_temperature"
+      ],
+      "testable_prediction": "Higher skin impedance predicts higher uncertainty (positive association).",
+      "failure_condition": "No significant positive association between skin impedance and uncertainty after controlling for sweat, motion, and temperature.",
+      "statistical_test_plan": "Multiple regression of uncertainty on skin impedance with sweat rate, accelerometer variance, and ambient temperature as covariates.",
+      "falsification_test": "Temporarily lower skin impedance using a conductive gel; if uncertainty does not decrease accordingly, the mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Variability in the latency of the cortisol stress response creates misalignment between self‑report stress labels and wearable physiological signals, increasing uncertainty.",
+      "proposed_mechanism": "Slower cortisol peaks cause temporal mismatch between label timestamps and model‑expected stress signatures, raising uncertainty.",
+      "causal_path": "cortisol_response_latency → label_signal_misalignment → stress‑detection uncertainty",
+      "mechanism_variables": [
+        "cortisol_latency_min",
+        "misalignment_score_crosscorr_lag",
+        "uncertainty_score"
+      ],
+      "possible_confounders": [
+        "circadian_time",
+        "food_intake",
+        "stressor_type"
+      ],
+      "control_variables": [
+        "time_of_day_h",
+        "fasting_state_binary",
+        "stressor_modality_categorical"
+      ],
+      "rival_explanation": "Uncertainty stems mainly from inconsistent self‑report compliance rather than hormonal timing.",
+      "rival_prediction": "Subjects with low compliance will show high uncertainty irrespective of cortisol latency.",
+      "distinguishing_test": "After adjusting for self‑report compliance scores, cortisol latency remains a significant predictor of uncertainty.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Earlier work shows moderate correlations (r≈0.35) between hormonal response latency and self‑report physiological alignment.",
+      "minimum_data_needed": [
+        "salivary_cortisol_time_series",
+        "self_report_stress_timestamps",
+        "uncertainty_per_subject",
+        "compliance_score",
+        "time_of_day",
+        "fasting_state",
+        "stressor_type"
+      ],
+      "testable_prediction": "Longer cortisol latency predicts higher uncertainty (positive association).",
+      "failure_condition": "No significant positive association between cortisol latency and uncertainty after controlling for compliance, time of day, fasting, and stressor type.",
+      "statistical_test_plan": "Linear mixed‑effects model with uncertainty as outcome, cortisol latency as fixed effect, random subject intercept, and compliance, time of day, fasting, stressor type as covariates.",
+      "falsification_test": "Administer a CRH agonist to advance cortisol response; if uncertainty does not decrease as predicted, the mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Individual circadian phase influences baseline drift of electrodermal activity (EDA), producing time‑of‑day dependent variation in stress‑detection uncertainty.",
+      "proposed_mechanism": "Circadian‑dependent EDA baseline drift alters the background against which stress‑related changes are detected, increasing uncertainty when drift is large.",
+      "causal_path": "circadian_phase → EDA_baseline_drift → stress‑detection uncertainty",
+      "mechanism_variables": [
+        "circadian_phase_h_from_DLMO",
+        "EDA_baseline_drift_uS_per_h",
+        "uncertainty_score"
+      ],
+      "possible_confounders": [
+        "sleep_deprivation",
+        "caffeine_intake",
+        "activity_level"
+      ],
+      "control_variables": [
+        "prior_sleep_hours",
+        "caffeine_mg",
+        "accelerometer_variance_g2"
+      ],
+      "rival_explanation": "Uncertainty fluctuations are driven primarily by battery voltage decline over the recording session.",
+      "rival_prediction": "Lower battery voltage predicts higher uncertainty independent of circadian phase.",
+      "distinguishing_test": "After statistically controlling for battery level, circadian phase still predicts uncertainty.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Prior work shows modest but significant circadian modulation of EDA baseline (≈5‑10 % amplitude).",
+      "minimum_data_needed": [
+        "circadian_phase_estimate",
+        "EDA_baseline_drift",
+        "uncertainty_per_subject",
+        "battery_voltage",
+        "prior_sleep_hours",
+        "caffeine_mg",
+        "accelerometer_variance"
+      ],
+      "testable_prediction": "Uncertainty is higher during the biological night (circadian phase 0‑6 h) for individuals with delayed phase.",
+      "failure_condition": "No significant interaction between circadian phase and uncertainty after adjusting for battery, sleep, caffeine, and activity.",
+      "statistical_test_plan": "Linear mixed‑effects model with uncertainty as outcome, circadian phase, battery level, and their interaction as fixed effects, random intercept for subject, and sleep, caffeine, activity as covariates.",
+      "falsification_test": "Conduct a constant‑routine protocol to eliminate circadian variation; if uncertainty still varies with clock time, the mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Individual differences in alexithymia increase noise in self‑report stress labels, which propagates to higher model uncertainty.",
+      "proposed_mechanism": "Greater alexithymia reduces the reliability of subjective stress reports, inflating label noise and thus the uncertainty of the learned stress detector.",
+      "causal_path": "alexithymia_score → label_noise → stress‑detection uncertainty",
+      "mechanism_variables": [
+        "alexithymia_TAS_score",
+        "label_noise_entropy",
+        "uncertainty_score"
+      ],
+      "possible_confounders": [
+        "education_level",
+        "language_proficiency",
+        "mood_disorder_status"
+      ],
+      "control_variables": [
+        "years_education",
+        "TOEFL_score",
+        "PHQ_9_depression_score"
+      ],
+      "rival_explanation": "Uncertainty differences arise mainly from variations in stressor intensity across subjects.",
+      "rival_prediction": "Higher variability in administered stressor intensity leads to higher uncertainty regardless of alexithymia.",
+      "distinguishing_test": "After controlling for stressor‑intensity variance, alexithymia remains a significant predictor of uncertainty.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Studies report moderate associations (r≈0.3) between alexithymia and self‑report reliability.",
+      "minimum_data_needed": [
+        "alexithymia_score",
+        "multiple_self_reports_per_stressor_to_compute_label_noise",
+        "uncertainty_per_subject",
+        "years_education",
+        "TOEFL_score",
+        "PHQ_9_score",
+        "stressor_intensity_variance"
+      ],
+      "testable_prediction": "Higher alexithymia predicts higher uncertainty (positive association).",
+      "failure_condition": "No significant positive association between alexithymia and uncertainty after adjusting for education, language proficiency, and mood disorder.",
+      "statistical_test_plan": "Regression of uncertainty on alexithymia with years of education, TOEFL score, and PHQ‑9 as covariates.",
+      "falsification_test": "Replace self‑report labels with objective biomarker labels (e.g., cortisol) and retrain the model; if uncertainty no longer correlates with alexithymia, the mechanism is supported; if the correlation persists, it is falsified."
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Unmodeled hypertensive subpopulations produce heteroscedastic uncertainty because altered vascular tone changes PPG amplitude and degrades model fit for those subjects.",
+      "proposed_mechanism": "Hypertension‑related vascular tone shifts reduce PPG pulse amplitude, increasing model residuals and thus uncertainty for hypertensive individuals.",
+      "causal_path": "hypertension_status → PPG_amplitude_shift → model_residual_variance → stress‑detection uncertainty",
+      "mechanism_variables": [
+        "hypertension_binary",
+        "PPG_amplitude_normalized",
+        "residual_variance",
+        "uncertainty_score"
+      ],
+      "possible_confounders": [
+        "antihypertensive_medication",
+        "arterial_stiffness",
+        "age"
+      ],
+      "control_variables": [
+        "medication_use_binary",
+        "pulse_wave_velocity_m_s",
+        "age_years"
+      ],
+      "rival_explanation": "Uncertainty differences are primarily due to differing physical activity levels between hypertensive and normotensive subjects.",
+      "rival_prediction": "After adjusting for activity, hypertension status no longer predicts uncertainty.",
+      "distinguishing_test": "Include physical activity as a covariate; if hypertension remains a significant predictor, the mechanism is supported.",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "No prior work has quantified the uncertainty gap between hypertensive and normotensive wearables; variance‑components analysis is needed.",
+      "minimum_data_needed": [
+        "hypertension_status",
+        "PPG_amplitude",
+        "model_residuals_per_window",
+        "uncertainty_per_subject",
+        "antihypertensive_medication",
+        "pulse_wave_velocity",
+        "age",
+        "physical_activity_counts"
+      ],
+      "testable_prediction": "Hypertensive subjects exhibit higher uncertainty than normotensive subjects (positive direction).",
+      "failure_condition": "No significant difference in uncertainty between hypertensive and normotensive groups after controlling for medication, arterial stiffness, age, and activity.",
+      "statistical_test_plan": "Linear mixed‑effects model with uncertainty as outcome, hypertension as fixed effect, random subject intercept, and medication, pulse wave velocity, age, activity as covariates.",
+      "falsification_test": "Train separate stress‑detection models for hypertensive and normotensive subsamples; if the uncertainty gap disappears when models are group‑specific, the mechanism is supported; if the gap persists, it is falsified."
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Subjects whose feature vectors lie far from the training distribution incur higher model‑based uncertainty due to extrapolation.",
+      "proposed_mechanism": "Greater Mahalanobis distance from the training feature distribution signals out‑of‑domain inputs, which Bayesian or ensemble models interpret as higher predictive uncertainty.",
+      "causal_path": "Mahalanobis_distance_to_train → predictive_uncertainty",
+      "mechanism_variables": [
+        "Mahalanobis_distance_unitless",
+        "predictive_uncertainty_entropy_or_variance"
+      ],
+      "possible_confounders": [
+        "feature_scaling_method",
+        "missing_data_imputation_strategy"
+      ],
+      "control_variables": [
+        "scaling_technique_categorical",
+        "imputation_approach_categorical"
+      ],
+      "rival_explanation": "Uncertainty differences arise mainly from disagreement among ensemble members unrelated to input distance.",
+      "rival_prediction": "High ensemble variance can occur even for in‑distribution points, producing uncertainty unrelated to Mahalanobis distance.",
+      "distinguishing_test": "After accounting for ensemble variance, Mahalanobis distance still predicts uncertainty.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Out‑of‑distribution samples routinely increase predictive uncertainty by factors of 2 or more in deep ensembles.",
+      "minimum_data_needed": [
+        "feature_vector_per_window",
+        "training_set_mean_and_covariance",
+        "Mahalanobis_distance",
+        "uncertainty_per_subject",
+        "scaling_technique",
+        "imputation_approach"
+      ],
+      "testable_prediction": "Larger Mahalanobis distance predicts higher uncertainty (positive association).",
+      "failure_condition": "No significant positive association between Mahalanobis distance and uncertainty after controlling for scaling and imputation method.",
+      "statistical_test_plan": "Linear mixed‑effects model with uncertainty as outcome, Mahalanobis distance as fixed effect, random intercept for subject, and scaling technique and imputation approach as covariates.",
+      "falsification_test": "Project out‑of‑distribution samples back into the training subspace via PCA reconstruction; if uncertainty does not decrease after projection, the mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Subject‑specific motion artifact levels corrupt wearable features, increasing uncertainty in stress detection.",
+      "proposed_mechanism": "Higher motion introduces spurious variations in PPG and EDA channels, which the model interprets as stress‑related signal, raising predictive uncertainty.",
+      "causal_path": "motion_artifact_level → feature_corruption → stress‑detection uncertainty",
+      "mechanism_variables": [
+        "accelerometer_variance_g2",
+        "feature_noise_metric",
+        "uncertainty_score"
+      ],
+      "possible_confounders": [
+        "skin_tone",
+        "device_fit_tightness",
+        "ambient_vibration"
+      ],
+      "control_variables": [
+        "melanin_index",
+        "strap_tension_score",
+        "ambient_vibration_mg"
+      ],
+      "rival_explanation": "Uncertainty differences are mainly due to variations in individual stress reactivity rather than motion.",
+      "rival_prediction": "Subjects with high intrinsic stress reactivity will show high uncertainty even when motion is low.",
+      "distinguishing_test": "After controlling for a physiological stress reactivity index (e.g., task‑evoked HRV change), motion artifact level still predicts uncertainty.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Prior work shows moderate effect sizes (Cohen’s d≈0.5) of motion artifact on PPG signal quality.",
+      "minimum_data_needed": [
+        "accelerometer_variance",
+        "feature_noise_metric",
+        "uncertainty_per_subject",
+        "melanin_index",
+        "strap_tension_score",
+        "ambient_vibration",
+        "task_evoked_HRV_change"
+      ],
+      "testable_prediction": "Higher motion artifact level predicts higher uncertainty (positive association).",
+      "failure_condition": "No significant positive association between accelerometer variance and uncertainty after adjusting for melanin index, strap tension, ambient vibration, and stress reactivity.",
+      "statistical_test_plan": "Multiple regression of uncertainty on accelerometer variance with melanin index, strap tension, ambient vibration, and task‑evoked HRV change as covariates.",
+      "falsification_test": "Constrain subject movement using a rigid harness while preserving physiological stress induction; if uncertainty does not drop accordingly, the mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Individual differences in sleep inertia cause systematic delays in self‑report stress labeling, increasing label‑time misalignment and model uncertainty.",
+      "proposed_mechanism": "Upon waking, slowed cognitive processing delays self‑report entry, shifting labels relative to physiological stress onset and inflating uncertainty.",
+      "causal_path": "sleep_inertia_duration → label_entry_delay → label_signal_misalignment → stress‑detection uncertainty",
+      "mechanism_variables": [
+        "sleep_inertia_min",
+        "label_entry_delay_s",
+        "misalignment_score_crosscorr_lag",
+        "uncertainty_score"
+      ],
+      "possible_confounders": [
+        "total_sleep_time",
+        "caffeine_before_report",
+        "time_since_wake"
+      ],
+      "control_variables": [
+        "total_sleep_h",
+        "caffeine_mg_pre",
+        "minutes_since_wake"
+      ],
+      "rival_explanation": "Uncertainty differences arise mainly from random variability in self‑report compliance unrelated to sleep state.",
+      "rival_prediction": "Low compliance predicts high uncertainty irrespective of sleep inertia duration.",
+      "distinguishing_test": "After adjusting for compliance scores, sleep inertia duration remains a significant predictor of uncertainty.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Sleep inertia effects on cognitive performance are typically small to moderate (effect size ≈0.3).",
+      "minimum_data_needed": [
+        "sleep_inertia_measurement",
+        "label_entry_timestamp",
+        "physiological_stress_onset",
+        "uncertainty_per_subject",
+        "compliance_score",
+        "total_sleep_time",
+        "caffeine_intake_before_report",
+        "minutes_since_wake"
+      ],
+      "testable_prediction": "Longer sleep inertia predicts higher uncertainty (positive association).",
+      "failure_condition": "No significant positive association between sleep inertia duration and uncertainty after controlling for compliance, total sleep, caffeine, and minutes since wake.",
+      "statistical_test_plan": "Linear mixed‑effects model with uncertainty as outcome, sleep inertia as fixed effect, random subject intercept, and compliance, total sleep, caffeine, minutes since wake as covariates.",
+      "falsification_test": "Administer a short nap protocol that eliminates sleep inertia; if uncertainty does not decrease for post‑nap reports, the mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Failure to model within‑subject temporal autocorrelation leads to underestimated uncertainty for subjects with high intra‑individual variability.",
+      "proposed_mechanism": "Ignoring autocorrelation causes the model to treat correlated observations as independent, producing overly confident predictions and thus lower reported uncertainty for stable subjects, while high‑variability subjects show higher observed uncertainty.",
+      "causal_path": "ignored_autocorrelation → misestimated_prediction_variance → stress‑detection_uncertainty_bias",
+      "mechanism_variables": [
+        "autocorrelation_lag1",
+        "reported_uncertainty",
+        "observed_prediction_error_variance"
+      ],
+      "possible_confounders": [
+        "number_of_observations_per_subject",
+        "sensor_sampling_rate",
+        "experimenter_effect"
+      ],
+      "control_variables": [
+        "obs_count_per_subj",
+        "sampling_rate_Hz",
+        "experimenter_id"
+      ],
+      "rival_explanation": "Uncertainty differences are mainly due to true differences in underlying stress volatility across subjects.",
+      "rival_prediction": "Subjects with genuinely higher stress volatility will have higher uncertainty even when autocorrelation is properly modeled.",
+      "distinguishing_test": "Fit two models: one ignoring autocorrelation, one with an AR(1) residual structure; if the autocorrelation‑aware model reduces the uncertainty gap between high‑ and low‑variability subjects, the mechanism is supported.",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "The magnitude of bias from ignoring autocorrelation depends on the intra‑class correlation coefficient, which must be estimated from data.",
+      "minimum_data_needed": [
+        "time_series_of_predictions_per_subject",
+        "reported_uncertainty_per_window",
+        "observed_squared_errors",
+        "autocorrelation_estimate",
+        "obs_count_per_subj",
+        "sampling_rate_Hz",
+        "experimenter_id"
+      ],
+      "testable_prediction": "Subjects with higher lag‑1 autocorrelation will show larger discrepancy between reported uncertainty and observed error variance (positive association).",
+      "failure_condition": "No significant positive association between autocorrelation lag‑1 and the difference between observed error variance and reported uncertainty after controlling for observation count, sampling rate, and experimenter.",
+      "statistical_test_plan": "Regression of (observed_error_variance − reported_uncertainty) on lag‑1 autocorrelation with observation count, sampling rate, and experimenter ID as covariates.",
+      "falsification_test": "Re‑fit the stress‑detection model using a mixed‑effects framework that explicitly models subject‑level autocorrelation; if the uncertainty‑variance discrepancy disappears, the mechanism is supported; if it persists, the mechanism is falsified."
+    }
+  ],
+  "total_tokens": 23351,
+  "completion_tokens": 18051
+}

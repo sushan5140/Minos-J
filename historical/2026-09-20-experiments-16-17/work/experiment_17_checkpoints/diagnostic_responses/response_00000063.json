@@ -1,0 +1,15 @@
+{
+  "archive_sequence": 63,
+  "classification": "incomplete_read",
+  "captured_at_utc": "2026-09-22T00:39:03Z",
+  "metadata": {
+    "model": "nex-agi/nex-n2.5-pro:free",
+    "schema_name": "blinded_judgments",
+    "http_attempt": 1,
+    "expected_bytes": null
+  },
+  "body_sha256": "2aeb11b93e9eab19f5d47f8627faf21919e60876970888a9b6cb08134f42e0da",
+  "body_bytes": 517,
+  "body_encoding": "utf-8",
+  "body": "\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n\n         \n"
+}

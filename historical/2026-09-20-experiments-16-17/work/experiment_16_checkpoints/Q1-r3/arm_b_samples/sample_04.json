@@ -1,0 +1,358 @@
+{
+  "sample_index": 4,
+  "valid": true,
+  "error": null,
+  "cards": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Subjects with high intra-subject heart rate variability (HRV) complexity during baseline exhibit undercoverage because Mondrian's subject-level taxonomy fails to stratify on dynamical complexity, causing calibration quantiles to underestimate tail dispersion for these individuals.",
+      "proposed_mechanism": "High baseline HRV sample entropy (SampEn) → wider conditional distribution of nonconformity scores at test time → fixed subject-level calibration quantile (90th percentile) falls below true conditional 90th percentile → undercoverage.",
+      "causal_path": "baseline_HRV_SampEn → conditional_nonconformity_score_dispersion → calibration_quantile_deficit → empirical_coverage_shortfall",
+      "mechanism_variables": [
+        "baseline_HRV_SampEn",
+        "conditional_nonconformity_score_90th_percentile",
+        "subject_calibration_quantile",
+        "empirical_coverage"
+      ],
+      "possible_confounders": [
+        "age",
+        "fitness_level",
+        "medication_use",
+        "caffeine_intake"
+      ],
+      "control_variables": [
+        "stratify calibration by baseline_HRV_SampEn tertiles; include age, fitness_level as covariates in quantile regression"
+      ],
+      "rival_explanation": "Undercoverage is driven by sensor noise variance differences across subjects, not physiological complexity.",
+      "rival_prediction": "Subjects with high EDA sensor noise (measured by high-frequency power ratio) show undercoverage regardless of HRV SampEn.",
+      "distinguishing_test": "Partial correlation between baseline_HRV_SampEn and coverage deficit controlling for EDA_noise_ratio; significant partial correlation supports H1.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Prior work (Voss et al. 2019) shows HRV complexity explains ~15% variance in stress response dispersion; expect Cohen's f² ≈ 0.15 for SampEn predicting coverage deficit.",
+      "minimum_data_needed": [
+        "WESAD raw ECG for baseline SampEn computation per subject",
+        "Mondrian nonconformity scores per subject per fold",
+        "Subject-level empirical coverage at 90% nominal level"
+      ],
+      "testable_prediction": "Subjects in top tercile of baseline_HRV_SampEn have empirical coverage ≤ 85% at 90% nominal level; bottom tercile ≥ 89%.",
+      "failure_condition": "No monotonic relationship between baseline_HRV_SampEn and coverage deficit across subjects (Spearman ρ > -0.2).",
+      "statistical_test_plan": "Spearman correlation between baseline_HRV_SampEn and (nominal_coverage - empirical_coverage) across 15 subjects; one-sided test α=0.05.",
+      "falsification_test": "Re-run Mondrian with taxonomy stratified by baseline_HRV_SampEn terciles; if undercoverage persists in high-SampEn stratum, mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Subjects with poor electrodermal activity (EDA) sensor contact (quantified by high tonic skin conductance level drift) produce nonconformity scores with heavier tails that the subject-level calibration quantile fails to capture.",
+      "proposed_mechanism": "Poor EDA electrode contact → increased tonic SCL drift rate (µS/min) → inflated nonconformity scores during high-stress periods → subject-level 90th percentile quantile underestimates true conditional tail → undercoverage.",
+      "causal_path": "EDA_contact_quality → SCL_drift_rate → nonconformity_score_tail_index → calibration_quantile_bias → coverage_deficit",
+      "mechanism_variables": [
+        "EDA_contact_impedance",
+        "SCL_drift_rate",
+        "nonconformity_score_90th_percentile",
+        "subject_calibration_quantile",
+        "empirical_coverage"
+      ],
+      "possible_confounders": [
+        "ambient_temperature",
+        "skin_hydration",
+        "electrode_gel_degradation"
+      ],
+      "control_variables": [
+        "include ambient_temperature as covariate; restrict to first 30 min of session before gel degradation"
+      ],
+      "rival_explanation": "Undercoverage stems from ECG-derived feature noise, not EDA contact quality.",
+      "rival_prediction": "Subjects with high ECG noise (measured by RR interval artifact ratio) show undercoverage independent of EDA contact quality.",
+      "distinguishing_test": "Compare variance inflation factor (VIF) of SCL_drift_rate vs. ECG_artifact_ratio in predicting coverage deficit; lower VIF for SCL_drift_rate supports H2.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Sensor contact issues can double nonconformity score variance (empirical observation in WESAD preprocessing); expect coverage drop >10 percentage points for worst-contact subjects.",
+      "minimum_data_needed": [
+        "WESAD EDA raw signal for contact impedance estimation",
+        "SCL drift rate per subject per session",
+        "Nonconformity scores and coverage per subject"
+      ],
+      "testable_prediction": "Subjects with SCL_drift_rate > 0.05 µS/min have empirical coverage ≤ 82%; subjects with drift < 0.01 µS/min have coverage ≥ 89%.",
+      "failure_condition": "SCL_drift_rate shows no positive correlation with coverage deficit (ρ < 0.1).",
+      "statistical_test_plan": "Linear regression: coverage_deficit ~ SCL_drift_rate + ambient_temperature; test coefficient of SCL_drift_rate > 0 (α=0.05).",
+      "falsification_test": "Re-calibrate Mondrian using only ECG features (excluding EDA); if undercoverage pattern across subjects remains identical, EDA contact is not the mechanism."
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Subjects exhibiting rapid physiological habituation to repeated stress tasks (TSST, cold pressor) show undercoverage because nonconformity scores decrease within-session, violating exchangeability assumed by Mondrian's calibration set construction.",
+      "proposed_mechanism": "Repeated stress exposure → within-session habituation slope (negative trend in EDA phasic peak amplitude across trials) → nonconformity scores systematically lower in later test trials than calibration trials → calibration quantile too high for early trials, too low for late trials → net undercoverage for habituating subjects.",
+      "causal_path": "habituation_slope → nonconformity_score_temporal_trend → calibration_test_distribution_mismatch → coverage_deficit",
+      "mechanism_variables": [
+        "EDA_phasic_peak_amplitude_slope_across_trials",
+        "nonconformity_score_temporal_slope",
+        "calibration_quantile",
+        "empirical_coverage"
+      ],
+      "possible_confounders": [
+        "trial_order_randomization",
+        "inter_trial_interval_duration",
+        "baseline_stress_level"
+      ],
+      "control_variables": [
+        "include trial_index as covariate; use time-stratified calibration"
+      ],
+      "rival_explanation": "Undercoverage is due to sensitization (increasing response) not habituation.",
+      "rival_prediction": "Subjects with positive EDA phasic slope (sensitization) show undercoverage; habituating subjects show overcoverage.",
+      "distinguishing_test": "Sign of correlation between EDA_phasic_slope and coverage deficit: negative supports H3, positive supports rival.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Habituation slopes in WESAD range -0.05 to 0.05 µS/trial; simulation suggests 0.03 µS/trial slope yields ~5% coverage deficit.",
+      "minimum_data_needed": [
+        "Trial-level EDA phasic peak amplitudes per subject",
+        "Trial-level nonconformity scores",
+        "Trial indices for calibration and test sets"
+      ],
+      "testable_prediction": "Subjects with EDA_phasic_slope < -0.02 µS/trial have coverage ≤ 85%; subjects with slope > 0.02 have coverage ≥ 90%.",
+      "failure_condition": "No negative correlation between habituation slope and coverage deficit (ρ > -0.15).",
+      "statistical_test_plan": "Mixed-effects model: nonconformity_score ~ trial_index + (1|subject); extract subject-level slopes; correlate with coverage deficit (Spearman, one-sided α=0.05).",
+      "falsification_test": "Apply time-stratified Mondrian (separate calibration per trial block); if undercoverage disappears for habituating subjects, mechanism confirmed; if persists, falsified."
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Subjects with systematic label timing offsets (delayed self-report stress ratings relative to physiological peaks) cause misalignment between nonconformity scores and true stress states, producing apparent undercoverage.",
+      "proposed_mechanism": "Delayed self-report labeling → label_physiological_offset (seconds) → nonconformity scores computed against misaligned labels → inflated scores during true stress (labeled baseline) and deflated during true baseline (labeled stress) → increased score variance → calibration quantile insufficient for true conditional distribution → undercoverage.",
+      "causal_path": "label_offset → nonconformity_score_variance_inflation → calibration_quantile_deficit → empirical_coverage_shortfall",
+      "mechanism_variables": [
+        "label_physiological_offset",
+        "nonconformity_score_variance",
+        "calibration_quantile",
+        "empirical_coverage"
+      ],
+      "possible_confounders": [
+        "subject_reaction_time",
+        "experimenter_annotation_latency",
+        "task_complexity"
+      ],
+      "control_variables": [
+        "use physiological peak detection (EDA/ECG) as ground truth for alignment check; exclude subjects with offset > 30s"
+      ],
+      "rival_explanation": "Undercoverage is due to genuine physiological variability, not label misalignment.",
+      "rival_prediction": "Re-aligning labels using physiological peaks does not improve coverage for undercovered subjects.",
+      "distinguishing_test": "Re-compute nonconformity scores with physiologically aligned labels; if coverage improves significantly for undercovered subjects, H4 supported.",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "No prior quantification of label offset prevalence in WESAD; need to compute offset distribution via cross-correlation of self-report vs. EDA peaks to estimate effect.",
+      "minimum_data_needed": [
+        "Self-report timestamps per subject per trial",
+        "EDA/ECG physiological peak timestamps",
+        "Original and re-aligned nonconformity scores"
+      ],
+      "testable_prediction": "Subjects with median label_offset > 15s show coverage improvement ≥ 5% after physiological re-alignment.",
+      "failure_condition": "Median label_offset < 5s for all undercovered subjects, or re-alignment yields < 2% coverage improvement.",
+      "statistical_test_plan": "Paired t-test: coverage_before_realignment vs coverage_after_realignment for subjects with offset > 15s (α=0.05, one-sided).",
+      "falsification_test": "Simulate perfect labels from physiological ground truth; if Mondrian still shows undercoverage for same subjects, label offset is not the cause."
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Subjects with discordant self-report vs. physiological stress responses (high physiological arousal but low self-reported stress) exhibit undercoverage because the taxonomy stratifies on noisy self-report labels rather than latent stress state.",
+      "proposed_mechanism": "Physiological-psychological discordance → high EDA/HRV reactivity but low self-report score → Mondrian taxonomy assigns low-stress stratum → calibration quantile from low-stress stratum applied to high-arousal test points → severe undercoverage.",
+      "causal_path": "discordance_index → taxonomy_stratum_mismatch → conditional_calibration_quantile_bias → coverage_deficit",
+      "mechanism_variables": [
+        "discordance_index (physio_z - selfreport_z)",
+        "assigned_taxon",
+        "true_latent_stress_stratum",
+        "calibration_quantile",
+        "empirical_coverage"
+      ],
+      "possible_confounders": [
+        "alexithymia",
+        "interoceptive_awareness",
+        "social_desirability_bias"
+      ],
+      "control_variables": [
+        "include alexithymia score (TAS-20) as covariate; use physiological clustering for taxonomy"
+      ],
+      "rival_explanation": "Undercoverage occurs for all high-arousal subjects regardless of self-report concordance.",
+      "rival_prediction": "Subjects with high physiological arousal show undercoverage even when self-report matches (high-high concordance).",
+      "distinguishing_test": "Compare coverage deficit for high-arousal subjects split by concordance: discordant (high physio, low self-report) vs. concordant (high physio, high self-report). Larger deficit in discordant supports H5.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Taxonomy mismatch can shift conditional coverage by 20-30% (conformal prediction theory); expect >15% coverage gap between discordant and concordant high-arousal subjects.",
+      "minimum_data_needed": [
+        "Self-report stress scores per trial",
+        "Physiological reactivity indices (EDA/HRV) per trial",
+        "Mondrian taxonomy assignments and coverage per subject"
+      ],
+      "testable_prediction": "Discordant high-arousal subjects (top physio quartile, bottom self-report quartile) have coverage ≤ 75%; concordant high-arousal subjects have coverage ≥ 88%.",
+      "failure_condition": "Discordance index shows no association with coverage deficit after controlling for physiological arousal level (partial ρ < 0.1).",
+      "statistical_test_plan": "ANCOVA: coverage ~ discordance_group (discordant/concordant) + physio_arousal_level; test group effect (α=0.05).",
+      "falsification_test": "Replace self-report taxonomy with k-means clustering on physiological features; if undercoverage pattern across subjects remains unchanged, self-report discordance is not the mechanism."
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Mondrian's subject-level taxonomy is too coarse for subjects with bimodal stress response distributions (distinct low/high arousal modes), causing a single calibration quantile to undercover both modes.",
+      "proposed_mechanism": "Bimodal stress response distribution → two distinct conditional nonconformity score distributions → single subject-level 90th percentile quantile falls between modes → undercoverage for both modes because quantile < 90th percentile of each mode.",
+      "causal_path": "response_bimodality_index → conditional_score_distribution_separation → single_quantile_deficit → coverage_shortfall",
+      "mechanism_variables": [
+        "Hartigans_dip_test_pvalue",
+        "mode_separation_distance",
+        "subject_calibration_quantile",
+        "mode_specific_90th_percentiles",
+        "empirical_coverage"
+      ],
+      "possible_confounders": [
+        "number_of_trials_per_subject",
+        "task_type_variety",
+        "session_duration"
+      ],
+      "control_variables": [
+        "ensure minimum 10 trials per subject; include task_type as stratification variable"
+      ],
+      "rival_explanation": "Undercoverage is due to heavy-tailed unimodal distribution, not bimodality.",
+      "rival_prediction": "Subjects with heavy-tailed (high kurtosis) but unimodal nonconformity scores show similar undercoverage.",
+      "distinguishing_test": "Fit Gaussian mixture model (2 components) vs. single t-distribution to nonconformity scores; compare BIC. Lower BIC for 2-component GMM supports H6.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Bimodality with mode separation > 1.5 SD yields ~8% coverage deficit per mode (simulation); expect 5-10% deficit for bimodal subjects.",
+      "minimum_data_needed": [
+        "Per-subject nonconformity score distributions (calibration + test)",
+        "Hartigan's dip test results per subject",
+        "GMM fit statistics per subject"
+      ],
+      "testable_prediction": "Subjects with dip test p < 0.05 and mode separation > 1.5 SD have coverage ≤ 83%; unimodal subjects have coverage ≥ 89%.",
+      "failure_condition": "No subjects exhibit significant bimodality (dip test p < 0.05) among undercovered subjects.",
+      "statistical_test_plan": "Hartigan's dip test per subject; logistic regression: undercovered (yes/no) ~ dip_test_significant + kurtosis; test dip_test_significant coefficient (α=0.05).",
+      "falsification_test": "Apply Mondrian with taxonomy stratified by detected mode (using GMM posterior); if undercoverage persists within each mode, bimodality is not the mechanism."
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Subjects with small calibration sets (due to missing trials or artifacts) have high variance in the estimated 90th percentile quantile, leading to frequent undercoverage by chance.",
+      "proposed_mechanism": "Small calibration set size (n_cal) → high sampling variance of empirical 90th percentile quantile → quantile often below true conditional 90th percentile → undercoverage.",
+      "causal_path": "n_calibration_trials → quantile_estimation_variance → quantile_bias_downward → empirical_coverage_deficit",
+      "mechanism_variables": [
+        "n_calibration_trials",
+        "quantile_estimation_standard_error",
+        "subject_calibration_quantile",
+        "true_conditional_90th_percentile",
+        "empirical_coverage"
+      ],
+      "possible_confounders": [
+        "artifact_rejection_rate",
+        "trial_exclusion_criteria",
+        "session_length"
+      ],
+      "control_variables": [
+        "use bootstrap bias correction for quantile; minimum n_cal threshold"
+      ],
+      "rival_explanation": "Undercoverage is systematic (bias) not variance-driven; increasing n_cal would not fix it.",
+      "rival_prediction": "Bootstrap bias-corrected quantiles do not improve coverage for small-n_cal subjects.",
+      "distinguishing_test": "Apply bootstrap bias correction (BCa) to calibration quantiles; if coverage improves for small-n_cal subjects, H7 supported.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "For n_cal=10, 90th percentile SE ≈ 0.15 * IQR; simulation shows 20% chance of >5% coverage deficit. For n_cal=30, <5% chance.",
+      "minimum_data_needed": [
+        "Number of calibration trials per subject after artifact rejection",
+        "Bootstrap distribution of 90th percentile per subject",
+        "Coverage before/after bias correction"
+      ],
+      "testable_prediction": "Subjects with n_cal < 15 have coverage ≤ 82%; after BCa correction, coverage ≥ 88%.",
+      "failure_condition": "No correlation between n_cal and coverage deficit (ρ > -0.1), or BCa correction yields < 2% improvement for small-n_cal subjects.",
+      "statistical_test_plan": "Spearman correlation between n_cal and coverage deficit; paired t-test pre/post BCa for n_cal < 15 (α=0.05).",
+      "falsification_test": "Pool calibration data across all subjects (global calibration); if undercoverage persists for same subjects, small n_cal is not the mechanism."
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Subjects whose test feature vectors fall outside the convex hull of calibration features (covariate shift) experience undercoverage because nonconformity scores extrapolate poorly.",
+      "proposed_mechanism": "Feature space extrapolation → test points in low-density calibration regions → nonconformity score function unreliable → scores systematically higher than calibration distribution → calibration quantile exceeded → undercoverage.",
+      "causal_path": "mahalanobis_distance_to_calibration_centroid → nonconformity_score_inflation → quantile_exceedance_rate → coverage_deficit",
+      "mechanism_variables": [
+        "mahalanobis_distance_test_to_calibration",
+        "nonconformity_score",
+        "calibration_quantile",
+        "empirical_coverage"
+      ],
+      "possible_confounders": [
+        "feature_scaling",
+        "dimensionality",
+        "outlier_detection_threshold"
+      ],
+      "control_variables": [
+        "standardize features on calibration set; use PCA to 95% variance; exclude distances > 99th percentile"
+      ],
+      "rival_explanation": "Undercoverage is due to label noise, not feature space extrapolation.",
+      "rival_prediction": "Subjects with high label noise (measured by self-report inconsistency) show undercoverage regardless of Mahalanobis distance.",
+      "distinguishing_test": "Partial correlation between Mahalanobis distance and coverage deficit controlling for label_inconsistency; significant partial correlation supports H8.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Conformal prediction theory: coverage guarantee holds only under exchangeability; covariate shift breaks it. Empirical studies show 5-15% deficit for moderate shift.",
+      "minimum_data_needed": [
+        "Calibration feature matrix per subject",
+        "Test feature matrix per subject",
+        "Nonconformity scores and coverage per subject"
+      ],
+      "testable_prediction": "Subjects with median test Mahalanobis distance > 90th percentile of calibration distances have coverage ≤ 84%.",
+      "failure_condition": "Mahalanobis distance shows no positive correlation with coverage deficit (ρ < 0.15).",
+      "statistical_test_plan": "Linear mixed model: coverage ~ mahalanobis_distance + (1|subject); test fixed effect > 0 (α=0.05).",
+      "falsification_test": "Retrain nonconformity scorer with importance weighting (KLIEP) to correct covariate shift; if undercoverage disappears for high-distance subjects, mechanism confirmed; if persists, falsified."
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Subjects who consumed caffeine within 2 hours pre-experiment exhibit altered cardiovascular stress reactivity (blunted HRV response) that shifts their nonconformity score distribution relative to non-caffeinated calibration subjects.",
+      "proposed_mechanism": "Caffeine intake → blunted HRV stress reactivity (reduced RMSSD drop) → altered feature distribution → nonconformity scores computed on caffeine-altered physiology → calibration quantile from mixed caffeine/non-caffeine subjects mismatched → undercoverage for caffeinated subjects.",
+      "causal_path": "caffeine_intake → HRV_reactivity_blunting → feature_distribution_shift → nonconformity_score_distribution_shift → calibration_quantile_mismatch → coverage_deficit",
+      "mechanism_variables": [
+        "caffeine_dose_mg",
+        "HRV_RMSSD_stress_reactivity",
+        "nonconformity_score_distribution_shift",
+        "calibration_quantile",
+        "empirical_coverage"
+      ],
+      "possible_confounders": [
+        "habitual_caffeine_use",
+        "time_since_last_caffeine",
+        "nicotine_use",
+        "medication"
+      ],
+      "control_variables": [
+        "record caffeine intake via questionnaire; stratify calibration by caffeine status"
+      ],
+      "rival_explanation": "Caffeine effects are negligible compared to inter-subject variability; undercoverage unrelated to caffeine.",
+      "rival_prediction": "Caffeine consumers and non-consumers show similar coverage when matched on baseline HRV.",
+      "distinguishing_test": "Compare coverage for caffeine+ vs caffeine- subjects matched on baseline HRV (propensity score matching); significant difference supports H9.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Caffeine blunts HRV reactivity by ~10-15% (meta-analysis); expected coverage deficit 3-5% for consumers vs non-consumers.",
+      "minimum_data_needed": [
+        "Caffeine intake questionnaire per subject",
+        "Baseline and stress RMSSD per subject",
+        "Coverage per subject"
+      ],
+      "testable_prediction": "Caffeine consumers (≥100mg within 2h) have coverage ≤ 86%; matched non-consumers have coverage ≥ 89%.",
+      "failure_condition": "No coverage difference between matched caffeine+ and caffeine- subjects (Δ < 2%).",
+      "statistical_test_plan": "Propensity score matching on baseline HRV, age, sex; paired t-test on coverage (α=0.05, one-sided).",
+      "falsification_test": "Re-calibrate Mondrian separately for caffeine+ and caffeine- subjects; if undercoverage persists within caffeine+ stratum, caffeine is not the mechanism."
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Subjects with high motion artifact burden during stress tasks (quantified by accelerometer magnitude) have corrupted physiological features that produce spuriously high nonconformity scores, but Mondrian's taxonomy does not stratify on motion, causing undercoverage.",
+      "proposed_mechanism": "High motion during stress → accelerometer magnitude > threshold → ECG/EDA motion artifacts → corrupted features (e.g., false RR intervals, EDA spikes) → inflated nonconformity scores → subject-level calibration quantile (computed on mixed clean/artifact trials) too low for high-motion test trials → undercoverage.",
+      "causal_path": "motion_artifact_burden → feature_corruption_severity → nonconformity_score_inflation → calibration_quantile_deficit → coverage_shortfall",
+      "mechanism_variables": [
+        "accelerometer_magnitude_95th_percentile",
+        "ECG_artifact_ratio",
+        "EDA_artifact_ratio",
+        "nonconformity_score",
+        "calibration_quantile",
+        "empirical_coverage"
+      ],
+      "possible_confounders": [
+        "task_type (TSST vs cold pressor)",
+        "sensor_placement_tightness",
+        "body_composition"
+      ],
+      "control_variables": [
+        "include task_type as stratification; use artifact detection to flag corrupted trials"
+      ],
+      "rival_explanation": "Undercoverage is due to genuine physiological stress response intensity, not motion artifacts.",
+      "rival_prediction": "Subjects with high physiological stress reactivity (high EDA peak) but low motion show similar undercoverage.",
+      "distinguishing_test": "Compare coverage for high-motion/low-reactivity vs low-motion/high-reactivity subjects; higher deficit in high-motion group supports H10.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Motion artifacts can inflate nonconformity scores by 2-3x (WESAD preprocessing observations); expect >15% coverage deficit for high-motion subjects.",
+      "minimum_data_needed": [
+        "WESAD accelerometer data (chest/wrist) per trial",
+        "Automated artifact detection flags for ECG/EDA",
+        "Nonconformity scores and coverage per subject per trial"
+      ],
+      "testable_prediction": "Subjects with mean trial accelerometer magnitude > 0.5g have coverage ≤ 80%; subjects with < 0.1g have coverage ≥ 90%.",
+      "failure_condition": "Accelerometer magnitude shows no positive correlation with coverage deficit after controlling for physiological reactivity (partial ρ < 0.1).",
+      "statistical_test_plan": "Partial Spearman correlation: coverage_deficit ~ accel_magnitude | EDA_peak_amplitude; test ρ > 0 (α=0.05).",
+      "falsification_test": "Exclude all trials with accelerometer magnitude > 0.3g from calibration and test; if undercoverage disappears for previously high-motion subjects, mechanism confirmed; if persists, falsified."
+    }
+  ],
+  "total_tokens": 7243,
+  "completion_tokens": 6691
+}

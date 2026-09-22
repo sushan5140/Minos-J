@@ -1,0 +1,154 @@
+{
+  "statistical_testability_builds": [
+    {
+      "hypothesis_id": "H1",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Mechanism builder predicts absolute coverage deviation >5% for subjects with high autonomic variability (RMSSD CV >30%) in leave-one-subject-out calibration at nominal 90%.",
+      "minimum_data_needed": [
+        "Multi-subject physiological dataset with ≥50 subjects",
+        "Each subject with ≥10 segments of ≥5 min continuous ECG/PPG",
+        "Simultaneous reference measurements for prediction target (e.g., cuff BP)",
+        "Per-segment HRV metrics (RMSSD, LF/HF ratio) and baroreflex sensitivity estimates"
+      ],
+      "testable_prediction": "Subjects with autonomic parameter coefficient of variation >30% across the cohort will show mean absolute coverage deviation >5% from nominal 90% in leave-one-subject-out conformal prediction, with a positive correlation between subject-level autonomic distance from calibration pool mean and coverage deviation.",
+      "failure_condition": "If the correlation between subject autonomic parameter distance and coverage deviation is not statistically significant (p>0.05) or the mean absolute coverage deviation for high-variability subjects (top quartile CV) is ≤2%.",
+      "statistical_test_plan": "1. Compute per-subject autonomic parameters (RMSSD, LF/HF, BRS) for each segment. 2. Perform leave-one-subject-out conformal prediction at nominal 90% coverage. 3. Calculate empirical coverage per subject. 4. Regress absolute coverage deviation on subject-level coefficient of variation of autonomic parameters using linear regression. 5. Test slope ≠ 0 with α=0.05. 6. Bootstrap 95% CI for mean coverage deviation in high-variability vs low-variability subject groups.",
+      "statistical_testability_notes": "Requires sufficient subjects for leave-one-out; if subjects <30, use k-fold subject-wise cross-validation. Control for sensor placement and medication via covariates."
+    },
+    {
+      "hypothesis_id": "H2",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Mechanism builder predicts coverage ≤80% at nominal 90% for top-quartile impedance drift (>20% change) or accelerometer variance segments, versus ≥88% for bottom quartile — a ≥8% absolute difference.",
+      "minimum_data_needed": [
+        "Wearable sensor dataset (PPG/ECG) with simultaneous electrode impedance tracking",
+        "Triaxial accelerometer data synchronized with physiological signals",
+        "≥100 segments spanning wide range of motion/impedance conditions",
+        "Reference signal quality metrics (SNR) per segment"
+      ],
+      "testable_prediction": "Segments in the top quartile of electrode impedance drift (>20% change) or accelerometer variance will exhibit conformal coverage ≤80% at nominal 90%, while bottom-quartile segments will maintain ≥88% coverage, with a monotonic negative correlation between artifact severity metrics and coverage.",
+      "failure_condition": "If coverage in top-quartile artifact segments is >85% at nominal 90%, or if the correlation between artifact metrics and coverage deviation is not statistically significant (p>0.05) after controlling for physiological state.",
+      "statistical_test_plan": "1. Quantify per-segment impedance drift (% change) and accelerometer variance. 2. Stratify segments into quartiles by each artifact metric. 3. Compute conformal coverage at nominal 90% per quartile using calibration on bottom-quartile segments. 4. Test coverage difference between top and bottom quartiles with two-proportion z-test (α=0.01). 5. Fit logistic regression of coverage indicator on artifact metrics controlling for HRV. 6. Assess calibration via reliability diagrams per stratum.",
+      "statistical_testability_notes": "Controlled impedance/motion protocols (gel drying, standardized movements) strengthen causal inference. Use reference-grade sensors to isolate artifact effects."
+    },
+    {
+      "hypothesis_id": "H3",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Mechanism builder predicts coverage drops ≥10% below nominal within 2 minutes post-state-transition, with recovery only after calibration window fully contains new-state samples.",
+      "minimum_data_needed": [
+        "Physiological dataset with gold-standard state annotations (e.g., PSG sleep stages)",
+        "≥50 state transitions (e.g., NREM→REM, sleep→wake) across subjects",
+        "Continuous signals with ≥30 min pre/post-transition per transition",
+        "Sliding-window conformal prediction implementation with variable window sizes"
+      ],
+      "testable_prediction": "Conformal coverage at nominal 90% will drop ≥10% within 2 minutes after verified autonomic state transitions (e.g., N2→REM), with drop magnitude inversely proportional to (window size / state duration) ratio; coverage will recover to within 3% of nominal only after the calibration window contains >80% new-state samples.",
+      "failure_condition": "If coverage drop post-transition is <5% at nominal 90%, or if coverage recovers before the calibration window contains predominantly new-state samples (i.e., recovery time < 0.5 × window size).",
+      "statistical_test_plan": "1. Align all transitions to t=0. 2. Compute coverage in 30-second bins from -10 to +10 min relative to transition. 3. Fit piecewise linear model to coverage time-course; test slope change at t=0 (α=0.01). 4. Vary calibration window size (1, 5, 15, 30 min) and measure minimum coverage and recovery time. 5. Compare coverage drop across transition types (N2→REM vs N3→wake) with ANOVA. 6. Test interaction between window size and transition type.",
+      "statistical_testability_notes": "Requires high-resolution state labels; use PSG-scored data. Control for movement artifacts during transitions via accelerometer stratification."
+    },
+    {
+      "hypothesis_id": "H4",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Mechanism builder predicts coverage oscillation amplitude ≥5% at nominal 90% across circadian phases, with minimum coverage at circadian trough (~04:00-06:00).",
+      "minimum_data_needed": [
+        "Continuous physiological monitoring ≥48 hours per subject (≥20 subjects)",
+        "Circadian phase markers (DLMO, core body temperature rhythm, or validated proxy)",
+        "Segments binned into ≥6 circadian phase bins (4-hour width)",
+        "Conformal prediction with fixed calibration window shorter than 24h"
+      ],
+      "testable_prediction": "Conformal coverage at nominal 90% will oscillate with a 24-hour period (cosinor amplitude ≥2.5%, p<0.05), reaching minimum at circadian phases corresponding to peak residual variance (e.g., 04:00-06:00), and phase-stratified calibration will reduce oscillation amplitude by ≥50% compared to fixed calibration.",
+      "failure_condition": "If cosinor analysis yields amplitude <1.5% (p>0.05) or if phase-stratified calibration does not reduce coverage oscillation amplitude by at least 30%.",
+      "statistical_test_plan": "1. Bin segments by circadian phase relative to DLMO (4-hour bins). 2. Compute coverage per bin at nominal 90%. 3. Fit cosinor model: coverage ~ mesor + amplitude*cos(2πt/24 + phase). 4. Test amplitude >0 with bootstrap CI (α=0.05). 5. Compare fixed-window vs phase-stratified (6 strata) calibration using paired t-test on per-bin coverage deviations. 6. Correlate residual variance with CBT proxy across bins.",
+      "statistical_testability_notes": "Constant routine or forced desynchrony data provide gold-standard circadian phase; in observational data, use DLMO or CBT minimum as phase anchor. Control for activity/sleep via covariates."
+    },
+    {
+      "hypothesis_id": "H5",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Mechanism builder predicts segments with inter-rater kappa <0.7 show coverage deviation ≥8% from nominal, with direction depending on noise asymmetry.",
+      "minimum_data_needed": [
+        "Multi-rater annotated physiological dataset (≥3 raters, ≥100 segments)",
+        "Adjudicated consensus labels as ground truth reference",
+        "Per-segment signal quality indices (SQI)",
+        "Rater identity and experience metadata"
+      ],
+      "testable_prediction": "Segments with inter-rater agreement (Cohen's kappa) <0.7 will show absolute coverage deviation ≥8% from nominal 90% when calibrated on single-rater labels, but coverage will be within 2% of nominal when calibrated on adjudicated labels; coverage deviation will correlate with rater-specific bias patterns after controlling for SQI.",
+      "failure_condition": "If coverage deviation in low-agreement segments (kappa<0.7) is <4% when using single-rater labels, or if adjudicated-label calibration does not reduce deviation by at least 50%.",
+      "statistical_test_plan": "1. Compute per-segment inter-rater kappa and SQI. 2. Run conformal prediction at nominal 90% using each single rater's labels and adjudicated labels separately. 3. Compare coverage deviation (|empirical - nominal|) between low-kappa (<0.7) and high-kappa (≥0.7) segments via Mann-Whitney U test. 4. Regress coverage deviation on kappa, SQI, and rater bias indicators. 5. Simulate label noise at known rates (5%, 10%, 20%) and measure coverage degradation slope.",
+      "statistical_testability_notes": "Requires multi-rater data with adjudication (e.g., MASS, Sleep-EDF). Test both symmetric and asymmetric noise simulations."
+    },
+    {
+      "hypothesis_id": "H6",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Mechanism builder predicts undercoverage ≥15% at nominal 90% during vigorous activity (METs>6) when calibrated on mixed/rest data, with overcoverage ≥5% during rest if calibration dominated by exercise.",
+      "minimum_data_needed": [
+        "Free-living dataset with synchronized accelerometer and physiological signals (PPG/ECG)",
+        "Activity classification (rest, walk, run, bike) with METs estimates",
+        "≥100 segments per activity intensity stratum",
+        "Reference target measurements (e.g., cuff BP) during activities"
+      ],
+      "testable_prediction": "Unstratified conformal prediction calibrated on mixed-activity data will show coverage ≤75% at nominal 90% during vigorous activity (METs>6) and ≥95% during rest; activity-stratified calibration (minimum 4 strata: rest, light, moderate, vigorous) will restore coverage to within 3% of nominal per stratum.",
+      "failure_condition": "If unstratified coverage during vigorous activity is >85% at nominal 90%, or if activity-stratified calibration fails to bring all strata within 5% of nominal coverage.",
+      "statistical_test_plan": "1. Classify segments by activity type/intensity (METs bins). 2. Compute coverage per stratum using unstratified calibration (all data). 3. Test coverage difference between vigorous and rest strata with two-proportion z-test. 4. Implement activity-stratified conformal prediction (separate calibration per stratum). 5. Compare per-stratum coverage deviations between unstratified and stratified via paired bootstrap. 6. Determine minimum strata granularity by sequentially merging strata until coverage deviation >5% in any stratum.",
+      "statistical_testability_notes": "Control for motion artifacts via reference signals during controlled exercise. Use datasets like PPG-DaLiA, WESAD, or Apple Watch studies."
+    },
+    {
+      "hypothesis_id": "H7",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Mechanism builder predicts coverage deviation correlates with confounder distribution shift (|coverage-nominal|>0.05 when KL divergence>0.5) and medication-on vs off shows ≥10% coverage gap.",
+      "minimum_data_needed": [
+        "Dataset with measured confounders (hydration: urine specific gravity; medication: timestamps/plasma levels; caffeine: salivary assays)",
+        "≥30 recording sessions per subject with confounder variation",
+        "Physiological signals and prediction targets per session",
+        "Measured covariates (age, sex, BMI, activity, time-of-day)"
+      ],
+      "testable_prediction": "Conformal coverage at nominal 90% will deviate by >5% in sessions where unmeasured confounder distribution (e.g., hydration, medication status) shifts substantially (KL divergence >0.5) relative to calibration sessions; adding gold-standard confounder measures to the conformal predictor will reduce coverage-confounder correlation to non-significance (p>0.05) and bring conditional coverage within 2% of nominal across confounder strata.",
+      "failure_condition": "If coverage deviation does not correlate with confounder shift magnitude (p>0.05), or if adding measured confounder proxies fails to reduce coverage variation across confounder strata by at least 50%.",
+      "statistical_test_plan": "1. Quantify confounder distribution shift per session relative to calibration pool (KL divergence for continuous, chi-square for categorical). 2. Compute per-session coverage at nominal 90%. 3. Regress absolute coverage deviation on shift magnitude (linear regression, α=0.05). 4. Perform Rosenbaum sensitivity analysis: compute Γ required to explain away coverage-confounder association. 5. Add confounder measures as stratification variables; test conditional coverage per stratum vs nominal (binomial test). 6. Compare marginal vs conditional coverage gap.",
+      "statistical_testability_notes": "Gold-standard confounder measures (plasma drug levels, urine osmolarity) are critical. If unavailable, use sensitivity analysis bounds. Simulate hidden confounding by omitting known confounders."
+    },
+    {
+      "hypothesis_id": "H8",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Mechanism builder predicts segments with MNAR missingness >20% show coverage deviation ≥10% from nominal, while MCAR missingness ≤30% maintains nominal coverage.",
+      "minimum_data_needed": [
+        "Wearable dataset with wireless transmission (Bluetooth) and simultaneous wired reference",
+        "Native missing data patterns with mechanism classification (MCAR/MAR/MNAR via Little's test)",
+        "Ability to artificially impose controlled missingness (MCAR/MAR/MNAR) at 10-50% rates",
+        "Multiple imputation methods (linear, spline, model-based) for comparison"
+      ],
+      "testable_prediction": "Native MNAR missingness >20% will cause conformal coverage deviation ≥10% from nominal 90%, while artificially imposed MCAR missingness at the same rate will maintain coverage within 3% of nominal; coverage degradation will be specific to missingness mechanism (MNAR >> MAR > MCAR) and imputation method.",
+      "failure_condition": "If MCAR missingness at 30% causes coverage deviation >5%, or if native MNAR missingness at 20% yields coverage deviation <5%, or if mechanism-specific differences are not statistically significant (p>0.01).",
+      "statistical_test_plan": "1. Classify native missingness mechanism per segment (Little's test). 2. Compute coverage per segment at nominal 90% using standard imputation. 3. Artificially impose MCAR, MAR, MNAR missingness at 10%, 20%, 30%, 40% on complete segments. 4. For each mechanism/rate, compute coverage across 100 imputation replicates. 5. Fit ANOVA: coverage ~ mechanism * rate * imputation_method. 6. Test planned contrasts: MNAR vs MCAR at each rate (α=0.01 with Bonferroni). 7. Evaluate missingness-aware conformal (weighted) vs standard.",
+      "statistical_testability_notes": "Requires simultaneous wired+wireless reference to isolate missingness effects. Test multiple imputation strategies."
+    },
+    {
+      "hypothesis_id": "H9",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Mechanism builder predicts coverage standard deviation across segments scales as √(DoF/n_seg); segments with n_seg/DoF <10 show coverage variance ≥0.02² at nominal 90%.",
+      "minimum_data_needed": [
+        "Physiological dataset with highly heterogeneous segment lengths (30s to 30min)",
+        "Known model effective degrees of freedom (DoF) or complexity measure",
+        "≥200 segments spanning wide n_seg range",
+        "Stationary reference signal for subsampling experiments"
+      ],
+      "testable_prediction": "Coverage variance across segments will scale linearly with DoF/n_seg (slope ≈1 on log-log scale) when segments are randomly subsampled from a stationary process; in real heterogeneous data, this scaling will explain <50% of coverage variance, with residual variance correlating with physiological state/quality metrics.",
+      "failure_condition": "If coverage variance does not scale with √(DoF/n_seg) in stationary subsampling experiment (p>0.05 for slope=0.5 on log-log), or if finite-sample scaling explains >80% of coverage variance in real heterogeneous data.",
+      "statistical_test_plan": "1. Subsample stationary reference signal (e.g., stable sleep ECG) to create segments of varying lengths n_seg. 2. Compute coverage per segment at nominal 90% for a model with known DoF. 3. Regress log(coverage variance) on log(DoF/n_seg); test slope = 0.5. 4. In real heterogeneous data, compute coverage variance per segment length bin. 5. Fit mixed model: coverage ~ 1 + (1|segment_length) + physiological_state + signal_quality. 6. Compare variance components. 7. Test hierarchical/Bayesian conformal methods for variance reduction.",
+      "statistical_testability_notes": "Model DoF can be estimated via bootstrap or analytic approximations (e.g., number of parameters, Rademacher complexity). Use event-triggered datasets for natural length heterogeneity."
+    },
+    {
+      "hypothesis_id": "H10",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Mechanism builder predicts coverage deviation >8% when morphology distribution shift (Wasserstein distance) >0.5, and undercoverage ≥15% for segments outside calibration convex hull.",
+      "minimum_data_needed": [
+        "Cuffless BP dataset with simultaneous PPG and reference tonometry/arterial line",
+        "Pulse wave morphology features per beat (AIx, PWV, systolic/diastolic peak ratio, entropy)",
+        "Controlled morphology shifts via vascular interventions (cold pressor, nitroglycerin, tilt table)",
+        "≥50 segments spanning wide morphology distribution"
+      ],
+      "testable_prediction": "Conformal coverage at nominal 90% will deviate by >8% when test-segment morphology distribution shift (Wasserstein distance on morphology features) exceeds 0.5 relative to calibration; segments with morphology features outside the calibration convex hull will show undercoverage ≥15%; morphology-stratified conformal prediction will restore nominal coverage across all shift magnitudes.",
+      "failure_condition": "If coverage deviation is <4% for Wasserstein distance >0.5, or if morphology-stratified conformal fails to bring coverage within 5% of nominal for out-of-hull segments.",
+      "statistical_test_plan": "1. Extract morphology features per segment from PPG/tonometry. 2. Compute Wasserstein distance between calibration and test morphology distributions. 3. Bin test segments by shift magnitude. 4. Compute coverage per bin at nominal 90% using standard conformal. 5. Test correlation between shift magnitude and coverage deviation (Spearman, α=0.01). 6. Identify segments outside calibration convex hull (via PCA bounding box). 7. Compare coverage for in-hull vs out-of-hull segments (two-proportion z-test). 8. Implement morphology-stratified conformal (k-means clusters on morphology); test per-stratum coverage.",
+      "statistical_testability_notes": "Vascular interventions (cold pressor, nitroglycerin) induce controlled morphology shifts. Compare importance-weighted conformal vs stratification to distinguish covariate shift from concept shift."
+    }
+  ]
+}

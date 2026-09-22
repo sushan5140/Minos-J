@@ -1,0 +1,326 @@
+{
+  "artifact": "Experiment 17 model capability metadata snapshot",
+  "scientific_results": false,
+  "fetched_at_utc": "2026-09-22T00:11:31Z",
+  "source": "https://openrouter.ai/api/v1/models",
+  "selection_criteria": {
+    "required_supported_parameters": [
+      "response_format",
+      "structured_outputs"
+    ],
+    "minimum_max_completion_tokens": 12000,
+    "generator_and_judge_must_differ": true,
+    "prefer_advertised_zero_price": true
+  },
+  "recommended": {
+    "generator": {
+      "model": {
+        "id": "nvidia/nemotron-3-super-120b-a12b:free",
+        "name": "NVIDIA: Nemotron 3 Super (free)",
+        "context_length": 262144,
+        "architecture": {
+          "modality": "text->text",
+          "input_modalities": [
+            "text"
+          ],
+          "output_modalities": [
+            "text"
+          ],
+          "tokenizer": "Other",
+          "instruct_type": null
+        },
+        "pricing": {
+          "prompt": "0",
+          "completion": "0"
+        },
+        "top_provider": {
+          "context_length": 262144,
+          "max_completion_tokens": 235929,
+          "is_moderated": false
+        },
+        "supported_parameters": [
+          "include_reasoning",
+          "max_tokens",
+          "reasoning",
+          "reasoning_effort",
+          "response_format",
+          "seed",
+          "structured_outputs",
+          "temperature",
+          "tool_choice",
+          "tools",
+          "top_p"
+        ],
+        "expiration_date": null
+      },
+      "endpoint_url": "https://openrouter.ai/api/v1/models/nvidia/nemotron-3-super-120b-a12b:free/endpoints",
+      "endpoints": [
+        {
+          "provider_name": "Nvidia",
+          "status": 0,
+          "context_length": 262144,
+          "max_completion_tokens": 235929,
+          "pricing": {
+            "prompt": "0",
+            "completion": "0",
+            "discount": 0
+          },
+          "supported_parameters": [
+            "reasoning",
+            "include_reasoning",
+            "temperature",
+            "max_tokens",
+            "seed",
+            "top_p",
+            "tools",
+            "tool_choice",
+            "structured_outputs",
+            "response_format",
+            "reasoning_effort"
+          ],
+          "uptime_last_30m": 96.52664993355972,
+          "uptime_last_1d": 96.6036476853834
+        }
+      ]
+    },
+    "blinded_judge": {
+      "model": {
+        "id": "nex-agi/nex-n2.5-pro:free",
+        "name": "Nex AGI: Nex-N2.5-Pro (free)",
+        "context_length": 262144,
+        "architecture": {
+          "modality": "text+image->text",
+          "input_modalities": [
+            "text",
+            "image"
+          ],
+          "output_modalities": [
+            "text"
+          ],
+          "tokenizer": "Qwen3",
+          "instruct_type": null
+        },
+        "pricing": {
+          "prompt": "0",
+          "completion": "0"
+        },
+        "top_provider": {
+          "context_length": 262144,
+          "max_completion_tokens": 235929,
+          "is_moderated": false
+        },
+        "supported_parameters": [
+          "include_reasoning",
+          "logprobs",
+          "max_tokens",
+          "reasoning",
+          "reasoning_effort",
+          "response_format",
+          "structured_outputs",
+          "temperature",
+          "tool_choice",
+          "tools",
+          "top_k",
+          "top_logprobs",
+          "top_p"
+        ],
+        "expiration_date": null
+      },
+      "endpoint_url": "https://openrouter.ai/api/v1/models/nex-agi/nex-n2.5-pro:free/endpoints",
+      "endpoints": [
+        {
+          "provider_name": "Nex AGI",
+          "status": 0,
+          "context_length": 262144,
+          "max_completion_tokens": 235929,
+          "pricing": {
+            "prompt": "0",
+            "completion": "0",
+            "discount": 0
+          },
+          "supported_parameters": [
+            "reasoning",
+            "include_reasoning",
+            "top_p",
+            "top_k",
+            "temperature",
+            "max_tokens",
+            "logprobs",
+            "top_logprobs",
+            "tools",
+            "tool_choice",
+            "response_format",
+            "structured_outputs",
+            "reasoning_effort"
+          ],
+          "uptime_last_30m": 99.96253278381417,
+          "uptime_last_1d": 99.88197940859244
+        }
+      ]
+    }
+  },
+  "eligible_free_models": [
+    {
+      "id": "dots-studio/dots-3-note-preview:free",
+      "name": "Dots Studio: Dots3-Note Preview (free)",
+      "context_length": 512000,
+      "architecture": {
+        "modality": "text+image->text",
+        "input_modalities": [
+          "text",
+          "image"
+        ],
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "Other",
+        "instruct_type": null
+      },
+      "pricing": {
+        "prompt": "0",
+        "completion": "0"
+      },
+      "top_provider": {
+        "context_length": 512000,
+        "max_completion_tokens": 460800,
+        "is_moderated": false
+      },
+      "supported_parameters": [
+        "include_reasoning",
+        "max_tokens",
+        "reasoning",
+        "response_format",
+        "structured_outputs",
+        "temperature",
+        "tool_choice",
+        "tools",
+        "top_p"
+      ],
+      "expiration_date": "2026-09-30"
+    },
+    {
+      "id": "nex-agi/nex-n2.5-mini:free",
+      "name": "Nex AGI: Nex-N2.5-Mini (free)",
+      "context_length": 262144,
+      "architecture": {
+        "modality": "text+image->text",
+        "input_modalities": [
+          "text",
+          "image"
+        ],
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "Qwen3",
+        "instruct_type": null
+      },
+      "pricing": {
+        "prompt": "0",
+        "completion": "0"
+      },
+      "top_provider": {
+        "context_length": 262144,
+        "max_completion_tokens": 235929,
+        "is_moderated": false
+      },
+      "supported_parameters": [
+        "include_reasoning",
+        "logprobs",
+        "max_tokens",
+        "reasoning",
+        "reasoning_effort",
+        "response_format",
+        "structured_outputs",
+        "temperature",
+        "tool_choice",
+        "tools",
+        "top_k",
+        "top_logprobs",
+        "top_p"
+      ],
+      "expiration_date": null
+    },
+    {
+      "id": "nex-agi/nex-n2.5-pro:free",
+      "name": "Nex AGI: Nex-N2.5-Pro (free)",
+      "context_length": 262144,
+      "architecture": {
+        "modality": "text+image->text",
+        "input_modalities": [
+          "text",
+          "image"
+        ],
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "Qwen3",
+        "instruct_type": null
+      },
+      "pricing": {
+        "prompt": "0",
+        "completion": "0"
+      },
+      "top_provider": {
+        "context_length": 262144,
+        "max_completion_tokens": 235929,
+        "is_moderated": false
+      },
+      "supported_parameters": [
+        "include_reasoning",
+        "logprobs",
+        "max_tokens",
+        "reasoning",
+        "reasoning_effort",
+        "response_format",
+        "structured_outputs",
+        "temperature",
+        "tool_choice",
+        "tools",
+        "top_k",
+        "top_logprobs",
+        "top_p"
+      ],
+      "expiration_date": null
+    },
+    {
+      "id": "nvidia/nemotron-3-super-120b-a12b:free",
+      "name": "NVIDIA: Nemotron 3 Super (free)",
+      "context_length": 262144,
+      "architecture": {
+        "modality": "text->text",
+        "input_modalities": [
+          "text"
+        ],
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "Other",
+        "instruct_type": null
+      },
+      "pricing": {
+        "prompt": "0",
+        "completion": "0"
+      },
+      "top_provider": {
+        "context_length": 262144,
+        "max_completion_tokens": 235929,
+        "is_moderated": false
+      },
+      "supported_parameters": [
+        "include_reasoning",
+        "max_tokens",
+        "reasoning",
+        "reasoning_effort",
+        "response_format",
+        "seed",
+        "structured_outputs",
+        "temperature",
+        "tool_choice",
+        "tools",
+        "top_p"
+      ],
+      "expiration_date": null
+    }
+  ],
+  "eligible_free_model_count": 4
+}

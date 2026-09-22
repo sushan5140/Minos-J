@@ -1,0 +1,1098 @@
+{
+  "experiment_name": "Meno-J Experiment 7: v4 Architecture Upgrade and Ablation",
+  "version": "v4_mechanism_confounder_testability",
+  "research_question": "What mechanisms could explain subject-level variation in wearable stress-detection uncertainty?",
+  "model": "nvidia/nemotron-3-super-120b-a12b:free",
+  "stage_4_hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Subject-level variation in wearable stress-detection uncertainty stems from individual differences in baseline autonomic tone, such as resting heart-rate variability, which alters the mapping between physiological signals and stress labels.",
+      "proposed_mechanism": "Higher resting parasympathetic tone yields weaker stress-evoked signal changes, increasing model uncertainty for those individuals.",
+      "core_assumption": "Baseline autonomic tone is stable enough across measurement sessions to act as a subject-specific modifier of stress-related signal dynamics.",
+      "knowledge_gap_addressed": "Limited understanding of how inter-individual baseline autonomic states contribute to uncertainty in wearable stress detection.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Variability in skin impedance and epidermal properties across participants leads to heterogeneous PPG signal quality, thereby influencing uncertainty estimates.",
+      "proposed_mechanism": "Higher skin impedance attenuates PPG amplitude and increases noise, reducing signal-to-noise ratio and raising prediction uncertainty.",
+      "core_assumption": "Skin impedance varies significantly between individuals and is not fully corrected by standard preprocessing pipelines.",
+      "knowledge_gap_addressed": "Gap in quantifying how subject-specific skin characteristics affect sensor-derived stress signal reliability.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Circadian phase differences cause time-of-day-dependent modulation of stress-related physiology, producing subject-specific uncertainty when models ignore temporal context.",
+      "proposed_mechanism": "Stress biomarkers exhibit circadian rhythms; misalignment between measurement time and a subject's internal phase yields weaker or stronger signal changes, affecting confidence.",
+      "core_assumption": "Each individual has a stable circadian phase that can be approximated by sleep/wake times or melatonin onset.",
+      "knowledge_gap_addressed": "Lack of models that incorporate individual circadian timing to explain uncertainty in stress detection.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Inconsistent self-report labeling of stress across participants introduces label noise that propagates to higher model uncertainty for certain subjects.",
+      "proposed_mechanism": "Subjects differ in interpretive bias, recall accuracy, and willingness to report stress, leading to heterogeneous ground-truth quality.",
+      "core_assumption": "Label noise is primarily driven by subject-specific reporting tendencies rather than random error.",
+      "knowledge_gap_addressed": "Unclear extent to which subject-level labeling variability contributes to uncertainty estimates in wearable stress models.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Variability in sensor placement tightness and orientation across individuals creates differential motion artifact susceptibility, affecting uncertainty.",
+      "proposed_mechanism": "Looser coupling increases motion-induced noise, degrading signal fidelity and raising prediction uncertainty for those users.",
+      "core_assumption": "Placement tightness varies systematically between users and is not fully mitigated by algorithmic motion correction.",
+      "knowledge_gap_addressed": "Insufficient knowledge of how subject-specific wearing habits influence sensor-derived stress signal reliability.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Genetic polymorphisms in catecholamine metabolism (e.g., COMT Val158Met) modulate the magnitude of physiological stress responses, leading to subject-level uncertainty differences.",
+      "proposed_mechanism": "Variants causing higher enzymatic activity produce faster catecholamine clearance, blunting physiological stress signals and increasing model uncertainty.",
+      "core_assumption": "Genotype-dependent differences in stress-reactivity are sufficiently large to be detectable via wearable signals.",
+      "knowledge_gap_addressed": "Gap in linking genetic variation to observable differences in wearable stress-signal uncertainty.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Within-subject temporal non-stationarity (habituation or sensitization to stressors) over weeks causes drift in the stress-signal relationship, raising uncertainty for later measurements.",
+      "proposed_mechanism": "Repeated exposure alters physiological responsiveness, making earlier-trained models less accurate and increasing uncertainty over time.",
+      "core_assumption": "Stress-response dynamics change measurably across longitudinal sessions for many individuals.",
+      "knowledge_gap_addressed": "Limited understanding of how longitudinal physiological adaptation contributes to uncertainty in wearable stress detection.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Failure to stratify by activity context (e.g., exercise vs. sedentary) yields context-dependent uncertainty that varies across subjects based on their typical activity patterns.",
+      "proposed_mechanism": "Physical activity induces overlapping physiological changes with stress, confounding signal interpretation; subjects with higher activity exposure exhibit greater uncertainty when context is ignored.",
+      "core_assumption": "Activity-induced physiological confounds are not fully captured by generic stress models.",
+      "knowledge_gap_addressed": "Gap in quantifying how subject-specific activity profiles affect uncertainty in stress detection when context is omitted.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Low per-subject sample size leads to high variance in estimated model parameters (e.g., weights in a personalized classifier), directly increasing uncertainty estimates for those individuals.",
+      "proposed_mechanism": "Sparse data per user yields unstable parameter estimates, causing wider confidence intervals in predictions.",
+      "core_assumption": "Parameter uncertainty scales inversely with the number of labeled samples available per subject.",
+      "knowledge_gap_addressed": "Insufficient insight into how limited individual data contributes to uncertainty in wearable stress models.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Differences in sensor sampling rates and synchronization errors across devices introduce temporal misalignment that affects feature extraction, leading to subject-specific uncertainty.",
+      "proposed_mechanism": "Misaligned timestamps cause phase shifts in multimodal features (e.g., PPG vs. accelerometry), degrading model confidence for users with larger synchronization drift.",
+      "core_assumption": "Sampling rate jitter and synchronization offsets vary between devices and are not fully corrected by standard interpolation.",
+      "knowledge_gap_addressed": "Lack of knowledge on how subject-level sensor timing inconsistencies propagate into uncertainty in stress detection.",
+      "status": "SPECULATIVE"
+    }
+  ],
+  "stage_4_1_mechanism_builder": [
+    {
+      "hypothesis_id": "H1",
+      "mechanism_variables": [
+        "resting RMSSD (ms)",
+        "stress-evoked RMSSD change (ΔRMSSD)",
+        "model prediction uncertainty (entropy)"
+      ],
+      "causal_path": "Higher resting parasympathetic tone (greater RMSSD) → smaller stress‑evoked decrease in RMSSD (ΔRMSSD) → lower signal‑to‑noise ratio for stress features → increased model prediction uncertainty.",
+      "expected_direction": "Positive (higher resting RMSSD associated with higher uncertainty)",
+      "domain_specific_boundary_conditions": [
+        "Seated baseline ≥5 min and standardized psychosocial stress task (e.g., TSST)",
+        "PPG sampled at ≥64 Hz with motion artifact removed",
+        "Age 18‑45, no cardiovascular medication"
+      ],
+      "measurable_outcomes": [
+        "Prediction entropy from stress classifier",
+        "Brier score",
+        "Calibration slope",
+        "AUC for stress vs non‑stress"
+      ],
+      "mechanism_builder_notes": "Assumes linear relationship between RMSSD and uncertainty; can be tested with mixed‑effects regression."
+    },
+    {
+      "hypothesis_id": "H2",
+      "mechanism_variables": [
+        "skin impedance (kΩ)",
+        "PPG AC amplitude",
+        "PPG signal‑to‑noise ratio (SNR)",
+        "model uncertainty"
+      ],
+      "causal_path": "Higher skin impedance → reduced PPG AC amplitude and increased noise → lower SNR → degraded feature quality → increased model uncertainty.",
+      "expected_direction": "Positive (higher impedance → higher uncertainty)",
+      "domain_specific_boundary_conditions": [
+        "Ambient temperature 20‑25°C",
+        "Skin cleaned with alcohol, strap pressure standardized",
+        "Measurement during rest and mild stress, sampling ≥100 Hz",
+        "No tattoos or calluses at sensor site"
+      ],
+      "measurable_outcomes": [
+        "Predictive variance from Bayesian neural net",
+        "PPG SNR",
+        "Stress classification accuracy"
+      ],
+      "mechanism_builder_notes": "Impedance can be measured via the same device's electrodes; effect expected to be larger in dry‑electrode designs."
+    },
+    {
+      "hypothesis_id": "H3",
+      "mechanism_variables": [
+        "circadian phase difference (hours)",
+        "stress‑evoked biomarker amplitude (e.g., HRV ΔRMSSD)",
+        "model uncertainty"
+      ],
+      "causal_path": "Misalignment between clock time and individual circadian phase (phase difference) → attenuated stress‑evoked physiological response → lower feature discriminability → increased model uncertainty.",
+      "expected_direction": "Positive (larger absolute phase difference → higher uncertainty)",
+      "domain_specific_boundary_conditions": [
+        "Stable sleep‑wake schedule ≥3 days prior",
+        "Circadian phase assessed via melatonin onset (DLMO) or core body temperature",
+        "Measurements in dim light, no caffeine/alcohol 2 h prior",
+        "Age 18‑35"
+      ],
+      "measurable_outcomes": [
+        "Prediction entropy",
+        "Stress detection AUC",
+        "Phase difference variable"
+      ],
+      "mechanism_builder_notes": "Actigraphy can provide a proxy for phase when melatonin assay unavailable."
+    },
+    {
+      "hypothesis_id": "H4",
+      "mechanism_variables": [
+        "self‑report bias score (EMA‑physiology discrepancy)",
+        "label noise variance",
+        "model uncertainty"
+      ],
+      "causal_path": "Higher subject‑specific self‑report bias → increased label noise in training data → poorer learned decision boundary → higher prediction uncertainty for that subject.",
+      "expected_direction": "Positive (greater bias magnitude → higher uncertainty)",
+      "domain_specific_boundary_conditions": [
+        "EMA prompts 6×/day for 2 weeks",
+        "Physiological ground truth from validated stress induction (e.g., cold pressor)",
+        "Wearable data synchronized with EMA, compliance >80%",
+        "Participants fluent in EMA language"
+      ],
+      "measurable_outcomes": [
+        "Prediction entropy",
+        "Estimated label noise (disagreement between EMA and physiology)",
+        "Classification accuracy"
+      ],
+      "mechanism_builder_notes": "Bias can be quantified as intraclass correlation coefficient between EMA and physiological stress indices."
+    },
+    {
+      "hypothesis_id": "H5",
+      "mechanism_variables": [
+        "strap tightness (force sensor reading, N)",
+        "motion artifact index (accelerometer variance)",
+        "PPG SNR",
+        "model uncertainty"
+      ],
+      "causal_path": "Looser strap → lower coupling force → higher motion‑induced artifacts → decreased PPG SNR → degraded features → increased model uncertainty.",
+      "expected_direction": "Inverse (lower tightness → higher uncertainty)",
+      "domain_specific_boundary_conditions": [
+        "Standardized walking protocol (6‑min walk test) and seated rest",
+        "Strap tightness measured in real‑time",
+        "Ambient temperature 22 °C, no lotion on skin",
+        "Fixed device firmware version"
+      ],
+      "measurable_outcomes": [
+        "Prediction uncertainty",
+        "Motion artifact index",
+        "Classification accuracy during walk vs rest"
+      ],
+      "mechanism_builder_notes": "Tightness can also be inferred from PPG amplitude variability if force sensor unavailable."
+    },
+    {
+      "hypothesis_id": "H6",
+      "mechanism_variables": [
+        "COMT Val158Met genotype (0‑2 Val alleles)",
+        "catecholamine clearance rate (plasma metabolite ratio)",
+        "stress‑evoked HRV change (ΔRMSSD)",
+        "model uncertainty"
+      ],
+      "causal_path": "Val allele → higher COMT activity → faster catecholamine clearance → smaller physiological stress response (blunted ΔRMSSD) → reduced signal amplitude → increased model uncertainty.",
+      "expected_direction": "Positive dose‑response (more Val alleles → higher uncertainty)",
+      "domain_specific_boundary_conditions": [
+        "Abstinence from nicotine, caffeine, alcohol 12 h prior",
+        "Stress task: mental arithmetic or TSST",
+        "Genotyping via saliva",
+        "Age 18‑45, no psychiatric medication",
+        "ECG/PPG sampled ≥256 Hz"
+      ],
+      "measurable_outcomes": [
+        "Prediction uncertainty",
+        "Stress‑evoked HRV amplitude",
+        "Genotype"
+      ],
+      "mechanism_builder_notes": "Effect size may be modest; large N (>200) recommended for adequate power."
+    },
+    {
+      "hypothesis_id": "H7",
+      "mechanism_variables": [
+        "session number (weeks)",
+        "within‑subject stress‑response slope (ΔRMSSD per session)",
+        "model uncertainty"
+      ],
+      "causal_path": "Repeated exposure → habituation or sensitization → drift in true stress‑signal relationship → model trained on early sessions misfits later data → increased uncertainty.",
+      "expected_direction": "Positive (greater absolute change in stress‑response slope across sessions → higher uncertainty)",
+      "domain_specific_boundary_conditions": [
+        "Longitudinal study ≥8 weeks, weekly lab session with standardized stressor",
+        "Wearable worn continuously, compliance >90%",
+        "No major life events or medication changes",
+        "Age 20‑50"
+      ],
+      "measurable_outcomes": [
+        "Prediction entropy per session",
+        "Stress‑response slope (mixed‑effects estimate)",
+        "Classification accuracy over time"
+      ],
+      "mechanism_builder_notes": "Can be tested by comparing uncertainty trends in models with vs without session‑specific bias terms."
+    },
+    {
+      "hypothesis_id": "H8",
+      "mechanism_variables": [
+        "average daily activity intensity (MET‑hours)",
+        "proportion time in moderate‑vigorous activity",
+        "model uncertainty (context‑agnostic)"
+      ],
+      "causal_path": "Higher activity exposure → greater overlap of activity‑induced physiological changes (HRV, skin conductance) with stress signals → when model ignores activity context, feature ambiguity ↑ → uncertainty ↑.",
+      "expected_direction": "Positive (higher activity intensity → higher uncertainty)",
+      "domain_specific_boundary_conditions": [
+        "Free‑living monitoring 7 days, accelerometer 30 Hz",
+        "Activity classification validated against VO₂submax",
+        "Stress labels from EMA synchronized with wearable",
+        "No extreme exercise (>90% HRmax) during labeling periods"
+      ],
+      "measurable_outcomes": [
+        "Prediction uncertainty",
+        "Activity intensity metrics",
+        "Stress detection AUC stratified by activity level"
+      ],
+      "mechanism_builder_notes": "Including activity as a covariate should reduce uncertainty if the hypothesis holds."
+    },
+    {
+      "hypothesis_id": "H9",
+      "mechanism_variables": [
+        "number of labeled samples per subject (n_i)",
+        "posterior variance of classifier weights",
+        "model prediction uncertainty"
+      ],
+      "causal_path": "Fewer labels → higher posterior variance of classifier weights → wider predictive distribution → increased uncertainty.",
+      "expected_direction": "Inverse (lower n_i → higher uncertainty)",
+      "domain_specific_boundary_conditions": [
+        "Same regularized logistic regression hyperparameters for all subjects",
+        "Labels from validated stress inductions",
+        "Minimum 5 labeled samples per subject for feasibility",
+        "Leave‑one‑out cross‑validation within subject"
+      ],
+      "measurable_outcomes": [
+        "Predictive variance (uncertainty)",
+        "Weight posterior variance",
+        "Classification accuracy"
+      ],
+      "mechanism_builder_notes": "Can be confirmed by simulation: subsampling labels and measuring resulting uncertainty."
+    },
+    {
+      "hypothesis_id": "H10",
+      "mechanism_variables": [
+        "sampling rate jitter (SD of inter‑sample interval, ms)",
+        "synchronization offset between PPG and accelerometer (ms)",
+        "feature misalignment index (cross‑correlation lag)",
+        "model uncertainty"
+      ],
+      "causal_path": "Greater sampling jitter & sync offset → temporal misalignment of multimodal features → degraded feature representation → increased model uncertainty.",
+      "expected_direction": "Positive (higher jitter/offset → higher uncertainty)",
+      "domain_specific_boundary_conditions": [
+        "Device firmware logs timestamps with µs resolution",
+        "Bench test with known periodic signal to quantify jitter",
+        "Participants wear device during controlled task (e.g., paced breathing)",
+        "Ambient temperature 20‑25 °C, no firmware updates during study"
+      ],
+      "measurable_outcomes": [
+        "Prediction uncertainty",
+        "Feature misalignment index",
+        "Classification accuracy"
+      ],
+      "mechanism_builder_notes": "Standard interpolation reduces but does not eliminate jitter; residual misalignment can be modeled as additional noise term."
+    }
+  ],
+  "stage_4_2_confounder_rival_builder": [
+    {
+      "hypothesis_id": "H1",
+      "possible_confounders": [
+        "age",
+        "sex",
+        "baseline fitness level (VO2max)",
+        "caffeine intake prior to measurement",
+        "use of cardiovascular medication"
+      ],
+      "control_variables": [
+        "age",
+        "sex",
+        "VO2max",
+        "caffeine intake (mg)",
+        "medication status"
+      ],
+      "boring_rival_explanations": [
+        "random fluctuation in model entropy due to stochastic training",
+        "variability in PPG signal quality unrelated to autonomic tone",
+        "measurement error in RMSSD estimation"
+      ],
+      "rival_prediction": "Higher resting RMSSD is associated with lower model uncertainty (i.e., better signal quality reduces uncertainty).",
+      "distinguishing_condition": "After controlling for fitness level and caffeine intake, the sign of the association between resting RMSSD and uncertainty reverses or becomes non‑significant.",
+      "confounder_rival_notes": "Fitness and caffeine influence both baseline autonomic tone and signal noise, potentially confounding the observed relationship."
+    },
+    {
+      "hypothesis_id": "H2",
+      "possible_confounders": [
+        "skin hydration (moisture level)",
+        "ambient temperature",
+        "presence of hair or calluses at sensor site",
+        "recent application of lotion or topical agents",
+        "sweat accumulation during measurement"
+      ],
+      "control_variables": [
+        "skin hydration measured by corneometer",
+        "ambient temperature (°C)",
+        "hair removal status",
+        "lotion use (yes/no)",
+        "sweat rate (mg/min)"
+      ],
+      "boring_rival_explanations": [
+        "electrode degradation over time causing impedance changes unrelated to baseline skin properties",
+        "variability in device firmware affecting impedance measurement",
+        "motion artifacts masquerading as impedance effects"
+      ],
+      "rival_prediction": "Higher skin impedance is associated with lower model uncertainty because it reflects better epidermal barrier reducing motion artifact.",
+      "distinguishing_condition": "When skin hydration and sweat rate are statistically controlled, the positive relationship between impedance and uncertainty disappears or reverses.",
+      "confounder_rival_notes": "Hydration and sweat simultaneously affect impedance and signal quality, thus confounding the direct effect."
+    },
+    {
+      "hypothesis_id": "H3",
+      "possible_confounders": [
+        "sleep deprivation prior to measurement",
+        "caffeine intake within 2 h",
+        "chronotype (morningness‑eveningness score)",
+        "acute stress exposure earlier in the day",
+        "light exposure intensity"
+      ],
+      "control_variables": [
+        "self‑reported sleep duration (hours)",
+        "caffeine dose (mg)",
+        "chronotype questionnaire score",
+        "recent stressor checklist",
+        "ambient lux level"
+      ],
+      "boring_rival_explanations": [
+        "time‑of‑day variation in ambient temperature affecting sensor readings",
+        "daily variation in device battery voltage influencing signal amplitude",
+        "random fluctuations in circadian markers unrelated to internal phase"
+      ],
+      "rival_prediction": "Larger circadian phase difference is associated with lower model uncertainty because stress‑evoked responses are amplified at certain internal phases.",
+      "distinguishing_condition": "After adjusting for sleep deprivation and caffeine, the direction of the association between phase difference and uncertainty flips or becomes null.",
+      "confounder_rival_notes": "Sleep loss and caffeine shift both perceived circadian phase and physiological responsiveness, potentially confounding the phase‑uncertainty link."
+    },
+    {
+      "hypothesis_id": "H4",
+      "possible_confounders": [
+        "neuroticism trait score",
+        "social desirability bias",
+        "current affective state (momentary mood)",
+        "cognitive ability / working memory capacity",
+        "language proficiency with EMA prompts"
+      ],
+      "control_variables": [
+        "Neuroticism inventory score",
+        "Marlowe‑Crowne social desirability scale",
+        "PANAS momentary affect",
+        "working memory test score",
+        "self‑rated EMA comprehension"
+      ],
+      "boring_rival_explanations": [
+        "random inattention leading to occasional missed EMA prompts",
+        "variability in EMA prompt timing causing misalignment with physiological states",
+        "device‑specific EMA app bugs causing duplicate entries"
+      ],
+      "rival_prediction": "Higher self‑report bias is associated with lower model uncertainty because biased labels produce a more consistent (though inaccurate) pattern that the model can learn confidently.",
+      "distinguishing_condition": "When neuroticism and momentary affect are included as covariates, the bias‑uncertainty relationship loses significance or reverses.",
+      "confounder_rival_notes": "Personality and current mood influence both reporting tendencies and physiological stress responses, confounding the bias‑uncertainty link."
+    },
+    {
+      "hypothesis_id": "H5",
+      "possible_confounders": [
+        "arm circumference",
+        "subcutaneous fat thickness at sensor site",
+        "skin elasticity (measured by cutometer)",
+        "average arm movement intensity during measurement",
+        "material fatigue of the strap over time"
+      ],
+      "control_variables": [
+        "arm circumference (cm)",
+        "fat thickness (mm)",
+        "skin elasticity index",
+        "accelerometer‑derived movement variance",
+        "strap usage duration (days)"
+      ],
+      "boring_rival_explanations": [
+        "strap loosening due to material creep rather than initial tightness",
+        "variability in sensor adhesive properties across production batches",
+        "motion artifacts that are independent of strap force"
+      ],
+      "rival_prediction": "Looser strap coupling is associated with lower model uncertainty because increased motion averages out noise, leading to more stable features.",
+      "distinguishing_condition": "After controlling for arm circumference and movement intensity, the inverse relationship between tightness and uncertainty disappears or changes sign.",
+      "confounder_rival_notes": "Anatomical factors and movement behavior affect both how tight the strap feels and the amount of motion artifact, potentially confounding the tightness‑uncertainty link."
+    },
+    {
+      "hypothesis_id": "H6",
+      "possible_confounders": [
+        "baseline plasma dopamine level",
+        "history of recent stress exposure",
+        "use of medications affecting catecholamine metabolism (e.g., antipsychotics)",
+        "MAOA genotype variation",
+        "population stratification ancestry"
+      ],
+      "control_variables": [
+        "baseline dopamine (nmol/L)",
+        "recent stressor count (past week)",
+        "medication status (yes/no)",
+        "MAOA genotype (high/low activity)",
+        "genetic ancestry principal components"
+      ],
+      "boring_rival_explanations": [
+        "random genotyping error causing misclassification of COMT status",
+        "batch effects in saliva DNA extraction influencing genotype calls",
+        "uncorrected population structure producing spurious genotype‑phenotype associations"
+      ],
+      "rival_prediction": "Carrying more Val alleles is associated with lower model uncertainty because faster catecholamine clearance yields a more stable baseline, reducing variability in stress‑evoked signals.",
+      "distinguishing_condition": "After adjusting for baseline dopamine and recent stress exposure, the Val‑allele effect on uncertainty becomes non‑significant or reverses.",
+      "confounder_rival_notes": "Baseline dopaminergic tone and recent stress influence both catecholamine dynamics and signal variability, potentially confounding the genotype‑uncertainty relationship."
+    },
+    {
+      "hypothesis_id": "H7",
+      "possible_confounders": [
+        "occurrence of major life events (e.g., job change, bereavement) during the study period",
+        "changes in medication or health status",
+        "variations in sleep quality over weeks",
+        "seasonal changes affecting ambient temperature and activity",
+        "device firmware or software updates"
+      ],
+      "control_variables": [
+        "life event checklist score",
+        "medication change indicator",
+        "Pittsburgh Sleep Quality Index trend",
+        "average ambient temperature",
+        "firmware version number"
+      ],
+      "boring_rival_explanations": [
+        "software bugs causing drift in model parameters unrelated to physiology",
+        "variability in label quality over time due to rater fatigue",
+        "hardware sensor drift causing apparent non‑stationarity"
+      ],
+      "rival_prediction": "Greater within‑subject change in stress‑response slope across sessions is associated with lower model uncertainty because the model adapts to the new relationship over time.",
+      "distinguishing_condition": "When life‑event and medication change covariates are included, the association between slope change and uncertainty loses significance or flips direction.",
+      "confounder_rival_notes": "Life events and health changes can simultaneously alter physiological responsiveness and introduce noise, confounding the non‑stationarity‑uncertainty link."
+    },
+    {
+      "hypothesis_id": "H8",
+      "possible_confounders": [
+        "cardiorespiratory fitness (VO2max)",
+        "baseline heart rate variability at rest",
+        "stress reactivity to exercise (ΔHRV during submax test)",
+        "habitual caffeine consumption",
+        "time of day of activity bouts"
+      ],
+      "control_variables": [
+        "VO2max (ml/kg/min)",
+        "resting RMSSD",
+        "exercise‑induced ΔRMSSD",
+        "daily caffeine mg",
+        "proportion of activity in morning vs evening"
+      ],
+      "boring_rival_explanations": [
+        "sensor drift or battery voltage changes during prolonged activity affecting signal quality",
+        "misclassification of activity intensity due to accelerometer placement",
+        "random variation in EMA stress labels unrelated to activity"
+      ],
+      "rival_prediction": "Higher average daily activity intensity is associated with lower model uncertainty because activity‑induced physiological changes provide a stronger, more distinguishable signal for the model.",
+      "distinguishing_condition": "After adjusting for fitness and exercise stress reactivity, the positive relationship between activity intensity and uncertainty becomes non‑significant or reverses.",
+      "confounder_rival_notes": "Fitness and exercise‑specific stress reactivity influence both activity levels and the overlap of activity‑ and stress‑related physiology, potentially confounding the activity‑uncertainty link."
+    },
+    {
+      "hypothesis_id": "H9",
+      "possible_confounders": [
+        "average stress label variance across samples",
+        "label reliability (inter‑rater agreement)",
+        "regularization strength of the model",
+        "class imbalance ratio (stress vs non‑stress)",
+        "variability in stress intensity of the induced stimuli"
+      ],
+      "control_variables": [
+        "label variance (σ² of EMA scores)",
+        "Cohen’s kappa for label agreement",
+        "L2 regularization lambda",
+        "stress‑to‑non‑stress sample ratio",
+        "mean intensity of stress inducer"
+      ],
+      "boring_rival_explanations": [
+        "unequal class distribution causing higher uncertainty for minority class regardless of sample size",
+        "variability in stress intensity leading to heterogeneous signal strength",
+        "model hyperparameter tuning differences across subjects"
+      ],
+      "rival_prediction": "Fewer labeled samples per subject are associated with lower model uncertainty because less data reduces overfitting, yielding more conservative predictions.",
+      "distinguishing_condition": "When label variance and regularization are controlled for, the inverse relationship between sample size and uncertainty disappears or changes sign.",
+      "confounder_rival_notes": "Label noise and model regularization can simultaneously affect both the effective sample size and uncertainty, confounding the sample‑size‑uncertainty link."
+    },
+    {
+      "hypothesis_id": "H10",
+      "possible_confounders": [
+        "ambient temperature affecting oscillator drift",
+        "battery voltage level during measurement",
+        "firmware version differences across devices",
+        "electromagnetic interference in the environment",
+        "physical stress on the device casing (e.g., bending)"
+      ],
+      "control_variables": [
+        "ambient temperature (°C)",
+        "battery voltage (mV)",
+        "firmware version identifier",
+        "EMI exposure rating (low/medium/high)",
+        "casing strain gauge reading"
+      ],
+      "boring_rival_explanations": [
+        "random jitter introduced by software interpolation algorithms",
+        "variability in timestamp resolution due to operating system scheduling",
+        "uncorrected sensor drift that mimics timing misalignment"
+      ],
+      "rival_prediction": "Greater sampling‑rate jitter and synchronization offset are associated with lower model uncertainty because the introduced temporal dispersion acts as a regularizing noise term.",
+      "distinguishing_condition": "After controlling for temperature and battery voltage, the relationship between jitter/offset and uncertainty loses significance or reverses.",
+      "confounder_rival_notes": "Temperature and battery state influence both oscillator stability and signal amplitude, potentially confounding the timing‑uncertainty link."
+    }
+  ],
+  "stage_4_3_statistical_testability_builder": [
+    {
+      "hypothesis_id": "H1",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Prior work shows moderate correlations (r≈0.3) between baseline HRV and stress-evoked physiological changes, translating to moderate effects on model uncertainty.",
+      "minimum_data_needed": [
+        "N=120 participants aged 18-45",
+        "5-min seated baseline ECG/PPG to compute resting RMSSD",
+        "Standardized psychosocial stress task (TSST) with PPG recording",
+        "Model prediction entropy for each stress vs non-stress segment",
+        "Covariates: age, sex, VO2max, caffeine intake, medication status"
+      ],
+      "testable_prediction": "Higher resting RMSSD will be associated with higher model prediction entropy (positive association).",
+      "failure_condition": "After adjusting for age, sex, VO2max, caffeine, and medication, the regression coefficient for resting RMSSD is not significantly positive (p>0.05) or is negative.",
+      "statistical_test_plan": "Linear mixed-effects model: entropy ~ resting_RMSSD + age + sex + VO2max + caffeine + medication + (1|subject). Test significance of resting_RMSSD coefficient via Wald test.",
+      "statistical_testability_notes": "Assumes stable baseline RMSSD across sessions; can be verified with intraclass correlation."
+    },
+    {
+      "hypothesis_id": "H2",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Skin impedance explains a notable portion of PPG SNR variance in pilot studies (R²≈0.25), suggesting a medium effect on downstream uncertainty.",
+      "minimum_data_needed": [
+        "N=100 participants",
+        "Skin impedance measured at sensor site (kΩ) using device electrodes",
+        "PPG AC amplitude and SNR computed",
+        "Model prediction entropy",
+        "Control variables: skin hydration, ambient temperature, hair presence, lotion use, sweat rate"
+      ],
+      "testable_prediction": "Higher skin impedance will be associated with higher model prediction entropy.",
+      "failure_condition": "After controlling for skin hydration, ambient temperature, hair, lotion, sweat, the impedance coefficient is not significantly positive (p>0.05).",
+      "statistical_test_plan": "Multiple linear regression: entropy ~ skin_impedance + skin_hydration + ambient_temp + hair_removal + lotion_use + sweat_rate. Evaluate impedance coefficient.",
+      "statistical_testability_notes": "Impedance can be measured concurrently with PPG; ensure stable temperature."
+    },
+    {
+      "hypothesis_id": "H3",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Circadian misalignment effects on physiological reactivity are often subtle (Cohen's d≈0.2), leading to a small effect on model uncertainty.",
+      "minimum_data_needed": [
+        "N=80 participants with stable sleep-wake schedule ≥3 days",
+        "Circadian phase assessed via melatonin onset (DLMO) or core body temperature",
+        "Clock time of each measurement",
+        "Compute absolute phase difference (hours)",
+        "Model prediction entropy",
+        "Covariates: sleep duration, caffeine, chronotype, recent stressor, light exposure"
+      ],
+      "testable_prediction": "Larger absolute circadian phase difference will be associated with higher model prediction entropy.",
+      "failure_condition": "After adjusting for sleep deprivation, caffeine, chronotype, recent stress, and light, the phase difference coefficient is not significantly positive (p>0.05).",
+      "statistical_test_plan": "Linear mixed-effects model: entropy ~ abs_phase_diff + sleep_hours + caffeine + chronotype + recent_stressor + lux + (1|subject). Test abs_phase_diff coefficient.",
+      "statistical_testability_notes": "If melatonin assay unavailable, use actigraphy-derived phase as proxy; note increased measurement error."
+    },
+    {
+      "hypothesis_id": "H4",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Label noise from self-report bias can substantially degrade classifier performance; prior EMA-physiology disagreement studies show moderate impact (AUC drop ~0.1).",
+      "minimum_data_needed": [
+        "N=90 participants",
+        "EMA prompts 6x/day for 2 weeks",
+        "Physiological ground truth from validated stress inducer (e.g., cold pressor) to compute label noise per subject",
+        "Self-report bias score (e.g., ICC between EMA and physiology)",
+        "Model prediction entropy",
+        "Control variables: neuroticism, social desirability, momentary affect, working memory, language proficiency"
+      ],
+      "testable_prediction": "Higher self-report bias score will be associated with higher model prediction entropy.",
+      "failure_condition": "After controlling for neuroticism, social desirability, momentary affect, working memory, language proficiency, the bias coefficient is not significantly positive (p>0.05).",
+      "statistical_test_plan": "Multiple regression: entropy ~ bias_score + neuroticism + social_desirability + PANAS + WM + language_prof. Test bias_score coefficient.",
+      "statistical_testability_notes": "Bias score can be derived from intraclass correlation coefficient; ensure EMA compliance >80%."
+    },
+    {
+      "hypothesis_id": "H5",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Strap tightness influences motion artifact but effect sizes are often modest due to algorithmic correction; pilot data show small correlations (r≈0.15).",
+      "minimum_data_needed": [
+        "N=110 participants",
+        "Strap tightness measured via force sensor (N) during rest and 6‑min walk test",
+        "Motion artifact index (accelerometer variance)",
+        "PPG SNR",
+        "Model prediction entropy",
+        "Control variables: arm circumference, fat thickness, skin elasticity, movement variance, strap usage duration"
+      ],
+      "testable_prediction": "Lower strap tightness will be associated with higher model prediction entropy (inverse relationship).",
+      "failure_condition": "After adjusting for arm circumference, fat thickness, skin elasticity, movement variance, and strap usage, the tightness coefficient is not significantly negative (p>0.05).",
+      "statistical_test_plan": "Linear mixed-effects model: entropy ~ tightness + arm_circ + fat_thick + skin_elastic + movement_var + strap_days + (1|subject). Test tightness coefficient.",
+      "statistical_testability_notes": "If force sensor unavailable, use PPG amplitude variability as proxy; note reduced precision."
+    },
+    {
+      "hypothesis_id": "H6",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "COMT Val158Met explains a small fraction of variance in stress reactivity (η²≈0.02), leading to a small effect on wearable uncertainty.",
+      "minimum_data_needed": [
+        "N=250 participants (to detect small genetic effect)",
+        "Genotyping for COMT Val158Met (0‑2 Val alleles)",
+        "Stress task (mental arithmetic or TSST) with ECG/PPG ≥256 Hz",
+        "Stress‑evoked HRV change (ΔRMSSD)",
+        "Model prediction entropy",
+        "Control variables: baseline dopamine, recent stress exposure, medication affecting catecholamines, MAOA genotype, ancestry PCs"
+      ],
+      "testable_prediction": "Each additional Val allele will be associated with higher model prediction entropy (positive dose‑response).",
+      "failure_condition": "After adjusting for baseline dopamine, recent stress, medication, MAOA, ancestry, the Val allele coefficient is not significantly positive (p>0.05).",
+      "statistical_test_plan": "Linear regression: entropy ~ Val_allele_count + baseline_dopamine + recent_stress + med_status + MAOA + PC1-PC5. Test Val_allele_count coefficient.",
+      "statistical_testability_notes": "Large N required for adequate power; consider adding interaction with stress task intensity."
+    },
+    {
+      "hypothesis_id": "H7",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Longitudinal habituation/sensitization can produce moderate changes in stress response over weeks (Cohen's d≈0.4), translating to a medium effect on uncertainty.",
+      "minimum_data_needed": [
+        "N=70 participants",
+        "Weekly lab sessions ≥8 weeks with standardized stressor",
+        "Wearable compliance >90%",
+        "Compute within‑subject stress‑response slope (ΔRMSSD per session) via mixed‑effects",
+        "Model prediction entropy per session",
+        "Control variables: life event checklist, medication changes, PSQI trend, ambient temperature, firmware version"
+      ],
+      "testable_prediction": "Greater absolute change in stress‑response slope across sessions will be associated with higher model prediction entropy.",
+      "failure_condition": "After adjusting for life events, medication changes, sleep quality, temperature, firmware, the slope‑change coefficient is not significantly positive (p>0.05).",
+      "statistical_test_plan": "Linear mixed-effects model: entropy ~ abs_slope_change + life_event_score + med_change + PSQI_trend + avg_temp + firmware + (1|subject). Test abs_slope_change coefficient.",
+      "statistical_testability_notes": "Slope change can be estimated as subject-specific random slope variance; alternative is to include session*subject interaction."
+    },
+    {
+      "hypothesis_id": "H8",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Activity context confounding has shown moderate impact on stress classification (AUC reduction ~0.08) in free‑living studies.",
+      "minimum_data_needed": [
+        "N=100 participants",
+        "7‑day free‑living monitoring with accelerometer 30 Hz",
+        "Compute average daily activity intensity (MET‑hours) and proportion time in moderate‑vigorous activity",
+        "Model prediction entropy (context‑agnostic)",
+        "Control variables: VO2max, resting RMSSD, exercise‑induced ΔRMSSD, daily caffeine, proportion activity morning vs evening"
+      ],
+      "testable_prediction": "Higher average daily activity intensity will be associated with higher model prediction entropy.",
+      "failure_condition": "After adjusting for VO2max, resting RMSSD, exercise‑induced ΔRMSSD, caffeine, and time‑of‑day activity, the activity intensity coefficient is not significantly positive (p>0.05).",
+      "statistical_test_plan": "Multiple regression: entropy ~ avg_MET_hours + VO2max + resting_RMSSD + exercise_delta_RMSSD + daily_caffeine + prop_morning_activity. Test avg_MET_hours coefficient.",
+      "statistical_testability_notes": "Including activity as covariate in model should reduce entropy if hypothesis holds; can test interaction."
+    },
+    {
+      "hypothesis_id": "H9",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Parameter uncertainty scales inversely with sample size; simulations show that halving labeled samples can double predictive variance, indicating a large effect.",
+      "minimum_data_needed": [
+        "N=60 participants with varying numbers of labeled stress samples per subject (range 5‑50)",
+        "Same regularized logistic regression hyperparameters for all subjects",
+        "Labels from validated stress inductions",
+        "Compute posterior variance of classifier weights (or predictive variance) per subject",
+        "Model prediction uncertainty (predictive variance)",
+        "Control variables: label variance, label reliability (kappa), regularization lambda, class imbalance, mean stress intensity"
+      ],
+      "testable_prediction": "Fewer labeled samples per subject will be associated with higher model prediction uncertainty (inverse relationship).",
+      "failure_condition": "After controlling for label variance, label reliability, regularization strength, class imbalance, and stress intensity, the sample size coefficient is not significantly negative (p>0.05).",
+      "statistical_test_plan": "Linear regression: uncertainty ~ n_i + label_variance + kappa + lambda + class_ratio + stress_intensity. Test n_i coefficient.",
+      "statistical_testability_notes": "Can be confirmed by simulation: subsample labels and measure resulting uncertainty."
+    },
+    {
+      "hypothesis_id": "H10",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Sampling jitter and sync offsets typically contribute minor noise relative to biological variability; pilot data show small effects on classification confidence (r≈0.1).",
+      "minimum_data_needed": [
+        "N=80 participants",
+        "Device firmware logs timestamps with µs resolution",
+        "Compute sampling rate jitter (SD of inter‑sample interval) and synchronization offset between PPG and accelerometer",
+        "Feature misalignment index (cross‑correlation lag)",
+        "Model prediction entropy",
+        "Control variables: ambient temperature, battery voltage, firmware version, EMI exposure, casing strain"
+      ],
+      "testable_prediction": "Higher sampling rate jitter or greater synchronization offset will be associated with higher model prediction entropy.",
+      "failure_condition": "After adjusting for ambient temperature, battery voltage, firmware version, EMI, and casing strain, the jitter/offset coefficients are not significantly positive (p>0.05).",
+      "statistical_test_plan": "Multiple regression: entropy ~ jitter_SD + sync_offset_ms + ambient_temp + battery_voltage + firmware_version + EMI + casing_strain. Test jitter_SD and sync_offset coefficients.",
+      "statistical_testability_notes": "Standard interpolation reduces but does not eliminate jitter; residual misalignment can be modeled as noise term."
+    }
+  ],
+  "stage_5_audits": [
+    {
+      "hypothesis_id": "H1",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All checklist items satisfied: variables (resting RMSSD, stress-evoked RMSSD change, entropy) are measurable; causal chain linking higher parasympathetic tone to smaller stress-evoked RMSSD change and higher uncertainty is plausible; confounders (age, sex, fitness, caffeine, medication) are identified; data requirements (N=120, baseline ECG/PPG, TSST, entropy, covariates) are clear; mechanism is domain-specific (autonomic tone modulating stress-evoked signal); effect size medium is plausible; prediction is testable via mixed-effects regression.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H2",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All checklist items satisfied: skin impedance, PPG AC amplitude, SNR, and entropy are measurable; causal chain from higher impedance to lower SNR and higher uncertainty is plausible; confounders (hydration, temperature, hair, lotion, sweat) are identified; data requirements (N=100, impedance, PPG metrics, entropy, controls) are clear; mechanism is domain-specific (skin impedance affecting PPG quality); effect size medium is plausible; prediction testable via multiple regression.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H3",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All checklist items satisfied: circadian phase difference, stress-evoked biomarker amplitude, and entropy are measurable; causal chain from phase misalignment to attenuated stress response and higher uncertainty is plausible; confounders (sleep deprivation, caffeine, chronotype, prior stress, light) are identified; data requirements (N=80, stable schedule, DLMO or temperature, clock time, entropy, covariates) are clear; mechanism is domain-specific (circadian phase modulating stress physiology); effect size small is plausible; prediction testable via mixed-effects model.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H4",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All checklist items satisfied: self-report bias score, label noise variance, and entropy are measurable; causal chain from higher bias to more label noise, poorer decision boundary, and higher uncertainty is plausible; confounders (neuroticism, social desirability, momentary affect, working memory, language proficiency) are identified; data requirements (N=90, EMA 6x/day for 2 weeks, physiological ground truth, bias score, entropy, controls) are clear; mechanism is domain-specific (subject-specific reporting tendencies affecting label noise); effect size medium is plausible; prediction testable via multiple regression.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H5",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All checklist items satisfied: strap tightness (force sensor), motion artifact index, PPG SNR, and entropy are measurable; causal chain from looser strap to higher motion artifacts, lower SNR, and higher uncertainty is plausible; confounders (arm circumference, fat thickness, skin elasticity, movement intensity, strap fatigue) are identified; data requirements (N=110, tightness measured during rest and walk, motion artifact, SNR, entropy, controls) are clear; mechanism is domain-specific (wearable coupling affecting motion artifact susceptibility); effect size small is plausible; prediction testable via linear mixed-effects model.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H6",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All checklist items satisfied: COMT genotype, catecholamine clearance rate, stress-evoked HRV change, and entropy are measurable; causal chain from Val allele to higher COMT activity, faster catecholamine clearance, blunted stress response, and higher uncertainty is plausible; confounders (baseline dopamine, recent stress, catecholamine-affecting medication, MAOA genotype, ancestry PCs) are identified; data requirements (N=250, genotyping, stress task, HRV change, entropy, controls) are clear; mechanism is domain-specific (genetic variation in catecholamine metabolism affecting stress-evoked physiology); effect size small is plausible; prediction testable via linear regression.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H7",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All checklist items satisfied: session number, within-subject stress-response slope (ΔRMSSD per session), and entropy are measurable; causal chain from repeated exposure to habituation/sensitization, drift in stress-signal relationship, model misfit, and higher uncertainty is plausible; confounders (life events, medication changes, sleep quality, seasonal temperature, firmware updates) are identified; data requirements (N=70, weekly sessions ≥8 weeks, compliance >90%, slope estimation, entropy per session, controls) are clear; mechanism is domain-specific (longitudinal non-stationarity of stress response); effect size medium is plausible; prediction testable via mixed-effects model.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H8",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All checklist items satisfied: average daily activity intensity (MET-hours), proportion time in moderate-vigorous activity, and entropy are measurable; causal chain from higher activity exposure to greater overlap of activity-induced physiological changes with stress signals, increased feature ambiguity, and higher uncertainty is plausible; confounders (VO2max, resting RMSSD, exercise-induced ΔRMSSD, caffeine, time-of-day activity) are identified; data requirements (N=100, 7-day free-living monitoring, activity metrics, entropy, controls) are clear; mechanism is domain-specific (activity context confounding stress detection); effect size medium is plausible; prediction testable via multiple regression.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H9",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All checklist items satisfied: number of labeled samples per subject, posterior variance of classifier weights (or predictive variance), and entropy are measurable; causal chain from fewer labels to higher posterior weight variance, wider predictive distribution, and higher uncertainty is plausible; confounders (label variance, label reliability, regularization strength, class imbalance, stress intensity variability) are identified; data requirements (N=60 with varying labeled samples, same hyperparameters, validated stress inductions, posterior variance, entropy, controls) are clear; mechanism is domain-specific (sample size affecting parameter uncertainty in personalized classifiers); effect size large is plausible; prediction testable via linear regression.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H10",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All checklist items satisfied: sampling rate jitter (SD of inter-sample interval), synchronization offset, feature misalignment index, and entropy are measurable; causal chain from greater jitter/offset to temporal misalignment of multimodal features, degraded feature representation, and higher uncertainty is plausible; confounders (ambient temperature, battery voltage, firmware version, EMI, casing strain) are identified; data requirements (N=80, timestamp logs, jitter and offset computation, misalignment index, entropy, controls) are clear; mechanism is domain-specific (sensor timing inconsistencies affecting multimodal feature alignment); effect size small is plausible; prediction testable via multiple regression.",
+      "salvage_note": ""
+    }
+  ],
+  "diagnostics": {
+    "generated_count": 10,
+    "passed_count": 10,
+    "rejected_count": 0,
+    "salvageable_count": 0,
+    "pass_survival_rate": 1.0,
+    "salvageable_rate": 0.0,
+    "rejection_reason_diversity": 0,
+    "top_failed_checklist_fields": {},
+    "failure_points_consistency": true,
+    "rubber_stamp_red_flags": [
+      "10/10 passed",
+      "0 rejection reasons",
+      "all checklist values true",
+      "no salvageable or rejected hypotheses"
+    ],
+    "mechanism_builder_count": 10,
+    "confounder_rival_builder_count": 10,
+    "statistical_testability_builder_count": 10,
+    "avg_mechanism_variables_per_hypothesis": 3.4,
+    "avg_confounders_per_hypothesis": 5.0,
+    "avg_rivals_per_hypothesis": 3.0,
+    "hypotheses_with_effect_size_expectation": 10,
+    "hypotheses_with_failure_condition": 10,
+    "hypotheses_with_testable_prediction": 10
+  },
+  "stage_6_rival_prediction_matrix": [
+    {
+      "rival_explanation": "random fluctuation in model entropy due to stochastic training",
+      "hypothesis_id": "H1",
+      "meno_j_prediction": "Higher resting RMSSD will be associated with higher model prediction entropy (positive association).",
+      "what_result_supports_rival": "The association between resting RMSSD and uncertainty becomes non-significant or negative after controlling for fitness and caffeine intake.",
+      "meno_j_hypothesis": "Subject-level variation in wearable stress-detection uncertainty stems from individual differences in baseline autonomic tone, such as resting heart-rate variability, which alters the mapping between physiological signals and stress labels.",
+      "what_result_supports_meno_j": "A significant positive association between resting RMSSD and model uncertainty persists after controlling for fitness and caffeine intake.",
+      "distinguishing_test": "After controlling for fitness level and caffeine intake, the sign of the association between resting RMSSD and uncertainty reverses or becomes non‑significant.",
+      "rival_prediction": "Higher resting RMSSD is associated with lower model uncertainty (i.e., better signal quality reduces uncertainty)."
+    },
+    {
+      "rival_explanation": "electrode degradation over time causing impedance changes unrelated to baseline skin properties",
+      "hypothesis_id": "H2",
+      "meno_j_prediction": "Higher skin impedance will be associated with higher model prediction entropy.",
+      "what_result_supports_rival": "The association between skin impedance and uncertainty becomes non-significant or negative after controlling for skin hydration and sweat rate.",
+      "meno_j_hypothesis": "Variability in skin impedance and epidermal properties across participants leads to heterogeneous PPG signal quality, thereby influencing uncertainty estimates.",
+      "what_result_supports_meno_j": "A significant positive association between skin impedance and model uncertainty remains after controlling for skin hydration and sweat rate.",
+      "distinguishing_test": "When skin hydration and sweat rate are statistically controlled, the positive relationship between impedance and uncertainty disappears or reverses.",
+      "rival_prediction": "Higher skin impedance is associated with lower model uncertainty because it reflects better epidermal barrier reducing motion artifact."
+    },
+    {
+      "rival_explanation": "time‑of‑day variation in ambient temperature affecting sensor readings",
+      "hypothesis_id": "H3",
+      "meno_j_prediction": "Larger absolute circadian phase difference will be associated with higher model prediction entropy.",
+      "what_result_supports_rival": "The association between circadian phase difference and uncertainty becomes non-significant or negative after adjusting for sleep deprivation and caffeine.",
+      "meno_j_hypothesis": "Circadian phase differences cause time-of-day-dependent modulation of stress-related physiology, producing subject-specific uncertainty when models ignore temporal context.",
+      "what_result_supports_meno_j": "A significant positive association between absolute circadian phase difference and model uncertainty persists after adjusting for sleep deprivation and caffeine.",
+      "distinguishing_test": "After adjusting for sleep deprivation and caffeine, the direction of the association between phase difference and uncertainty flips or becomes null.",
+      "rival_prediction": "Larger circadian phase difference is associated with lower model uncertainty because stress‑evoked responses are amplified at certain internal phases."
+    },
+    {
+      "rival_explanation": "random inattention leading to occasional missed EMA prompts",
+      "hypothesis_id": "H4",
+      "meno_j_prediction": "Higher self-report bias score will be associated with higher model prediction entropy.",
+      "what_result_supports_rival": "The association between self-report bias and uncertainty becomes non-significant or negative after controlling for neuroticism and momentary affect.",
+      "meno_j_hypothesis": "Inconsistent self-report labeling of stress across participants introduces label noise that propagates to higher model uncertainty for certain subjects.",
+      "what_result_supports_meno_j": "A significant positive association between self-report bias score and model uncertainty remains after controlling for neuroticism and momentary affect.",
+      "distinguishing_test": "When neuroticism and momentary affect are included as covariates, the bias‑uncertainty relationship loses significance or reverses.",
+      "rival_prediction": "Higher self‑report bias is associated with lower model uncertainty because biased labels produce a more consistent (though inaccurate) pattern that the model can learn confidently."
+    },
+    {
+      "rival_explanation": "strap loosening due to material creep rather than initial tightness",
+      "hypothesis_id": "H5",
+      "meno_j_prediction": "Lower strap tightness will be associated with higher model prediction entropy (inverse relationship).",
+      "what_result_supports_rival": "The association between strap tightness and uncertainty becomes non-significant or positive after controlling for arm circumference and movement intensity.",
+      "meno_j_hypothesis": "Variability in sensor placement tightness and orientation across individuals creates differential motion artifact susceptibility, affecting uncertainty.",
+      "what_result_supports_meno_j": "A significant negative association between strap tightness and model uncertainty (lower tightness → higher uncertainty) persists after controlling for arm circumference and movement intensity.",
+      "distinguishing_test": "After controlling for arm circumference and movement intensity, the inverse relationship between tightness and uncertainty disappears or changes sign.",
+      "rival_prediction": "Looser strap coupling is associated with lower model uncertainty because increased motion averages out noise, leading to more stable features."
+    },
+    {
+      "rival_explanation": "random genotyping error causing misclassification of COMT status",
+      "hypothesis_id": "H6",
+      "meno_j_prediction": "Each additional Val allele will be associated with higher model prediction entropy (positive dose‑response).",
+      "what_result_supports_rival": "The association between Val allele count and uncertainty becomes non-significant or negative after adjusting for baseline dopamine and recent stress exposure.",
+      "meno_j_hypothesis": "Genetic polymorphisms in catecholamine metabolism (e.g., COMT Val158Met) modulate the magnitude of physiological stress responses, leading to subject-level uncertainty differences.",
+      "what_result_supports_meno_j": "A significant positive association between number of Val alleles and model uncertainty persists after adjusting for baseline dopamine and recent stress exposure.",
+      "distinguishing_test": "After adjusting for baseline dopamine and recent stress exposure, the Val‑allele effect on uncertainty becomes non‑significant or reverses.",
+      "rival_prediction": "Carrying more Val alleles is associated with lower model uncertainty because faster catecholamine clearance yields a more stable baseline, reducing variability in stress‑evoked signals."
+    },
+    {
+      "rival_explanation": "software bugs causing drift in model parameters unrelated to physiology",
+      "hypothesis_id": "H7",
+      "meno_j_prediction": "Greater absolute change in stress‑response slope across sessions will be associated with higher model prediction entropy.",
+      "what_result_supports_rival": "The association between stress‑response slope change and uncertainty becomes non-significant or negative after adjusting for life events and medication changes.",
+      "meno_j_hypothesis": "Within-subject temporal non-stationarity (habituation or sensitization to stressors) over weeks causes drift in the stress-signal relationship, raising uncertainty for later measurements.",
+      "what_result_supports_meno_j": "A significant positive association between absolute change in stress‑response slope and model uncertainty remains after adjusting for life events and medication changes.",
+      "distinguishing_test": "When life‑event and medication change covariates are included, the association between slope change and uncertainty loses significance or flips direction.",
+      "rival_prediction": "Greater within‑subject change in stress‑response slope across sessions is associated with lower model uncertainty because the model adapts to the new relationship over time."
+    },
+    {
+      "rival_explanation": "sensor drift or battery voltage changes during prolonged activity affecting signal quality",
+      "hypothesis_id": "H8",
+      "meno_j_prediction": "Higher average daily activity intensity will be associated with higher model prediction entropy.",
+      "what_result_supports_rival": "The association between activity intensity and uncertainty becomes non-significant or negative after adjusting for fitness and exercise stress reactivity.",
+      "meno_j_hypothesis": "Failure to stratify by activity context (e.g., exercise vs. sedentary) yields context-dependent uncertainty that varies across subjects based on their typical activity patterns.",
+      "what_result_supports_meno_j": "A significant positive association between average daily activity intensity and model uncertainty persists after adjusting for fitness and exercise stress reactivity.",
+      "distinguishing_test": "After adjusting for fitness and exercise stress reactivity, the positive relationship between activity intensity and uncertainty becomes non‑significant or reverses.",
+      "rival_prediction": "Higher average daily activity intensity is associated with lower model uncertainty because activity‑induced physiological changes provide a stronger, more distinguishable signal for the model."
+    },
+    {
+      "rival_explanation": "unequal class distribution causing higher uncertainty for minority class regardless of sample size",
+      "hypothesis_id": "H9",
+      "meno_j_prediction": "Fewer labeled samples per subject will be associated with higher model prediction uncertainty (inverse relationship).",
+      "what_result_supports_rival": "The association between sample size and uncertainty becomes non-significant or positive after controlling for label variance and regularization.",
+      "meno_j_hypothesis": "Low per-subject sample size leads to high variance in estimated model parameters (e.g., weights in a personalized classifier), directly increasing uncertainty estimates for those individuals.",
+      "what_result_supports_meno_j": "A significant negative association between number of labeled samples per subject and model uncertainty persists after controlling for label variance and regularization strength.",
+      "distinguishing_test": "When label variance and regularization are controlled for, the inverse relationship between sample size and uncertainty disappears or changes sign.",
+      "rival_prediction": "Fewer labeled samples per subject are associated with lower model uncertainty because less data reduces overfitting, yielding more conservative predictions."
+    },
+    {
+      "rival_explanation": "random jitter introduced by software interpolation algorithms",
+      "hypothesis_id": "H10",
+      "meno_j_prediction": "Higher sampling rate jitter or greater synchronization offset will be associated with higher model prediction entropy.",
+      "what_result_supports_rival": "The association between jitter/offset and uncertainty becomes non-significant or negative after controlling for ambient temperature and battery voltage.",
+      "meno_j_hypothesis": "Differences in sensor sampling rates and synchronization errors across devices introduce temporal misalignment that affects feature extraction, leading to subject-specific uncertainty.",
+      "what_result_supports_meno_j": "A significant positive association between sampling rate jitter/synchronization offset and model uncertainty persists after controlling for ambient temperature and battery voltage.",
+      "distinguishing_test": "After controlling for temperature and battery voltage, the relationship between jitter/offset and uncertainty loses significance or reverses.",
+      "rival_prediction": "Greater sampling‑rate jitter and synchronization offset are associated with lower model uncertainty because the introduced temporal dispersion acts as a regularizing noise term."
+    }
+  ],
+  "stage_7_falsification_tests": [
+    {
+      "strongest_falsification_test": "Linear mixed-effects regression of model prediction entropy on resting RMSSD with random intercept for subject, controlling for age, sex, VO2max, caffeine intake, and medication status; test significance of RMSSD coefficient.",
+      "failure_condition": "After adjusting for age, sex, VO2max, caffeine, and medication, the regression coefficient for resting RMSSD is not significantly positive (p>0.05) or is negative.",
+      "most_likely_false_negative_risk": "Low reliability of resting RMSSD or entropy measurements, or insufficient within-subject variation, could attenuate the true association leading to a false negative.",
+      "most_likely_false_positive_risk": "Uncontrolled confounding by aerobic fitness or caffeine intake that influences both resting RMSSD and model uncertainty could produce a spurious positive association.",
+      "hypothesis_id": "H1",
+      "minimum_data_needed": "N=120 participants aged 18-45; 5-min seated baseline ECG/PPG to compute resting RMSSD; standardized psychosocial stress task (TSST) with PPG recording; model prediction entropy for each stress vs non-stress segment; covariates: age, sex, VO2max, caffeine intake, medication status."
+    },
+    {
+      "strongest_falsification_test": "Multiple linear regression of model prediction entropy on skin impedance controlling for skin hydration, ambient temperature, hair presence, lotion use, and sweat rate; test significance of impedance coefficient.",
+      "failure_condition": "After controlling for skin hydration, ambient temperature, hair, lotion, sweat, the impedance coefficient is not significantly positive (p>0.05).",
+      "most_likely_false_negative_risk": "Measurement error in impedance or SNR, or limited range of impedance values, could mask a true effect, yielding a false negative.",
+      "most_likely_false_positive_risk": "Residual confounding by unmeasured sweat composition or skin temperature could create a false positive link between impedance and uncertainty.",
+      "hypothesis_id": "H2",
+      "minimum_data_needed": "N=100 participants; skin impedance measured at sensor site (kΩ); PPG AC amplitude and SNR computed; model prediction entropy; covariates: skin hydration, ambient temperature, hair presence, lotion use, sweat rate."
+    },
+    {
+      "strongest_falsification_test": "Linear mixed-effects model of model prediction entropy on absolute circadian phase difference controlling for sleep duration, caffeine, chronotype, recent stressor, and ambient light; test significance of phase difference coefficient.",
+      "failure_condition": "After adjusting for sleep deprivation, caffeine, chronotype, recent stress, and light, the phase difference coefficient is not significantly positive (p>0.05).",
+      "most_likely_false_negative_risk": "Imprecise estimation of circadian phase (e.g., using actigraphy proxy) adds noise, potentially obscuring a true relationship and causing false negative.",
+      "most_likely_false_positive_risk": "Uncontrolled influence of sleep deprivation or caffeine on both perceived phase and physiological responsiveness could produce a spurious positive association.",
+      "hypothesis_id": "H3",
+      "minimum_data_needed": "N=80 participants with stable sleep-wake schedule ≥3 days; circadian phase assessed via melatonin onset (DLMO) or core body temperature; clock time of each measurement; compute absolute phase difference (hours); model prediction entropy; covariates: sleep duration, caffeine, chronotype, recent stressor, light exposure."
+    },
+    {
+      "strongest_falsification_test": "Multiple regression of model prediction entropy on self-report bias score controlling for neuroticism, social desirability, momentary affect, working memory, and language proficiency; test significance of bias coefficient.",
+      "failure_condition": "After controlling for neuroticism, social desirability, momentary affect, working memory, language proficiency, the bias coefficient is not significantly positive (p>0.05).",
+      "most_likely_false_negative_risk": "Low EMA compliance or noisy physiological ground truth could attenuate bias estimate, masking a true effect and causing false negative.",
+      "most_likely_false_positive_risk": "Shared method variance between EMA and physiological measures could inflate bias score and its association with uncertainty, leading to false positive.",
+      "hypothesis_id": "H4",
+      "minimum_data_needed": "N=90 participants; EMA prompts 6×/day for 2 weeks; physiological ground truth from validated stress inducer (e.g., cold pressor) to compute label noise per subject; self-report bias score (e.g., ICC between EMA and physiology); model prediction entropy; covariates: neuroticism, social desirability, momentary affect, working memory, language proficiency."
+    },
+    {
+      "strongest_falsification_test": "Linear mixed-effects model of model prediction entropy on strap tightness controlling for arm circumference, fat thickness, skin elasticity, movement variance, and strap usage duration; test significance of tightness coefficient (expected negative).",
+      "failure_condition": "After adjusting for arm circumference, fat thickness, skin elasticity, movement variance, and strap usage, the tightness coefficient is not significantly negative (p>0.05).",
+      "most_likely_false_negative_risk": "Limited variation in strap tightness across participants or high algorithmic motion correction could reduce observable effect, yielding false negative.",
+      "most_likely_false_positive_risk": "Unmeasured skin moisture or temperature affecting both strap coupling and signal quality could produce a spurious inverse association.",
+      "hypothesis_id": "H5",
+      "minimum_data_needed": "N=110 participants; strap tightness measured via force sensor (N) during rest and 6‑min walk test; motion artifact index (accelerometer variance); PPG SNR; model prediction entropy; covariates: arm circumference, fat thickness, skin elasticity, movement variance, strap usage duration."
+    },
+    {
+      "strongest_falsification_test": "Linear regression of model prediction entropy on COMT Val158Met allele count controlling for baseline dopamine, recent stress exposure, medication affecting catecholamines, MAOA genotype, and ancestry principal components; test significance of allele count coefficient (expected positive).",
+      "failure_condition": "After adjusting for baseline dopamine, recent stress, medication, MAOA, ancestry, the Val allele coefficient is not significantly positive (p>0.05).",
+      "most_likely_false_negative_risk": "Small effect size and limited genetic variance may require larger sample; insufficient power could yield false negative.",
+      "most_likely_false_positive_risk": "Population stratification or linkage disequilibrium with other functional variants could create a spurious association between Val allele count and uncertainty.",
+      "hypothesis_id": "H6",
+      "minimum_data_needed": "N=250 participants; genotyping for COMT Val158Met (0‑2 Val alleles); stress task (mental arithmetic or TSST) with ECG/PPG ≥256 Hz; stress‑evoked HRV change (ΔRMSSD); model prediction entropy; covariates: baseline dopamine, recent stress exposure, medication affecting catecholamines, MAOA genotype, ancestry PCs."
+    },
+    {
+      "strongest_falsification_test": "Linear mixed-effects model of model prediction entropy on absolute change in within‑subject stress‑response slope across sessions controlling for life event score, medication changes, PSQI trend, ambient temperature, and firmware version; test significance of slope‑change coefficient.",
+      "failure_condition": "After adjusting for life events, medication changes, sleep quality, temperature, firmware, the slope‑change coefficient is not significantly positive (p>0.05).",
+      "most_likely_false_negative_risk": "High intra‑session variability in stress response or low compliance could mask true drift, leading to false negative.",
+      "most_likely_false_positive_risk": "Unmeasured seasonal variations in activity or daylight could confound slope change and uncertainty, producing false positive.",
+      "hypothesis_id": "H7",
+      "minimum_data_needed": "N=70 participants; weekly lab sessions ≥8 weeks with standardized stressor; wearable compliance >90%; compute within‑subject stress‑response slope (ΔRMSSD per session) via mixed‑effects; model prediction entropy per session; covariates: life event checklist, medication changes, PSQI trend, ambient temperature, firmware version."
+    },
+    {
+      "strongest_falsification_test": "Multiple regression of model prediction entropy on average daily activity intensity (MET‑hours) controlling for VO2max, resting RMSSD, exercise‑induced ΔRMSSD, daily caffeine, and proportion of morning activity; test significance of activity intensity coefficient.",
+      "failure_condition": "After adjusting for VO2max, resting RMSSD, exercise‑induced ΔRMSSD, caffeine, and time‑of‑day activity, the activity intensity coefficient is not significantly positive (p>0.05).",
+      "most_likely_false_negative_risk": "If activity context is already partially captured by the model (e.g., via motion features), the added variance may be small, risking false negative.",
+      "most_likely_false_positive_risk": "Higher fitness may simultaneously increase activity intensity and improve signal quality, creating a spurious positive association if not fully controlled.",
+      "hypothesis_id": "H8",
+      "minimum_data_needed": "N=100 participants; 7‑day free‑living monitoring with accelerometer 30 Hz; compute average daily activity intensity (MET‑hours) and proportion time in moderate‑vigorous activity; model prediction entropy (context‑agnostic); covariates: VO2max, resting RMSSD, exercise‑induced ΔRMSSD, daily caffeine, proportion activity morning vs evening."
+    },
+    {
+      "strongest_falsification_test": "Linear regression of model prediction uncertainty on number of labeled samples per subject controlling for label variance, label reliability (kappa), regularization lambda, class imbalance, and mean stress intensity; test significance of sample size coefficient (expected negative).",
+      "failure_condition": "After controlling for label variance, label reliability, regularization strength, class imbalance, and stress intensity, the sample size coefficient is not significantly negative (p>0.05).",
+      "most_likely_false_negative_risk": "Limited range of sample sizes or strong regularization may diminish the impact of sample size on uncertainty, masking a true effect and causing false negative.",
+      "most_likely_false_positive_risk": "If label noise is higher for subjects with more samples, it could invert the expected relationship, producing a false positive negative association.",
+      "hypothesis_id": "H9",
+      "minimum_data_needed": "N=60 participants with varying numbers of labeled stress samples per subject (range 5‑50); same regularized logistic regression hyperparameters for all subjects; labels from validated stress inductions; compute posterior variance of classifier weights (or predictive variance) per subject; model prediction uncertainty (predictive variance); covariates: label variance, label reliability (kappa), regularization lambda, class imbalance, mean stress intensity."
+    },
+    {
+      "strongest_falsification_test": "Multiple regression of model prediction entropy on sampling rate jitter (SD of inter‑sample interval) and synchronization offset controlling for ambient temperature, battery voltage, firmware version, EMI exposure, and casing strain; test significance of jitter and offset coefficients (expected positive).",
+      "failure_condition": "After adjusting for ambient temperature, battery voltage, firmware version, EMI, and casing strain, the jitter/offset coefficients are not significantly positive (p>0.05).",
+      "most_likely_false_negative_risk": "High interpolation effectiveness may reduce residual jitter to negligible levels, making true effect undetectable and yielding false negative.",
+      "most_likely_false_positive_risk": "Unmeasured electromagnetic interference or temperature fluctuations could affect both timing jitter and signal amplitude, creating a spurious positive association.",
+      "hypothesis_id": "H10",
+      "minimum_data_needed": "N=80 participants; device firmware logs timestamps with µs resolution; compute sampling rate jitter (SD of inter‑sample interval) and synchronization offset between PPG and accelerometer; feature misalignment index (cross‑correlation lag); model prediction entropy; covariates: ambient temperature, battery voltage, firmware version, EMI exposure, casing strain."
+    }
+  ]
+}

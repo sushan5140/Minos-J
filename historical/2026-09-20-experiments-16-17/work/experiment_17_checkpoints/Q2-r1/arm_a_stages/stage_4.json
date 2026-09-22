@@ -1,0 +1,84 @@
+{
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Subject-specific baseline physiological variability breaks exchangeability across signal segments, causing coverage drift.",
+      "proposed_mechanism": "Individual differences in baseline heart rate, respiration, or morphology shift the distribution of features between segments.",
+      "core_assumption": "Calibration data from one subject adequately represents the distribution for all subjects.",
+      "knowledge_gap_addressed": "Lack of subject-stratified or personalized conformal prediction methods for physiological signals.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Sensor drift or time-varying noise alters feature distributions, leading to miscalibrated conformal intervals.",
+      "proposed_mechanism": "Changes in electrode impedance, amplifier gain, or environmental interference modify the observed signal statistics over time.",
+      "core_assumption": "Sensor characteristics remain stable and invariant across all recording segments.",
+      "knowledge_gap_addressed": "Insufficient modeling of sensor-specific covariate shift in conformal prediction frameworks.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Physiological state transitions (e.g., sleep vs wake, rest vs exercise) induce concept drift that violates the i.i.d. assumption.",
+      "proposed_mechanism": "Underlying generative processes of the signal change with state, altering the relationship between features and labels.",
+      "core_assumption": "The signal-generating process is stationary within each segment.",
+      "knowledge_gap_addressed": "Absence of state-aware conformal methods that adapt to physiological context changes.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Strong temporal autocorrelation within physiological signals violates exchangeability, causing underestimation of prediction uncertainty.",
+      "proposed_mechanism": "Successive samples are dependent, reducing effective sample size and inflating confidence in conformity scores.",
+      "core_assumption": "Observations are independent and identically distributed.",
+      "knowledge_gap_addressed": "Missing adjustments for temporal dependence in conformity score calculation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Segment-specific label noise or annotation errors bias conformity scores, destabilizing coverage.",
+      "proposed_mechanism": "Mislabelled events (e.g., incorrect arrhythmia tags) produce anomalously large or small residuals, skewing the empirical quantile.",
+      "core_assumption": "All labels are ground-truth accurate.",
+      "knowledge_gap_addressed": "Limited robustness of conformal prediction to heterogeneous label quality across segments.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Rare physiological events are underrepresented in calibration sets, leading to poor coverage for those segments.",
+      "proposed_mechanism": "Imbalanced stratification causes the conformity score quantile to be dominated by common classes, ignoring tail behavior.",
+      "core_assumption": "Calibration set reflects the true prevalence of all event types across segments.",
+      "knowledge_gap_addressed": "Need for stratified or importance-weighted conformal methods to handle class imbalance in physiological data.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Heteroscedasticity in signal amplitude leads to non-uniform error variance, breaking the assumption of constant conformity score distribution.",
+      "proposed_mechanism": "Larger signal excursions produce proportionally larger prediction errors, causing variance to change with amplitude.",
+      "core_assumption": "Prediction errors have homogeneous variance across the signal range.",
+      "knowledge_gap_addressed": "Lack of heteroscedasticity-aware conformal scores that adapt variance estimates locally.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Motion or muscle artifacts introduce outlier segments that inflate conformity scores and destabilize coverage.",
+      "proposed_mechanism": "Artifactual spikes generate extreme residuals, shifting the empirical quantile used for interval construction.",
+      "core_assumption": "Artifacts are negligible or behave like random noise.",
+      "knowledge_gap_addressed": "Insufficient robustness of conformal prediction to structured, non-Gaussian artifacts in physiological recordings.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Changes in recording protocols (sampling rate, filtering, segmentation) create domain shifts that invalidate calibration.",
+      "proposed_mechanism": "Different preprocessing alters feature distributions, causing a mismatch between calibration and test segments.",
+      "core_assumption": "All segments share identical preprocessing and acquisition settings.",
+      "knowledge_gap_addressed": "Need for protocol-invariant or adaptive conformal predictors that accommodate preprocessing variability.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Feedback loops where model predictions influence subsequent signal processing (e.g., adaptive filtering) induce dependence between training and test data.",
+      "proposed_mechanism": "The model’s output alters the signal (e.g., via noise cancellation), changing the distribution of future segments relative to the calibration set.",
+      "core_assumption": "Test segments are generated independently of the model’s predictions.",
+      "knowledge_gap_addressed": "Overlooking the impact of predictive interventions on the data-generating process in conformal evaluation.",
+      "status": "SPECULATIVE"
+    }
+  ]
+}

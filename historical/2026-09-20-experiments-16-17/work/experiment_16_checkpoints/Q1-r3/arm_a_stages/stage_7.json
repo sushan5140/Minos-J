@@ -1,0 +1,60 @@
+{
+  "falsification_tests": [
+    {
+      "hypothesis_id": "H1",
+      "strongest_falsification_test": "Within each Mondrian bin (predicted stress/non-stress), perform a two-sample Kolmogorov-Smirnov test comparing nonconformity score distributions of high-reactivity subjects (top 20% sympathetic reactivity index) versus typical responders. Simultaneously, fit a linear regression of per-subject coverage on sympathetic reactivity index controlling for per-subject classification accuracy. If the KS test fails to reject the null (p > 0.05) AND the reactivity coefficient is non-significant (p > 0.05) or positive, the proposed mechanism is falsified.",
+      "failure_condition": "KS test p-value > 0.05 and partial correlation between reactivity index and coverage (controlling for classification accuracy) is non-significant (p > 0.05) or positive.",
+      "minimum_data_needed": "Per-subject sympathetic reactivity index, per-subject nonconformity scores for each calibration sample, per-subject coverage rates, per-subject classification accuracy from Mondrian CP with binary taxonomy on WESAD (LOOCV).",
+      "most_likely_false_positive_risk": "Small sample size (n=15) may yield non-significant results even if mechanism exists (low power).",
+      "most_likely_false_negative_risk": "If the reactivity index is poorly measured or the Mondrian bins are too coarse, the test may fail to detect a real mechanism."
+    },
+    {
+      "hypothesis_id": "H2",
+      "strongest_falsification_test": "Stratify subjects by gesture frequency (high/low) and baseline ACC variance (high/low as loose-fit proxy). Fit a linear model predicting coverage with gesture frequency, baseline ACC variance, their interaction, and BVP SQI as covariate. If the interaction term is non-significant (p > 0.05) AND coverage does not differ between high-gesture/high-baseline-ACC and high-gesture/low-baseline-ACC subgroups after conditioning on BVP SQI (ANCOVA p > 0.05), the mechanism is falsified.",
+      "failure_condition": "The interaction term p-value > 0.05 and the ANCOVA comparing coverage across gesture/fit subgroups with BVP SQI as covariate yields non-significant subgroup effect (p > 0.05).",
+      "minimum_data_needed": "Per-subject gesture frequency during TSST (ACC peaks >0.5g/min), per-subject baseline ACC variance (5-min pre-TSST), per-subject BVP SQI during TSST, per-subject coverage rates from Mondrian CP (binary taxonomy, LOOCV).",
+      "most_likely_false_positive_risk": "Baseline ACC variance is an imperfect proxy for watch fit; residual confounding may mask true interaction.",
+      "most_likely_false_negative_risk": "If motion artifacts affect all high-movement subjects similarly regardless of gesture specificity, the interaction may be non-significant even if artifacts cause undercoverage."
+    },
+    {
+      "hypothesis_id": "H3",
+      "strongest_falsification_test": "Fit a mixed-effects logistic regression: coverage ~ recovery_phenotype * calibration_time_half + (1|subject). If the interaction term is non-significant (p > 0.05) AND the coverage decline slope for slow recoverers is not significantly steeper than for fast recoverers (linear contrast p > 0.05), the mechanism is falsified.",
+      "failure_condition": "The recovery_phenotype × calibration_time_half interaction p-value > 0.05 and the difference in coverage decline slopes between phenotypes is non-significant (p > 0.05).",
+      "minimum_data_needed": "Per-subject HRV recovery slope (RMSSD change/min post-TSST), temporal index of each calibration sample (early/late half), per-subject coverage for early and late calibration samples from Mondrian CP (LOOCV).",
+      "most_likely_false_positive_risk": "WESAD protocol fixes task order, so time is confounded with task phase; a main effect of time may be misattributed to phenotype interaction.",
+      "most_likely_false_negative_risk": "If the calibration window is too short to capture drift, or if recovery phenotype is misclassified, the test may lack power to detect interaction."
+    },
+    {
+      "hypothesis_id": "H5",
+      "strongest_falsification_test": "Bin predicted-stress calibration samples by predicted probability deciles. Compute coverage per decile. Perform Jonckheere-Terpstra test for monotonic trend of coverage with predicted probability. If the trend test is non-significant (p > 0.05) AND the coverage difference between mild (prob 0.5-0.7) and severe (prob >0.9) stress is <5 percentage points, the mechanism is falsified.",
+      "failure_condition": "Jonckheere-Terpstra test p-value > 0.05 and mild-vs-severe coverage gap < 5 percentage points.",
+      "minimum_data_needed": "Predicted probability of stress class for each calibration sample (LOOCV), stress intensity latent variable (PC1 of physiological features), per-sample nonconformity scores, empirical (1-α) quantile per predicted probability decile within predicted-stress bin.",
+      "most_likely_false_positive_risk": "If the model's predicted probabilities are poorly calibrated, the decile binning may not reflect true intensity, masking the taxonomy effect.",
+      "most_likely_false_negative_risk": "If the nonconformity score function (1-p) is inherently unsuited for extreme probabilities, coverage gaps may persist even with intensity-aware taxonomy, making it appear the binary taxonomy is not the bottleneck."
+    },
+    {
+      "hypothesis_id": "H6",
+      "strongest_falsification_test": "Fit a regression: coverage ~ tonic + tonic² + HR_max + HRV + respiration_rate. If the quadratic tonic term is non-significant (p > 0.05) AND an ANOVA comparing coverage across skin condition categories (dry/normal/sweaty) is non-significant (p > 0.05) after controlling for HR_max, HRV, respiration, the mechanism is falsified.",
+      "failure_condition": "Quadratic tonic coefficient p-value > 0.05 and skin condition category effect p-value > 0.05 in ANCOVA with sympathetic covariates.",
+      "minimum_data_needed": "Per-subject mean EDA tonic level during TSST, per-subject EDA phasic driver amplitude, per-subject coverage rates, HR max, HRV, respiration rate during TSST.",
+      "most_likely_false_positive_risk": "EDA tonic level may correlate with true sympathetic tone; residual confounding may produce spurious U-shape.",
+      "most_likely_false_negative_risk": "Skin impedance not directly measured; tonic/phasic ratio may be insufficient proxy, leading to misclassification of skin condition."
+    },
+    {
+      "hypothesis_id": "H8",
+      "strongest_falsification_test": "For each LOOCV fold, compute Mahalanobis distance of left-out subject to training set. Identify high-Mahalanobis subjects (top 5%). Run class-conditional Mondrian and k-NN Mondrian (k=10) on these subjects. Perform paired Wilcoxon test comparing coverage between taxonomies. If the test is non-significant (p > 0.05) AND both taxonomies yield coverage <80% for high-Mahalanobis subjects, the mechanism is falsified.",
+      "failure_condition": "Paired Wilcoxon test p-value > 0.05 and median coverage for high-Mahalanobis subjects <80% under both taxonomies.",
+      "minimum_data_needed": "Per-subject Mahalanobis distance from training population feature covariance (LOOCV), per-subject coverage from class-conditional Mondrian and k-NN Mondrian (k=10), subject phenotype labels.",
+      "most_likely_false_positive_risk": "k-NN taxonomy may not adequately capture feature-conditional calibration if k is poorly chosen or feature space is high-dimensional.",
+      "most_likely_false_negative_risk": "If the model's probabilities are fundamentally unreliable for OOD samples, no taxonomy can rescue coverage, making it appear the mechanism is wrong when it's actually a model limitation."
+    },
+    {
+      "hypothesis_id": "H9",
+      "strongest_falsification_test": "Define rare phenotypes in WESAD (non-responders, paradoxical responders). Compute n_bin per phenotype in Mondrian bins. Run LOOCV Mondrian CP; record per-phenotype coverage. Test coverage vs 90% via exact binomial test. Simulate: bootstrap calibration samples to create synthetic sets of increasing size; compute coverage vs n_bin. Fit coverage = 1-α - c/√n_bin. If per-phenotype coverage is not significantly below 90% (binomial test p > 0.05) OR the simulated coverage plateaus below 90% as n_bin grows (c not significantly >0), the mechanism is falsified.",
+      "failure_condition": "Exact binomial test p-value > 0.05 for all rare phenotypes, or the simulated coverage curve plateaus below 90% (c ≤ 0 in coverage = 1-α - c/√n_bin).",
+      "minimum_data_needed": "Phenotype definitions and counts in WESAD calibration set, per-phenotype effective bin size (n_bin), empirical (1-α) quantile estimates per phenotype bin, bootstrap variance of quantile estimates per phenotype.",
+      "most_likely_false_positive_risk": "Phenotype definitions may be arbitrary; small n_bin may yield non-significant binomial tests due to low power.",
+      "most_likely_false_negative_risk": "If the nonconformity score distribution for rare phenotypes has heavier tails, coverage may not converge to 1-α even with large n_bin, mimicking model bias."
+    }
+  ]
+}

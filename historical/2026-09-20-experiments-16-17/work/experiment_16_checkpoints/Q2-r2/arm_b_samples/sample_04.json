@@ -1,0 +1,392 @@
+{
+  "sample_index": 4,
+  "valid": true,
+  "error": null,
+  "cards": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Inter-subject variability in autonomic regulation causes calibration set non-representativeness, leading to coverage instability across physiological signal segments from different individuals.",
+      "proposed_mechanism": "Individual differences in baseline heart rate variability (HRV) and baroreflex sensitivity alter the conditional distribution of prediction errors, making a pooled calibration set unrepresentative for specific subjects' test segments.",
+      "causal_path": "Subject ID -> Baseline HRV (RMSSD) & Baroreflex Sensitivity -> Conditional Error Distribution Shift -> Calibration-Test Distribution Mismatch -> Coverage Deviation",
+      "mechanism_variables": [
+        "Subject ID",
+        "Baseline RMSSD (ms)",
+        "Baroreflex Sensitivity (ms/mmHg)",
+        "Calibration Set Error Quantiles",
+        "Test Segment Error Quantiles",
+        "Empirical Coverage"
+      ],
+      "possible_confounders": [
+        "Age",
+        "Medication use (beta-blockers)",
+        "Time of day",
+        "Physical fitness (VO2 max)"
+      ],
+      "control_variables": [
+        "Stratify calibration by RMSSD tertiles",
+        "Include subject as random effect in conformal score model",
+        "Match calibration/test segments by time-of-day"
+      ],
+      "rival_explanation": "Coverage instability is driven by segment duration differences rather than subject physiology; shorter segments have noisier error estimates.",
+      "rival_prediction": "Coverage deviation correlates with segment length, not with subject-level HRV metrics.",
+      "distinguishing_test": "Regress coverage deviation on both subject RMSSD and segment length; subject RMSSD remains significant predictor after controlling for length.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Prior work shows HRV explains 15-30% variance in ECG-derived respiration error distributions; expect similar magnitude for coverage deviation.",
+      "minimum_data_needed": [
+        "Multi-subject physiological recordings (>=30 subjects) with simultaneous ECG and reference respiration",
+        "Segment-level ground truth labels",
+        "Subject metadata: age, medication, fitness"
+      ],
+      "testable_prediction": "Subjects with RMSSD < 20 ms will show coverage deviation > 5% from nominal 90% when using pooled calibration, while subjects with RMSSD > 50 ms will show deviation < 2%.",
+      "failure_condition": "No significant correlation between subject RMSSD and coverage deviation after segment-length adjustment (p > 0.05).",
+      "statistical_test_plan": "Linear mixed model: coverage_deviation ~ RMSSD + segment_length + (1|subject), test RMSSD coefficient != 0.",
+      "falsification_test": "Per-subject conformal calibration (separate calibration set per subject) eliminates coverage deviation across all subjects; if deviation persists, subject physiology is not the primary mechanism."
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Sensor electrode-skin impedance drift during long recordings creates segment-dependent measurement noise that violates exchangeability assumptions of conformal prediction.",
+      "proposed_mechanism": "Increasing electrode-skin impedance over time attenuates signal amplitude and increases high-frequency noise, shifting the distribution of model residuals in later segments relative to the calibration set.",
+      "causal_path": "Recording Duration -> Electrode-Skin Impedance (kOhm) -> Signal Amplitude Attenuation & Noise Floor Rise -> Residual Distribution Shift -> Coverage Drop in Late Segments",
+      "mechanism_variables": [
+        "Segment Index",
+        "Electrode Impedance (kOhm)",
+        "Signal Amplitude (mV)",
+        "High-Frequency Noise Power (uV^2/Hz)",
+        "Residual Variance",
+        "Empirical Coverage"
+      ],
+      "possible_confounders": [
+        "Skin preparation quality",
+        "Electrode gel drying rate",
+        "Ambient temperature/humidity",
+        "Subject movement"
+      ],
+      "control_variables": [
+        "Impedance monitoring at segment boundaries",
+        "Include impedance as covariate in conformal score",
+        "Re-calibrate per impedance stratum"
+      ],
+      "rival_explanation": "Coverage drops in later segments due to physiological fatigue (e.g., decreasing HRV), not sensor degradation.",
+      "rival_prediction": "Coverage deviation correlates with physiological fatigue markers (e.g., HRV decline), not with impedance.",
+      "distinguishing_test": "Simultaneously track impedance and HRV; impedance predicts coverage deviation after controlling for HRV.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Impedance can increase 2-5x over 24h; prior studies show 3x impedance increase doubles ECG noise power, which should substantially shift residual distributions.",
+      "minimum_data_needed": [
+        "Long-duration recordings (>=8h) with continuous impedance monitoring",
+        "Segment-level ground truth",
+        "Electrode metadata (type, gel, placement)"
+      ],
+      "testable_prediction": "Segments with impedance > 20 kOhm will show coverage < 85% at nominal 90%, while segments < 5 kOhm maintain coverage > 88%.",
+      "failure_condition": "No significant association between segment impedance and coverage deviation after controlling for time-on-task (p > 0.05).",
+      "statistical_test_plan": "Generalized additive model: coverage ~ s(impedance) + s(time) + subject_random_effect, test significance of impedance smooth term.",
+      "falsification_test": "Artificially add noise to early segments to match late-segment noise characteristics; if coverage equalizes, sensor noise is the mechanism. If not, mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Non-stationary physiological dynamics during state transitions (sleep-wake, rest-exercise) create distribution shifts that violate the i.i.d. assumption within calibration segments.",
+      "proposed_mechanism": "Autonomic state transitions cause abrupt changes in signal morphology and variability, making residuals from one physiological state non-exchangeable with residuals from another state within the same calibration set.",
+      "causal_path": "Physiological State Transition -> Autonomic Balance Shift (LF/HF Ratio) -> Signal Morphology Change -> Residual Distribution Multimodality -> Conformal Quantile Miscalibration -> Coverage Instability",
+      "mechanism_variables": [
+        "State Label (sleep/wake/rest/exercise)",
+        "LF/HF Ratio",
+        "Signal Morphology Features (QRS width, T-wave amplitude)",
+        "Residual Distribution Modality (Hartigan's Dip Statistic)",
+        "Calibration Quantile",
+        "Empirical Coverage per State"
+      ],
+      "possible_confounders": [
+        "Circadian rhythm",
+        "Medication timing",
+        "Sleep disorder status",
+        "Fitness level"
+      ],
+      "control_variables": [
+        "State-aware segmentation using annotated labels",
+        "Stratified conformal prediction per state",
+        "Include LF/HF as difficulty score in weighted conformal"
+      ],
+      "rival_explanation": "Coverage instability stems from label noise during state transitions (ambiguous ground truth), not from physiological non-stationarity.",
+      "rival_prediction": "Coverage deviation correlates with label uncertainty metrics, not with LF/HF ratio or morphology change magnitude.",
+      "distinguishing_test": "Compare coverage deviation in cleanly labeled stable-state segments vs. transition segments; physiological mechanism predicts deviation in stable states with different LF/HF, label-noise mechanism predicts deviation only at transitions.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Sleep-stage-specific HRV differences are well-documented (LF/HF varies 3-5x); expect coverage deviation of 3-8% between states.",
+      "minimum_data_needed": [
+        "Physiological recordings with concurrent polysomnography or actigraphy state labels",
+        "High-resolution autonomic markers (LF/HF)",
+        "Segment-level ground truth"
+      ],
+      "testable_prediction": "Coverage in REM sleep segments will deviate > 6% from nominal when calibrated on pooled NREM+wake data, but < 2% when calibrated on REM-only data.",
+      "failure_condition": "State-stratified conformal prediction does not improve coverage stability compared to pooled (paired t-test p > 0.05).",
+      "statistical_test_plan": "Paired comparison: per-state coverage deviation (pooled vs. stratified calibration) across subjects; Wilcoxon signed-rank test.",
+      "falsification_test": "Train a state classifier on residuals; if classifier cannot distinguish states (AUC ~ 0.5), residuals are exchangeable across states, falsifying the mechanism."
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Temporal autocorrelation in physiological signals violates the exchangeability assumption of split conformal prediction, causing coverage to degrade with increasing segment length.",
+      "proposed_mechanism": "Strong temporal autocorrelation in physiological signals (e.g., HRV, respiratory sinus arrhythmia) means consecutive samples are not exchangeable; longer segments contain fewer effective independent samples, inflating conformal quantile variance.",
+      "causal_path": "Segment Length -> Effective Sample Size (n_eff = n / (1 + 2*sum(autocorr))) -> Conformal Quantile Variance -> Coverage Instability (under-coverage for long segments, over-coverage for short)",
+      "mechanism_variables": [
+        "Segment Length (s)",
+        "Lag-1 Autocorrelation of Residuals",
+        "Effective Sample Size",
+        "Conformal Quantile (90th percentile)",
+        "Quantile Bootstrap Variance",
+        "Empirical Coverage"
+      ],
+      "possible_confounders": [
+        "Signal preprocessing (filtering introduces autocorrelation)",
+        "Model architecture (RNNs vs. CNNs)",
+        "Sampling rate"
+      ],
+      "control_variables": [
+        "Block bootstrap for quantile estimation",
+        "Thinning residuals to reduce autocorrelation",
+        "Use dependent conformal prediction (e.g., CV+ with block CV)"
+      ],
+      "rival_explanation": "Coverage instability with segment length is due to finite-sample effects (small n), not autocorrelation specifically.",
+      "rival_prediction": "Coverage deviation follows 1/sqrt(n) scaling regardless of autocorrelation structure.",
+      "distinguishing_test": "Compare coverage deviation vs. segment length for original residuals vs. phase-randomized surrogates (preserves spectrum but destroys temporal structure); autocorrelation mechanism predicts different curves.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Typical HRV autocorrelation at lag-1 is 0.7-0.9; effective sample size reduction of 3-10x should cause measurable quantile variance inflation.",
+      "minimum_data_needed": [
+        "Long continuous recordings (>=30 min) with ground truth",
+        "Multiple segment lengths (10s, 30s, 60s, 120s)",
+        "Residual time series from base predictor"
+      ],
+      "testable_prediction": "Coverage deviation from nominal scales with 1/sqrt(n_eff) not 1/sqrt(n); segments with autocorrelation > 0.8 show 2x larger deviation than phase-randomized surrogates at same nominal length.",
+      "failure_condition": "Coverage deviation vs. segment length fits 1/sqrt(n) equally well as 1/sqrt(n_eff) (AIC difference < 2).",
+      "statistical_test_plan": "Nonlinear regression: coverage_deviation ~ a / sqrt(n_eff) + b; compare AIC to model with n instead of n_eff.",
+      "falsification_test": "Apply block conformal prediction with block size > autocorrelation decay time; if coverage stabilizes, autocorrelation was the mechanism. If instability persists, mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Inconsistent ground truth labeling across annotators or algorithms for different physiological segments introduces label noise that masquerades as coverage instability.",
+      "proposed_mechanism": "Segment-specific labeling protocols (e.g., manual scoring for sleep vs. algorithmic for wake) create heterogeneous label noise distributions; conformal prediction calibrates to noisy labels, causing apparent coverage deviation when evaluated against a different reference.",
+      "causal_path": "Segment Type -> Labeling Method (Manual/Algorithmic/Heuristic) -> Label Noise Distribution (Bias, Variance) -> Calibration to Noisy Target -> Evaluation Against Clean Reference -> Apparent Coverage Deviation",
+      "mechanism_variables": [
+        "Segment Type",
+        "Labeling Method ID",
+        "Label Noise Variance (estimated via inter-rater ICC)",
+        "Label Bias (systematic offset)",
+        "Calibration Quantile",
+        "Empirical Coverage vs. Clean Reference"
+      ],
+      "possible_confounders": [
+        "Annotator experience",
+        "Signal quality in segment",
+        "Physiological state ambiguity"
+      ],
+      "control_variables": [
+        "Use only segments with consensus labeling",
+        "Model label noise explicitly (e.g., conformal with noisy labels)",
+        "Cross-validate labeling methods"
+      ],
+      "rival_explanation": "Coverage instability is genuine model performance variation across segments, not a labeling artifact.",
+      "rival_prediction": "Coverage deviation persists when evaluated against consensus labels from multiple expert annotators.",
+      "distinguishing_test": "Re-evaluate coverage using a held-out expert consensus label set; labeling-noise mechanism predicts deviation disappears, genuine mechanism predicts deviation persists.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Inter-rater ICC for sleep staging is ~0.8; for respiratory event scoring ~0.7. This noise level can shift empirical coverage by 5-15% depending on noise structure.",
+      "minimum_data_needed": [
+        "Segments with multiple independent label sources (>=3 raters or algorithms)",
+        "Consensus/reference labels for evaluation",
+        "Labeling method metadata per segment"
+      ],
+      "testable_prediction": "Segments labeled by low-ICC methods (ICC < 0.75) show coverage deviation > 8% from nominal when evaluated against high-ICC consensus, while high-ICC segments (ICC > 0.9) show deviation < 3%.",
+      "failure_condition": "Coverage deviation remains > 5% even when evaluated against multi-rater consensus labels (p > 0.05 for reduction).",
+      "statistical_test_plan": "Paired t-test: coverage deviation (original labels vs. consensus labels) across segments; test mean difference > 0.",
+      "falsification_test": "Simulate label noise matching estimated ICC; if simulated noise reproduces observed coverage deviation pattern, labeling is sufficient explanation. If not, mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Improper segmentation strategy (fixed-length windows ignoring physiological boundaries) mixes distinct dynamical regimes, creating heterogeneous calibration sets that yield unstable coverage.",
+      "proposed_mechanism": "Fixed-duration segmentation cuts across physiological events (e.g., apneas, arousals, ectopic beats), mixing segments with different error distributions; the resulting calibration set quantile represents a mixture that fits no single regime well.",
+      "causal_path": "Segmentation Strategy (Fixed vs. Event-Aligned) -> Regime Purity (Entropy of Physiological State within Segment) -> Residual Distribution Homogeneity -> Calibration Quantile Representativeness -> Coverage Stability",
+      "mechanism_variables": [
+        "Segmentation Method",
+        "Regime Purity Index (0-1, based on state annotation homogeneity)",
+        "Residual Distribution KL Divergence (within-segment vs. calibration)",
+        "Calibration Quantile",
+        "Empirical Coverage per Regime"
+      ],
+      "possible_confounders": [
+        "Event detection accuracy",
+        "Segment length",
+        "Base model robustness to artifacts"
+      ],
+      "control_variables": [
+        "Event-aligned segmentation (e.g., beat-to-beat, breath-to-breath)",
+        "Stratified calibration by regime purity",
+        "Weighted conformal by regime probability"
+      ],
+      "rival_explanation": "Coverage instability is due to inherent physiological variability, not segmentation artifacts; event-aligned segmentation won't help.",
+      "rival_prediction": "Event-aligned and fixed-length segmentation show similar coverage deviation distributions.",
+      "distinguishing_test": "Compare coverage deviation variance across segments for fixed vs. event-aligned segmentation; segmentation mechanism predicts lower variance for event-aligned.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Fixed windows mixing apnea/non-apnea segments can create bimodal residual distributions; expect 30-50% reduction in coverage deviation variance with proper alignment.",
+      "minimum_data_needed": [
+        "Physiological recordings with event annotations (apneas, arousals, beats)",
+        "Base model predictions",
+        "Ground truth per event/segment"
+      ],
+      "testable_prediction": "Variance of per-segment coverage deviation across a recording is > 40% lower with event-aligned segmentation than with fixed 30s windows.",
+      "failure_condition": "Levene's test for equality of coverage deviation variances between segmentation methods shows p > 0.05.",
+      "statistical_test_plan": "Levene's test on per-segment coverage deviations (fixed vs. event-aligned) across multiple recordings.",
+      "falsification_test": "Generate synthetic data with known regime boundaries; if event-aligned segmentation fails to stabilize coverage on synthetic data where regimes are perfectly known, mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Finite calibration set size combined with high-dimensional physiological feature spaces causes conformal quantile estimation error that varies systematically with segment feature density.",
+      "proposed_mechanism": "In high-dimensional feature spaces (e.g., raw waveform + HRV + spectral features), the calibration set sparsely covers the feature space; segments in low-density regions have fewer similar calibration points, leading to quantile estimation error and coverage deviation.",
+      "causal_path": "Segment Feature Vector -> Calibration Set Local Density (k-NN distance in feature space) -> Local Quantile Estimation Error -> Coverage Deviation (under-coverage in sparse regions)",
+      "mechanism_variables": [
+        "Segment Feature Vector (dimensionality d)",
+        "Calibration Set Size (n_cal)",
+        "Local Density (mean k-NN distance, k=50)",
+        "Local Quantile Bias (vs. oracle quantile)",
+        "Empirical Coverage"
+      ],
+      "possible_confounders": [
+        "Feature scaling",
+        "Irrelevant features diluting distance metric",
+        "Base model calibration quality"
+      ],
+      "control_variables": [
+        "Dimensionality reduction (PCA/autoencoder) before density estimation",
+        "Adaptive conformal (local quantiles)",
+        "Increase calibration set size"
+      ],
+      "rival_explanation": "Coverage deviation in sparse regions is due to genuine model extrapolation error, not quantile estimation error.",
+      "rival_prediction": "Model prediction error (MAE) increases in sparse regions, but conformal quantile correctly captures this (coverage remains nominal).",
+      "distinguishing_test": "Compare coverage deviation vs. local density for conformal prediction vs. oracle quantile (computed from large test set); quantile-estimation mechanism predicts deviation only for conformal, not oracle.",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Depends on intrinsic dimensionality of physiological feature manifold; need pilot data estimating covering numbers. Would estimate via: fit k-NN density on calibration features, regress coverage deviation on log-density, extrapolate to target n_cal.",
+      "minimum_data_needed": [
+        "Large calibration set (n_cal >= 5000) with high-dimensional features (d >= 50)",
+        "Independent large test set for oracle quantile estimation",
+        "Segment-level ground truth"
+      ],
+      "testable_prediction": "Segments in lowest density decile show coverage deviation > 7% from nominal; highest density decile shows deviation < 2%. Oracle quantile shows < 2% deviation across all deciles.",
+      "failure_condition": "Oracle quantile shows similar coverage deviation pattern as conformal quantile across density deciles (correlation > 0.7).",
+      "statistical_test_plan": "Quantile regression: coverage_deviation ~ log(local_density); test slope < 0 for conformal but not for oracle.",
+      "falsification_test": "Increase calibration set size 10x via data augmentation (if valid) or collection; if coverage deviation in sparse regions does not decrease proportionally to 1/sqrt(n_cal), mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Circadian modulation of physiological signal-to-noise ratio creates time-of-day-dependent residual distributions that violate conformal prediction's exchangeability assumption across segments recorded at different times.",
+      "proposed_mechanism": "Circadian rhythms modulate both signal amplitude (e.g., cortisol-driven BP changes) and noise (e.g., movement artifacts during wake), creating systematic time-of-day variation in residual variance that a single calibration quantile cannot capture.",
+      "causal_path": "Time of Day -> Circadian Phase (melatonin/cortisol proxy) -> Signal Amplitude & Artifact Rate -> Residual Variance -> Conformal Quantile Mismatch -> Coverage Deviation by Time Bin",
+      "mechanism_variables": [
+        "Time of Day (hour)",
+        "Circadian Phase Proxy (core body temp minimum offset)",
+        "Signal Amplitude (mV)",
+        "Movement Artifact Rate (% samples)",
+        "Residual Variance",
+        "Empirical Coverage per 4h Bin"
+      ],
+      "possible_confounders": [
+        "Sleep/wake state",
+        "Light exposure",
+        "Meal timing",
+        "Shift work history"
+      ],
+      "control_variables": [
+        "Time-of-day stratified calibration",
+        "Include circadian phase as difficulty score in weighted conformal",
+        "Detrend residuals by time-of-day"
+      ],
+      "rival_explanation": "Time-of-day coverage variation is mediated entirely by sleep/wake state, not direct circadian effects.",
+      "rival_prediction": "Controlling for sleep/wake state eliminates time-of-day coverage variation.",
+      "distinguishing_test": "Within same sleep state (e.g., NREM only), test if coverage still varies by circadian phase; circadian mechanism predicts yes, sleep-state mechanism predicts no.",
+      "effect_size_expectation": "small",
+      "effect_size_rationale": "Circadian HRV amplitude is ~10-15% peak-to-trough; residual variance modulation likely smaller. Expect 1-3% coverage deviation across circadian phases.",
+      "minimum_data_needed": [
+        "Multi-day recordings with time stamps",
+        "Circadian phase markers (core body temp or dim-light melatonin onset)",
+        "Sleep/wake annotations",
+        "Segment-level ground truth"
+      ],
+      "testable_prediction": "Coverage in 04:00-08:00 bin (circadian trough) deviates > 2% from nominal when calibrated on pooled data, but < 1% when calibrated on same-phase data.",
+      "failure_condition": "Time-of-day coverage variation becomes non-significant (p > 0.05) after including sleep/wake state as covariate.",
+      "statistical_test_plan": "Two-way ANOVA: coverage ~ time_bin * sleep_state; test time_bin main effect after accounting for sleep_state.",
+      "falsification_test": "Simulate residuals with only sleep-state-dependent variance (no circadian component); if this reproduces observed time-of-day pattern, circadian mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Conformal prediction's marginal coverage guarantee fails to provide conditional coverage across physiological signal segments with different difficulty levels, causing systematic under-coverage on hard segments.",
+      "proposed_mechanism": "Marginal conformal prediction guarantees average coverage but not coverage conditional on segment difficulty (e.g., low SNR, arrhythmia burden); hard segments systematically fall below nominal coverage while easy segments exceed it.",
+      "causal_path": "Segment Difficulty (SNR, Arrhythmia Burden, Morphology Complexity) -> Conditional Error Distribution -> Marginal Quantile Mismatch for Hard Segments -> Conditional Coverage Deviation (Under-coverage on Hard, Over-coverage on Easy)",
+      "mechanism_variables": [
+        "Segment Difficulty Score (composite: SNR, % ectopic beats, spectral entropy)",
+        "Conditional Error CDF",
+        "Marginal Conformal Quantile",
+        "Conditional Coverage (per difficulty bin)",
+        "Coverage Gap (Hard - Easy)"
+      ],
+      "possible_confounders": [
+        "Base model architecture",
+        "Calibration set difficulty distribution",
+        "Difficulty score validity"
+      ],
+      "control_variables": [
+        "Difficulty-stratified conformal prediction",
+        "Weighted conformal with difficulty weights",
+        "Mondrian conformal with difficulty bins"
+      ],
+      "rival_explanation": "Coverage is stable across difficulty; apparent variation is sampling noise from finite test segments per bin.",
+      "rival_prediction": "Coverage deviation across difficulty bins is not statistically significant; confidence intervals overlap nominal.",
+      "distinguishing_test": "Test for trend in coverage vs. difficulty bins (Cochran-Armitage); marginal coverage mechanism predicts significant negative trend.",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Theoretical results show marginal conformal can have conditional coverage as low as 0% on hard subsets; empirical studies on medical data show 10-20% gaps between easy/hard.",
+      "minimum_data_needed": [
+        "Segments with difficulty annotations (SNR, arrhythmia labels)",
+        "Sufficient segments per difficulty bin (>= 100)",
+        "Base model predictions and ground truth"
+      ],
+      "testable_prediction": "Hardest difficulty decile shows coverage < 80% at nominal 90%; easiest decile shows coverage > 95%. Coverage gap > 10%.",
+      "failure_condition": "Cochran-Armitage trend test for coverage vs. difficulty bins shows p > 0.05.",
+      "statistical_test_plan": "Cochran-Armitage trend test on coverage across 10 difficulty bins; logistic regression: covered ~ difficulty_score.",
+      "falsification_test": "Apply Mondrian conformal prediction with difficulty bins; if conditional coverage equalizes across bins, marginal coverage was the mechanism. If gaps persist, mechanism is falsified."
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Environmental electromagnetic interference (EMI) from medical equipment creates segment-specific artifact bursts that violate the exchangeability assumption by introducing non-physiological outliers in the calibration set.",
+      "proposed_mechanism": "Intermittent EMI (e.g., from electrosurgical units, MRI gradients, wireless devices) contaminates specific segments with high-amplitude artifacts; these outliers inflate the conformal quantile, causing over-coverage on clean segments and under-coverage on EMI-contaminated segments if artifacts differ in character.",
+      "causal_path": "EMI Event Occurrence -> Artifact Amplitude & Spectral Signature -> Residual Outlier Generation -> Calibration Quantile Inflation -> Coverage Deviation (Over-coverage on Clean, Under-coverage on EMI if Model Fails Differently)",
+      "mechanism_variables": [
+        "EMI Flag (binary, from spectral monitor)",
+        "Artifact Amplitude (mV)",
+        "Artifact Spectral Centroid (Hz)",
+        "Residual Outlier Count per Segment",
+        "Calibration Quantile",
+        "Empirical Coverage (EMI vs. Clean)"
+      ],
+      "possible_confounders": [
+        "Physiological artifacts (muscle, motion) mimicking EMI",
+        "Equipment shielding quality",
+        "Proximity to EMI sources"
+      ],
+      "control_variables": [
+        "Real-time EMI monitoring (spectral watchdog)",
+        "EMI-aware segmentation (exclude or flag)",
+        "Robust conformal (trimmed quantiles)"
+      ],
+      "rival_explanation": "Coverage variation is due to physiological state changes coinciding with EMI events (e.g., surgery), not EMI itself.",
+      "rival_prediction": "EMI flag adds no predictive power for coverage deviation beyond physiological state variables.",
+      "distinguishing_test": "Compare coverage on EMI-flagged vs. clean segments matched on physiological state (same sleep stage, activity level); EMI mechanism predicts difference persists.",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "EMI artifacts can exceed physiological signals 10-100x; even brief contamination (1-2% of samples) can shift 90th percentile quantile substantially.",
+      "minimum_data_needed": [
+        "Recordings with synchronized EMI spectral monitoring",
+        "EMI event log with timestamps",
+        "Segment-level ground truth",
+        "Physiological state annotations"
+      ],
+      "testable_prediction": "EMI-contaminated segments show coverage deviation > 5% from clean segments matched on physiological state; robust conformal (90th percentile of clean calibration) restores coverage on clean segments to within 1%.",
+      "failure_condition": "Matched-pair comparison of EMI vs. clean segments shows no significant coverage difference (paired t-test p > 0.05).",
+      "statistical_test_plan": "Matched-pair design: each EMI segment matched to clean segment with same physiological state; paired t-test on coverage deviation.",
+      "falsification_test": "Inject synthetic EMI artifacts into clean segments at known rates; if coverage deviation pattern matches observed data only when injection mimics real EMI spectral/temporal structure, mechanism confirmed. If any artifact injection reproduces pattern, mechanism is falsified (non-specific artifact effect)."
+    }
+  ],
+  "total_tokens": 7066,
+  "completion_tokens": 6519
+}

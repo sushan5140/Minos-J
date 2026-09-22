@@ -1,0 +1,338 @@
+{
+  "samples": [
+    {
+      "sample_index": 1,
+      "valid": true,
+      "error": null,
+      "total_tokens": 4258,
+      "completion_tokens": 3623
+    },
+    {
+      "sample_index": 2,
+      "valid": true,
+      "error": null,
+      "total_tokens": 4259,
+      "completion_tokens": 3624
+    },
+    {
+      "sample_index": 3,
+      "valid": true,
+      "error": null,
+      "total_tokens": 4261,
+      "completion_tokens": 3626
+    },
+    {
+      "sample_index": 4,
+      "valid": true,
+      "error": null,
+      "total_tokens": 4259,
+      "completion_tokens": 3624
+    }
+  ],
+  "k_samples": 4,
+  "k_cap": 14,
+  "pool_size": 40,
+  "selected": [
+    "S3-H8",
+    "S2-H4",
+    "S1-H4",
+    "S4-H10",
+    "S3-H2",
+    "S4-H8",
+    "S4-H3",
+    "S4-H5",
+    "S1-H1",
+    "S2-H2"
+  ],
+  "audits": [
+    {
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "Fake audit reason for S3-H8.",
+      "salvage_note": "",
+      "hypothesis_id": "S3-H8"
+    },
+    {
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "Fake audit reason for S2-H4.",
+      "salvage_note": "",
+      "hypothesis_id": "S2-H4"
+    },
+    {
+      "audit_decision": "REJECT",
+      "variables_measurable": false,
+      "causal_chain_valid": false,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "variables_measurable",
+        "causal_chain_valid",
+        "confounders_identified"
+      ],
+      "decision_reason": "Fake audit reason for S1-H4.",
+      "salvage_note": "",
+      "hypothesis_id": "S1-H4"
+    },
+    {
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "Fake audit reason for S4-H10.",
+      "salvage_note": "",
+      "hypothesis_id": "S4-H10"
+    },
+    {
+      "audit_decision": "SALVAGEABLE",
+      "variables_measurable": false,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "variables_measurable"
+      ],
+      "decision_reason": "Fake audit reason for S3-H2.",
+      "salvage_note": "Fake repair.",
+      "hypothesis_id": "S3-H2"
+    },
+    {
+      "audit_decision": "REJECT",
+      "variables_measurable": false,
+      "causal_chain_valid": false,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "variables_measurable",
+        "causal_chain_valid",
+        "confounders_identified"
+      ],
+      "decision_reason": "Fake audit reason for S4-H8.",
+      "salvage_note": "",
+      "hypothesis_id": "S4-H8"
+    },
+    {
+      "audit_decision": "REJECT",
+      "variables_measurable": false,
+      "causal_chain_valid": false,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "variables_measurable",
+        "causal_chain_valid",
+        "confounders_identified"
+      ],
+      "decision_reason": "Fake audit reason for S4-H3.",
+      "salvage_note": "",
+      "hypothesis_id": "S4-H3"
+    },
+    {
+      "audit_decision": "REJECT",
+      "variables_measurable": false,
+      "causal_chain_valid": false,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "variables_measurable",
+        "causal_chain_valid",
+        "confounders_identified"
+      ],
+      "decision_reason": "Fake audit reason for S4-H5.",
+      "salvage_note": "",
+      "hypothesis_id": "S4-H5"
+    },
+    {
+      "audit_decision": "SALVAGEABLE",
+      "variables_measurable": false,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "variables_measurable"
+      ],
+      "decision_reason": "Fake audit reason for S1-H1.",
+      "salvage_note": "Fake repair.",
+      "hypothesis_id": "S1-H1"
+    },
+    {
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "Fake audit reason for S2-H2.",
+      "salvage_note": "",
+      "hypothesis_id": "S2-H2"
+    }
+  ],
+  "selector_error": null,
+  "cards": [
+    {
+      "source_ref": "S3-H8",
+      "card": {
+        "hypothesis": "Fake hypothesis 8 (n417) with a specific variable relation.",
+        "proposed_mechanism": "Fake proposed_mechanism 8 (n140) with a specific variable relation.",
+        "causal_path": "Fake causal_path 8 (n951) with a specific variable relation.",
+        "mechanism_variables": [
+          "Fake mechanism_variables 8 (n708) with a specific variable relation."
+        ],
+        "possible_confounders": [
+          "Fake possible_confounders 8 (n868) with a specific variable relation."
+        ],
+        "control_variables": [
+          "Fake control_variables 8 (n374) with a specific variable relation."
+        ],
+        "rival_explanation": "Fake rival_explanation 8 (n484) with a specific variable relation.",
+        "rival_prediction": "Fake rival_prediction 8 (n329) with a specific variable relation.",
+        "distinguishing_test": "Fake distinguishing_test 8 (n579) with a specific variable relation.",
+        "effect_size_expectation": "small",
+        "effect_size_rationale": "Fake effect_size_rationale 8 (n157) with a specific variable relation.",
+        "minimum_data_needed": [
+          "Fake minimum_data_needed 8 (n672) with a specific variable relation."
+        ],
+        "testable_prediction": "Fake testable_prediction 8 (n656) with a specific variable relation.",
+        "failure_condition": "Fake failure_condition 8 (n140) with a specific variable relation.",
+        "statistical_test_plan": "Fake statistical_test_plan 8 (n252) with a specific variable relation.",
+        "falsification_test": "Fake falsification_test 8 (n735) with a specific variable relation."
+      }
+    },
+    {
+      "source_ref": "S2-H4",
+      "card": {
+        "hypothesis": "Fake hypothesis 4 (n254) with a specific variable relation.",
+        "proposed_mechanism": "Fake proposed_mechanism 4 (n899) with a specific variable relation.",
+        "causal_path": "Fake causal_path 4 (n177) with a specific variable relation.",
+        "mechanism_variables": [
+          "Fake mechanism_variables 4 (n936) with a specific variable relation."
+        ],
+        "possible_confounders": [
+          "Fake possible_confounders 4 (n498) with a specific variable relation."
+        ],
+        "control_variables": [
+          "Fake control_variables 4 (n739) with a specific variable relation."
+        ],
+        "rival_explanation": "Fake rival_explanation 4 (n42) with a specific variable relation.",
+        "rival_prediction": "Fake rival_prediction 4 (n604) with a specific variable relation.",
+        "distinguishing_test": "Fake distinguishing_test 4 (n298) with a specific variable relation.",
+        "effect_size_expectation": "small",
+        "effect_size_rationale": "Fake effect_size_rationale 4 (n414) with a specific variable relation.",
+        "minimum_data_needed": [
+          "Fake minimum_data_needed 4 (n328) with a specific variable relation."
+        ],
+        "testable_prediction": "Fake testable_prediction 4 (n428) with a specific variable relation.",
+        "failure_condition": "Fake failure_condition 4 (n312) with a specific variable relation.",
+        "statistical_test_plan": "Fake statistical_test_plan 4 (n937) with a specific variable relation.",
+        "falsification_test": "Fake falsification_test 4 (n972) with a specific variable relation."
+      }
+    },
+    {
+      "source_ref": "S4-H10",
+      "card": {
+        "hypothesis": "Fake hypothesis 10 (n758) with a specific variable relation.",
+        "proposed_mechanism": "Fake proposed_mechanism 10 (n867) with a specific variable relation.",
+        "causal_path": "Fake causal_path 10 (n294) with a specific variable relation.",
+        "mechanism_variables": [
+          "Fake mechanism_variables 10 (n554) with a specific variable relation."
+        ],
+        "possible_confounders": [
+          "Fake possible_confounders 10 (n937) with a specific variable relation."
+        ],
+        "control_variables": [
+          "Fake control_variables 10 (n503) with a specific variable relation."
+        ],
+        "rival_explanation": "Fake rival_explanation 10 (n916) with a specific variable relation.",
+        "rival_prediction": "Fake rival_prediction 10 (n161) with a specific variable relation.",
+        "distinguishing_test": "Fake distinguishing_test 10 (n324) with a specific variable relation.",
+        "effect_size_expectation": "small",
+        "effect_size_rationale": "Fake effect_size_rationale 10 (n778) with a specific variable relation.",
+        "minimum_data_needed": [
+          "Fake minimum_data_needed 10 (n962) with a specific variable relation."
+        ],
+        "testable_prediction": "Fake testable_prediction 10 (n472) with a specific variable relation.",
+        "failure_condition": "Fake failure_condition 10 (n37) with a specific variable relation.",
+        "statistical_test_plan": "Fake statistical_test_plan 10 (n895) with a specific variable relation.",
+        "falsification_test": "Fake falsification_test 10 (n929) with a specific variable relation."
+      }
+    },
+    {
+      "source_ref": "S2-H2",
+      "card": {
+        "hypothesis": "Fake hypothesis 2 (n477) with a specific variable relation.",
+        "proposed_mechanism": "Fake proposed_mechanism 2 (n648) with a specific variable relation.",
+        "causal_path": "Fake causal_path 2 (n452) with a specific variable relation.",
+        "mechanism_variables": [
+          "Fake mechanism_variables 2 (n469) with a specific variable relation."
+        ],
+        "possible_confounders": [
+          "Fake possible_confounders 2 (n637) with a specific variable relation."
+        ],
+        "control_variables": [
+          "Fake control_variables 2 (n125) with a specific variable relation."
+        ],
+        "rival_explanation": "Fake rival_explanation 2 (n542) with a specific variable relation.",
+        "rival_prediction": "Fake rival_prediction 2 (n403) with a specific variable relation.",
+        "distinguishing_test": "Fake distinguishing_test 2 (n246) with a specific variable relation.",
+        "effect_size_expectation": "small",
+        "effect_size_rationale": "Fake effect_size_rationale 2 (n346) with a specific variable relation.",
+        "minimum_data_needed": [
+          "Fake minimum_data_needed 2 (n631) with a specific variable relation."
+        ],
+        "testable_prediction": "Fake testable_prediction 2 (n527) with a specific variable relation.",
+        "failure_condition": "Fake failure_condition 2 (n446) with a specific variable relation.",
+        "statistical_test_plan": "Fake statistical_test_plan 2 (n623) with a specific variable relation.",
+        "falsification_test": "Fake falsification_test 2 (n293) with a specific variable relation."
+      }
+    }
+  ]
+}

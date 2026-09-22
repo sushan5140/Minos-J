@@ -1,0 +1,657 @@
+{
+  "samples": [
+    {
+      "sample_index": 1,
+      "valid": true,
+      "error": null,
+      "total_tokens": 7257,
+      "completion_tokens": 6705
+    },
+    {
+      "sample_index": 2,
+      "valid": true,
+      "error": null,
+      "total_tokens": 8022,
+      "completion_tokens": 7470
+    },
+    {
+      "sample_index": 3,
+      "valid": true,
+      "error": null,
+      "total_tokens": 7663,
+      "completion_tokens": 7111
+    },
+    {
+      "sample_index": 4,
+      "valid": true,
+      "error": null,
+      "total_tokens": 8183,
+      "completion_tokens": 7631
+    },
+    {
+      "sample_index": 5,
+      "valid": true,
+      "error": null,
+      "total_tokens": 7987,
+      "completion_tokens": 7435
+    },
+    {
+      "sample_index": 6,
+      "valid": true,
+      "error": null,
+      "total_tokens": 7775,
+      "completion_tokens": 7223
+    },
+    {
+      "sample_index": 7,
+      "valid": true,
+      "error": null,
+      "total_tokens": 7854,
+      "completion_tokens": 7302
+    }
+  ],
+  "k_samples": 7,
+  "k_cap": 14,
+  "pool_size": 70,
+  "selected": [
+    "S1-H1",
+    "S1-H2",
+    "S1-H3",
+    "S1-H4",
+    "S1-H5",
+    "S1-H6",
+    "S1-H7",
+    "S1-H8",
+    "S1-H9",
+    "S2-H7"
+  ],
+  "audits": [
+    {
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks satisfied: variables are measurable from WESAD (EDA, HRV, bin assignments, coverage), causal chain from autonomic reactivity to extreme responses to bin quantile violation is logically sound, confounders (baseline EDA, age, sex, fitness, medication, time) are identified, data requirements are explicit, mechanism is specific to Mondrian taxonomy and physiological stress (non-generic), and testable prediction with falsification test is provided. Base rate and effect size are plausible given WESAD characteristics.",
+      "salvage_note": "",
+      "hypothesis_id": "S1-H1"
+    },
+    {
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks satisfied: wrist and chest EDA, temperature, signal quality, and nonconformity scores are available in WESAD; causal chain from stress-induced vasoconstriction to wrist EDA attenuation to underestimated nonconformity scores is physiologically grounded; confounders (ambient temperature, contact pressure, hydration, wrist circumference) are listed; data needs are clear; mechanism is specific to wrist EDA vasoconstriction artifact (non-generic); prediction distinguishes from rival via wrist-chest EDA ratio and falsification test using chest EDA features. Base rate and effect size are supported by literature.",
+      "salvage_note": "",
+      "hypothesis_id": "S1-H2"
+    },
+    {
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks satisfied: per-condition physiological features, condition order, bin assignments, and coverage are measurable; causal chain from protocol progression to adaptation to distribution shift within bins is coherent; confounders (fatigue, circadian drift, sensor drift, temperature) identified; data requirements explicit; mechanism is specific to WESAD protocol timeline and Mondrian binning across conditions (non-generic); testable prediction with falsification test using condition-stratified taxonomy. Base rate and effect size plausible given habituation literature.",
+      "salvage_note": "",
+      "hypothesis_id": "S1-H3"
+    },
+    {
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks satisfied: self-report labels, physiological stress scores, bin purity, and coverage are measurable; causal chain from label-physiology mismatch to corrupted nonconformity scores to undercoverage is logical; confounders (compliance, demand effects, order effects) identified; data requirements clear; mechanism specific to label noise in stress labeling (non-generic); testable prediction with falsification test using physiological relabeling. Base rate and effect size plausible given typical label-physiology mismatch rates.",
+      "salvage_note": "",
+      "hypothesis_id": "S1-H4"
+    },
+    {
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks satisfied: continuous stress intensity composite, bin centroids, mismatch scores, and coverage are measurable; causal chain from ordinal intensity to nominal bins to mismatched quantiles is valid; confounders (subjective perception, condition order, recovery rate) identified; data requirements explicit; mechanism specific to Mondrian's discrete taxonomy vs continuous stress gradient (non-generic); testable prediction with falsification test using ordinal taxonomy. Base rate plausible given WESAD's 5 conditions; effect size small but plausible.",
+      "salvage_note": "",
+      "hypothesis_id": "S1-H5"
+    },
+    {
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks satisfied: chest ACC, signal quality indices, HRV features, bin assignments, and coverage are measurable; causal chain from stress movement to sensor displacement to heteroscedastic noise to underestimated variance is sound; confounders (body composition, strap tightness, clothing) identified; data requirements clear; mechanism specific to chest sensor displacement during stress (non-generic); testable prediction with falsification test using low-movement recalibration. Base rate and effect size plausible given WESAD movement increases.",
+      "salvage_note": "",
+      "hypothesis_id": "S1-H6"
+    },
+    {
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks satisfied: bin sizes, nonconformity scores, coverage, and bootstrap capability are available; causal chain from rare phenotypes to small bins to quantile estimation bias to undercoverage is statistically rigorous; confounders (bin heterogeneity, calibration randomness) identified; data requirements explicit; mechanism specific to finite-sample bias in Mondrian bins for rare physiological phenotypes (non-generic); testable prediction with falsification test using synthetic augmentation. Base rate and effect size strongly supported by order statistic theory.",
+      "salvage_note": "",
+      "hypothesis_id": "S1-H7"
+    },
+    {
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks satisfied: EDA/HRV time series, recovery time constants, meditation bin assignments, and coverage are measurable; causal chain from slow recovery to elevated meditation arousal to mixed-bin quantiles to undercoverage is physiologically grounded; confounders (fitness, age, stress reactivity, meditation experience) identified; data requirements clear; mechanism specific to post-stress recovery dynamics in meditation condition (non-generic); testable prediction with falsification test using recovery-stratified bins. Base rate and effect size plausible given recovery time constant variability.",
+      "salvage_note": "",
+      "hypothesis_id": "S1-H8"
+    },
+    {
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks satisfied: high-resolution EDA/HRV, window parameters, nonconformity scores, and coverage are measurable; causal chain from delayed latency to missed response in fixed window to underestimated nonconformity scores is coherent; confounders (condition order, anticipatory anxiety, sensor latency) identified; data requirements explicit; mechanism specific to fixed feature window alignment vs physiological latency (non-generic); testable prediction with falsification test using latency-aligned windows. Base rate plausible given EDA latency literature; effect size small but plausible.",
+      "salvage_note": "",
+      "hypothesis_id": "S1-H9"
+    },
+    {
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks satisfied: wrist and chest TEMP, ambient temperature, timestamps, bin assignments, and coverage are measurable; causal chain from thermistor drift to temperature bias to misbinning to narrow quantiles is sensor-specific and valid; confounders (ambient temperature, skin perfusion, contact pressure, condition order) identified; data requirements clear; mechanism specific to wrist TEMP sensor drift over protocol (non-generic); testable prediction with falsification test using drift correction. Base rate and effect size plausible given thermistor drift characteristics.",
+      "salvage_note": "",
+      "hypothesis_id": "S2-H7"
+    }
+  ],
+  "selector_error": null,
+  "cards": [
+    {
+      "source_ref": "S1-H1",
+      "card": {
+        "hypothesis": "Subject-specific autonomic reactivity patterns cause non-exchangeability within Mondrian taxonomy bins, violating the conditional coverage guarantee for high-reactivity individuals",
+        "proposed_mechanism": "High autonomic reactivity subjects exhibit EDA and HRV response magnitudes that fall outside the calibration distribution of their assigned Mondrian bin, causing prediction sets to be systematically too narrow for their actual stress responses",
+        "causal_path": "Subject trait (high autonomic reactivity) → Extreme physiological response magnitude during stress → Response falls outside calibration bin's empirical quantile range → Conformal prediction set too narrow → Undercoverage",
+        "mechanism_variables": [
+          "subject_autonomic_reactivity_score",
+          "eda_peak_amplitude_stress",
+          "hrv_rmssd_change_stress",
+          "mondrian_bin_assignment",
+          "calibration_bin_quantile_range",
+          "prediction_set_width",
+          "coverage_indicator"
+        ],
+        "possible_confounders": [
+          "baseline_eda_level",
+          "age",
+          "sex",
+          "fitness_level",
+          "medication_use",
+          "time_of_day"
+        ],
+        "control_variables": [
+          "stratify calibration by reactivity tertiles",
+          "include baseline_eda as covariate in bin assignment",
+          "match on age/sex in calibration set"
+        ],
+        "rival_explanation": "Undercoverage stems from sensor noise artifacts during high-movement stress periods, not autonomic reactivity per se",
+        "rival_prediction": "Undercoverage correlates with ACC magnitude during stress, not with autonomic reactivity scores measured during rest",
+        "distinguishing_test": "Regress per-subject coverage gap against both autonomic reactivity score and mean ACC during stress; reactivity should remain significant predictor after controlling for ACC",
+        "effect_size_expectation": "medium",
+        "effect_size_rationale": "Prior WESAD analyses show ~30% of subjects have EDA responses >2 SD from mean; Mondrian bins typically contain 10-20 subjects, so extreme responders likely fall outside bin quantiles",
+        "minimum_data_needed": [
+          "per-subject EDA/HRV time series during stress/rest",
+          "Mondrian bin assignments for each calibration point",
+          "per-subject coverage indicators at nominal 90% level",
+          "ACC data for movement artifact quantification"
+        ],
+        "testable_prediction": "Subjects in top tertile of autonomic reactivity score will show coverage <80% at nominal 90% level, while bottom tertile will show coverage ≥88%",
+        "failure_condition": "No significant correlation between autonomic reactivity score and per-subject coverage gap (p>0.05) after controlling for movement",
+        "statistical_test_plan": "Linear mixed model: coverage_gap ~ reactivity_tertile + mean_stress_ACC + (1|subject), test reactivity_tertile coefficient",
+        "falsification_test": "Re-calibrate Mondrian bins using reactivity-stratified taxonomy; if undercoverage persists for high-reactivity subjects, the mechanism is falsified"
+      }
+    },
+    {
+      "source_ref": "S1-H2",
+      "card": {
+        "hypothesis": "Wrist-worn sensor signal quality degradation during stress-induced vasoconstriction causes systematic underestimation of EDA amplitude in calibration, leading to narrow prediction sets",
+        "proposed_mechanism": "Stress-induced peripheral vasoconstriction reduces wrist skin conductance signal-to-noise ratio, causing the EDA feature extractor to underestimate true sympathetic activation during calibration; test-time stress responses then exceed predicted ranges",
+        "causal_path": "Stress → Peripheral vasoconstriction → Reduced wrist EDA signal amplitude + increased noise → Feature extractor underestimates phasic EDA peaks → Calibration nonconformity scores too small → Prediction sets too narrow → Undercoverage",
+        "mechanism_variables": [
+          "wrist_eda_tonic_level",
+          "wrist_eda_phasic_peak_amplitude",
+          "chest_eda_phasic_peak_amplitude",
+          "wrist_eda_signal_quality_index",
+          "peripheral_vasoconstriction_proxy",
+          "calibration_nonconformity_score",
+          "prediction_set_width",
+          "coverage_indicator"
+        ],
+        "possible_confounders": [
+          "ambient_temperature",
+          "sensor_contact_pressure",
+          "skin_hydration",
+          "wrist_circumference"
+        ],
+        "control_variables": [
+          "use chest EDA as ground truth for sympathetic activation",
+          "include wrist_eda_tonic_level as covariate",
+          "exclude periods with signal_quality_index < threshold"
+        ],
+        "rival_explanation": "Chest and wrist EDA measure different physiological phenomena; discrepancy reflects true physiological difference not sensor artifact",
+        "rival_prediction": "Wrist-chest EDA discrepancy correlates with vasoconstriction proxy (finger temperature drop) but coverage gap does not",
+        "distinguishing_test": "Compute wrist-chest EDA ratio during stress; if mechanism holds, ratio should predict coverage gap. If rival holds, ratio predicts physiological difference but not coverage gap",
+        "effect_size_expectation": "large",
+        "effect_size_rationale": "WESAD wrist EDA known to have 40-60% lower amplitude than chest during stress; vasoconstriction can reduce wrist signal by additional 30-50% based on vascular physiology literature",
+        "minimum_data_needed": [
+          "wrist EDA time series",
+          "chest EDA time series",
+          "wrist temperature or finger temperature",
+          "Mondrian calibration nonconformity scores",
+          "per-subject coverage indicators"
+        ],
+        "testable_prediction": "Subjects with largest wrist-chest EDA amplitude ratio drop during stress will show greatest undercoverage; wrist EDA tonic level during stress negatively correlates with coverage",
+        "failure_condition": "Wrist-chest EDA ratio during stress does not correlate with per-subject coverage gap (p>0.05)",
+        "statistical_test_plan": "Spearman correlation between (chest_eda_peak - wrist_eda_peak)/chest_eda_peak during stress and per-subject coverage gap; permutation test n=10000",
+        "falsification_test": "Replace wrist EDA features with chest EDA features in Mondrian predictor; if undercoverage disappears for previously affected subjects, mechanism confirmed; if persists, falsified"
+      }
+    },
+    {
+      "source_ref": "S1-H3",
+      "card": {
+        "hypothesis": "Non-stationary physiological baselines across the WESAD protocol timeline cause calibration-test distribution shift within Mondrian bins",
+        "proposed_mechanism": "The WESAD protocol induces progressive physiological adaptation (habituation/sensitization) across conditions; calibration data from early conditions don't represent test condition distributions for subjects with strong temporal trends",
+        "causal_path": "Protocol progression (baseline → amusement → stress → meditation → recovery) → Progressive physiological adaptation (e.g., EDA habituation, HRV sensitization) → Calibration conditions (early) distribution ≠ Test condition (late) distribution within same Mondrian bin → Nonconformity scores miscalibrated → Undercoverage",
+        "mechanism_variables": [
+          "condition_order",
+          "eda_tonic_baseline_trend",
+          "hrv_rmssd_trend",
+          "mondrian_bin",
+          "calibration_condition_indices",
+          "test_condition_index",
+          "nonconformity_score_distribution_shift",
+          "coverage_indicator"
+        ],
+        "possible_confounders": [
+          "subject fatigue",
+          "circadian_drift",
+          "sensor_drift",
+          "room_temperature_change"
+        ],
+        "control_variables": [
+          "include condition_order as stratification variable",
+          "detrend physiological signals per subject",
+          "use only same-condition calibration points"
+        ],
+        "rival_explanation": "Undercoverage is due to inherent subject heterogeneity, not temporal non-stationarity",
+        "rival_prediction": "Shuffling condition order labels destroys any temporal trend but coverage gap remains associated with subject ID",
+        "distinguishing_test": "Fit per-subject linear trend of EDA tonic across conditions; correlate trend slope with coverage gap. Under mechanism, significant correlation; under rival, no correlation after controlling for subject ID",
+        "effect_size_expectation": "medium",
+        "effect_size_rationale": "WESAD protocol spans ~60 minutes; EDA habituation literature shows 10-30% tonic decline over similar durations; Mondrian bins pool across conditions, so shift could be substantial",
+        "minimum_data_needed": [
+          "per-subject per-condition physiological features",
+          "condition order labels",
+          "Mondrian bin assignments per calibration point",
+          "per-subject per-condition coverage indicators"
+        ],
+        "testable_prediction": "Subjects with steepest negative EDA tonic trend across conditions will show largest undercoverage on late conditions (meditation/recovery)",
+        "failure_condition": "Per-subject EDA tonic trend slope does not predict coverage gap on late conditions (p>0.05)",
+        "statistical_test_plan": "Per-subject linear regression: EDA_tonic ~ condition_order; extract slope. Then: coverage_gap_late_conditions ~ slope + (1|subject_bin)",
+        "falsification_test": "Re-run Mondrian with condition-stratified taxonomy (separate bins per condition); if undercoverage disappears, mechanism confirmed; if persists, falsified"
+      }
+    },
+    {
+      "source_ref": "S1-H4",
+      "card": {
+        "hypothesis": "Stress label misalignment between self-report and physiological ground truth creates label noise that disproportionately affects Mondrian bins with ambiguous stress responses",
+        "proposed_mechanism": "Some subjects show physiological stress responses during 'non-stress' conditions (anticipatory anxiety) or fail to respond during 'stress' conditions (blunted responders); Mondrian bins pool these mislabeled points, corrupting nonconformity score distributions",
+        "causal_path": "Subject trait (anxiety/blunted response) → Physiological response mismatches labeled condition → Miscalibrated nonconformity scores in affected Mondrian bins → Prediction sets too narrow for true stress state → Undercoverage for affected subjects",
+        "mechanism_variables": [
+          "self_report_stress_label",
+          "physiological_stress_score",
+          "label_agreement_indicator",
+          "mondrian_bin",
+          "bin_label_purity",
+          "calibration_nonconformity_score",
+          "prediction_set_width",
+          "coverage_indicator"
+        ],
+        "possible_confounders": [
+          "subject_compliance",
+          "experimenter_demand_effects",
+          "condition_order_effects"
+        ],
+        "control_variables": [
+          "compute physiological_stress_score from chest EDA/HRV",
+          "estimate bin_label_purity",
+          "weight calibration points by label_agreement"
+        ],
+        "rival_explanation": "Undercoverage reflects true physiological variability, not label noise",
+        "rival_prediction": "Coverage gap correlates with physiological variability within condition, not with label disagreement",
+        "distinguishing_test": "Compute per-subject label_agreement (correlation between self-report and physiological stress score across conditions); regress coverage gap on label_agreement controlling for within-condition physiological variance",
+        "effect_size_expectation": "medium",
+        "effect_size_rationale": "WESAD self-report labels are coarse (binary stress/non-stress); literature suggests 15-25% label-physiology mismatch in stress studies; Mondrian bins with <80% purity could have substantially corrupted quantiles",
+        "minimum_data_needed": [
+          "self-report stress labels per condition",
+          "chest EDA and HRV per condition",
+          "Mondrian bin assignments",
+          "per-subject per-condition coverage"
+        ],
+        "testable_prediction": "Subjects with low label_agreement (physiological response contradicts self-report) will show undercoverage specifically in bins with low label_purity",
+        "failure_condition": "Label agreement does not predict coverage gap after controlling for within-condition physiological variance (p>0.05)",
+        "statistical_test_plan": "For each bin, compute label_purity = proportion of points where physiological_stress_score matches self_report. Mixed model: coverage_gap ~ label_purity + within_bin_physiological_variance + (1|subject)",
+        "falsification_test": "Re-label calibration data using physiological_stress_score threshold instead of self-report; if undercoverage resolves for mismatched subjects, mechanism confirmed; if not, falsified"
+      }
+    },
+    {
+      "source_ref": "S1-H5",
+      "card": {
+        "hypothesis": "Mondrian taxonomy based on discrete condition labels fails to capture continuous stress intensity gradients, causing undercoverage for subjects with intermediate stress responses",
+        "proposed_mechanism": "WESAD conditions represent ordinal stress levels (baseline < amusement < stress > meditation > recovery) but Mondrian treats them as nominal categories; subjects with intermediate responses fall between bins, receiving prediction sets calibrated for wrong intensity",
+        "causal_path": "Ordinal stress intensity continuum → Discrete Mondrian taxonomy (nominal bins) → Subjects with intermediate responses assigned to adjacent bins → Calibration quantiles from wrong intensity level → Prediction sets mismatched to true stress intensity → Undercoverage",
+        "mechanism_variables": [
+          "continuous_stress_intensity",
+          "mondrian_bin_categorical",
+          "bin_intensity_centroid",
+          "subject_intensity_bin_mismatch",
+          "calibration_quantile_at_bin_centroid",
+          "prediction_set_width",
+          "coverage_indicator"
+        ],
+        "possible_confounders": [
+          "subject-specific stress perception",
+          "condition_order",
+          "physiological_recovery_rate"
+        ],
+        "control_variables": [
+          "use ordinal taxonomy with intensity-ordered bins",
+          "include continuous_stress_intensity as covariate",
+          "interpolate quantiles across bins"
+        ],
+        "rival_explanation": "Undercoverage is due to within-bin heterogeneity unrelated to stress intensity ordering",
+        "rival_prediction": "Coverage gap correlates with within-bin feature variance, not with distance to bin intensity centroid",
+        "distinguishing_test": "Compute subject_intensity_bin_mismatch = |continuous_stress_intensity - bin_intensity_centroid|; test if mismatch predicts coverage gap better than within-bin variance",
+        "effect_size_expectation": "small",
+        "effect_size_rationale": "WESAD has 5 conditions; if stress intensity is roughly linear baseline→stress, intermediate conditions (amusement, meditation) may have 20-30% of subjects mismatched; effect depends on bin granularity",
+        "minimum_data_needed": [
+          "continuous stress intensity measure per subject per condition (e.g., EDA+HRV composite)",
+          "Mondrian bin assignments",
+          "bin intensity centroids",
+          "per-subject coverage"
+        ],
+        "testable_prediction": "Subjects whose continuous stress intensity falls between bin centroids will show lower coverage than those near centroids",
+        "failure_condition": "Intensity-bin mismatch does not predict coverage gap (p>0.05) after controlling for within-bin variance",
+        "statistical_test_plan": "Quantile regression: coverage_gap ~ intensity_bin_mismatch + within_bin_variance, test mismatch coefficient at τ=0.9",
+        "falsification_test": "Replace nominal Mondrian taxonomy with ordinal taxonomy (bins respect intensity ordering); if undercoverage for intermediate responders disappears, mechanism confirmed; if not, falsified"
+      }
+    },
+    {
+      "source_ref": "S1-H6",
+      "card": {
+        "hypothesis": "Chest-worn sensor displacement during stress-induced movement creates heteroscedastic noise that violates Mondrian's exchangeability assumption within bins",
+        "proposed_mechanism": "Stress conditions involve more upper-body movement (typing, gesturing) causing chest sensor displacement; this increases ECG/RESP noise heteroscedastically for high-movement subjects, widening true conditional distribution beyond calibration quantiles",
+        "causal_path": "Stress condition → Increased upper-body movement → Chest sensor displacement → Heteroscedastic noise in ECG/RESP features → True conditional variance > calibration variance within bin → Prediction sets too narrow → Undercoverage",
+        "mechanism_variables": [
+          "chest_acc_magnitude",
+          "ecg_signal_quality_index",
+          "resp_signal_quality_index",
+          "hrv_feature_noise_estimate",
+          "mondrian_bin",
+          "calibration_conditional_variance",
+          "true_conditional_variance",
+          "coverage_indicator"
+        ],
+        "possible_confounders": [
+          "subject_body_composition",
+          "sensor_strap_tightness",
+          "clothing_type"
+        ],
+        "control_variables": [
+          "include chest_acc_magnitude as stratification variable",
+          "exclude low signal_quality periods",
+          "use movement-robust features"
+        ],
+        "rival_explanation": "Undercoverage is due to genuine physiological variability increase during stress, not sensor noise",
+        "rival_prediction": "Coverage gap correlates with physiological variability markers (e.g., HRV complexity) not with signal quality indices",
+        "distinguishing_test": "Regress coverage gap on both chest_acc_magnitude and HRV_sample_entropy during stress; mechanism predicts ACC significant, entropy not; rival predicts opposite",
+        "effect_size_expectation": "medium",
+        "effect_size_rationale": "WESAD chest ACC shows 2-3x increase during stress vs baseline; sensor displacement can increase ECG noise 5-10x; Mondrian bins pool across movement levels, so high-movement subjects' true variance underestimated",
+        "minimum_data_needed": [
+          "chest ACC time series",
+          "ECG/RESP signal quality indices",
+          "HRV features",
+          "Mondrian bin assignments",
+          "per-subject coverage"
+        ],
+        "testable_prediction": "Subjects with high chest ACC during stress will show undercoverage; coverage gap correlates with ACC magnitude but not with HRV complexity",
+        "failure_condition": "Chest ACC magnitude during stress does not predict coverage gap after controlling for HRV complexity (p>0.05)",
+        "statistical_test_plan": "Mixed model: coverage_gap ~ stress_chest_acc + stress_hrv_sample_entropy + (1|mondrian_bin)",
+        "falsification_test": "Re-calibrate using only low-movement periods (chest_acc < threshold); if undercoverage persists for high-movement subjects, mechanism falsified"
+      }
+    },
+    {
+      "source_ref": "S1-H7",
+      "card": {
+        "hypothesis": "Finite calibration set size per Mondrian bin causes quantile estimation error that disproportionately affects small bins containing rare physiological phenotypes",
+        "proposed_mechanism": "Mondrian bins with few calibration points (rare phenotypes: e.g., blunted responders, hyper-responders) have high quantile estimation variance; the 90th percentile nonconformity score is underestimated, yielding prediction sets that are too narrow",
+        "causal_path": "Rare physiological phenotype → Small Mondrian bin size (n_calibration) → High variance in empirical 90th percentile nonconformity score → Systematic underestimation of true 90th percentile (order statistic bias) → Prediction sets too narrow → Undercoverage",
+        "mechanism_variables": [
+          "mondrian_bin_size",
+          "bin_phenotype_rarity",
+          "empirical_90th_percentile_nonconformity",
+          "true_90th_percentile_nonconformity",
+          "quantile_estimation_bias",
+          "prediction_set_width",
+          "coverage_indicator"
+        ],
+        "possible_confounders": [
+          "bin feature heterogeneity",
+          "calibration set composition randomness"
+        ],
+        "control_variables": [
+          "minimum bin size threshold",
+          "bin merging for small bins",
+          "Bayesian quantile estimation with prior"
+        ],
+        "rival_explanation": "Undercoverage for rare phenotypes reflects genuine distributional differences, not estimation error",
+        "rival_prediction": "Coverage gap persists even with infinite calibration data (simulated via bootstrap)",
+        "distinguishing_test": "Bootstrap calibration sets within each bin to estimate quantile estimation variance; correlate bin_size with bootstrap variance of 90th percentile; test if coverage gap correlates with bootstrap variance",
+        "effect_size_expectation": "large",
+        "effect_size_rationale": "Order statistic theory: for n=10, 90th percentile has ~30% relative standard error; WESAD has ~15 subjects, 5 conditions, Mondrian may create bins with n<5 for rare phenotypes",
+        "minimum_data_needed": [
+          "Mondrian bin assignments for all calibration points",
+          "nonconformity scores per calibration point",
+          "bin sizes",
+          "per-subject coverage",
+          "bootstrap resampling capability"
+        ],
+        "testable_prediction": "Bins with size <10 will show coverage <85% at nominal 90%; coverage gap negatively correlates with bin size",
+        "failure_condition": "No correlation between bin size and coverage gap (p>0.05); or bootstrap variance does not explain coverage gap",
+        "statistical_test_plan": "Bin-level regression: mean_coverage_gap ~ log(bin_size) + bin_feature_variance; subject-level: coverage_gap ~ bin_size + (1|bin)",
+        "falsification_test": "Augment calibration with synthetic data from fitted parametric distribution per bin; if undercoverage persists, mechanism falsified (not estimation error)"
+      }
+    },
+    {
+      "source_ref": "S1-H8",
+      "card": {
+        "hypothesis": "Physiological recovery dynamics during the post-stress meditation condition create a non-exchangeable subpopulation within the 'recovery' Mondrian bin",
+        "proposed_mechanism": "Subjects differ in physiological recovery speed after stress; slow recoverers in the meditation condition have elevated sympathetic tone that resembles stress, but are binned with fast recoverers; calibration quantiles from mixed recovery states are too narrow for slow recoverers",
+        "causal_path": "Subject trait (slow physiological recovery) → Elevated EDA/HRV during meditation condition → Assigned to same Mondrian bin as fast recoverers → Calibration nonconformity scores reflect mixed recovery states → Prediction sets too narrow for slow recoverers → Undercoverage during meditation",
+        "mechanism_variables": [
+          "eda_recovery_time_constant",
+          "hrv_recovery_slope",
+          "meditation_condition_eda",
+          "meditation_condition_hrv",
+          "mondrian_bin_recovery",
+          "bin_recovery_heterogeneity",
+          "calibration_nonconformity_score",
+          "coverage_indicator"
+        ],
+        "possible_confounders": [
+          "baseline_fitness",
+          "age",
+          "stress_reactivity_magnitude",
+          "meditation_experience"
+        ],
+        "control_variables": [
+          "stratify recovery bin by recovery_time_constant",
+          "include stress_reactivity as covariate",
+          "separate slow/fast recoverer bins"
+        ],
+        "rival_explanation": "Meditation condition undercoverage is due to meditation-specific physiological patterns (e.g., respiratory sinus arrhythmia) not recovery speed",
+        "rival_prediction": "Coverage gap during meditation correlates with respiration rate variability, not with EDA/HRV recovery time constants from stress",
+        "distinguishing_test": "Fit per-subject EDA exponential decay during recovery; correlate time constant with meditation coverage gap controlling for respiration variability",
+        "effect_size_expectation": "medium",
+        "effect_size_rationale": "Recovery time constants vary 3-5x across individuals; WESAD meditation is 5-10 min post-stress; slow recoverers (τ>5min) still elevated; Mondrian bin pools all, so quantiles biased toward fast recoverers",
+        "minimum_data_needed": [
+          "EDA/HRV time series during stress and meditation",
+          "recovery time constant estimates",
+          "Mondrian bin for meditation",
+          "per-subject meditation coverage"
+        ],
+        "testable_prediction": "Subjects with slow EDA recovery (τ > median) will show meditation coverage <80%; fast recoverers will show coverage ≥88%",
+        "failure_condition": "EDA recovery time constant does not predict meditation coverage gap (p>0.05) after controlling for respiration variability",
+        "statistical_test_plan": "Per-subject nonlinear fit: EDA(t) = A*exp(-t/τ) + C during recovery; extract τ. Mixed model: meditation_coverage_gap ~ τ + respiration_rate_variability + (1|bin)",
+        "falsification_test": "Create separate Mondrian bins for slow vs fast recoverers (median split on τ); if undercoverage disappears for slow recoverers, mechanism confirmed; if not, falsified"
+      }
+    },
+    {
+      "source_ref": "S1-H9",
+      "card": {
+        "hypothesis": "Feature extraction window alignment with stressor onset creates systematic nonconformity score bias for subjects with delayed physiological responses",
+        "proposed_mechanism": "WESAD uses fixed windows relative to condition onset; subjects with delayed EDA/HRV responses (latency > window) have features extracted from pre-response baseline, yielding artificially low nonconformity scores during calibration; test windows capture response, causing undercoverage",
+        "causal_path": "Subject trait (delayed physiological latency) → Fixed feature window misses response onset → Calibration features reflect baseline not stress → Nonconformity scores underestimated → Prediction sets calibrated to baseline variability → Test windows capture true response → Response exceeds prediction set → Undercoverage",
+        "mechanism_variables": [
+          "eda_response_latency",
+          "hrv_response_latency",
+          "feature_window_start",
+          "feature_window_duration",
+          "calibration_feature_value",
+          "true_stress_feature_value",
+          "nonconformity_score_bias",
+          "coverage_indicator"
+        ],
+        "possible_confounders": [
+          "condition_order",
+          "anticipatory_anxiety",
+          "sensor_latency"
+        ],
+        "control_variables": [
+          "estimate per-subject latency and align windows",
+          "use variable-length windows",
+          "include latency as covariate"
+        ],
+        "rival_explanation": "Undercoverage is due to response magnitude variability, not latency",
+        "rival_prediction": "Coverage gap correlates with response magnitude, not with latency; latency-magnitude correlation is zero",
+        "distinguishing_test": "Estimate per-subject EDA latency (time from stressor to 10% peak); regress coverage gap on latency controlling for peak magnitude",
+        "effect_size_expectation": "small",
+        "effect_size_rationale": "EDA latency literature: 1-5s typical, but 10-20% subjects >10s; WESAD windows likely 10-30s; delayed responders may have 30-50% of response missed in calibration window",
+        "minimum_data_needed": [
+          "High-resolution EDA/HRV time series aligned to stressor onset",
+          "feature extraction window parameters",
+          "Mondrian calibration nonconformity scores",
+          "per-subject coverage"
+        ],
+        "testable_prediction": "Subjects with EDA latency > feature_window_start will show undercoverage; coverage gap correlates with latency after controlling for magnitude",
+        "failure_condition": "EDA response latency does not predict coverage gap after controlling for peak magnitude (p>0.05)",
+        "statistical_test_plan": "Per-subject latency estimation via change-point detection on EDA phasic driver. Quantile regression: coverage_gap ~ latency + peak_magnitude",
+        "falsification_test": "Re-extract features using latency-aligned windows per subject; if undercoverage resolves for delayed responders, mechanism confirmed; if not, falsified"
+      }
+    },
+    {
+      "source_ref": "S2-H7",
+      "card": {
+        "hypothesis": "Sensor calibration drift in wrist TEMP (thermistor) over the 60-minute protocol causes systematic temperature underestimation in later conditions, shifting late-stress windows into cooler Mondrian bins with narrower conformal quantiles.",
+        "proposed_mechanism": "Thermistor self-heating / ambient drift -> wrist_TEMP_bias increasing over time -> late stress windows assigned to low-TEMP Mondrian bins -> conformal quantiles calibrated on cooler (baseline/amusement) windows -> undercoverage for late stress.",
+        "causal_path": "protocol_elapsed_time -> wrist_TEMP_bias -> mondrian_TEMP_bin_assignment -> conformal_quantile_width -> coverage_by_time",
+        "mechanism_variables": [
+          "elapsed_minutes",
+          "wrist_TEMP_bias_estimate",
+          "mondrian_TEMP_bin_index",
+          "conformal_quantile_90",
+          "empirical_coverage_90"
+        ],
+        "possible_confounders": [
+          "ambient_temperature_change",
+          "skin_perfusion_changes",
+          "sensor_contact_pressure",
+          "condition_order"
+        ],
+        "control_variables": [
+          "monitor ambient temperature; include condition_order as factor; use chest TEMP as reference"
+        ],
+        "rival_explanation": "Temporal coverage drop is due to physiological habituation, not sensor drift.",
+        "rival_prediction": "Coverage drops similarly for chest TEMP (which has no drift) if habituation is the cause.",
+        "distinguishing_test": "Compare coverage drift for wrist TEMP vs chest TEMP across protocol time. H1 predicts wrist-specific drift; rival predicts parallel drift.",
+        "effect_size_expectation": "small",
+        "effect_size_rationale": "Thermistor drift ~0.1-0.3°C over 60min; Mondrian TEMP bins ~0.5°C wide; ~20% of late windows misbinned -> 3-6pp coverage drop.",
+        "minimum_data_needed": [
+          "wrist TEMP at 4Hz",
+          "chest TEMP at 700Hz",
+          "ambient temperature log",
+          "protocol timestamps",
+          "Mondrian bin assignments",
+          "conformal intervals",
+          "ground-truth labels"
+        ],
+        "testable_prediction": "Wrist TEMP shows negative bias trend >0.15°C over protocol; coverage for stress condition drops >5pp from first to last stress block; chest TEMP shows no bias trend and no coverage drop.",
+        "failure_condition": "No significant wrist TEMP bias trend (linear regression slope p>0.05) OR coverage drop not wrist-specific (chest TEMP shows similar drop).",
+        "statistical_test_plan": "Linear regression: wrist_TEMP_bias ~ elapsed_time. Mixed model: coverage ~ elapsed_time * sensor_location (wrist/chest) + (1|subject). Test interaction at alpha=0.05.",
+        "falsification_test": "Apply post-hoc drift correction to wrist TEMP (linear detrending per subject). If coverage drop persists after correction, H7 is falsified."
+      }
+    }
+  ]
+}

@@ -1,0 +1,254 @@
+{
+  "confounder_rival_builds": [
+    {
+      "hypothesis_id": "H1",
+      "possible_confounders": [
+        "age",
+        "sex",
+        "baseline fitness level (VO2max)",
+        "caffeine intake prior to measurement",
+        "use of cardiovascular medication"
+      ],
+      "control_variables": [
+        "age",
+        "sex",
+        "VO2max",
+        "caffeine intake (mg)",
+        "medication status"
+      ],
+      "boring_rival_explanations": [
+        "random fluctuation in model entropy due to stochastic training",
+        "variability in PPG signal quality unrelated to autonomic tone",
+        "measurement error in RMSSD estimation"
+      ],
+      "rival_prediction": "Higher resting RMSSD is associated with lower model uncertainty (i.e., better signal quality reduces uncertainty).",
+      "distinguishing_condition": "After controlling for fitness level and caffeine intake, the sign of the association between resting RMSSD and uncertainty reverses or becomes non‑significant.",
+      "confounder_rival_notes": "Fitness and caffeine influence both baseline autonomic tone and signal noise, potentially confounding the observed relationship."
+    },
+    {
+      "hypothesis_id": "H2",
+      "possible_confounders": [
+        "skin hydration (moisture level)",
+        "ambient temperature",
+        "presence of hair or calluses at sensor site",
+        "recent application of lotion or topical agents",
+        "sweat accumulation during measurement"
+      ],
+      "control_variables": [
+        "skin hydration measured by corneometer",
+        "ambient temperature (°C)",
+        "hair removal status",
+        "lotion use (yes/no)",
+        "sweat rate (mg/min)"
+      ],
+      "boring_rival_explanations": [
+        "electrode degradation over time causing impedance changes unrelated to baseline skin properties",
+        "variability in device firmware affecting impedance measurement",
+        "motion artifacts masquerading as impedance effects"
+      ],
+      "rival_prediction": "Higher skin impedance is associated with lower model uncertainty because it reflects better epidermal barrier reducing motion artifact.",
+      "distinguishing_condition": "When skin hydration and sweat rate are statistically controlled, the positive relationship between impedance and uncertainty disappears or reverses.",
+      "confounder_rival_notes": "Hydration and sweat simultaneously affect impedance and signal quality, thus confounding the direct effect."
+    },
+    {
+      "hypothesis_id": "H3",
+      "possible_confounders": [
+        "sleep deprivation prior to measurement",
+        "caffeine intake within 2 h",
+        "chronotype (morningness‑eveningness score)",
+        "acute stress exposure earlier in the day",
+        "light exposure intensity"
+      ],
+      "control_variables": [
+        "self‑reported sleep duration (hours)",
+        "caffeine dose (mg)",
+        "chronotype questionnaire score",
+        "recent stressor checklist",
+        "ambient lux level"
+      ],
+      "boring_rival_explanations": [
+        "time‑of‑day variation in ambient temperature affecting sensor readings",
+        "daily variation in device battery voltage influencing signal amplitude",
+        "random fluctuations in circadian markers unrelated to internal phase"
+      ],
+      "rival_prediction": "Larger circadian phase difference is associated with lower model uncertainty because stress‑evoked responses are amplified at certain internal phases.",
+      "distinguishing_condition": "After adjusting for sleep deprivation and caffeine, the direction of the association between phase difference and uncertainty flips or becomes null.",
+      "confounder_rival_notes": "Sleep loss and caffeine shift both perceived circadian phase and physiological responsiveness, potentially confounding the phase‑uncertainty link."
+    },
+    {
+      "hypothesis_id": "H4",
+      "possible_confounders": [
+        "neuroticism trait score",
+        "social desirability bias",
+        "current affective state (momentary mood)",
+        "cognitive ability / working memory capacity",
+        "language proficiency with EMA prompts"
+      ],
+      "control_variables": [
+        "Neuroticism inventory score",
+        "Marlowe‑Crowne social desirability scale",
+        "PANAS momentary affect",
+        "working memory test score",
+        "self‑rated EMA comprehension"
+      ],
+      "boring_rival_explanations": [
+        "random inattention leading to occasional missed EMA prompts",
+        "variability in EMA prompt timing causing misalignment with physiological states",
+        "device‑specific EMA app bugs causing duplicate entries"
+      ],
+      "rival_prediction": "Higher self‑report bias is associated with lower model uncertainty because biased labels produce a more consistent (though inaccurate) pattern that the model can learn confidently.",
+      "distinguishing_condition": "When neuroticism and momentary affect are included as covariates, the bias‑uncertainty relationship loses significance or reverses.",
+      "confounder_rival_notes": "Personality and current mood influence both reporting tendencies and physiological stress responses, confounding the bias‑uncertainty link."
+    },
+    {
+      "hypothesis_id": "H5",
+      "possible_confounders": [
+        "arm circumference",
+        "subcutaneous fat thickness at sensor site",
+        "skin elasticity (measured by cutometer)",
+        "average arm movement intensity during measurement",
+        "material fatigue of the strap over time"
+      ],
+      "control_variables": [
+        "arm circumference (cm)",
+        "fat thickness (mm)",
+        "skin elasticity index",
+        "accelerometer‑derived movement variance",
+        "strap usage duration (days)"
+      ],
+      "boring_rival_explanations": [
+        "strap loosening due to material creep rather than initial tightness",
+        "variability in sensor adhesive properties across production batches",
+        "motion artifacts that are independent of strap force"
+      ],
+      "rival_prediction": "Looser strap coupling is associated with lower model uncertainty because increased motion averages out noise, leading to more stable features.",
+      "distinguishing_condition": "After controlling for arm circumference and movement intensity, the inverse relationship between tightness and uncertainty disappears or changes sign.",
+      "confounder_rival_notes": "Anatomical factors and movement behavior affect both how tight the strap feels and the amount of motion artifact, potentially confounding the tightness‑uncertainty link."
+    },
+    {
+      "hypothesis_id": "H6",
+      "possible_confounders": [
+        "baseline plasma dopamine level",
+        "history of recent stress exposure",
+        "use of medications affecting catecholamine metabolism (e.g., antipsychotics)",
+        "MAOA genotype variation",
+        "population stratification ancestry"
+      ],
+      "control_variables": [
+        "baseline dopamine (nmol/L)",
+        "recent stressor count (past week)",
+        "medication status (yes/no)",
+        "MAOA genotype (high/low activity)",
+        "genetic ancestry principal components"
+      ],
+      "boring_rival_explanations": [
+        "random genotyping error causing misclassification of COMT status",
+        "batch effects in saliva DNA extraction influencing genotype calls",
+        "uncorrected population structure producing spurious genotype‑phenotype associations"
+      ],
+      "rival_prediction": "Carrying more Val alleles is associated with lower model uncertainty because faster catecholamine clearance yields a more stable baseline, reducing variability in stress‑evoked signals.",
+      "distinguishing_condition": "After adjusting for baseline dopamine and recent stress exposure, the Val‑allele effect on uncertainty becomes non‑significant or reverses.",
+      "confounder_rival_notes": "Baseline dopaminergic tone and recent stress influence both catecholamine dynamics and signal variability, potentially confounding the genotype‑uncertainty relationship."
+    },
+    {
+      "hypothesis_id": "H7",
+      "possible_confounders": [
+        "occurrence of major life events (e.g., job change, bereavement) during the study period",
+        "changes in medication or health status",
+        "variations in sleep quality over weeks",
+        "seasonal changes affecting ambient temperature and activity",
+        "device firmware or software updates"
+      ],
+      "control_variables": [
+        "life event checklist score",
+        "medication change indicator",
+        "Pittsburgh Sleep Quality Index trend",
+        "average ambient temperature",
+        "firmware version number"
+      ],
+      "boring_rival_explanations": [
+        "software bugs causing drift in model parameters unrelated to physiology",
+        "variability in label quality over time due to rater fatigue",
+        "hardware sensor drift causing apparent non‑stationarity"
+      ],
+      "rival_prediction": "Greater within‑subject change in stress‑response slope across sessions is associated with lower model uncertainty because the model adapts to the new relationship over time.",
+      "distinguishing_condition": "When life‑event and medication change covariates are included, the association between slope change and uncertainty loses significance or flips direction.",
+      "confounder_rival_notes": "Life events and health changes can simultaneously alter physiological responsiveness and introduce noise, confounding the non‑stationarity‑uncertainty link."
+    },
+    {
+      "hypothesis_id": "H8",
+      "possible_confounders": [
+        "cardiorespiratory fitness (VO2max)",
+        "baseline heart rate variability at rest",
+        "stress reactivity to exercise (ΔHRV during submax test)",
+        "habitual caffeine consumption",
+        "time of day of activity bouts"
+      ],
+      "control_variables": [
+        "VO2max (ml/kg/min)",
+        "resting RMSSD",
+        "exercise‑induced ΔRMSSD",
+        "daily caffeine mg",
+        "proportion of activity in morning vs evening"
+      ],
+      "boring_rival_explanations": [
+        "sensor drift or battery voltage changes during prolonged activity affecting signal quality",
+        "misclassification of activity intensity due to accelerometer placement",
+        "random variation in EMA stress labels unrelated to activity"
+      ],
+      "rival_prediction": "Higher average daily activity intensity is associated with lower model uncertainty because activity‑induced physiological changes provide a stronger, more distinguishable signal for the model.",
+      "distinguishing_condition": "After adjusting for fitness and exercise stress reactivity, the positive relationship between activity intensity and uncertainty becomes non‑significant or reverses.",
+      "confounder_rival_notes": "Fitness and exercise‑specific stress reactivity influence both activity levels and the overlap of activity‑ and stress‑related physiology, potentially confounding the activity‑uncertainty link."
+    },
+    {
+      "hypothesis_id": "H9",
+      "possible_confounders": [
+        "average stress label variance across samples",
+        "label reliability (inter‑rater agreement)",
+        "regularization strength of the model",
+        "class imbalance ratio (stress vs non‑stress)",
+        "variability in stress intensity of the induced stimuli"
+      ],
+      "control_variables": [
+        "label variance (σ² of EMA scores)",
+        "Cohen’s kappa for label agreement",
+        "L2 regularization lambda",
+        "stress‑to‑non‑stress sample ratio",
+        "mean intensity of stress inducer"
+      ],
+      "boring_rival_explanations": [
+        "unequal class distribution causing higher uncertainty for minority class regardless of sample size",
+        "variability in stress intensity leading to heterogeneous signal strength",
+        "model hyperparameter tuning differences across subjects"
+      ],
+      "rival_prediction": "Fewer labeled samples per subject are associated with lower model uncertainty because less data reduces overfitting, yielding more conservative predictions.",
+      "distinguishing_condition": "When label variance and regularization are controlled for, the inverse relationship between sample size and uncertainty disappears or changes sign.",
+      "confounder_rival_notes": "Label noise and model regularization can simultaneously affect both the effective sample size and uncertainty, confounding the sample‑size‑uncertainty link."
+    },
+    {
+      "hypothesis_id": "H10",
+      "possible_confounders": [
+        "ambient temperature affecting oscillator drift",
+        "battery voltage level during measurement",
+        "firmware version differences across devices",
+        "electromagnetic interference in the environment",
+        "physical stress on the device casing (e.g., bending)"
+      ],
+      "control_variables": [
+        "ambient temperature (°C)",
+        "battery voltage (mV)",
+        "firmware version identifier",
+        "EMI exposure rating (low/medium/high)",
+        "casing strain gauge reading"
+      ],
+      "boring_rival_explanations": [
+        "random jitter introduced by software interpolation algorithms",
+        "variability in timestamp resolution due to operating system scheduling",
+        "uncorrected sensor drift that mimics timing misalignment"
+      ],
+      "rival_prediction": "Greater sampling‑rate jitter and synchronization offset are associated with lower model uncertainty because the introduced temporal dispersion acts as a regularizing noise term.",
+      "distinguishing_condition": "After controlling for temperature and battery voltage, the relationship between jitter/offset and uncertainty loses significance or reverses.",
+      "confounder_rival_notes": "Temperature and battery state influence both oscillator stability and signal amplitude, potentially confounding the timing‑uncertainty link."
+    }
+  ]
+}
