@@ -255,7 +255,15 @@ def selftest() -> int:
 def main() -> int:
     WORK.mkdir(exist_ok=True)
     if "--selftest" in sys.argv:
-        return selftest()
+        # Log first, so "Python never started" is distinguishable from "crashed later".
+        log(f"selftest started (claude session env present: {any(k.startswith('CLAUDE') for k in os.environ)})")
+        try:
+            return selftest()
+        except BaseException:  # noqa: BLE001 - diagnostics must survive any failure
+            import traceback
+            (WORK / "experiment_17c_selftest_error.txt").write_text(traceback.format_exc(), encoding="utf-8")
+            log("selftest CRASHED; traceback in work/experiment_17c_selftest_error.txt")
+            return 1
     if not acquire_lock():
         log("another tick holds the lock; exiting")
         return 0

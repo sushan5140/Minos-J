@@ -56,3 +56,22 @@ Completed units (those with `arm_a_report.json`/`arm_a_failed.json`, `arm_b_resu
   - Task Scheduler deletes the task automatically at its 21-day end boundary (`DeleteExpiredTaskAfter=PT0S`).
 
 Harness validation now passes 26/26. The frozen protocol is unchanged, and preflight confirms the on-disk protocol still matches.
+
+## Installer fix — self-test wait logic (2026-09-23)
+
+The first manual install failed with "Self-test produced no fresh result". Investigation:
+
+- **Not auth or Python.** The identical action (`conhost --headless python work\experiment_17c_tick.py --selftest`), run outside Task Scheduler, passed in 6.3 s: `authMethod=claude.ai`, output `{"answer": 4}`. `conhost --headless` was also confirmed to wait for its child.
+- **Not the future `StartBoundary` either.** The installer already called `Start-ScheduledTask`; StartBoundary only controls automatic triggering.
+- **Root cause: the wait loop.** It slept 3 s and then waited only *while* the state was `Running`, without ever confirming the task had launched. If the task was still `Queued`/`Ready` at that moment, the loop ended at once. `Stop-ScheduledTask` then killed any Python that had started, and the task was deleted, erasing `LastTaskResult`. The self-test takes about 6 s and logged only at its end, so no trace was left.
+- **Why the exact path can't be confirmed.** The Task Scheduler Operational log is disabled on this machine, and the installer deleted the task record. The log was not enabled, because that is a system setting.
+
+**Fix (installer and self-test diagnostics only; no experimental file, protocol or running process touched):**
+
+- The self-test task has no trigger; it runs on demand only.
+- It is started explicitly. The installer then polls until Task Scheduler reports `LastRunTime` after registration *and* a state other than `Running`/`Queued`, with a 6-minute timeout.
+- `LastRunTime`, `LastTaskResult` and a state timeline are captured before the task is deleted, in a `finally` block.
+- The tick logs `selftest started` as its first action and writes any traceback to `work/experiment_17c_selftest_error.txt`.
+- Every attempt writes `work/experiment_17c_install_diagnostics/install_<timestamp>.json`, classified as one of: `SCHEDULING_FAILURE`, `LAUNCHER_FAILURE`, `TIMEOUT`, `SELFTEST_CRASH`, `NO_RESULT`, `CLAUDE_CLI_OR_AUTH_FAILURE`, `WRONG_OUTPUT`, `PASS`.
+- Earlier results are moved aside, never deleted.
+- The recurring supervisor is registered only on `PASS`.
