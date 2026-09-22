@@ -298,8 +298,58 @@ def preflight() -> dict[str, Any]:
     return {"cli": str(cli), "cli_version": version, "auth": auth}
 
 
+ARM_A_FAILED_MARKER = "arm_a_failed.json"
+ARM_B_FAILED_MARKER = "arm_b_failed.json"
+
+
+def _durable_arm_failures() -> None:
+    """Make arm failures terminal across resumed processes (amendment 1, 2026-09-23).
+
+    The inherited core checkpoints arm successes but not arm failures, so a
+    resumed process would silently grant a failed arm another attempt, making a
+    unit's outcome depend on whether an interruption happened (this occurred in
+    Experiment 17 for Q1-r1 Stage 5).  Mirroring Experiment 17's rule for judge
+    attempts, a model/validation failure (``Exception``) is persisted and replayed
+    on resume.  Usage-limit/auth stops are ``BaseException`` and are never
+    persisted, so pausing cannot fail an arm.
+    """
+    if getattr(e16, "_E17C_DURABLE_FAILURES", False):
+        return
+    original_a, original_b = e16.run_arm_a, e16.run_arm_b
+
+    def run_arm_a(engine, meter, unit_dir: Path, question: str, model: str):
+        marker = unit_dir / ARM_A_FAILED_MARKER
+        stored = runtime.read_json(marker)
+        if stored is not None:
+            raise RuntimeError(f"{stored['error']} [terminal; recorded {stored['recorded_at_utc']}]")
+        try:
+            return original_a(engine, meter, unit_dir, question, model)
+        except Exception as exc:
+            runtime.atomic_write_json(marker, {
+                "status": "ARM_A_FAILED", "error": f"{type(exc).__name__}: {str(exc)[:300]}",
+                "recorded_at_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            })
+            raise
+
+    def run_arm_b(engine, meter, unit_dir: Path, *args, **kwargs):
+        stored = runtime.read_json(unit_dir / ARM_B_FAILED_MARKER)
+        if stored is not None:
+            return stored["result"]
+        result = original_b(engine, meter, unit_dir, *args, **kwargs)
+        if result.get("selector_error"):
+            runtime.atomic_write_json(unit_dir / ARM_B_FAILED_MARKER, {
+                "status": "ARM_B_FAILED", "result": result,
+                "recorded_at_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            })
+        return result
+
+    e16.run_arm_a, e16.run_arm_b = run_arm_a, run_arm_b
+    e16._E17C_DURABLE_FAILURES = True
+
+
 def _install_protocol_globals() -> None:
     runtime.install_experiment_17_core_hooks()
+    _durable_arm_failures()
     e16.EXPERIMENT_16_NAME = EXPERIMENT_NAME
     e16.PROTOCOL = PROTOCOL
 

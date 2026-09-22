@@ -233,6 +233,52 @@ def run_checks(tmp: Path) -> dict[str, dict[str, Any]]:
     check("json_repair_single_request", len(runner.calls) == 2 and runner.calls[1]["prompt"].startswith("<<<ORIGINAL REQUEST>>>")
           and len(repaired["hypotheses"]) == 10, len(runner.calls))
 
+    # 10b. Amendment 1: arm failures are terminal across resumes; pauses are not failures
+    e17c._install_protocol_globals()
+    calls = {"n": 0}
+    original = e16.run_arm_a.__closure__  # wrapper installed
+    unit_dir = tmp / "durable" / "U"
+    unit_dir.mkdir(parents=True)
+
+    def boom(*a, **k):
+        calls["n"] += 1
+        raise schema.PipelineValidationError("synthetic Stage 5 failure")
+
+    import pipeline as _pipeline
+
+    class P:  # minimal engine whose pipeline always fails
+        run_v4_pipeline = staticmethod(boom)
+
+    class NullMeter:
+        def ctx(self, **k):
+            import contextlib
+            return contextlib.nullcontext()
+
+    engine = (None, P, None, schema)
+    outcomes = []
+    for _ in range(2):
+        try:
+            e16.run_arm_a(engine, NullMeter(), unit_dir, "q", "m")
+        except Exception as exc:  # noqa: BLE001
+            outcomes.append(type(exc).__name__)
+    marker_written = (unit_dir / e17c.ARM_A_FAILED_MARKER).exists()
+
+    def pause(*a, **k):
+        raise claude_rt.SubscriptionUsageLimitReached("limit")
+
+    class Q:
+        run_v4_pipeline = staticmethod(pause)
+
+    pause_dir = tmp / "durable" / "V"
+    try:
+        e16.run_arm_a((None, Q, None, schema), NullMeter(), pause_dir, "q", "m")
+    except claude_rt.SubscriptionUsageLimitReached:
+        pass
+    check("arm_failure_terminal_across_resume_pause_not_failure",
+          calls["n"] == 1 and outcomes == ["PipelineValidationError", "RuntimeError"] and marker_written
+          and not (pause_dir / e17c.ARM_A_FAILED_MARKER).exists() and original is not None,
+          (calls, outcomes, marker_written))
+
     # 11. End-to-end fake unit through the unchanged E16/E17 scientific core
     import pipeline
     import prompts

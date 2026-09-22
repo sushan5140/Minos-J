@@ -1,8 +1,8 @@
 {
   "artifact": "Experiment 17-C harness validation (fake CLI; not a scientific result)",
   "status": "PASSED",
-  "passed": 19,
-  "total": 19,
+  "passed": 20,
+  "total": 20,
   "checks": {
     "e17_base_protocol_unchanged": {
       "passed": true,
@@ -38,7 +38,7 @@
     },
     "usage_mapping_includes_cache_tokens": {
       "passed": true,
-      "detail": "{'arm': 'B', 'completion_tokens': 3624, 'cost': None, 'event': 'request', 'http_attempts': 1, 'incomplete_read_retries': 0, 'invalid_response_json_retries': 0, 'invalid_response_shape_retries': 0, 'is_json_repair': False, 'latency_s': 0.003, 'model_requested': 'claude-sonnet-5', 'model_returned': 'claude-sonnet-5', 'network_retries': 0, 'prompt_sha256': '29bcbb37cc690547cd42fffd138679bdc9e0fbb12bae01a990f707dad604a15a', 'prompt_tokens': 619, 'resume_session_id': '02288becd60140c0b9894b4ec8a8070a"
+      "detail": "{'arm': 'B', 'completion_tokens': 3624, 'cost': None, 'event': 'request', 'http_attempts': 1, 'incomplete_read_retries': 0, 'invalid_response_json_retries': 0, 'invalid_response_shape_retries': 0, 'is_json_repair': False, 'latency_s': 0.003, 'model_requested': 'claude-sonnet-5', 'model_returned': 'claude-sonnet-5', 'network_retries': 0, 'prompt_sha256': '29bcbb37cc690547cd42fffd138679bdc9e0fbb12bae01a990f707dad604a15a', 'prompt_tokens': 619, 'resume_session_id': '7a88e0411b85427d82838b0f7fc05b25"
     },
     "usage_limit_halts_without_invalid_sample": {
       "passed": true,
@@ -67,6 +67,10 @@
     "json_repair_single_request": {
       "passed": true,
       "detail": "2"
+    },
+    "arm_failure_terminal_across_resume_pause_not_failure": {
+      "passed": true,
+      "detail": "({'n': 1}, ['PipelineValidationError', 'RuntimeError'], True)"
     },
     "end_to_end_fake_units": {
       "passed": true,
