@@ -169,6 +169,38 @@ def clear_stale_oauth_lock(procs: list[dict]) -> None:
             log(f"could not remove OAuth lock: {exc}")
 
 
+TASK_NAME = "MinosJ-Experiment17C-Supervisor"
+STATE = WORK / "experiment_17c_supervisor_state.json"
+MAX_CONSECUTIVE_FAILURES = 3
+EXIT_PAUSED, EXIT_BUSY = 75, 73
+
+
+def schtasks(*args: str) -> int:
+    """Only ever touches the supervisor's own task name."""
+    return subprocess.run(["schtasks", *args, "/TN", TASK_NAME], capture_output=True, text=True).returncode
+
+
+def remove_task(reason: str) -> None:
+    code = schtasks("/Delete", "/F")
+    log(f"supervisor task removed ({reason}); schtasks exit {code}")
+    event("supervisor_task_removed", reason=reason, schtasks_exit=code)
+
+
+def disable_task(reason: str) -> None:
+    code = schtasks("/Change", "/DISABLE")
+    log(f"supervisor task DISABLED ({reason}); operator review needed; schtasks exit {code}")
+    event("supervisor_task_disabled", reason=reason, schtasks_exit=code)
+
+
+def record_exit(code: int) -> None:
+    state = json.loads(STATE.read_text(encoding="utf-8")) if STATE.exists() else {"consecutive_failures": 0}
+    state["consecutive_failures"] = 0 if code in (0, EXIT_PAUSED, EXIT_BUSY) else state["consecutive_failures"] + 1
+    state["last_exit"], state["last_exit_utc"] = code, now()
+    STATE.write_text(json.dumps(state, indent=2), encoding="utf-8")
+    if state["consecutive_failures"] >= MAX_CONSECUTIVE_FAILURES:
+        disable_task(f"{state['consecutive_failures']} consecutive run failures (last exit {code})")
+
+
 def run(args: list[str], log_path: Path) -> int:
     with log_path.open("a", encoding="utf-8") as handle:
         handle.write(f"=== supervisor tick {now()} :: {' '.join(args)}\n")
@@ -234,11 +266,11 @@ def main() -> int:
             log(f"Experiment 17-C run already active (pid {alive}); nothing to do")
             return 0
         if REPORT.exists():
-            if VALIDATION.exists():
-                log("run complete and validated; nothing to do")
-                return 0
-            return validate()
+            code = 0 if VALIDATION.exists() else validate()
+            remove_task(f"Experiment 17-C complete; independent validation exit {code}")
+            return code
         if not ledger_ok() or not checkpoints_ok():
+            disable_task("integrity check refused resume")
             return 2
         note_unclean_termination()
         clear_stale_oauth_lock(procs)
@@ -247,7 +279,10 @@ def main() -> int:
         log(f"run exit {code}")
         event("run_process_exit", exit_code=code)
         if code == 0 and REPORT.exists():
-            return validate()
+            vcode = validate()
+            remove_task(f"Experiment 17-C complete; independent validation exit {vcode}")
+            return vcode
+        record_exit(code)
         return code
     finally:
         LOCK.unlink(missing_ok=True)

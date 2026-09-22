@@ -31,3 +31,28 @@ The frozen protocol (SHA-256 `31fadcff…2ab594`) is **unchanged**. The amendmen
 | Judge attempt in flight at any stop | `STARTED` → `INTERRUPTED` (Experiment 17 rule) | consumes one of the two judge attempts for that batch (frozen rule, kept) |
 
 Completed units (those with `arm_a_report.json`/`arm_a_failed.json`, `arm_b_result.json`/`arm_b_failed.json`, and a terminal judge state) are never re-executed or rewritten.
+
+## Amendment 2 — a provider stop with no model output is not a judge attempt (2026-09-23, ~22:50 UTC)
+
+**Problem.** Under the inherited Experiment 17 rule, a judge attempt left `STARTED` counts as consumed. A subscription usage-limit or auth stop during a judge call leaves the attempt `STARTED` even though the provider refused the call and no model output exists. Two badly timed limits could fail a unit's judge phase with zero judgments made. Arm B samples and Arm A stages are already not charged in this situation (declared protocol deviation 9), so the judge was the only asymmetric case.
+
+**Change.**
+- `_durable_arm_failures()` also wraps `judge_unit`. On `SubscriptionUsageLimitReached` or `ClaudeAuthUnavailable`, it checks the ledger for any successful judge `request` row between the previous judge logical call and the failing one. If there is none, the `STARTED` attempt is withdrawn, kept under `provider_stops` in `judge_state.json`, and logged as a `judge_attempt_not_sent` ledger event.
+- If model output *was* produced (for example, the limit hit on the JSON-repair request), the attempt stays consumed. That is the frozen Experiment 17 rule.
+- `reconcile_provider_stopped_judge_attempts()` applies the same evidence rule at every resume. This covers stops that happened in a process started before this amendment (PID 22864).
+- A hard kill leaves no ledger evidence, so it keeps the Experiment 17 rule.
+
+**Bias check.** The judge scores both arms' cards in the same pooled, blinded batches, so this is arm-neutral. At amendment time, no unit had reached the judge.
+
+## Execution safeguards added in the same audit (no scientific effect)
+
+- **Arm B symmetry:** an unexpected Arm B exception is saved as a terminal `ARM_B_FAILED`, the same as Arm A, instead of crashing the process and being retried on every resume.
+- **Single process:** the runner takes `work/experiment_17c_run.lock` (holder PID; reclaimed only when that PID is dead). A second run exits with code 73. The supervisor also refuses to start while any `--run` process is alive, and Task Scheduler's `IgnoreNew` policy stops ticks from overlapping.
+- **No overwrite:** `--run` refuses to start once the final report exists, so completed results can't be regenerated. Output names for Experiments ≤ 17 are blocked by `HISTORICAL_GUARD`, and 17-C checkpoints live in their own folder.
+- **Supervisor lifecycle:**
+  - The tick deletes its own task once the run is complete and the independent validator has run.
+  - It disables the task after 3 consecutive run failures, or when a ledger or checkpoint integrity check refuses to resume.
+  - A usage-limit pause (exit 75) is not a failure. At most one run process starts per 30-minute tick, and it stops at the first refused call, so a limit window costs at most one zero-token failed call per tick.
+  - Task Scheduler deletes the task automatically at its 21-day end boundary (`DeleteExpiredTaskAfter=PT0S`).
+
+Harness validation now passes 26/26. The frozen protocol is unchanged, and preflight confirms the on-disk protocol still matches.

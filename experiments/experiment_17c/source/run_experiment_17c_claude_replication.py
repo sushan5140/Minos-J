@@ -313,9 +313,10 @@ def _durable_arm_failures() -> None:
     on resume.  Usage-limit/auth stops are ``BaseException`` and are never
     persisted, so pausing cannot fail an arm.
     """
-    if getattr(e16, "_E17C_DURABLE_FAILURES", False):
-        return
-    original_a, original_b = e16.run_arm_a, e16.run_arm_b
+    # Idempotent: E17 hooks may have been re-installed (replacing judge_unit), so
+    # unwrap to the current underlying functions before wrapping again.
+    original_a = getattr(e16.run_arm_a, "_e17c_original", e16.run_arm_a)
+    original_b = getattr(e16.run_arm_b, "_e17c_original", e16.run_arm_b)
 
     def run_arm_a(engine, meter, unit_dir: Path, question: str, model: str):
         marker = unit_dir / ARM_A_FAILED_MARKER
@@ -335,7 +336,11 @@ def _durable_arm_failures() -> None:
         stored = runtime.read_json(unit_dir / ARM_B_FAILED_MARKER)
         if stored is not None:
             return stored["result"]
-        result = original_b(engine, meter, unit_dir, *args, **kwargs)
+        try:
+            result = original_b(engine, meter, unit_dir, *args, **kwargs)
+        except Exception as exc:  # symmetric with Arm A: unexpected failures are terminal, not crash loops
+            result = {"samples": [], "k_samples": 0, "k_cap": 0, "pool_size": 0, "selected": [], "audits": [],
+                      "selector_error": f"{type(exc).__name__}: {str(exc)[:200]}", "cards": []}
         if result.get("selector_error"):
             runtime.atomic_write_json(unit_dir / ARM_B_FAILED_MARKER, {
                 "status": "ARM_B_FAILED", "result": result,
@@ -343,8 +348,81 @@ def _durable_arm_failures() -> None:
             })
         return result
 
-    e16.run_arm_a, e16.run_arm_b = run_arm_a, run_arm_b
-    e16._E17C_DURABLE_FAILURES = True
+    original_judge = getattr(e16.judge_unit, "_e17c_original", e16.judge_unit)
+
+    def judge_unit(engine, meter, unit_dir: Path, unit_id: str, *args, **kwargs):
+        """Amendment 2: a provider stop that produced no model output is not a judge attempt."""
+        try:
+            return original_judge(engine, meter, unit_dir, unit_id, *args, **kwargs)
+        except (claude_rt.SubscriptionUsageLimitReached, claude_rt.ClaudeAuthUnavailable) as stop:
+            rows = runtime.read_jsonl(meter.ledger_path)
+            judge_calls = [i for i, r in enumerate(rows)
+                           if r.get("event") == "logical_call" and r.get("arm") == "JUDGE" and r.get("unit_id") == unit_id]
+            start = judge_calls[-2] + 1 if len(judge_calls) >= 2 else 0
+            end = judge_calls[-1] if judge_calls else len(rows)
+            produced = any(r.get("event") == "request" and r.get("arm") == "JUDGE" and r.get("unit_id") == unit_id
+                           for r in rows[start:end])
+            state_path = unit_dir / "judge_state.json"
+            state = runtime.read_json(state_path)
+            if state is not None and not produced:
+                for batch in state.get("batches", []):
+                    attempts = batch.get("attempts", [])
+                    if attempts and attempts[-1].get("status") == "STARTED":
+                        withdrawn = attempts.pop()
+                        state.setdefault("provider_stops", []).append({
+                            "batch": batch.get("batch"), "withdrawn_attempt": withdrawn.get("attempt"),
+                            "reason": type(stop).__name__, "model_output_produced": False,
+                            "at_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        })
+                        runtime.atomic_write_json(state_path, state)
+                        meter.event("judge_attempt_not_sent", batch=batch.get("batch"), reason=type(stop).__name__)
+                        break
+            raise
+
+    run_arm_a._e17c_original = original_a
+    run_arm_b._e17c_original = original_b
+    judge_unit._e17c_original = original_judge
+    e16.run_arm_a, e16.run_arm_b, e16.judge_unit = run_arm_a, run_arm_b, judge_unit
+
+
+def reconcile_provider_stopped_judge_attempts(ledger_path: Path) -> list[str]:
+    """Apply amendment 2 retroactively from ledger evidence (e.g. a stop in a pre-amendment process).
+
+    A STARTED judge attempt is withdrawn only if the unit's last judge logical call
+    ended with a usage-limit/auth stop and no successful judge request lies between
+    it and the previous judge logical call.  Without that evidence (e.g. a hard kill)
+    the Experiment 17 rule (STARTED counts as consumed) is kept.
+    """
+    stops = {"SubscriptionUsageLimitReached", "ClaudeAuthUnavailable"}
+    rows = runtime.read_jsonl(ledger_path)
+    withdrawn = []
+    for state_path in sorted(REAL_PATHS["checkpoints"].glob("*/judge_state.json")):
+        state = runtime.read_json(state_path)
+        unit_id = state.get("unit_id")
+        if state.get("terminal"):
+            continue
+        calls = [i for i, r in enumerate(rows) if r.get("event") == "logical_call" and r.get("arm") == "JUDGE"
+                 and r.get("unit_id") == unit_id]
+        if not calls or rows[calls[-1]].get("error") not in stops:
+            continue
+        start = calls[-2] + 1 if len(calls) >= 2 else 0
+        if any(r.get("event") == "request" and r.get("arm") == "JUDGE" and r.get("unit_id") == unit_id
+               for r in rows[start:calls[-1]]):
+            continue
+        for batch in state.get("batches", []):
+            attempts = batch.get("attempts", [])
+            if attempts and attempts[-1].get("status") == "STARTED":
+                item = attempts.pop()
+                state.setdefault("provider_stops", []).append({
+                    "batch": batch.get("batch"), "withdrawn_attempt": item.get("attempt"),
+                    "reason": rows[calls[-1]]["error"], "model_output_produced": False,
+                    "reconciled_from_ledger_seq": rows[calls[-1]].get("seq"),
+                    "at_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                })
+                runtime.atomic_write_json(state_path, state)
+                withdrawn.append(unit_id)
+                break
+    return withdrawn
 
 
 def _install_protocol_globals() -> None:
@@ -373,7 +451,47 @@ def _write_outputs(report: dict[str, Any], units: list[dict[str, Any]], ledger_p
     runtime.atomic_write_json(REAL_PATHS["repro_json"], repro)
 
 
+RUN_LOCK = WORK_DIR / "experiment_17c_run.lock"
+
+
+def _pid_alive(pid: int) -> bool:
+    import subprocess
+    out = subprocess.run(["tasklist", "/FI", f"PID eq {pid}", "/NH"], capture_output=True, text=True).stdout
+    return str(pid) in out
+
+
+def _acquire_run_lock() -> None:
+    """Exactly one Experiment 17-C scientific process at a time (any launcher)."""
+    import os
+    for _ in range(2):
+        try:
+            fd = os.open(RUN_LOCK, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            os.write(fd, str(os.getpid()).encode())
+            os.close(fd)
+            return
+        except FileExistsError:
+            try:
+                holder = int(RUN_LOCK.read_text().strip() or 0)
+            except ValueError:
+                holder = 0
+            if holder and _pid_alive(holder):
+                print(f"Another Experiment 17-C run holds the lock (pid {holder}); refusing to start.", flush=True)
+                raise SystemExit(73)
+            RUN_LOCK.unlink(missing_ok=True)
+    raise SystemExit("Could not acquire the Experiment 17-C run lock.")
+
+
 def run_real(argv: list[str]) -> dict[str, Any]:
+    if REAL_PATHS["report_json"].exists():
+        raise SystemExit("Experiment 17-C final report already exists; refusing to re-run or overwrite results.")
+    _acquire_run_lock()
+    try:
+        return _run_real(argv)
+    finally:
+        RUN_LOCK.unlink(missing_ok=True)
+
+
+def _run_real(argv: list[str]) -> dict[str, Any]:
     env_info = preflight()
     _install_protocol_globals()
     import pipeline
@@ -388,6 +506,8 @@ def run_real(argv: list[str]) -> dict[str, Any]:
     ledger_path = REAL_PATHS["checkpoints"] / "request_ledger.jsonl"
     meter = runtime.ResumeSafeMeter(client, ledger_path)
     meter.event("session_start", cli_version=env_info["cli_version"], protocol_sha256=protocol_sha256())
+    for unit_id in reconcile_provider_stopped_judge_attempts(ledger_path):
+        meter.event("judge_attempt_not_sent", unit_id=unit_id, reason="reconciled at resume from ledger evidence")
     units = []
     started = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     try:

@@ -1,8 +1,8 @@
 {
   "artifact": "Experiment 17-C harness validation (fake CLI; not a scientific result)",
   "status": "PASSED",
-  "passed": 20,
-  "total": 20,
+  "passed": 26,
+  "total": 26,
   "checks": {
     "e17_base_protocol_unchanged": {
       "passed": true,
@@ -38,7 +38,7 @@
     },
     "usage_mapping_includes_cache_tokens": {
       "passed": true,
-      "detail": "{'arm': 'B', 'completion_tokens': 3624, 'cost': None, 'event': 'request', 'http_attempts': 1, 'incomplete_read_retries': 0, 'invalid_response_json_retries': 0, 'invalid_response_shape_retries': 0, 'is_json_repair': False, 'latency_s': 0.003, 'model_requested': 'claude-sonnet-5', 'model_returned': 'claude-sonnet-5', 'network_retries': 0, 'prompt_sha256': '29bcbb37cc690547cd42fffd138679bdc9e0fbb12bae01a990f707dad604a15a', 'prompt_tokens': 619, 'resume_session_id': '7a88e0411b85427d82838b0f7fc05b25"
+      "detail": "{'arm': 'B', 'completion_tokens': 3624, 'cost': None, 'event': 'request', 'http_attempts': 1, 'incomplete_read_retries': 0, 'invalid_response_json_retries': 0, 'invalid_response_shape_retries': 0, 'is_json_repair': False, 'latency_s': 0.006, 'model_requested': 'claude-sonnet-5', 'model_returned': 'claude-sonnet-5', 'network_retries': 0, 'prompt_sha256': '29bcbb37cc690547cd42fffd138679bdc9e0fbb12bae01a990f707dad604a15a', 'prompt_tokens': 619, 'resume_session_id': '56b7c72cf39648e7b97abffb156b9817"
     },
     "usage_limit_halts_without_invalid_sample": {
       "passed": true,
@@ -71,6 +71,30 @@
     "arm_failure_terminal_across_resume_pause_not_failure": {
       "passed": true,
       "detail": "({'n': 1}, ['PipelineValidationError', 'RuntimeError'], True)"
+    },
+    "arm_b_failure_terminal_symmetric": {
+      "passed": true,
+      "detail": "({'n': 1}, \"KeyError: 'synthetic arm B crash'\")"
+    },
+    "judge_attempt_not_consumed_by_usage_limit_without_output": {
+      "passed": true,
+      "detail": "([{'batch': 0, 'withdrawn_attempt': 1, 'reason': 'SubscriptionUsageLimitReached', 'model_output_produced': False, 'at_utc': '2026-09-22T22:46:45Z'}], [{'attempt': 1, 'status': 'STARTED', 'ok': None}])"
+    },
+    "judge_reconciliation_at_resume_evidence_only": {
+      "passed": true,
+      "detail": "['R1']"
+    },
+    "runner_single_process_lock": {
+      "passed": true,
+      "detail": "(73, True)"
+    },
+    "rerun_refused_after_final_report": {
+      "passed": true,
+      "detail": "Experiment 17-C final report already exists; refusing to re-run or overwrite results."
+    },
+    "supervisor_lifecycle_remove_on_completion_disable_on_failure": {
+      "passed": true,
+      "detail": "(True, True, True)"
     },
     "end_to_end_fake_units": {
       "passed": true,

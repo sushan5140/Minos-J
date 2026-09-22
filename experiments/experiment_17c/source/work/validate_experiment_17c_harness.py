@@ -279,6 +279,158 @@ def run_checks(tmp: Path) -> dict[str, dict[str, Any]]:
           and not (pause_dir / e17c.ARM_A_FAILED_MARKER).exists() and original is not None,
           (calls, outcomes, marker_written))
 
+    # 10c. Arm B: unexpected exception is terminal ARM_B_FAILED (symmetric with Arm A), not a crash loop
+    bdir = tmp / "durable" / "B"
+    bdir.mkdir(parents=True)
+    original_b = e16.run_arm_b._e17c_original
+    bcalls = {"n": 0}
+
+    def b_boom(*a, **k):
+        bcalls["n"] += 1
+        raise KeyError("synthetic arm B crash")
+
+    e16.run_arm_b._e17c_original = b_boom
+    try:
+        wrapper_b = e16.run_arm_b
+        e17c._durable_arm_failures()  # rewrap around b_boom
+        r1 = e16.run_arm_b(None, NullMeter(), bdir, "q", 1, {}, 0)
+        r2 = e16.run_arm_b(None, NullMeter(), bdir, "q", 1, {}, 0)
+    finally:
+        e16.run_arm_b._e17c_original = original_b
+        e17c._durable_arm_failures()
+    check("arm_b_failure_terminal_symmetric",
+          bcalls["n"] == 1 and r1["selector_error"].startswith("KeyError") and r2 == r1
+          and (bdir / e17c.ARM_B_FAILED_MARKER).exists() and wrapper_b is not None, (bcalls, r1["selector_error"]))
+
+    # 10d. Amendment 2: usage-limit stop with no model output does not consume a judge attempt;
+    #      with model output already produced, the frozen E17 consumption rule still applies.
+    def judge_case(produce_output: bool) -> dict:
+        jdir = tmp / "judge" / ("out" if produce_output else "none")
+        jdir.mkdir(parents=True)
+        led = jdir / "ledger.jsonl"
+        rows = []
+        if produce_output:
+            rows.append({"event": "request", "arm": "JUDGE", "unit_id": "U", "seq": 1})
+        rows.append({"event": "logical_call", "arm": "JUDGE", "unit_id": "U", "ok": False, "seq": 2})
+        led.write_text("".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8")
+        runtime.atomic_write_json(jdir / "judge_state.json", {"version": 1, "unit_id": "U", "input_fingerprint": "x",
+            "terminal": False, "batches": [{"batch": 0, "status": "PENDING",
+                                            "attempts": [{"attempt": 1, "status": "STARTED", "ok": None}]}]})
+
+        class M:
+            ledger_path = led
+            def event(self, kind, **f):
+                runtime.append_jsonl(led, {"event": kind, "seq": 99, **f})
+
+        def stop(*a, **k):
+            raise claude_rt.SubscriptionUsageLimitReached("limit")
+
+        saved = e16.judge_unit._e17c_original
+        e16.judge_unit._e17c_original = stop
+        e17c._durable_arm_failures()
+        try:
+            e16.judge_unit(None, M(), jdir, "U", "q", {}, "m")
+        except claude_rt.SubscriptionUsageLimitReached:
+            pass
+        finally:
+            e16.judge_unit._e17c_original = saved
+            e17c._durable_arm_failures()
+        return runtime.read_json(jdir / "judge_state.json")
+
+    none_state, out_state = judge_case(False), judge_case(True)
+    check("judge_attempt_not_consumed_by_usage_limit_without_output",
+          none_state["batches"][0]["attempts"] == [] and none_state["provider_stops"][0]["withdrawn_attempt"] == 1
+          and out_state["batches"][0]["attempts"][0]["status"] == "STARTED" and "provider_stops" not in out_state,
+          (none_state.get("provider_stops"), out_state["batches"][0]["attempts"]))
+
+    # 10d-2. Retroactive reconciliation at resume (stop in a pre-amendment process); hard kill keeps E17 rule
+    rdir = tmp / "reconcile"
+    for uid, err in (("R1", "SubscriptionUsageLimitReached"), ("R2", None)):
+        (rdir / uid).mkdir(parents=True)
+        runtime.atomic_write_json(rdir / uid / "judge_state.json", {"unit_id": uid, "terminal": False, "batches": [
+            {"batch": 0, "status": "PENDING", "attempts": [{"attempt": 1, "status": "STARTED", "ok": None}]}]})
+    rled = rdir / "ledger.jsonl"
+    rled.write_text(json.dumps({"event": "logical_call", "arm": "JUDGE", "unit_id": "R1", "ok": False,
+                                "error": "SubscriptionUsageLimitReached", "seq": 5}) + "\n", encoding="utf-8")
+    saved_ck = e17c.REAL_PATHS["checkpoints"]
+    e17c.REAL_PATHS["checkpoints"] = rdir
+    try:
+        withdrawn = e17c.reconcile_provider_stopped_judge_attempts(rled)
+    finally:
+        e17c.REAL_PATHS["checkpoints"] = saved_ck
+    r2 = runtime.read_json(rdir / "R2" / "judge_state.json")
+    check("judge_reconciliation_at_resume_evidence_only",
+          withdrawn == ["R1"] and r2["batches"][0]["attempts"][0]["status"] == "STARTED", withdrawn)
+
+    # 10e. Single scientific process: a live lock holder blocks a second run (exit 73)
+    import os
+    saved_lock = e17c.RUN_LOCK
+    e17c.RUN_LOCK = tmp / "run.lock"
+    e17c.RUN_LOCK.write_text(str(os.getpid()))
+    try:
+        e17c._acquire_run_lock()
+        lock_outcome = "acquired"
+    except SystemExit as exc:
+        lock_outcome = exc.code
+    e17c.RUN_LOCK.write_text("999999")  # dead holder -> reclaimed
+    e17c._acquire_run_lock()
+    reclaimed = e17c.RUN_LOCK.read_text() == str(os.getpid())
+    e17c.RUN_LOCK = saved_lock
+    check("runner_single_process_lock", lock_outcome == 73 and reclaimed, (lock_outcome, reclaimed))
+
+    # 10f. Completed results cannot be regenerated by re-running
+    saved_report = e17c.REAL_PATHS["report_json"]
+    e17c.REAL_PATHS["report_json"] = tmp / "report.json"
+    e17c.REAL_PATHS["report_json"].write_text("{}")
+    try:
+        e17c.run_real(["--run"])
+        rerun = "ran"
+    except SystemExit as exc:
+        rerun = str(exc.code)
+    e17c.REAL_PATHS["report_json"] = saved_report
+    check("rerun_refused_after_final_report", "already exists" in rerun, rerun)
+
+    # 10g. Supervisor lifecycle: self-removal on completion, disable on crash loop / integrity refusal
+    sys.path.insert(0, str(PROJECT_DIR / "work"))
+    import experiment_17c_tick as tick
+    calls_log: list[tuple] = []
+    saved_tick = {k: getattr(tick, k) for k in ("schtasks", "WORK", "LOG", "LOCK", "CHECKPOINTS", "EVENTS", "REPORT",
+                                                  "VALIDATION", "STATE", "RUN_LOG", "processes", "run",
+                                                  "clear_stale_oauth_lock")}
+    twork = tmp / "tick"
+    (twork / "ckpt").mkdir(parents=True)
+    tick.schtasks = lambda *a: calls_log.append(a) or 0
+    tick.WORK, tick.LOG, tick.LOCK = twork, twork / "sup.log", twork / "tick.lock"
+    tick.CHECKPOINTS, tick.EVENTS = twork / "ckpt", twork / "ckpt" / "events.jsonl"
+    tick.REPORT, tick.VALIDATION, tick.STATE = twork / "report.json", twork / "validation.json", twork / "state.json"
+    tick.RUN_LOG = twork / "run.log"
+    tick.processes = lambda: []
+    tick.clear_stale_oauth_lock = lambda procs: None
+    exits = iter([1, 1, 1])
+    tick.run = lambda args, log_path: next(exits)
+    try:
+        for _ in range(3):
+            tick.main()
+        crash_disabled = calls_log == [("/Change", "/DISABLE")]
+        calls_log.clear()
+        tick.REPORT.write_text("{}")
+        tick.VALIDATION.write_text("{}")
+        tick.main()
+        removed = calls_log == [("/Delete", "/F")]
+        calls_log.clear()
+        tick.REPORT.unlink()
+        (twork / "ckpt" / "U").mkdir()
+        (twork / "ckpt" / "U" / "stage.json").write_text('{"trunc')
+        tick.main()
+        integrity_disabled = calls_log == [("/Change", "/DISABLE")]
+        task_name_only = tick.TASK_NAME == "MinosJ-Experiment17C-Supervisor"
+    finally:
+        for k, v in saved_tick.items():
+            setattr(tick, k, v)
+    check("supervisor_lifecycle_remove_on_completion_disable_on_failure",
+          crash_disabled and removed and integrity_disabled and task_name_only,
+          (crash_disabled, removed, integrity_disabled))
+
     # 11. End-to-end fake unit through the unchanged E16/E17 scientific core
     import pipeline
     import prompts
