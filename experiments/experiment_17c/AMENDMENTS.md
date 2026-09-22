@@ -28,7 +28,7 @@ The frozen protocol (SHA-256 `31fadcff…2ab594`) is **unchanged**. The amendmen
 | Arm A per-stage checkpoints (historical `pipeline.py`, frozen) | plain `write_text` | a kill during the few-millisecond write could truncate JSON; the supervisor refuses to resume and flags it instead of letting the unit fail |
 | Request ledger | append one line per event | a kill mid-append could truncate the last line; the supervisor refuses to resume and flags it |
 | In-flight model call at a hard kill | not recorded (the ledger writes after the call returns) | that call's tokens would be missing from the unit's budget; the supervisor logs `unclean_termination_detected` so the affected unit can be flagged in the report |
-| Judge attempt in flight at any stop | `STARTED` → `INTERRUPTED` (Experiment 17 rule) | consumes one of the two judge attempts for that batch (frozen rule, kept) |
+| Judge attempt in flight at a stop | `STARTED` in atomic judge state | usage-limit/auth stop with no model output: withdrawn (amendment 2); hard kill or output already produced: consumed (frozen Experiment 17 rule) |
 
 Completed units (those with `arm_a_report.json`/`arm_a_failed.json`, `arm_b_result.json`/`arm_b_failed.json`, and a terminal judge state) are never re-executed or rewritten.
 
