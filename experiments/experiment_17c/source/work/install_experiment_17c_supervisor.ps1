@@ -159,7 +159,7 @@ $classification =
 $diagnostics.task_ran = $ran; $diagnostics.task_finished = $finished; $diagnostics.timed_out = $timedOut
 $diagnostics.python_started = $pythonStarted; $diagnostics.state_timeline = $timeline
 $diagnostics.selftest_result = $selftest; $diagnostics.classification = $classification
-if (Test-Path $ErrTxt) { $diagnostics.selftest_traceback = Get-Content $ErrTxt -Raw }
+if (Test-Path $ErrTxt) { $diagnostics.selftest_traceback = [System.IO.File]::ReadAllText($ErrTxt) }
 $diagnostics | ConvertTo-Json -Depth 6 | Set-Content -Path $Report -Encoding utf8
 
 "Self-test: $classification"
