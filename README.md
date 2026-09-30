@@ -138,7 +138,7 @@ The intended next stage for Q3 produces exactly 10 statistical-testability objec
 
 - **Experiment 16:** inconclusive. 0 of 9 units were analysable, and the failures traced to engineering causes, not science.
 - **Experiment 17:** interrupted by the OpenRouter free-tier quota with 0 of 9 units evaluated. Its records and last valid checkpoint are preserved in [`historical/2026-09-20-experiments-16-17`](historical/2026-09-20-experiments-16-17/RECOVERY_REPORT.md).
-- **Experiment 17-C:** a Claude-based replication of Experiment 17, in progress. See [`experiments/experiment_17c`](experiments/experiment_17c/README.md).
+- **Experiment 17-C:** Claude-based replication of Experiment 17: **inconclusive** (1 of 9 units analysable; 6 failed on the shared audit rule). See [`experiments/experiment_17c`](experiments/experiment_17c/results/RESULTS.md).
 
 ---
 

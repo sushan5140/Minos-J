@@ -1,6 +1,6 @@
 # Experiment 17-C — Claude-based replication of Experiment 17
 
-**Status: live run in progress. No results yet.** This file is updated only with verified outputs.
+**Status: complete, independently validated (15/15). Verdict `INCONCLUSIVE_INSUFFICIENT_MATCHED_UNITS`: 1 of 9 units analysable.** See [results/RESULTS.md](results/RESULTS.md).
 
 ## Why this exists
 

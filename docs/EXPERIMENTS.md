@@ -142,9 +142,11 @@ The recovery audit traced the failures to engineering causes rather than scienti
 
 This was a repaired re-preregistration: strict JSON schemas, retry and resume fixes, and durable judge state. It stopped when the OpenRouter free-tier daily quota ran out, with **0 of 9 units evaluated**, so it has no result. The last valid checkpoint and the unit-by-unit state are in the [Experiment 16–17 recovery report](../historical/2026-09-20-experiments-16-17/RECOVERY_REPORT.md).
 
-### Experiment 17-C (Claude-based replication; in progress)
+### Experiment 17-C (Claude-based replication)
 
 This re-runs the complete Experiment 17 design with `claude-sonnet-5` as generator and `claude-opus-5-5` as blinded judge, through the Claude Code CLI on a Claude subscription. It has a separately frozen protocol with every substitution and deviation declared, and it is never pooled with Experiment 17. See [`experiments/experiment_17c/`](../experiments/experiment_17c/).
+
+**Verdict: `INCONCLUSIVE_INSUFFICIENT_MATCHED_UNITS`** (independently validated, 15/15). Six of nine units failed because the shared audit contract rejected the model's own audits: a hypothesis was marked `SALVAGEABLE` with 0 failed critical checks. That happened at Arm A's Stage 5 five times and at Arm B's selector once. Two of the three complete units were budget-unmatched, which leaves 1 analysable unit (D = +4). No architectural conclusion follows. See [results](../experiments/experiment_17c/results/RESULTS.md).
 
 ---
 

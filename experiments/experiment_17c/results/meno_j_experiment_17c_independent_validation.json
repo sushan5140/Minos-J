@@ -1,0 +1,69 @@
+{
+  "experiment_name": "Minos-J Experiment 17-C: Claude-Based Replication of Experiment 17 (Matched-Compute Architecture Falsification)",
+  "scope": "Independent post-execution validation of real Experiment 17-C outputs",
+  "status": "PASSED",
+  "protocol_sha256": "31fadcff3a17d6e81e074b309d23726f394c36cc21d0ce2610148548352ab594",
+  "scientific_verdict": "INCONCLUSIVE_INSUFFICIENT_MATCHED_UNITS",
+  "checks": {
+    "all_scientific_outputs_exist": {
+      "passed": true,
+      "detail": ""
+    },
+    "protocol_frozen_and_hash_verified": {
+      "passed": true,
+      "detail": "canonical SHA-256 31fadcff3a17d6e81e074b309d23726f394c36cc21d0ce2610148548352ab594"
+    },
+    "model_assignments_exact": {
+      "passed": true,
+      "detail": "generator=claude-sonnet-5; judge=claude-opus-5-5"
+    },
+    "nine_unique_preregistered_units": {
+      "passed": true,
+      "detail": "report=['Q1-r1', 'Q2-r1', 'Q3-r1', 'Q1-r2', 'Q2-r2', 'Q3-r2', 'Q1-r3', 'Q2-r3', 'Q3-r3']; raw=['Q1-r1', 'Q2-r1', 'Q3-r1', 'Q1-r2', 'Q2-r2', 'Q3-r2', 'Q1-r3', 'Q2-r3', 'Q3-r3']"
+    },
+    "ledger_sequences_unique_and_monotonic": {
+      "passed": true,
+      "detail": "rows=225; max=225"
+    },
+    "ledger_uses_only_frozen_models": {
+      "passed": true,
+      "detail": "bad sequences=[]"
+    },
+    "per_unit_budgets_recompute_from_ledger": {
+      "passed": true,
+      "detail": ""
+    },
+    "token_and_attempt_accounting_reconciles": {
+      "passed": true,
+      "detail": "tokens=2826926/2826926; attempts=113/113"
+    },
+    "matched_compute_flags_and_count": {
+      "passed": true,
+      "detail": "analysable=1; mismatches=[]"
+    },
+    "judge_outputs_schema_and_counts": {
+      "passed": true,
+      "detail": "judgment_rows=48; judge_failed_units=0; issues=[]"
+    },
+    "paired_differences_recompute": {
+      "passed": true,
+      "detail": ""
+    },
+    "bootstrap_ci_and_preregistered_verdict_recompute": {
+      "passed": true,
+      "detail": "verdict=INCONCLUSIVE_INSUFFICIENT_MATCHED_UNITS; stats mismatches=[]"
+    },
+    "historical_experiments_unchanged": {
+      "passed": true,
+      "detail": "files=700; changed=[]"
+    },
+    "credential_safety_scan": {
+      "passed": true,
+      "detail": "files=229; hits=[]"
+    },
+    "resume_and_judge_attempt_integrity": {
+      "passed": true,
+      "detail": "judge_state_files=3; invalid=[]"
+    }
+  }
+}
