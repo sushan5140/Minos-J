@@ -362,6 +362,73 @@ def run_checks(tmp: Path) -> dict[str, dict[str, Any]]:
     check("judge_reconciliation_at_resume_evidence_only",
           withdrawn == ["R1"] and r2["batches"][0]["attempts"][0]["status"] == "STARTED", withdrawn)
 
+    # 10d-3. Amendment 3: real Pro session-limit message is a quota stop, not a transient error
+    msg_limit = "You've hit your session limit · resets 8:20am (Asia/Kolkata)"
+    runner = FakeClaudeCLI([cli_error(msg_limit, 429)])
+    client = make_client(tmp / "sessionlimit", runner)
+    try:
+        client.call_llm(prompt)
+        sl = "returned"
+    except claude_rt.SubscriptionUsageLimitReached:
+        sl = "halted"
+    check("session_limit_message_halts_immediately",
+          sl == "halted" and len(runner.calls) == 1
+          and not claude_rt.is_usage_limit("API Error: Claude's response exceeded the 12000 output token maximum", None),
+          (sl, len(runner.calls)))
+
+    # 10d-4. Amendment 3: evidence-based reclassification + provider-stop-aware call counts + orphans
+    adir = tmp / "a3"
+    (adir / "diag").mkdir(parents=True)
+    arch = runtime.DiagnosticArchive(adir / "diag")
+    for body in ([{"is_error": True, "api_error_status": 429, "result": msg_limit, "usage": {"output_tokens": 0}}] * 2
+                 + [{"is_error": True, "api_error_status": None, "result": "exceeded output token maximum",
+                     "usage": {"output_tokens": 48000}}]
+                 + [{"is_error": True, "api_error_status": 429, "result": msg_limit, "usage": {"output_tokens": 0}}]):
+        arch.capture("cli_result", body=json.dumps(body))
+    arows = [
+        {"seq": 1, "event": "request_failed", "unit_id": "U", "arm": "A", "stage": "stage_5_auditor",
+         "error": "RuntimeError", "http_attempts": 2},
+        {"seq": 2, "event": "logical_call", "unit_id": "U", "arm": "A", "stage": "stage_5_auditor", "role": "evaluator",
+         "ok": False, "error": "RuntimeError"},
+        {"seq": 3, "event": "request_failed", "unit_id": "U", "arm": "B", "stage": "baseline_sample",
+         "error": "RuntimeError", "http_attempts": 1},
+        {"seq": 4, "event": "logical_call", "unit_id": "U", "arm": "B", "stage": "baseline_sample", "role": "generator",
+         "ok": False, "error": "RuntimeError"},
+    ]
+    items = e17c.provider_stop_reclassifications(arows, adir / "diag")
+    sim = arows + [{"event": "provider_stop_reclassified", "seq": 10, **items[0]}] if items else arows
+    ba = e16.summarize_budget(sim, "U", "A")
+    bb = e16.summarize_budget(sim, "U", "B")
+    orphans = e17c.orphan_captures(arows, adir / "diag")
+    check("amendment3_reclassify_only_zero_output_quota_refusals",
+          len(items) == 1 and items[0]["target_seqs"] == [1, 2] and ba["evaluator_calls"] == 0
+          and ba["provider_refused_logical_calls"] == 1 and ba["http_attempts"] == 2
+          and bb["generator_calls"] == 1 and bb["provider_refused_logical_calls"] == 0 and orphans == [4]
+          and e17c.provider_stop_reclassifications(sim, adir / "diag") == [],
+          (items, ba["evaluator_calls"], bb["generator_calls"], orphans))
+
+    # 10d-5. find_cli sees the MSIX package-private CLI copy (Task Scheduler context)
+    import os as _os
+    fake_local = tmp / "localappdata"
+    exe = fake_local / "Packages" / "Claude_test" / "LocalCache" / "Roaming" / "Claude" / "claude-code" / "9.9.9" / "claude.exe"
+    exe.parent.mkdir(parents=True)
+    exe.write_text("")
+    saved_env = {k: _os.environ.get(k) for k in ("LOCALAPPDATA", "MINOS_J_CLAUDE_CLI")}
+    saved_default = claude_rt.DEFAULT_CLI_PATH
+    _os.environ["LOCALAPPDATA"] = str(fake_local)
+    _os.environ.pop("MINOS_J_CLAUDE_CLI", None)
+    claude_rt.DEFAULT_CLI_PATH = tmp / "nonexistent"
+    try:
+        found = claude_rt.find_cli()
+    finally:
+        claude_rt.DEFAULT_CLI_PATH = saved_default
+        for k, v in saved_env.items():
+            if v is None:
+                _os.environ.pop(k, None)
+            else:
+                _os.environ[k] = v
+    check("find_cli_msix_package_fallback", found == exe, found)
+
     # 10e. Single scientific process: a live lock holder blocks a second run (exit 73)
     import os
     saved_lock = e17c.RUN_LOCK

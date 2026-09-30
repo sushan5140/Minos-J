@@ -385,6 +385,93 @@ def _durable_arm_failures() -> None:
     e16.run_arm_a, e16.run_arm_b, e16.judge_unit = run_arm_a, run_arm_b, judge_unit
 
 
+PROVIDER_STOP_ERRORS = {"SubscriptionUsageLimitReached", "ClaudeAuthUnavailable"}
+
+
+def provider_stop_reclassifications(ledger_rows: list[dict[str, Any]], diagnostic_dir: Path) -> list[dict[str, Any]]:
+    """Amendment 3: find request_failed rows that were subscription quota refusals misclassified as RuntimeError.
+
+    Each HTTP/CLI attempt produces exactly one ``cli_result``/``cli_timeout`` capture, in order,
+    so walking request/request_failed rows by ``http_attempts`` maps every row to its raw
+    captures.  A row qualifies only if EVERY mapped capture is HTTP 429, mentions a limit, and
+    reports zero output tokens (no model output).  Already-reclassified rows are skipped.
+    """
+    import experiment_17c_claude_runtime as rt17c
+    captures = []
+    for path in sorted(diagnostic_dir.glob("response_*.json")):
+        record = runtime.read_json(path)
+        if record.get("classification") in ("cli_result", "cli_timeout"):
+            captures.append(record)
+    done = {seq for r in ledger_rows if r.get("event") == "provider_stop_reclassified" for seq in r.get("target_seqs", [])}
+    found, cursor = [], 0
+    for index, row in enumerate(ledger_rows):
+        if row.get("event") not in ("request", "request_failed"):
+            continue
+        segment = captures[cursor:cursor + int(row.get("http_attempts", 0))]
+        cursor += int(row.get("http_attempts", 0))
+        if row["event"] != "request_failed" or row.get("error") != "RuntimeError" or row["seq"] in done:
+            continue
+        evidence = []
+        for capture in segment:
+            try:
+                body = json.loads(capture.get("body", ""))
+            except (TypeError, json.JSONDecodeError):
+                body = None
+            if not (isinstance(body, dict) and body.get("is_error") and body.get("api_error_status") == 429
+                    and rt17c.is_usage_limit(str(body.get("result", "")), 429)
+                    and int((body.get("usage") or {}).get("output_tokens") or 0) == 0):
+                evidence = []
+                break
+            evidence.append(capture["archive_sequence"])
+        if not evidence or len(evidence) != int(row.get("http_attempts", 0)):
+            continue
+        following = next((r for r in ledger_rows[index + 1:] if r.get("event") == "logical_call"
+                          and r.get("unit_id") == row.get("unit_id") and r.get("stage") == row.get("stage")), None)
+        found.append({"target_seqs": [row["seq"]] + ([following["seq"]] if following else []),
+                      "unit_id": row.get("unit_id"), "arm": row.get("arm"), "stage": row.get("stage"),
+                      "diagnostic_archive_sequences": evidence, "model_output_produced": False})
+    return found
+
+
+def orphan_captures(ledger_rows: list[dict[str, Any]], diagnostic_dir: Path) -> list[int]:
+    """Attempt captures not covered by ledger request rows and not already recorded."""
+    attempts = [r for r in sorted(diagnostic_dir.glob("response_*.json"))
+                if runtime.read_json(r).get("classification") in ("cli_result", "cli_timeout")]
+    covered = sum(int(r.get("http_attempts", 0)) for r in ledger_rows if r.get("event") in ("request", "request_failed"))
+    recorded = {s for r in ledger_rows if r.get("event") == "unclean_termination_recorded"
+                for s in r.get("diagnostic_archive_sequences", [])}
+    seqs = [runtime.read_json(p)["archive_sequence"] for p in attempts[covered:]]
+    return [s for s in seqs if s not in recorded]
+
+
+def _is_provider_stop(row: dict[str, Any], reclassified: set[int]) -> bool:
+    return row.get("error") in PROVIDER_STOP_ERRORS or row.get("seq") in reclassified
+
+
+def _provider_stop_aware_budgets() -> None:
+    """Amendment 3: provider-refused calls (zero model output) are not arm calls.
+
+    Frozen deviation 9 states a usage-limit stop charges nothing to an arm.  The inherited
+    summariser nevertheless counted the refused *logical call* toward generator/evaluator
+    call counts (and hence evaluator parity).  Refused logical calls are now excluded from
+    call counts; their HTTP attempts remain in attempt accounting, and tokens are unaffected
+    (refusals carry none).
+    """
+    base = getattr(e16.summarize_budget, "_e17c_original", e16.summarize_budget)
+
+    def summarize_budget(rows, unit_id, arm):
+        reclassified = {s for r in rows if r.get("event") == "provider_stop_reclassified" for s in r.get("target_seqs", [])}
+        kept = [r for r in rows if not (r.get("event") == "logical_call" and _is_provider_stop(r, reclassified))]
+        result = base(kept, unit_id, arm)
+        result["provider_refused_logical_calls"] = sum(
+            1 for r in rows if r.get("event") == "logical_call" and r.get("unit_id") == unit_id
+            and r.get("arm") == arm and _is_provider_stop(r, reclassified))
+        return result
+
+    summarize_budget._e17c_original = base
+    e16.summarize_budget = summarize_budget
+
+
 def reconcile_provider_stopped_judge_attempts(ledger_path: Path) -> list[str]:
     """Apply amendment 2 retroactively from ledger evidence (e.g. a stop in a pre-amendment process).
 
@@ -428,6 +515,7 @@ def reconcile_provider_stopped_judge_attempts(ledger_path: Path) -> list[str]:
 def _install_protocol_globals() -> None:
     runtime.install_experiment_17_core_hooks()
     _durable_arm_failures()
+    _provider_stop_aware_budgets()
     e16.EXPERIMENT_16_NAME = EXPERIMENT_NAME
     e16.PROTOCOL = PROTOCOL
 
@@ -508,6 +596,14 @@ def _run_real(argv: list[str]) -> dict[str, Any]:
     meter.event("session_start", cli_version=env_info["cli_version"], protocol_sha256=protocol_sha256())
     for unit_id in reconcile_provider_stopped_judge_attempts(ledger_path):
         meter.event("judge_attempt_not_sent", unit_id=unit_id, reason="reconciled at resume from ledger evidence")
+    for item in provider_stop_reclassifications(runtime.read_jsonl(ledger_path), REAL_PATHS["checkpoints"] / "diagnostic_responses"):
+        meter.event("provider_stop_reclassified", reason="amendment 3: HTTP 429 session-limit refusal misclassified as RuntimeError", **item)
+    orphans = orphan_captures(runtime.read_jsonl(ledger_path), REAL_PATHS["checkpoints"] / "diagnostic_responses")
+    if orphans:
+        meter.event("unclean_termination_recorded", diagnostic_archive_sequences=orphans,
+                    note="CLI attempts captured without a ledger row: the previous process ended mid-call. "
+                         "Any tokens those attempts consumed are absent from arm budgets.")
+
     units = []
     started = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     try:

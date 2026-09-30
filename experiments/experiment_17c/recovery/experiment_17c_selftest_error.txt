@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "C:\Users\DELL\Documents\Codex\2026-08-04\we-are-starting-a-fresh-implementation\work\experiment_17c_tick.py", line 261, in main
+    return selftest()
+           ^^^^^^^^^^
+  File "C:\Users\DELL\Documents\Codex\2026-08-04\we-are-starting-a-fresh-implementation\work\experiment_17c_tick.py", line 231, in selftest
+    cli = rt.find_cli()
+          ^^^^^^^^^^^^^
+  File "C:\Users\DELL\Documents\Codex\2026-08-04\we-are-starting-a-fresh-implementation\experiment_17c_claude_runtime.py", line 89, in find_cli
+    raise FileNotFoundError("Claude Code CLI not found; set MINOS_J_CLAUDE_CLI.")
+FileNotFoundError: Claude Code CLI not found; set MINOS_J_CLAUDE_CLI.

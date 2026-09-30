@@ -44,10 +44,17 @@ _STRIPPED_ENV_PREFIXES = ("CLAUDE", "ANTHROPIC_")
 _STRIPPED_ENV_NAMES = {"USE_LOCAL_OAUTH", "USE_STAGING_OAUTH"}
 
 _USAGE_LIMIT = re.compile(
-    r"usage limit|limit reached|limit will reset|resets? (at|in)|weekly limit|5-hour limit|"
-    r"out of (extra )?usage|upgrade to (max|pro)|credit balance",
+    r"usage limit|session limit|limit reached|limit will reset|resets? (at|in)|resets \d|weekly limit|5-hour limit|"
+    r"hit your \w+ limit|out of (extra )?usage|upgrade to (max|pro)|credit balance",
     re.IGNORECASE,
 )
+# Amendment 3: Claude Pro returned HTTP 429 "You've hit your session limit · resets 8:20am",
+# which the original pattern missed.  Any 429 that mentions a limit is a quota stop.
+_LIMIT_WORD = re.compile(r"\blimit\b", re.IGNORECASE)
+
+
+def is_usage_limit(message: str, status: Any = None) -> bool:
+    return bool(_USAGE_LIMIT.search(message)) or (status == 429 and bool(_LIMIT_WORD.search(message)))
 _TRANSIENT = re.compile(
     r"overloaded|529|500|502|503|504|internal server error|timed? ?out|ECONNRESET|socket|network|"
     r"fetch failed|refresh(ing)? OAuth token|another Claude Code process|temporarily",
@@ -81,8 +88,14 @@ def find_cli(explicit: str | None = None) -> Path:
     env_path = os.environ.get("MINOS_J_CLAUDE_CLI")
     if env_path and Path(env_path).exists():
         return Path(env_path)
+    # The Claude desktop app is an MSIX package: processes inside it see
+    # %APPDATA%\Claude, processes outside it (e.g. Task Scheduler) only see the
+    # package-private LocalCache copy.  Search both.
+    roots = [DEFAULT_CLI_PATH]
+    packages = Path(os.environ.get("LOCALAPPDATA", "")) / "Packages"
+    roots += [p / "LocalCache" / "Roaming" / "Claude" / "claude-code" for p in packages.glob("Claude_*")]
     candidates = sorted(
-        DEFAULT_CLI_PATH.glob("*/claude.exe"),
+        (exe for root in roots for exe in root.glob("*/claude.exe")),
         key=lambda p: [int(x) if x.isdigit() else x for x in re.split(r"[.]", p.parent.name)],
     )
     if not candidates:
@@ -279,7 +292,7 @@ class ClaudeCodeCLIClient(runtime.StructuredOpenRouterClient):
             if result.get("is_error"):
                 message = str(result.get("result") or "")
                 status = result.get("api_error_status")
-                if _USAGE_LIMIT.search(message):
+                if is_usage_limit(message, status):
                     raise SubscriptionUsageLimitReached(
                         "Claude subscription usage limit reached; diagnostic archived; state preserved."
                     )

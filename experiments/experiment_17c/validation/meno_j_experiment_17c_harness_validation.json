@@ -1,8 +1,8 @@
 {
   "artifact": "Experiment 17-C harness validation (fake CLI; not a scientific result)",
   "status": "PASSED",
-  "passed": 26,
-  "total": 26,
+  "passed": 29,
+  "total": 29,
   "checks": {
     "e17_base_protocol_unchanged": {
       "passed": true,
@@ -38,7 +38,7 @@
     },
     "usage_mapping_includes_cache_tokens": {
       "passed": true,
-      "detail": "{'arm': 'B', 'completion_tokens': 3624, 'cost': None, 'event': 'request', 'http_attempts': 1, 'incomplete_read_retries': 0, 'invalid_response_json_retries': 0, 'invalid_response_shape_retries': 0, 'is_json_repair': False, 'latency_s': 0.006, 'model_requested': 'claude-sonnet-5', 'model_returned': 'claude-sonnet-5', 'network_retries': 0, 'prompt_sha256': '29bcbb37cc690547cd42fffd138679bdc9e0fbb12bae01a990f707dad604a15a', 'prompt_tokens': 619, 'resume_session_id': '56b7c72cf39648e7b97abffb156b9817"
+      "detail": "{'arm': 'B', 'completion_tokens': 3624, 'cost': None, 'event': 'request', 'http_attempts': 1, 'incomplete_read_retries': 0, 'invalid_response_json_retries': 0, 'invalid_response_shape_retries': 0, 'is_json_repair': False, 'latency_s': 0.009, 'model_requested': 'claude-sonnet-5', 'model_returned': 'claude-sonnet-5', 'network_retries': 0, 'prompt_sha256': '29bcbb37cc690547cd42fffd138679bdc9e0fbb12bae01a990f707dad604a15a', 'prompt_tokens': 619, 'resume_session_id': '29f7a7d3cb0847279fd1ce4f52717818"
     },
     "usage_limit_halts_without_invalid_sample": {
       "passed": true,
@@ -78,11 +78,23 @@
     },
     "judge_attempt_not_consumed_by_usage_limit_without_output": {
       "passed": true,
-      "detail": "([{'batch': 0, 'withdrawn_attempt': 1, 'reason': 'SubscriptionUsageLimitReached', 'model_output_produced': False, 'at_utc': '2026-09-22T22:46:45Z'}], [{'attempt': 1, 'status': 'STARTED', 'ok': None}])"
+      "detail": "([{'batch': 0, 'withdrawn_attempt': 1, 'reason': 'SubscriptionUsageLimitReached', 'model_output_produced': False, 'at_utc': '2026-09-30T11:21:24Z'}], [{'attempt': 1, 'status': 'STARTED', 'ok': None}])"
     },
     "judge_reconciliation_at_resume_evidence_only": {
       "passed": true,
       "detail": "['R1']"
+    },
+    "session_limit_message_halts_immediately": {
+      "passed": true,
+      "detail": "('halted', 1)"
+    },
+    "amendment3_reclassify_only_zero_output_quota_refusals": {
+      "passed": true,
+      "detail": "([{'target_seqs': [1, 2], 'unit_id': 'U', 'arm': 'A', 'stage': 'stage_5_auditor', 'diagnostic_archive_sequences': [1, 2], 'model_output_produced': False}], 0, 1, [4])"
+    },
+    "find_cli_msix_package_fallback": {
+      "passed": true,
+      "detail": "C:\\Users\\DELL\\AppData\\Local\\Temp\\minosj_e17c_harness_a85xq59i\\localappdata\\Packages\\Claude_test\\LocalCache\\Roaming\\Claude\\claude-code\\9.9.9\\claude.exe"
     },
     "runner_single_process_lock": {
       "passed": true,
