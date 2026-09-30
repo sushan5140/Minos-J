@@ -5,3 +5,5 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .test-deps/
+experiments/experiment_18/work/
+experiments/experiment_18/tasks/*_answer_key.json

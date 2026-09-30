@@ -1,0 +1,320 @@
+{
+  "experiment_name": "Minos-J Experiment 18: Does explicit falsification, rather than compute or rival enumeration, improve mechanism identification?",
+  "protocol_status": "DRAFT",
+  "protocol_version": 1,
+  "research_question": "With the same model, identical information, the same number of model calls and approximately matched measured tokens, does an explicit falsification loop (rival mechanisms -> discriminating predictions -> test against evidence -> eliminate) identify the planted mechanism more reliably than generic self-critique and revision? Secondary: if it helps, is the gain due to testing discriminating predictions rather than merely generating rival hypotheses?",
+  "hypotheses": {
+    "H1_primary": {
+      "parameter": "delta_AC = P(correct | A) - P(correct | C), paired over cases",
+      "null": "delta_AC = 0 (exact McNemar, two-sided)",
+      "alternative": "delta_AC != 0",
+      "effect_of_interest": "delta_AC >= +0.10 (10 percentage points)"
+    },
+    "H2_mechanistic": {
+      "parameter": "delta_AD = P(correct | A) - P(correct | D)",
+      "claim_tested": "the benefit comes from explicitly testing discriminating predictions, not from enumerating rivals"
+    },
+    "H3_decoy_resistance": {
+      "parameter": "delta_AC on decoy cases minus delta_AC on non-decoy cases",
+      "claim_tested": "falsification specifically resists persuasive but misleading evidence"
+    }
+  },
+  "primary_endpoint": "exact mechanism-identification accuracy; paired difference Accuracy(A) - Accuracy(C) over all main cases (intention-to-treat: a failed trial counts as incorrect)",
+  "secondary_endpoints": [
+    "S1 A vs D paired accuracy difference (exact McNemar) [Holm family]",
+    "S2 A vs B paired accuracy difference (exact McNemar) [Holm family]",
+    "S3 A vs C on decoy cases (exact McNemar) [Holm family]",
+    "S4 A vs C on non-decoy cases (exact McNemar) [Holm family]",
+    "S5 decoy-vs-non-decoy difference in delta_AC (paired-case bootstrap CI; estimate, not in Holm family)",
+    "S6 multi-class Brier score per arm on completed trials (normalized probabilities over six mechanisms)",
+    "S7 trial failure rate per arm, split into output failures and infrastructure failures",
+    "S8 measured tokens per arm (input, cache-creation, cache-read, output, total) and per-call means",
+    "S9 calls completed per arm",
+    "S10 wall-clock latency per arm (engineering measure only; no inference)",
+    "S11 raw accuracy of every arm, overall and by decoy status and by mechanism (descriptive)"
+  ],
+  "arms": {
+    "A": {
+      "name": "explicit falsification",
+      "calls": 3,
+      "procedure": "rivals + discriminating predictions -> test each prediction against evidence and eliminate -> final answer"
+    },
+    "C": {
+      "name": "generic self-critique",
+      "calls": 3,
+      "procedure": "initial diagnosis -> generic critique -> revised final answer; no prediction table or elimination"
+    },
+    "D": {
+      "name": "rivals without falsification",
+      "calls": 3,
+      "procedure": "same number of rivals as A, with rationales -> holistic plausibility weighing/ranking without prediction tests -> final answer"
+    },
+    "B": {
+      "name": "single pass",
+      "calls": 1,
+      "procedure": "read evidence -> final answer (secondary efficiency/reference baseline)"
+    },
+    "primary_comparison": "A vs C",
+    "instructions_verbatim": {
+      "A1": "Step 1 of 3. Choose the 4 mechanisms you consider the strongest rival explanations. For each, state two discriminating predictions: observations in these diagnostics that should hold if that mechanism is the cause and should not hold otherwise.",
+      "A2": "Step 2 of 3. Test each rival's predictions against the observed diagnostics, one by one, and record whether the evidence supports or contradicts each prediction. Eliminate every rival that has a contradicted prediction.",
+      "A3": "Step 3 of 3. Using your previous steps, select the single planted mechanism and give a calibrated probability for every candidate mechanism.",
+      "C1": "Step 1 of 3. Diagnose which candidate mechanism is the planted cause of the subgroup's under-coverage. Give your diagnosis, a short justification that refers to the diagnostics, and a calibrated probability for every candidate mechanism.",
+      "C2": "Step 2 of 3. Critique your step-1 diagnosis: look for mistakes in your reasoning, diagnostics you overlooked or misread, and alternative explanations you may have dismissed too quickly.",
+      "C3": "Step 3 of 3. Using your previous steps, select the single planted mechanism and give a calibrated probability for every candidate mechanism.",
+      "D1": "Step 1 of 3. Choose the 4 mechanisms you consider the strongest rival explanations. For each, give a short rationale, referring to the diagnostics, for why it is a plausible cause of the subgroup's under-coverage.",
+      "D2": "Step 2 of 3. Weigh the rivals against each other by their overall plausibility given the diagnostics as a whole, and rank them. Give one overall judgement per rival rather than testing predictions one by one.",
+      "D3": "Step 3 of 3. Using your previous steps, select the single planted mechanism and give a calibrated probability for every candidate mechanism.",
+      "B1": "Select the single planted mechanism and give a calibrated probability for every candidate mechanism."
+    },
+    "instructions_sha256": "db16716d0153a70c84c2dba312c0437f415994c25b1f7f6c4d564c20990ad10d",
+    "system_message": "You are a careful scientific reasoner. Return only JSON that matches the required schema.",
+    "common_header": "Diagnostic task. Exactly one of the candidate mechanisms below was planted as the cause of the subgroup's under-coverage. Use only the information given here.",
+    "output_line": "Return JSON only, matching the provided schema exactly.",
+    "n_rivals": 4,
+    "schemas_sha256": "df1c947a3b22779434be70df8a2cab459181afebdeb8f460517794f67b48b797",
+    "prompt_assembly": "COMMON_HEADER + mechanism vocabulary + evidence packet + this trial's previous-step outputs (verbatim JSON) + step instruction + output line",
+    "arm_order": "per case, the four arms run in a seeded random order: sha256('E18|arm-order|' + case_id)"
+  },
+  "task_set": {
+    "generator_version": "e18-tasks-1.0.0",
+    "generator_sha256": "b87c7123ce684b2efda61fb3de8851412f75a806fb104e934ae81161a87ee6d5",
+    "vocabulary_sha256": "4867ac4ab04456e7c1c08690f84988aaa11a87f87db0bb3cf41e4b2aaa306c3f",
+    "mechanisms": [
+      "FINITE_SAMPLE",
+      "COVARIATE_SHIFT",
+      "LABEL_NOISE",
+      "TEMPORAL_DRIFT",
+      "SCORE_MISMATCH",
+      "SENSOR_ARTIFACT"
+    ],
+    "main": {
+      "seed": "E18-MAIN-2026-10-01",
+      "difficulty": 0.5,
+      "n_cases": 180,
+      "counts": {
+        "LABEL_NOISE": {
+          "decoy": 15,
+          "non_decoy": 15
+        },
+        "FINITE_SAMPLE": {
+          "decoy": 15,
+          "non_decoy": 15
+        },
+        "SCORE_MISMATCH": {
+          "decoy": 15,
+          "non_decoy": 15
+        },
+        "COVARIATE_SHIFT": {
+          "decoy": 15,
+          "non_decoy": 15
+        },
+        "SENSOR_ARTIFACT": {
+          "decoy": 15,
+          "non_decoy": 15
+        },
+        "TEMPORAL_DRIFT": {
+          "decoy": 15,
+          "non_decoy": 15
+        }
+      },
+      "public_sha256": "0ac69d961e42c99944e1f1ea4dba02960cdd4603e3cb43e1936d5df4ad92f1b4",
+      "answer_key_sha256": "e82c5f3c2be19f50d62a09aca96f78f43a3b02fc970ede79acdf2568af28b0ec",
+      "case_ids_sha256": "55d83ddfd88d38152fba82b9253f2b554b594760ab672eef6f6bd91940a9a189",
+      "packet_hashes_sha256": "ee331a3cdc94bab99eea1022a97f5045fc04094fc73e433ee131de34b9db3420",
+      "reference_solvers": {
+        "joint_falsifier": {
+          "all": 1.0,
+          "decoy": 1.0,
+          "non_decoy": 1.0
+        },
+        "marker_only": {
+          "all": 0.5,
+          "decoy": 0.0,
+          "non_decoy": 1.0
+        },
+        "intervention_only": {
+          "all": 0.8444,
+          "decoy": 0.6889,
+          "non_decoy": 1.0
+        },
+        "series_only": {
+          "all": 0.8833,
+          "decoy": 0.7667,
+          "non_decoy": 1.0
+        }
+      }
+    },
+    "pilot": {
+      "seed": "E18-PILOT-2026-10-01",
+      "difficulty": 0.5,
+      "n_cases": 12,
+      "public_sha256": "1babc52b4a9cb525705febf83077f6d9b3308c9cf2e27d4e08d3c03332555ee7",
+      "answer_key_sha256": "48300beda73a2820e0720eb1657b633ebf00296941f899d1333723437610f24c",
+      "case_ids_sha256": "bc2565da8829fa60a66d733a1838d69782f1f171828098de8c4caf221e5a385a"
+    },
+    "construction": "Each case plants one mechanism. For every mechanism the packet shows a marker (subgroup vs reference), coverage after that mechanism's intervention, and a 4-point coverage series. The planted mechanism satisfies both discriminating predictions (intervention restores coverage; series rises). Decoy cases add a different mechanism with a more abnormal marker that satisfies exactly one prediction, on that dimension up to 1.20x the planted value. Non-decoy cases add a milder distractor marker. Cases are resampled until the ideal joint falsifier identifies the planted mechanism with margin >= 0.04.",
+    "balance": "30 cases per mechanism (half decoy); decoy mechanism and decoy dimension rotate across cases",
+    "display_order": "mechanism rows shuffled per case with a seeded RNG (identical for all arms)"
+  },
+  "sample_size": {
+    "n_main_cases": 180,
+    "n_trials": 720,
+    "rationale": "Exact McNemar power for delta_AC = +0.10 (alpha 0.05, two-sided) and probability of ruling out +0.10 (95% CI upper bound < 0.10) when delta_AC = 0, by discordant-pair rate psi: n=60 -> power 0.19-0.40, rule-out 0.26-0.52 (psi 0.35-0.15): not informative. n=120 -> power 0.40-0.79, rule-out 0.46-0.81. n=180 -> power 0.58-0.94, rule-out 0.62-0.93. n=240 -> power 0.72-0.98, rule-out 0.75-0.98. 180 was chosen as the smallest size giving a majority chance of a decisive answer across plausible psi while remaining feasible on a Claude Pro subscription (about 1,800 calls).",
+    "assumptions": [
+      "discordant-pair rate between A and C of 0.15-0.35 (same model, similar procedures; not yet measured)",
+      "cases are exchangeable draws from the frozen generator",
+      "secondary comparisons (A vs D, A vs B, decoy subsets) are underpowered relative to the primary and are interpreted as estimates"
+    ],
+    "fixed": "Sample size cannot change after the freeze for any reason related to observed treatment results."
+  },
+  "inclusion_exclusion": {
+    "included": "all main cases; every arm-trial counts (intention-to-treat)",
+    "excluded": "none. Pilot cases are a separate held-out set and never enter the main analysis.",
+    "per_protocol_sensitivity": "primary estimate recomputed on cases where both A and C completed without failure"
+  },
+  "models": {
+    "reasoner": "claude-sonnet-5",
+    "judge": "none. Correctness is a deterministic string comparison of the final mechanism_id against the hidden answer key.",
+    "identity_recording": "model_returned (modelUsage key) and Claude Code CLI version are recorded on every attempt; any attempt returning a different model is an integrity violation that halts the run"
+  },
+  "blinding_and_key_isolation": "Answer keys live in separate files that the runner never loads during inference. build_prompt rejects any case object containing key fields. Prompts are hashed and scanned for key fields in validation. No LLM ever sees the answer key or scores output.",
+  "inference_settings": {
+    "transport": "claude -p (Claude Code CLI), Claude subscription OAuth (authMethod=claude.ai); no API key, no OpenRouter",
+    "flags": "--model claude-sonnet-5 --effort low --output-format json --tools '' --strict-mcp-config --setting-sources '' --disable-slash-commands --no-session-persistence --system-prompt <fixed> --json-schema <per call>",
+    "effort": "low",
+    "max_output_tokens_per_call": 8000,
+    "temperature": "not exposed by the Claude Code CLI; provider default, identical for all arms (not claimed to be controlled)",
+    "timeout_seconds_per_attempt": 600
+  },
+  "compute_accounting": {
+    "measured_tokens": "input + cache_creation_input + cache_read_input + output tokens as reported by the provider for EVERY attempt, including error envelopes and repair calls",
+    "reported_separately": [
+      "input_tokens",
+      "cache_creation_input_tokens",
+      "cache_read_input_tokens",
+      "output_tokens",
+      "measured_total_tokens",
+      "fixed CLI overhead estimate",
+      "calls attempted/completed",
+      "wall-clock latency"
+    ],
+    "fixed_cli_overhead": "estimated once per process session by a non-experimental calibration probe with the same flags and a trivial schema; stored in calibration.jsonl, never in the ledger or dataset",
+    "matching": "A and C are matched exactly on number of calls (3), output cap, information and revision opportunities. Tokens are not forced equal; they are measured.",
+    "compute_parity_gate": "R = sum measured tokens(A) / sum measured tokens(C) over all main trials. A positive A>C result supports the causal claim only if R <= 1.20. A null or negative result for A remains informative whatever R is. R and the output-token-only ratio are always reported."
+  },
+  "failure_definitions": {
+    "output_failure": "after the single allowed repair, a call's output still fails its schema or semantic validation (or the structured-output/output-cap error recurs); the trial ends FAILED_OUTPUT and scores incorrect",
+    "infrastructure_failure": "transient errors persist beyond 4 retries or an unclassified CLI error occurs; the trial ends FAILED_INFRA and scores incorrect (ITT), reported separately",
+    "not_a_failure": "subscription usage limit or login problem: the run PAUSES; nothing is recorded against the trial"
+  },
+  "retry_policy": {
+    "transient": "at most 4 retries per call (timeouts, HTTP 429 without a limit message, 5xx, 529, non-JSON CLI exit), exponential backoff",
+    "repair": "exactly one repair call per logical call when output is invalid; the repair prompt is the original prompt plus a fixed sentence naming the validation error; identical for every arm",
+    "semantic_retries_for_wrong_answers": "none: a valid but wrong answer is never retried"
+  },
+  "usage_limit_handling": "HTTP 429/limit messages -> QuotaPause (BaseException): current trial is left incomplete with its completed call checkpoints intact, a session_paused ledger event is written, the process exits 75, and the identical command resumes it later",
+  "crash_handling": "attempt_started without attempt_finished = orphan attempt; recorded at the next session start as orphan_attempt_recorded; the trial resumes from its last completed call checkpoint; orphan tokens are unknown and reported",
+  "checkpoint_semantics": {
+    "call_checkpoint": "work/<set>/trials/<case>/<arm>/call_<k>.json written atomically after a call's validated output; reused on resume",
+    "terminal_marker": "trial_result.json (COMPLETE | FAILED_OUTPUT | FAILED_INFRA) written atomically; a trial with a terminal marker is never executed again",
+    "ledger": "append-only JSONL with fsync; unique monotonic seq; never edited",
+    "locks": "work/<set>/run.lock with holder PID; second process exits 73",
+    "overwrite_protection": "if results/<set>_report.json exists, --run refuses",
+    "corruption": "any unreadable checkpoint or ledger line stops the run for operator review (exit 2); nothing is deleted"
+  },
+  "stopping_criteria": {
+    "planned": "all main cases x all four arms reach terminal markers",
+    "no_interim_efficacy_analysis": "no outcome is computed before all trials are terminal",
+    "infrastructure_halt": "if >= 5 of the last 40 terminal trials are FAILED_INFRA, the run halts (exit 76) for review and a documented amendment",
+    "identity_halt": "any model_returned different from the frozen model halts the run"
+  },
+  "statistical_analysis": {
+    "primary": "delta_AC with 95% paired-case bootstrap percentile CI (10,000 resamples, seed 18); exact two-sided McNemar test on discordant pairs; report b = #(A correct, C wrong), c = #(A wrong, C correct), accuracies of all arms",
+    "sensitivity": [
+      "per-protocol estimate (both A and C completed)",
+      "Newcombe hybrid-score CI for paired proportions"
+    ],
+    "secondary_multiplicity": "Holm correction across S1-S4 at familywise alpha 0.05",
+    "brier": "sum_k (p_k - y_k)^2 over six mechanisms, normalized probabilities, completed trials only; mean per arm with bootstrap CI",
+    "effect_sizes": "all differences in percentage points with 95% CI; odds ratio b/c for McNemar comparisons",
+    "no_p_value_only_interpretation": "decisions use the effect estimate and CI per the decision rules; p-values are reported alongside"
+  },
+  "decision_rules": {
+    "order": "evaluate top to bottom; first matching rule gives the primary verdict",
+    "rules": [
+      [
+        "INCONCLUSIVE_INCOMPLETE",
+        "fewer than 95% of main cases have terminal A and C trials, or FAILED_INFRA exceeds 10% of A or C trials"
+      ],
+      [
+        "C_SUPERIOR",
+        "95% CI upper bound of delta_AC < 0"
+      ],
+      [
+        "NO_PRACTICALLY_MEANINGFUL_ADVANTAGE",
+        "95% CI upper bound of delta_AC < +0.10 (strong evidence against a practically meaningful falsification advantage)"
+      ],
+      [
+        "FALSIFICATION_ADVANTAGE_SUPPORTED",
+        "delta_AC >= +0.10 AND CI lower bound > 0 AND McNemar p < 0.05 AND compute gate R <= 1.20"
+      ],
+      [
+        "ADVANTAGE_BUT_COMPUTE_UNMATCHED",
+        "the supported criteria hold except R > 1.20: cannot support the causal claim"
+      ],
+      [
+        "POSITIVE_BELOW_MARGIN_OR_UNCERTAIN",
+        "CI lower bound > 0 but delta_AC < +0.10, or CI includes both 0 and +0.10: direction or size unresolved"
+      ],
+      [
+        "INCONCLUSIVE",
+        "anything else"
+      ]
+    ],
+    "interpretation_rules": [
+      "If A and D are materially indistinguishable (S1 CI includes 0 and |delta_AD| < 0.05) while both exceed C, that supports 'considering rivals, not explicit falsification, does the useful work'.",
+      "If A shows no particular advantage on decoy cases (S5 estimate <= 0 or its CI includes 0), that weakens the claim that falsification resists persuasive misleading evidence.",
+      "A vs B informs efficiency only; it cannot establish the mechanism because B has fewer calls.",
+      "No rule may be changed after results are visible."
+    ]
+  },
+  "success_criteria": "FALSIFICATION_ADVANTAGE_SUPPORTED",
+  "falsification_criteria": [
+    "C_SUPERIOR",
+    "NO_PRACTICALLY_MEANINGFUL_ADVANTAGE"
+  ],
+  "pilot_policy": {
+    "set": "12 held-out pilot cases (separate seed, 2 per mechanism, 1 decoy each); never part of the main dataset",
+    "purposes": [
+      "infrastructure",
+      "answer schema",
+      "solvability",
+      "floor/ceiling detection",
+      "token accounting",
+      "crash/resume behavior"
+    ],
+    "forbidden": [
+      "selecting cases",
+      "tuning prompts from arm differences",
+      "changing scoring",
+      "redefining endpoints",
+      "inspecting treatment differences to tune Arm A"
+    ],
+    "difficulty_rule": "Compute pooled accuracy over ALL pilot trials of ALL arms together (arm identity ignored). If pooled > 0.85, raise difficulty by 0.25 (max 1.0); if pooled < 0.40, lower by 0.25 (min 0.0); otherwise keep 0.5. At most one adjustment. Any change regenerates the untouched main set with the same seed and requires re-freezing (new protocol hash) before main inference.",
+    "infrastructure_fixes": "documented in AMENDMENTS.md with re-freeze before the main study if any frozen field changes"
+  },
+  "deviation_procedure": "Any post-freeze change is recorded in AMENDMENTS.md with timestamp, reason, exact code/config change, affected units, possible bias for each arm, and validity of prior observations. Scientific fields (questions, arms, prompts, tasks, n, endpoints, analysis, decision rules) cannot change after main-study inference begins.",
+  "code_sha256": {
+    "e18_common.py": "b228a302287d3b11530c2f13742e3a09a97c131c3284f4a388f16c039496650d",
+    "e18_tasks.py": "b87c7123ce684b2efda61fb3de8851412f75a806fb104e934ae81161a87ee6d5",
+    "e18_prompts.py": "a2d4e1d7a1cfd8fcc47034ce7c351bc5d21f0380aba52eb6128d08569659534a",
+    "e18_transport.py": "5e76c1a6b16fbf8ff2a7afda92797c3542a841ae565d06cd59ffade370e2cf75",
+    "e18_runner.py": "3d13dde7e684626b2491ebc207a93d9d78a085b95131ea7bcf73bd2c916bc3ec",
+    "e18_analysis.py": "a4dd8b117cb6d204d147475cd322400f777afb7e79c66bd3e2ce3128b0fc69ff",
+    "e18_protocol.py": "82d3e4b16b6e1cc51ec4d4fbd7d87cd924bf04e58ec24e0cc74a4ee4dcd76df5",
+    "e18_validate_results.py": "bc3fd5abd72d55479f5c56badd28d0ea42b945b3e2b3ba1d7cbc1d7d3fb69824",
+    "e18_validate_harness.py": "a4a99fe60ac9ee676441fef6c122d889d777820351242ac08c459258b0e4db34"
+  },
+  "task_manifest_sha256": "4f58f3876421654e8c1386502565bfb618d60e953579f2726273d3915d555db5"
+}
