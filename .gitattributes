@@ -1,3 +1,4 @@
 # Historical artifacts are evidence. Never apply line-ending normalization.
 historical/2026-08-04/** -text
 historical/2026-09-20-experiments-16-17/** -text
+experiments/experiment_17c/results/** -text
