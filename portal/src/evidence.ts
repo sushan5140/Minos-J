@@ -52,7 +52,7 @@ function checkUsage(raw: unknown): void {
   if (!isObject(raw) || !string(raw.counting_basis)) throw new Error("Invalid usage basis");
   for (const k of ["input_tokens","output_tokens","cached_input_tokens","reported_total_tokens"]) {
     const v = raw[k];
-    if (v !== null && (!Number.isSafeInteger(v) || (v as number) < 0)) throw new Error("Invalid usage field: " + k);
+    if (v !== null && (typeof v !== "number" || !Number.isSafeInteger(v) || v < 0)) throw new Error("Invalid usage field: " + k);
   }
 }
 export function parseResearchCase(value: unknown): ResearchCase {
