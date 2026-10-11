@@ -1,0 +1,70 @@
+[
+  {
+    "schema_version": 1,
+    "experiment_id": "17-C",
+    "case_id": "Q2-r3",
+    "arm_id": "A",
+    "verdict": "inconclusive",
+    "provenance": {
+      "evidence_kind": "historical_record",
+      "verification": "reported_only",
+      "repository": "sushan5140/Minos-J",
+      "source_path": "experiments/experiment_17c/results/RESULTS.md"
+    },
+    "trace_status": "unavailable",
+    "trace_events": [],
+    "model_identity_status": "verified_by_returned_identity",
+    "ground_truth_status": "unknown",
+    "scoring_method": "blinded LLM judge; endpoint validation not established"
+  },
+  {
+    "schema_version": 1,
+    "experiment_id": "17-C",
+    "case_id": "Q2-r3",
+    "arm_id": "B",
+    "verdict": "inconclusive",
+    "provenance": {
+      "evidence_kind": "historical_record",
+      "verification": "reported_only",
+      "repository": "sushan5140/Minos-J",
+      "source_path": "experiments/experiment_17c/results/RESULTS.md"
+    },
+    "trace_status": "unavailable",
+    "trace_events": [],
+    "model_identity_status": "verified_by_returned_identity",
+    "ground_truth_status": "unknown",
+    "scoring_method": "blinded LLM judge; endpoint validation not established"
+  },
+  {
+    "schema_version": 1,
+    "experiment_id": "17",
+    "case_id": "Q2-r1",
+    "verdict": "interrupted",
+    "provenance": {
+      "evidence_kind": "historical_record",
+      "verification": "reported_only",
+      "repository": "sushan5140/Minos-J",
+      "source_path": "historical/2026-09-20-experiments-16-17/RECOVERY_REPORT.md"
+    },
+    "trace_status": "unavailable",
+    "trace_events": [],
+    "model_identity_status": "requested_only",
+    "ground_truth_status": "unknown"
+  },
+  {
+    "schema_version": 1,
+    "experiment_id": "7-v4",
+    "case_id": "Q3",
+    "verdict": "blocked",
+    "provenance": {
+      "evidence_kind": "historical_record",
+      "verification": "recovered_and_cross_checked",
+      "repository": "sushan5140/Minos-J",
+      "source_path": "historical/2026-08-04/RECOVERY_REPORT.md"
+    },
+    "trace_status": "unavailable",
+    "trace_events": [],
+    "model_identity_status": "unknown",
+    "ground_truth_status": "unknown"
+  }
+]
