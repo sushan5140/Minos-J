@@ -1,0 +1,16 @@
+{
+  "experiment_name": "Meno-J Experiment 15: Confidence–Trust Subject-Shift Diagnostic",
+  "update_status": "VALIDATED",
+  "primary_decision": "CONFIDENCE_TRUST_SUBJECT_SHIFT_SIGNAL_NOT_SUPPORTED",
+  "evidence": {
+    "primary_overall_coverage": 0.8768939393939394,
+    "high_risk_count": 433,
+    "high_risk_coverage": 0.7852193995381063,
+    "miscoverage_gap_vs_all_other": 0.1261620079336574,
+    "miscoverage_gap_vs_high_confidence_high_trust": 0.010039221151548872
+  },
+  "working_theory": "The frozen confidence–trust proxy does not explain the residual subject-level undercoverage strongly or stably enough.",
+  "next_action": "Do not build a confidence–trust gate. Test protocol/stressor posterior shift and temporal dependence as the next rivals.",
+  "claim_boundary": "This is an empirical mechanism diagnostic, not a causal proof or individual conditional-coverage guarantee.",
+  "validation": "PASS_INDEPENDENT_EXACT_REPLAY"
+}

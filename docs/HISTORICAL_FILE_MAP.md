@@ -1,8 +1,6 @@
 # Historical file map
 
-The following filenames were recovered from the original Minos-J project record.
-
-They are listed here to preserve provenance even though the original local files have not yet been imported byte-for-byte into this repository.
+The original Minos-J files have now been imported byte-for-byte under [`historical/2026-08-04`](../historical/2026-08-04). Every included source, output, checkpoint, and log is covered by the [SHA-256 manifest](../historical/2026-08-04/MANIFEST.sha256).
 
 ## Core modules reported in the historical implementation
 
@@ -10,6 +8,8 @@ They are listed here to preserve provenance even though the original local files
 - `schema.py`
 - `prompts.py`
 - `pipeline.py`
+
+These and the historical runners are available in [`historical/2026-08-04/source`](../historical/2026-08-04/source).
 
 ## Experiment 4
 
@@ -52,7 +52,7 @@ Recovered design:
 
 - 5 geometries
 - 3 scores
-- Mondrian vs marginal conditioning
+- exact strategy identifiers: `marginal` and `mondrian_class`
 - calibration sizes: 50, 100, 300
 - seeds: 0–4
 - 450 seed rows
@@ -117,3 +117,7 @@ The refactor reframed the system around:
 - theory updates
 
 The older Dreamer component was made optional / replaceable rather than treated as the core scientific contribution.
+
+## Recovery boundary
+
+The historical tree contains 59 source/support files, 178 outputs, 48 checkpoints, and 2 run/hash logs. Participant-derived WESAD features, external datasets, vendor directories, and caches were intentionally excluded. No original figures were found. See the [full recovery report](../historical/2026-08-04/RECOVERY_REPORT.md).

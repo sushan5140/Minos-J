@@ -1,0 +1,76 @@
+{
+  "falsification_tests": [
+    {
+      "hypothesis_id": "H1",
+      "strongest_falsification_test": "Run two modified Mondrian conformal predictors on the same held-out data: (a) add sympathetic_reactivity_index (EDA peak amplitude from first stress trial) as an additional stratification variable (quartile bins) to the existing condition-based taxonomy; (b) apply per-subject temperature scaling to the base classifier logits before standard Mondrian conformal prediction. Compare per-window coverage for high-reactivity subjects (top quartile) between (a), (b), and the original Mondrian using paired McNemar tests.",
+      "failure_condition": "If (a) does not significantly improve coverage for high-reactivity subjects over the original Mondrian (McNemar p>0.05) OR if (b) restores coverage to nominal without reactivity stratification (coverage within 2 percentage points of nominal, McNemar p>0.05 vs. nominal), the hypothesis is falsified.",
+      "minimum_data_needed": "Per-subject sympathetic_reactivity_index (EDA peak amplitude during first stress trial), nonconformity scores and coverage indicators from standard Mondrian, baseline autonomic tone measures, medication status, recording start time, and a held-out test set with the same windowing.",
+      "most_likely_false_positive_risk": "Reactivity index computed from the same trial used for calibration/test introduces circularity; spurious correlation if reactivity correlates with an unmeasured confounder (e.g., baseline HRV) that also affects coverage.",
+      "most_likely_false_negative_risk": "Insufficient power due to small number of high-reactivity subjects; temperature scaling may not fully capture per-subject miscalibration if the classifier's feature representation is fundamentally mismatched for high-reactivity individuals."
+    },
+    {
+      "hypothesis_id": "H2",
+      "strongest_falsification_test": "Fit a linear mixed model: coverage_indicator ~ session_time_elapsed + electrode_impedance_change + HRV_reactivity_decline + (1|subject). Test whether electrode_impedance_change remains a significant predictor of coverage after controlling for HRV_reactivity_decline (one-sided Wald test, alpha=0.05). Additionally, compare coverage on late-session windows using two calibration sets: (i) early-session windows only (first 50% of time) and (ii) full-session calibration. If early-only calibration yields worse late-session coverage than full calibration, sensor drift is implicated; if not, drift is not the primary cause.",
+      "failure_condition": "If electrode_impedance_change is not significant (p>0.05) in the mixed model after controlling for HRV_reactivity_decline, OR if early-session calibration does not degrade late-session coverage relative to full calibration (paired McNemar p>0.05), the sensor drift mechanism is falsified.",
+      "minimum_data_needed": "Electrode impedance at start and end of session (or per-trial signal quality index), EDA phasic peak amplitude per trial, session time elapsed per trial, nonconformity scores and coverage indicators per window, HRV reactivity (RMSSD change) per trial, ambient temperature logs, and accelerometer-derived movement intensity per window.",
+      "most_likely_false_positive_risk": "Ambient temperature drift correlates with both impedance and EDA amplitude, creating a spurious mediation effect if not perfectly controlled.",
+      "most_likely_false_negative_risk": "Impedance logs unavailable; signal quality index may be an insensitive proxy. Fatigue and sensor drift may co-occur, and the mixed model may lack power to disentangle them with limited trials."
+    },
+    {
+      "hypothesis_id": "H3",
+      "strongest_falsification_test": "Define transition windows as the first 120 seconds after each condition change. Implement two alternative Mondrian taxonomies: (a) condition-split taxonomy with separate strata for stress-onset, stress-steady, recovery-onset, recovery-steady; (b) standard condition taxonomy but with block bootstrap conformal prediction (block length 60s) to account for temporal dependence. Compare per-window coverage in transition windows between (a), (b), and original Mondrian using paired bootstrap tests (1000 resamples).",
+      "failure_condition": "If condition-split taxonomy (a) restores coverage in transition windows to within 3 percentage points of nominal (p>0.05 vs. nominal) while block bootstrap (b) does not provide additional improvement, the temporal dependence mechanism is falsified in favor of the transition-specific distribution shift rival.",
+      "minimum_data_needed": "HRV features (RMSSD, LF/HF) per 30s window, transition phase labels (transition vs. stable) derived from protocol timestamps, nonconformity scores and coverage indicators per window, motion artifact index per window, and the same windowing (30s, 50% overlap) as the original analysis.",
+      "most_likely_false_positive_risk": "Motion artifacts co-occur with transitions and may cause both residual autocorrelation and coverage drop; if not fully controlled, the block bootstrap may appear effective for the wrong reason.",
+      "most_likely_false_negative_risk": "Transition windows may be too few for stable quantile estimation in condition-split taxonomy, leading to finite-sample undercoverage that masks the true mechanism."
+    },
+    {
+      "hypothesis_id": "H4",
+      "strongest_falsification_test": "Train an independent physiological stress classifier (e.g., SVM on ECG+EDA features) on held-out data. Compute label_noise_indicator where self-report != classifier prediction (thresholded at 0.5). Re-run Mondrian conformal prediction using the classifier labels as ground truth for stratification (relabeled Mondrian). Compare per-window coverage in the low-stress stratum before and after relabeling using McNemar's test. If consensus labels from independent annotators are available for a subset, repeat with consensus as ground truth.",
+      "failure_condition": "If relabeling with the physiological classifier does not significantly improve low-stress stratum coverage (McNemar p>0.05) OR if consensus labels show no systematic mislabeling in the low-stress stratum (mislabeling rate <5%), the mislabeling hypothesis is falsified.",
+      "minimum_data_needed": "Self-reported stress labels per subject per condition, physiological stress index (classifier probability of high stress) per window, nonconformity scores and coverage indicators per window, consensus labels from independent annotators reviewing video/physiology (for a subset), interoceptive awareness scores and social desirability scores per subject.",
+      "most_likely_false_positive_risk": "The physiological classifier may be biased for certain subjects (e.g., high baseline HRV), creating apparent label noise that is actually classifier error.",
+      "most_likely_false_negative_risk": "Consensus labels unavailable for most subjects; the physiological classifier may not capture true stress state perfectly, leading to underestimation of mislabeling rate."
+    },
+    {
+      "hypothesis_id": "H5",
+      "strongest_falsification_test": "Implement two interventions: (a) add age bins (20-30, 30-40, 40-50, 50+) as additional strata in Mondrian taxonomy; (b) retrain the base classifier with stratified sampling by age bin to ensure balanced representation. Evaluate per-age-bin coverage on a held-out test set. Compare coverage for age>50 group across original Mondrian, age-stratified Mondrian, and age-balanced classifier + standard Mondrian using paired bootstrap (1000 resamples).",
+      "failure_condition": "If age-stratified Mondrian (a) does not restore coverage for age>50 to within 5 percentage points of nominal (p>0.05 vs. nominal) BUT age-balanced classifier retraining (b) does, the demographic stratum heterogeneity mechanism is falsified in favor of the classifier generalization rival.",
+      "minimum_data_needed": "Age per subject, baseline HRV (RMSSD) and baseline EDA (tonic level) per subject, nonconformity scores and coverage indicators per window, health status, medication list, fitness level per subject, and calibration set size per age bin.",
+      "most_likely_false_positive_risk": "Age bins may have insufficient calibration windows (<20) causing finite-sample undercoverage that mimics stratum heterogeneity.",
+      "most_likely_false_negative_risk": "Comorbidities and medication use correlated with age may be the true cause; controlling for them may reduce power to detect age-specific effects."
+    },
+    {
+      "hypothesis_id": "H6",
+      "strongest_falsification_test": "Evaluate three nonconformity scores on the same held-out data: (1) softmax margin (1 - margin), (2) Mahalanobis distance in joint multimodal feature space (ECG, EDA, respiration) using robust shrinkage covariance, (3) softmax margin after Dirichlet calibration of classifier logits (fit on separate validation set). Compare coverage across out-of-distribution (OOD) quantiles (e.g., top decile of Mahalanobis distance) using DeLong test for correlated coverage differences (alpha=0.05).",
+      "failure_condition": "If Dirichlet-calibrated softmax margin (3) achieves coverage within 2 percentage points of Mahalanobis nonconformity (2) (p>0.05) and both outperform uncalibrated margin (1), the geometry mismatch mechanism is falsified in favor of the classifier miscalibration rival.",
+      "minimum_data_needed": "Softmax margin per window, multimodal features (ECG HRV, EDA phasic/tonic, respiration rate/variability) per window, Mahalanobis distance in joint feature space per window, nonconformity scores and coverage indicators per window, Dirichlet calibration parameters for classifier logits.",
+      "most_likely_false_positive_risk": "Mahalanobis covariance estimation may be unstable with limited calibration data, making Mahalanobis nonconformity appear worse than it is.",
+      "most_likely_false_negative_risk": "Dirichlet calibration may not fully correct miscalibration for OOD patterns if the classifier's feature representation is fundamentally inadequate, leading to false support for geometry mismatch."
+    },
+    {
+      "hypothesis_id": "H8",
+      "strongest_falsification_test": "Compute stratum sample sizes and empirical conditional quantiles (alpha=0.1). Estimate oracle quantiles via 10-fold cross-validation on the calibration set. Apply finite-sample correction: use order statistic index ceil((n+1)*(1-alpha)) instead of ceil(n*(1-alpha)) for each stratum. Separately, pool calibration data across subjects for rare strata (size<30) and recompute quantiles. Compare coverage on held-out data for three methods: standard Mondrian, corrected Mondrian, and pooled-calibration Mondrian using paired bootstrap (1000 resamples).",
+      "failure_condition": "If pooled-calibration Mondrian restores coverage to within 2 percentage points of nominal for rare strata (p>0.05 vs. nominal) but finite-sample correction does not (coverage remains >5 percentage points below nominal, p<0.05), the finite-sample bias mechanism is falsified in favor of the distribution shift rival.",
+      "minimum_data_needed": "Stratum sample size (calibration windows per condition-subject stratum), conditional quantile estimates, oracle quantiles (from cross-validation or large holdout), nonconformity scores and coverage indicators per window, stratum nonconformity score IQR and skewness.",
+      "most_likely_false_positive_risk": "Stratum heterogeneity (IQR) may correlate with sample size; pooling across subjects may introduce distribution shift that masks the true finite-sample bias.",
+      "most_likely_false_negative_risk": "Oracle quantile estimation via cross-validation may be noisy, leading to inaccurate bias estimates and reduced power to detect correction efficacy."
+    },
+    {
+      "hypothesis_id": "H9",
+      "strongest_falsification_test": "Train three classifiers: (a) on trial 1 only, test on trial 3; (b) on trial 3 only, test on trial 1; (c) on all trials with trial number as a feature. Run Mondrian conformal prediction for each. Additionally, implement trial-stratified Mondrian (add trial number as stratum). Compare coverage for trial 3 across (a), (c), and trial-stratified Mondrian using paired McNemar tests. Control for stressor type (TSST, mental arithmetic, cold pressor) and clock time.",
+      "failure_condition": "If classifier (b) shows symmetric undercoverage on trial 1 (i.e., coverage gap similar to (a) on trial 3), the habituation mechanism is falsified in favor of the overfitting rival. If trial-stratified Mondrian does not eliminate the trial-number coverage gap (gap >5 percentage points, p<0.05), the habituation mechanism is also falsified.",
+      "minimum_data_needed": "Trial number (1,2,3) per stress task per subject, EDA peak amplitude per trial, HRV reactivity per trial, nonconformity scores and coverage indicators per window, stressor type per trial, clock time of trial start, self-reported anticipation ratings.",
+      "most_likely_false_positive_risk": "Stressor type is confounded with trial order; if not perfectly counterbalanced, apparent habituation may be stressor-specific effects.",
+      "most_likely_false_negative_risk": "Habituation may be non-linear (e.g., only between trial 1 and 2), and trial-stratified Mondrian may have insufficient calibration data per trial stratum."
+    },
+    {
+      "hypothesis_id": "H10",
+      "strongest_falsification_test": "Stratify windows by movement intensity quartile (accelerometer magnitude) and respiration missingness indicator. Fit a mixed-effects logistic regression: coverage_indicator ~ missingness * movement_quartile * stress_condition + (1|subject). Test the three-way interaction (alpha=0.05). Additionally, augment features with missingness indicator and re-run conformal prediction; compare coverage for high-movement stress windows (top movement quartile, stress condition) before and after augmentation using McNemar's test.",
+      "failure_condition": "If the three-way interaction is not significant (p>0.05) AND coverage drops with high movement regardless of respiration missingness (main effect of movement_quartile significant, missingness not), the informative missingness mechanism is falsified in favor of the general signal quality rival.",
+      "minimum_data_needed": "Respiration missingness indicator per window, movement intensity (accelerometer vector magnitude) per window, stress condition per window, imputed respiration features, nonconformity scores and coverage indicators per window, ECG/EDA signal quality indices per window.",
+      "most_likely_false_positive_risk": "Missingness indicator may correlate with unmeasured window-level SNR of ECG/EDA; if not controlled, the interaction may appear significant due to overall signal degradation.",
+      "most_likely_false_negative_risk": "Missingness rate may be too low in high-movement stress windows to detect an interaction; multiple imputation strategies may not be tested exhaustively."
+    }
+  ]
+}

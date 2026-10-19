@@ -1,0 +1,84 @@
+{
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Inter-individual differences in autonomic nervous system (ANS) baseline tone and reactivity cause systematic variation in the signal-to-noise ratio of wearable-derived stress biomarkers.",
+      "proposed_mechanism": "Subjects with high resting parasympathetic tone exhibit compressed heart rate variability (HRV) dynamic range during stressors, reducing classifier separability; conversely, sympathetic-dominant individuals show exaggerated but noisy responses.",
+      "core_assumption": "ANS baseline phenotype is stable within-subject across days but varies sufficiently across subjects to alter feature distributions used by stress detectors.",
+      "knowledge_gap_addressed": "Current models treat HRV features as universally calibrated; no large-scale quantification exists of how ANS phenotype distributions map to detection uncertainty intervals.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Idiosyncratic sensor-skin interface mechanics — driven by skin thickness, hydration, hair density, and subcutaneous fat — modulate photoplethysmography (PPG) and electrodermal activity (EDA) signal quality in a subject-specific, non-stationary manner.",
+      "proposed_mechanism": "Variable optical path length and electrode-skin impedance create subject-specific noise floors that correlate with stress-relevant physiology (e.g., vasoconstriction), inducing heteroscedastic measurement error that mimics or masks stress signatures.",
+      "core_assumption": "Skin-sensor coupling parameters are quasi-stable within a wear session but differ systematically across demographics and body sites, and they interact with the very physiological changes being measured.",
+      "knowledge_gap_addressed": "Wearable validation studies report aggregate signal quality metrics; the covariance between subject-specific interface properties and stress-induced physiological changes remains uncharacterized.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Circadian phase at stressor onset non-linearly interacts with subject chronotype to produce time-of-day-dependent detection uncertainty that is misattributed to subject-level random effects.",
+      "proposed_mechanism": "Cortisol awakening response, core body temperature nadir, and melatonin offset shift the operating point of cardiovascular and sudomotor systems; stressor-evoked deviations from this moving baseline have chronotype-dependent detectability.",
+      "core_assumption": "Chronotype modulates not just mean physiology but the gain and latency of stress-responsive systems, and wearable sampling schedules alias these dynamics differently across subjects.",
+      "knowledge_gap_addressed": "Most stress-detection pipelines either ignore time-of-day or apply population-level corrections; subject-specific circadian gain modulation of stress signatures is unquantified.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Ecological momentary assessment (EMA) labeling reliability varies systematically with subject traits (alexithymia, interoceptive accuracy, compliance fatigue), injecting subject-correlated label noise that masquerades as model uncertainty.",
+      "proposed_mechanism": "Subjects with low interoceptive awareness provide noisy or delayed self-reports; high-compliance subjects over-report stress to satisfy perceived study demands. Both create subject-specific label distributions that violate the i.i.d. noise assumption in supervised learning.",
+      "core_assumption": "Label noise is not random but structured by stable psychological traits, and these traits also correlate with physiological stress expression, creating a confounding pathway.",
+      "knowledge_gap_addressed": "Ground-truth stress labels are treated as noisy but unbiased; the joint distribution of labeling bias and physiological phenotype has not been measured in longitudinal wearable studies.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Subject-specific motion artifact spectral signatures — determined by gait biomechanics, occupational movement patterns, and tremor phenotypes — overlap differentially with stress-relevant frequency bands in PPG and accelerometer data.",
+      "proposed_mechanism": "A construction worker's repetitive hammering produces harmonic artifacts in the 0.1–0.4 Hz band used for HRV; an office worker's typing generates broadband noise. Artifact removal filters thus have subject-dependent residual error correlated with activity context.",
+      "core_assumption": "Movement artifact morphology is sufficiently consistent within-subject to create a learnable but subject-specific confound that standard domain-adaptation methods fail to capture.",
+      "knowledge_gap_addressed": "Motion artifact removal is evaluated on aggregate signal quality; the covariance between individual movement signatures and stress-classifier feature importance has not been mapped.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Stress response stereotypy — the degree to which an individual activates a consistent multi-system (cardiac, sudomotor, respiratory, thermal) pattern across stressors — determines the effective dimensionality of the wearable feature space for that subject.",
+      "proposed_mechanism": "High-stereotypy subjects occupy a low-dimensional manifold in feature space, enabling precise classification with few samples; low-stereotypy subjects express stress via variable subsystem recruitment, requiring exponentially more training data for equivalent certainty.",
+      "core_assumption": "Response stereotypy is a stable individual difference trait, not a state, and it governs the sample complexity of personalized stress detection.",
+      "knowledge_gap_addressed": "Personalization literature focuses on mean shifts; the subject-level variance in response covariance structure and its impact on classifier calibration is unexplored.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Wearable sensor calibration drift (LED intensity decay, electrode polarization, accelerometer bias) accumulates at subject-dependent rates due to wear patterns, skin chemistry, and environmental exposure, creating a time-varying subject-specific uncertainty envelope.",
+      "proposed_mechanism": "Acidic sweat accelerates electrode corrosion; high UV exposure degrades optical components; mechanical stress from specific activities biases MEMS sensors. Drift correlates with the very contexts (heat, exertion) that elicit stress, inducing non-ignorable missingness in reliable signal segments.",
+      "core_assumption": "Calibration drift is not random but driven by subject-specific exposure histories that co-occur with stress-relevant contexts, violating missing-at-random assumptions in uncertainty quantification.",
+      "knowledge_gap_addressed": "Longitudinal sensor reliability studies use controlled bench tests; in vivo drift trajectories and their covariance with stress contexts per subject are undocumented.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Subject-level variation in vascular anatomy (capillary density, arterial stiffness, venous compliance) alters the transfer function between central sympathetic outflow and peripheral wearable signals (PPG, skin temperature), creating irreducible inter-subject uncertainty.",
+      "proposed_mechanism": "Identical central stress commands produce divergent peripheral waveforms: stiff arteries amplify pulse wave velocity but dampen amplitude variability; high capillary density enhances thermal signal but slows EDA rise time. Anatomical variation sets a subject-specific ceiling on detectability.",
+      "core_assumption": "Peripheral vascular anatomy is stable over study durations and varies enough across adults to materially change the observability of central stress states from wrist-worn sensors.",
+      "knowledge_gap_addressed": "Wearable stress models assume a universal peripheral transfer function; anatomical determinants of inter-subject observability heterogeneity have not been quantified.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Psychological stress appraisal style (challenge vs. threat, rumination, reappraisal habit) drives divergent physiological trajectories for objectively matched stressors, causing label-feature misalignment that varies systematically by subject.",
+      "proposed_mechanism": "Two subjects facing the same Trier Social Stress Test: one shows cardiac efficiency (challenge), the other vascular resistance (threat). Wearable features trained on population averages misclassify both because the mapping from appraisal to physiology is subject-specific and unobserved.",
+      "core_assumption": "Appraisal style is a stable trait that modulates the physiology-stress label mapping, and it is not captured by current wearable feature sets.",
+      "knowledge_gap_addressed": "Stress detection treats the stressor as the ground truth cause; the mediating role of unmeasured cognitive appraisal in generating subject-specific physiological signatures is unaccounted for.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Statistical non-ergodicity in subject-level stress physiology — where within-subject temporal dynamics differ qualitatively from between-subject population distributions — invalidates hierarchical modeling assumptions and inflates uncertainty estimates for outliers.",
+      "proposed_mechanism": "Population-level priors shrink subject-specific parameters toward a mean that does not represent any individual's dynamics (e.g., group HRV-stress slope near zero due to opposing subgroups). Subjects with rare dynamic phenotypes receive overconfident but wrong predictions.",
+      "core_assumption": "The ergodicity assumption (group mean = individual trajectory) fails for stress physiology; subject-specific dynamical systems parameters are not drawn from a common Gaussian hierarchy.",
+      "knowledge_gap_addressed": "Hierarchical Bayesian wearable models assume exchangeability; the prevalence and detectability of non-ergodic subject phenotypes in stress detection has not been tested.",
+      "status": "SPECULATIVE"
+    }
+  ]
+}

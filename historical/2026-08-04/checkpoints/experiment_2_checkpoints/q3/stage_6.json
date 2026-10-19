@@ -1,0 +1,94 @@
+{
+  "rival_prediction_matrix": [
+    {
+      "hypothesis_id": "H1",
+      "meno_j_hypothesis": "Subject-specific autonomic baseline variability leads to different signal-to-noise ratios in wearable stress signals.",
+      "meno_j_prediction": "After controlling for age, fitness, medication, caffeine, and time of day, residual between-subject variance in resting HRV and SCL will predict the signal-to-noise ratio of stress features; higher resting HRV and lower SCL will associate with higher classifier confidence.",
+      "rival_explanation": "Observed variation in stress-detection uncertainty is driven by differences in the actual intensity of stressors experienced by each subject, not by their baseline autonomic physiology.",
+      "rival_prediction": "Per-subject stressor intensity (measured via standardized tasks or ecological momentary assessment) will account for the between-subject differences in signal-to-noise ratio; baseline HRV and SCL will not add predictive value once stressor intensity is included.",
+      "distinguishing_test": "Recruit subjects for repeated standardized stress tasks (e.g., TSST, cold pressor) with known intensity levels, while measuring baseline HRV/SCL and wearable stress features. Fit a mixed model predicting per-subject SNR from baseline autonomic measures and task intensity; compare variance explained.",
+      "what_result_supports_meno_j": "Baseline HRV and SCL remain significant predictors of SNR after including stressor intensity as a covariate.",
+      "what_result_supports_rival": "Stressor intensity fully mediates the relationship; baseline autonomic measures become non-significant when stressor intensity is in the model."
+    },
+    {
+      "hypothesis_id": "H2",
+      "meno_j_hypothesis": "Variability in sensor placement tightness and skin contact introduces subject-specific motion artifact profiles.",
+      "meno_j_prediction": "After controlling for activity intensity (accelerometer RMS), wrist circumference, and strap type, self-reported or objectively measured strap tightness will predict the amplitude of motion artifacts in PPG/EDA; looser fit will correlate with higher artifact contamination and lower stress-detection certainty.",
+      "rival_explanation": "Motion artifacts are primarily determined by the type and intensity of physical activity, not by how tightly the device is worn; different activities produce distinct artifact signatures regardless of strap tightness.",
+      "rival_prediction": "Activity type classification (e.g., typing vs. running vs. weightlifting) will explain the variance in artifact amplitude better than strap tightness; within the same activity type, tightness will not significantly predict artifact level.",
+      "distinguishing_test": "Collect synchronized high-resolution accelerometer, PPG, and EDA data during prescribed activities of varying types and intensities while manipulating strap tightness (tight, medium, loose). Use a factorial design to test the interaction between activity type and tightness on artifact metrics.",
+      "what_result_supports_meno_j": "A significant main effect of tightness on artifact amplitude after accounting for activity type and intensity, or a significant tightness-by-activity interaction showing tightness matters more for high-impact activities.",
+      "what_result_supports_rival": "Activity type and intensity fully account for artifact variance; tightness shows no significant effect in any activity condition."
+    },
+    {
+      "hypothesis_id": "H3",
+      "meno_j_hypothesis": "Individual differences in sweat gland density and distribution affect skin conductance signal quality and stress detectability.",
+      "meno_j_prediction": "After controlling for skin hydration, ambient temperature, age, and measurement site, a proxy for eccrine gland density (e.g., maximal SCR amplitude to a standardized stimulus) will predict the signal-to-noise ratio of stress-evoked EDA features; higher gland density will yield larger, faster SCRs and higher classifier confidence.",
+      "rival_explanation": "Variation in EDA signal quality is due to differences in central sympathetic reactivity (e.g., trait anxiety, autonomic flexibility) rather than peripheral gland density; subjects with higher sympathetic reactivity produce larger SCRs independent of gland count.",
+      "rival_prediction": "Measures of central sympathetic reactivity (e.g., heart rate reactivity to a cognitive stressor, trait anxiety scores) will predict SCR amplitude and detection performance better than gland-density proxies; gland-density proxies will not add unique variance.",
+      "distinguishing_test": "Obtain a gland-density proxy (e.g., pilocarpine iontophoresis or maximal SCR to deep breath) and central sympathetic reactivity measures (e.g., HR reactivity to Stroop, trait anxiety) in the same subjects. Predict per-subject EDA SNR during ecological stress episodes using both sets of predictors in a hierarchical regression.",
+      "what_result_supports_meno_j": "Gland-density proxy explains significant unique variance in EDA SNR after controlling for central sympathetic reactivity.",
+      "what_result_supports_rival": "Central sympathetic reactivity measures fully account for EDA SNR variance; gland-density proxy adds no significant incremental prediction."
+    },
+    {
+      "hypothesis_id": "H4",
+      "meno_j_hypothesis": "Circadian phase shifts cause time-of-day dependent model performance that differs across subjects.",
+      "meno_j_prediction": "Model performance (e.g., AUC, calibration) will vary systematically with circadian phase (estimated from sleep midpoint, light exposure, time since awakening); subjects with later chronotypes will show degraded performance at clock times that correspond to their biological morning, and performance will improve when circadian phase is included as a feature.",
+      "rival_explanation": "Time-of-day performance differences are driven by diurnal patterns in activity and stressor occurrence (e.g., work hours), not by endogenous circadian phase; performance varies because the distribution of stress labels and activity contexts changes across the day.",
+      "rival_prediction": "When controlling for activity level, stressor frequency, and context (e.g., work vs. leisure) at each hour, circadian phase will not explain additional variance in model performance; performance differences will align with activity/stressor patterns rather than chronotype.",
+      "distinguishing_test": "Collect at least one week of actigraphy, light exposure, EMA stress labels, and physiological data. Stratify model performance by clock time and by circadian phase bins (e.g., hours since sleep midpoint). Test whether chronotype moderates the clock-time effect after adjusting for activity and stressor context.",
+      "what_result_supports_meno_j": "Chronotype significantly interacts with clock time to predict performance; circadian phase bins explain performance variance beyond activity/stressor covariates.",
+      "what_result_supports_rival": "Clock-time performance variation disappears after adjusting for activity level and stressor context; chronotype adds no explanatory power."
+    },
+    {
+      "hypothesis_id": "H5",
+      "meno_j_hypothesis": "Self-reported stress labels contain subject-specific recall bias, creating heterogeneous label noise.",
+      "meno_j_prediction": "Subjects with high alexithymia (TAS-20) will show lower sensitivity (more false negatives) in self-reported stress relative to physiological arousal markers; subjects with high neuroticism will show lower specificity (more false positives). Incorporating personality traits into a measurement-error model will improve label-noise estimation and model calibration.",
+      "rival_explanation": "Label noise arises mainly from ambiguous stress definitions in study instructions and random forgetting, not from stable personality traits; all subjects have similar bias patterns, and noise is uncorrelated with personality.",
+      "rival_prediction": "Personality traits (alexithymia, neuroticism) will not predict the direction or magnitude of discrepancy between self-reported stress and physiological arousal; label noise will be uniform across subjects and better explained by EMA compliance and response latency.",
+      "distinguishing_test": "Administer personality questionnaires (TAS-20, Big Five) and conduct EMA with multiple reporting delays (immediate, 1-hour, end-of-day) alongside continuous physiological monitoring. Compute per-subject sensitivity/specificity of self-reports using physiological arousal as a proxy ground truth. Regress these metrics on personality traits and EMA compliance.",
+      "what_result_supports_meno_j": "Alexithymia predicts lower sensitivity and neuroticism predicts lower specificity, with significant effects after controlling for compliance and response latency.",
+      "what_result_supports_rival": "Personality traits show no significant association with label-noise metrics; compliance and response latency are the only significant predictors."
+    },
+    {
+      "hypothesis_id": "H6",
+      "meno_j_hypothesis": "Unobserved subpopulations (e.g., anxiety disorders, medication use) create heterogeneous stress response patterns.",
+      "meno_j_prediction": "Finite mixture modeling or hierarchical clustering on physiological response features (HRV, EDA reactivity) will reveal distinct subpopulations that align with clinical screening scores (GAD-7, PHQ-9) and medication classes (beta-blockers, SSRIs). Including these covariates as fixed effects and allowing subject-specific random effects on reactivity parameters will reduce uncertainty estimates for affected subjects.",
+      "rival_explanation": "Observed heterogeneity is due to random physiological variation and model underfitting (insufficient model capacity to capture complex, non-linear patterns), not discrete clinical subpopulations; a more flexible model (e.g., deep neural network with subject embeddings) would capture the variation without invoking latent classes.",
+      "rival_prediction": "A high-capacity model with subject-specific embeddings will achieve similar or better uncertainty calibration without explicit clinical covariates; mixture-model clusters will not correspond to clinical screening categories better than chance.",
+      "distinguishing_test": "Fit three models: (1) generic model with clinical covariates and random effects, (2) finite mixture model on response features, (3) deep learning model with subject embeddings. Compare per-subject uncertainty calibration (e.g., prediction interval coverage) and cluster alignment with clinical data.",
+      "what_result_supports_meno_j": "Clinical covariates and mixture-model clusters significantly improve calibration and align with screening scores; the deep model does not outperform the clinically informed model.",
+      "what_result_supports_rival": "The deep embedding model matches or exceeds the clinically informed model in calibration, and mixture-model clusters show no meaningful association with clinical screening data."
+    },
+    {
+      "hypothesis_id": "H8",
+      "meno_j_hypothesis": "Sensor firmware version differences introduce systematic bias across devices used by different subjects.",
+      "meno_j_prediction": "Feature distributions (e.g., HRV time-domain metrics, EDA tonic level) will differ significantly across firmware versions after controlling for hardware revision, device age, battery level, and temperature. Model performance will degrade for firmware versions underrepresented in training data, and domain adaptation (e.g., CORAL) using a small labeled subset per firmware will restore performance.",
+      "rival_explanation": "Apparent firmware effects are confounded by subject physiological differences that happen to correlate with firmware cohorts (e.g., newer firmware deployed to a different study site with different population); firmware itself does not alter feature distributions.",
+      "rival_prediction": "When subjects are randomly assigned to firmware versions in a controlled crossover design, feature distributions will not differ systematically by firmware; any observed differences in observational data will disappear after matching on subject characteristics and site.",
+      "distinguishing_test": "Conduct a randomized crossover trial where each subject wears devices with two firmware versions in counterbalanced order. Compare feature distributions and model performance within subjects across firmware versions. Alternatively, use propensity-score matching on observational data to balance subject covariates across firmware groups.",
+      "what_result_supports_meno_j": "Within-subject feature distributions shift significantly with firmware version, and domain adaptation improves cross-firmware performance.",
+      "what_result_supports_rival": "No within-subject firmware effect after controlling for order and time trends; matched observational analysis shows no firmware differences."
+    },
+    {
+      "hypothesis_id": "H9",
+      "meno_j_hypothesis": "Physical activity intensity interacts with stress detection, and habitual activity patterns differ per subject.",
+      "meno_j_prediction": "After controlling for activity intensity (METs) and type via accelerometer features, fitness level, and habitual activity, the residual interaction between activity intensity and stress detection uncertainty will be significant; subjects with higher habitual vigorous activity will show greater uncertainty during high-intensity stress windows, and activity-specific classifiers will outperform a single global classifier.",
+      "rival_explanation": "The apparent activity interaction is actually driven by sensor placement tightness, which tends to loosen during vigorous activity; it is the looseness, not the activity intensity per se, that generates artifacts and degrades detection.",
+      "rival_prediction": "When strap tightness is measured and held constant (or statistically controlled), activity intensity will no longer predict detection uncertainty; tightness will mediate the activity-uncertainty relationship.",
+      "distinguishing_test": "Collect data with objective tightness measurement (e.g., strap force sensor) during prescribed activities of varying intensity. Test a mediation model: activity intensity -> tightness -> artifact level -> detection uncertainty. Compare models with and without tightness as a mediator.",
+      "what_result_supports_meno_j": "Activity intensity retains a direct effect on uncertainty after accounting for tightness, or tightness does not fully mediate the relationship.",
+      "what_result_supports_rival": "Tightness fully mediates the effect of activity intensity on uncertainty; the direct effect of activity intensity becomes non-significant when tightness is included."
+    },
+    {
+      "hypothesis_id": "H10",
+      "meno_j_hypothesis": "Data missingness not at random (e.g., device removal during high stress) varies by subject, biasing uncertainty estimates.",
+      "meno_j_prediction": "Subjects with lower comfort/irritation ratings will have higher missingness rates during high-stress periods (identified via proxy measures like phone usage or location). Selection models or inverse probability weighting using a missingness model predicted by comfort, irritation, and observed covariates will correct the bias and widen uncertainty intervals for those subjects.",
+      "rival_explanation": "Missingness is primarily due to technical failures (Bluetooth disconnects, battery depletion, memory full) that are unrelated to stress level; any association with stress is spurious and driven by confounders like occupation or charging routine.",
+      "rival_prediction": "Device diagnostic logs (Bluetooth status, battery, memory) will explain missingness patterns better than comfort/irritation ratings; after including technical failure indicators, comfort ratings will not predict missingness during high-stress proxies.",
+      "distinguishing_test": "Analyze per-minute wear-time logs, device diagnostic codes, comfort/irritation surveys, and proxy stress indicators (phone screen-on, GPS velocity). Fit a joint model of missingness and stress proxy, comparing a selection model with comfort predictors vs. a model with only technical predictors.",
+      "what_result_supports_meno_j": "Comfort/irritation ratings significantly predict missingness during high-stress proxies after controlling for technical factors; selection model improves uncertainty calibration.",
+      "what_result_supports_rival": "Technical diagnostic variables fully account for missingness patterns; comfort ratings add no predictive value for stress-related missingness."
+    }
+  ]
+}

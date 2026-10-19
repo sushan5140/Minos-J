@@ -1,0 +1,74 @@
+{
+  "experiment_name": "Meno-J Experiment 15: Confidence–Trust Subject-Shift Diagnostic",
+  "protocol_status": "FROZEN_AFTER_LITERATURE_REVIEW_BEFORE_EXPERIMENT_15_OUTCOME_COMPUTATION",
+  "research_question": "After class conditioning, does undercoverage concentrate in physiological windows where the classifier is highly confident but geometrically unsupported by its predicted-class training manifold?",
+  "frozen_on": "2026-08-17",
+  "prerequisites": {
+    "experiment_14_required_validation_status": "PASS",
+    "literature_review_required": "meno_j_literature_review_after_experiment_14.json",
+    "reuse_exact_experiment_14_subjects_features_and_folds": true
+  },
+  "design": {
+    "subjects": 33,
+    "repetitions_per_subject": 3,
+    "training_subjects_per_fold": 24,
+    "external_calibration_subjects_per_fold": 8,
+    "heldout_test_windows_per_fold": 16,
+    "arms": [
+      "raw_marginal",
+      "normalized_class_mondrian"
+    ],
+    "primary_arm": "normalized_class_mondrian",
+    "expected_fold_rows": 198,
+    "expected_observation_rows": 3168,
+    "alpha": 0.1
+  },
+  "fixed_diagnostic": {
+    "feature_space": "The same 54-feature representation used by Experiments 13 and 14, standardized using the fitted LDA training mean and scale.",
+    "trust_score": "Distance to the nearest retained rival-class training point divided by distance to the nearest retained predicted-class training point.",
+    "density_filter": "Within each true training class, compute the Euclidean distance to the 10th nearest same-class point and remove the 10 percent with the largest radii.",
+    "confidence": "Maximum fitted LDA class probability.",
+    "risk_thresholds": "For each fold and representation, define high confidence at or above the median calibration confidence and low trust at or below the median calibration trust score.",
+    "high_risk_quadrant": "high_confidence AND low_trust",
+    "threshold_label_use": "Risk thresholds use calibration features and predictions only, not calibration labels or heldout labels. Training labels are used only to construct class manifolds, as prespecified.",
+    "numerical_rules": {
+      "knn_k": 10,
+      "density_trim_fraction": 0.1,
+      "distance_epsilon": 1e-12
+    }
+  },
+  "primary_decision_rule": {
+    "all_checks_required": true,
+    "checks": {
+      "primary_high_risk_observation_count_at_least_100": 100,
+      "primary_high_risk_miscoverage_minus_all_other_at_least_0_10": 0.1,
+      "primary_high_risk_miscoverage_minus_high_confidence_high_trust_at_least_0_10": 0.1,
+      "primary_high_risk_coverage_below_0_85": 0.85,
+      "gap_vs_all_other_positive_in_both_protocol_versions": true,
+      "gap_vs_all_other_positive_in_all_three_repetitions": true
+    },
+    "supported_decision": "CONFIDENCE_TRUST_SUBJECT_SHIFT_SIGNAL_SUPPORTED",
+    "not_supported_decision": "CONFIDENCE_TRUST_SUBJECT_SHIFT_SIGNAL_NOT_SUPPORTED"
+  },
+  "secondary_outputs": [
+    "coverage and miscoverage in all four confidence-trust quadrants",
+    "continuous confidence and trust summaries for covered versus miscovered observations",
+    "protocol-version and repetition-specific risk gaps",
+    "subject-level risk prevalence and coverage without claiming subject-conditional guarantees",
+    "raw-marginal negative-control comparison"
+  ],
+  "interpretation_contract": {
+    "pass": "The residual class-conditioned failure is consistent with confident classifier-manifold mismatch. The next repair may use a separately validated confidence-trust score transformation or safe abstention rule.",
+    "fail": "Do not build a confidence-trust gate. Move to protocol/stressor posterior shift, temporal dependence, or other prespecified rivals.",
+    "mixed": "Treat confidence-trust as descriptive only; do not optimize thresholds on these same outcomes."
+  },
+  "guardrails": [
+    "Do not change Experiment 13 or 14 outputs, features, classifier, folds, onboarding split, test split, alpha, or conformal score.",
+    "Do not use heldout labels to compute confidence, trust, density filters, or risk thresholds.",
+    "Do not choose trust-score hyperparameters or quadrant thresholds after outcome computation.",
+    "Do not claim exact individual or subject-conditional coverage.",
+    "Do not turn the diagnostic into a repair or deployment gate in this experiment.",
+    "Do not claim causal identification: geometric mismatch is a falsifiable mechanism proxy.",
+    "No LLM or external API call is permitted or required."
+  ]
+}

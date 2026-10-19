@@ -1,0 +1,104 @@
+{
+  "rival_prediction_matrix": [
+    {
+      "hypothesis_id": "H1",
+      "meno_j_hypothesis": "Enriched hypothesis 1",
+      "meno_j_prediction": "Distinct prediction 1",
+      "rival_explanation": "Boring rival 1",
+      "rival_prediction": "Rival prediction 1",
+      "distinguishing_test": "Distinguishing test 1",
+      "what_result_supports_meno_j": "Meno-J result 1",
+      "what_result_supports_rival": "Rival result 1"
+    },
+    {
+      "hypothesis_id": "H2",
+      "meno_j_hypothesis": "Enriched hypothesis 2",
+      "meno_j_prediction": "Distinct prediction 2",
+      "rival_explanation": "Boring rival 2",
+      "rival_prediction": "Rival prediction 2",
+      "distinguishing_test": "Distinguishing test 2",
+      "what_result_supports_meno_j": "Meno-J result 2",
+      "what_result_supports_rival": "Rival result 2"
+    },
+    {
+      "hypothesis_id": "H3",
+      "meno_j_hypothesis": "Enriched hypothesis 3",
+      "meno_j_prediction": "Distinct prediction 3",
+      "rival_explanation": "Boring rival 3",
+      "rival_prediction": "Rival prediction 3",
+      "distinguishing_test": "Distinguishing test 3",
+      "what_result_supports_meno_j": "Meno-J result 3",
+      "what_result_supports_rival": "Rival result 3"
+    },
+    {
+      "hypothesis_id": "H4",
+      "meno_j_hypothesis": "Enriched hypothesis 4",
+      "meno_j_prediction": "Distinct prediction 4",
+      "rival_explanation": "Boring rival 4",
+      "rival_prediction": "Rival prediction 4",
+      "distinguishing_test": "Distinguishing test 4",
+      "what_result_supports_meno_j": "Meno-J result 4",
+      "what_result_supports_rival": "Rival result 4"
+    },
+    {
+      "hypothesis_id": "H5",
+      "meno_j_hypothesis": "Enriched hypothesis 5",
+      "meno_j_prediction": "Distinct prediction 5",
+      "rival_explanation": "Boring rival 5",
+      "rival_prediction": "Rival prediction 5",
+      "distinguishing_test": "Distinguishing test 5",
+      "what_result_supports_meno_j": "Meno-J result 5",
+      "what_result_supports_rival": "Rival result 5"
+    },
+    {
+      "hypothesis_id": "H6",
+      "meno_j_hypothesis": "Enriched hypothesis 6",
+      "meno_j_prediction": "Distinct prediction 6",
+      "rival_explanation": "Boring rival 6",
+      "rival_prediction": "Rival prediction 6",
+      "distinguishing_test": "Distinguishing test 6",
+      "what_result_supports_meno_j": "Meno-J result 6",
+      "what_result_supports_rival": "Rival result 6"
+    },
+    {
+      "hypothesis_id": "H7",
+      "meno_j_hypothesis": "Enriched hypothesis 7",
+      "meno_j_prediction": "Distinct prediction 7",
+      "rival_explanation": "Boring rival 7",
+      "rival_prediction": "Rival prediction 7",
+      "distinguishing_test": "Distinguishing test 7",
+      "what_result_supports_meno_j": "Meno-J result 7",
+      "what_result_supports_rival": "Rival result 7"
+    },
+    {
+      "hypothesis_id": "H8",
+      "meno_j_hypothesis": "Enriched hypothesis 8",
+      "meno_j_prediction": "Distinct prediction 8",
+      "rival_explanation": "Boring rival 8",
+      "rival_prediction": "Rival prediction 8",
+      "distinguishing_test": "Distinguishing test 8",
+      "what_result_supports_meno_j": "Meno-J result 8",
+      "what_result_supports_rival": "Rival result 8"
+    },
+    {
+      "hypothesis_id": "H9",
+      "meno_j_hypothesis": "Enriched hypothesis 9",
+      "meno_j_prediction": "Distinct prediction 9",
+      "rival_explanation": "Boring rival 9",
+      "rival_prediction": "Rival prediction 9",
+      "distinguishing_test": "Distinguishing test 9",
+      "what_result_supports_meno_j": "Meno-J result 9",
+      "what_result_supports_rival": "Rival result 9"
+    },
+    {
+      "hypothesis_id": "H10",
+      "meno_j_hypothesis": "Enriched hypothesis 10",
+      "meno_j_prediction": "Distinct prediction 10",
+      "rival_explanation": "Boring rival 10",
+      "rival_prediction": "Rival prediction 10",
+      "distinguishing_test": "Distinguishing test 10",
+      "what_result_supports_meno_j": "Meno-J result 10",
+      "what_result_supports_rival": "Rival result 10"
+    }
+  ]
+}

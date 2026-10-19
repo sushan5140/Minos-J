@@ -1,0 +1,294 @@
+{
+  "confounder_rival_builds": [
+    {
+      "hypothesis_id": "H1",
+      "possible_confounders": [
+        "Age",
+        "Cardiorespiratory fitness (VO2max)",
+        "Respiratory rate and depth during recording",
+        "Recent caffeine, nicotine, or alcohol use",
+        "Medication affecting autonomic tone (beta-blockers, anticholinergics)",
+        "Circadian timing of sessions",
+        "Sensor placement variability across sessions"
+      ],
+      "control_variables": [
+        "Age, sex, BMI",
+        "VO2max or validated fitness proxy",
+        "Paced breathing protocol (0.25 Hz) during baseline and stress",
+        "12-hour caffeine/alcohol abstinence, nicotine abstinence",
+        "Medication-free inclusion criterion",
+        "Sessions scheduled at same circadian phase (±1h)",
+        "Standardized sensor placement with photographic verification"
+      ],
+      "boring_rival_explanations": [
+        "Variation in stressor adherence/compliance masquerades as ANS phenotype effects",
+        "Skin-sensor interface differences (H2) correlate with ANS phenotype and drive SNR variation",
+        "Regression to the mean in extreme baseline RMSSD groups creates spurious U-shaped AUC relationship"
+      ],
+      "rival_prediction": "If stressor non-adherence drives the effect, high-baseline-RMSSD subjects with low AUC will show blunted cortisol reactivity to the stressor; if ANS phenotype drives it, they will show normal cortisol reactivity but compressed HRV dynamic range.",
+      "distinguishing_condition": "Concurrent salivary cortisol sampling during stress sessions: observe whether low-AUC high-RMSSD subjects have attenuated cortisol AUCg (supports non-adherence) or normal cortisol AUCg with reduced ΔRMSSD (supports ANS mechanism).",
+      "confounder_rival_notes": "Cortisol provides orthogonal stress-system readout unaffected by HRV dynamic range compression. Must control for cortisol sampling timing relative to stressor onset."
+    },
+    {
+      "hypothesis_id": "H2",
+      "possible_confounders": [
+        "Ambient light leakage into PPG sensor",
+        "Ambient temperature and humidity",
+        "Sensor strap tightness variation",
+        "Subject movement during recording",
+        "Skin conditions (eczema, calluses)",
+        "Topical products (lotion, oil, sanitizer residue)",
+        "Device manufacturing variability across units"
+      ],
+      "control_variables": [
+        "Light-tight sensor housing or dark room",
+        "Climate-controlled room (22±1°C, 40-60% RH)",
+        "Standardized strap tension via spring-loaded clasp",
+        "Seated, minimal-movement protocol with accelerometer gating",
+        "Dermatological screening exclusion",
+        "Skin cleaning protocol (alcohol wipe, 5-min dry)",
+        "Single device model/batch; cross-over sensor swap design"
+      ],
+      "boring_rival_explanations": [
+        "Signal quality differences stem from device manufacturing variability, not subject anatomy",
+        "Motion artifact (H5) dominates noise floor; static anatomy measures are epiphenomenal",
+        "Software filtering pipeline introduces subject-dependent artifacts via fixed parameters"
+      ],
+      "rival_prediction": "If device variability drives noise floors, swapping sensors between subjects will transfer the signal quality profile (SQI, impedance) to the new subject; if anatomy drives it, the profile stays with the subject.",
+      "distinguishing_condition": "Cross-over design: each subject wears 3 different sensors (same model) in counterbalanced order; compute intraclass correlation (ICC) of PPG SQI and EDA impedance partitioned by subject vs. sensor. Subject ICC > 0.6 and sensor ICC < 0.2 supports anatomy mechanism.",
+      "confounder_rival_notes": "Requires identical sensor firmware and filtering. Sensor order randomization controls for session-order effects. Measure impedance at 10 Hz before/after each session."
+    },
+    {
+      "hypothesis_id": "H3",
+      "possible_confounders": [
+        "Prior sleep duration and quality",
+        "Caffeine intake timing and dose",
+        "Light exposure history (intensity, duration, timing)",
+        "Menstrual cycle phase (for female subjects)",
+        "Seasonal photoperiod variation",
+        "Time-on-task fatigue accumulation",
+        "Stressor type varying by time-of-day"
+      ],
+      "control_variables": [
+        "Actigraphy-verified sleep schedule (7-9h, fixed bed/wake) for 7 days prior",
+        "Caffeine abstinence 12h pre-session",
+        "Controlled light exposure (dim light <10 lux pre-session, standardized bright light pulse)",
+        "Menstrual phase tracking; test in early follicular or control hormonally",
+        "Counterbalanced season enrollment",
+        "Forced desynchrony or constant routine to dissociate circadian phase from time awake",
+        "Identical stressor protocol at all circadian phases"
+      ],
+      "boring_rival_explanations": [
+        "Detection uncertainty follows time-awake fatigue monotonically, not circadian phase",
+        "Signal quality (H2, H7) degrades at night due to temperature/movement, not physiology",
+        "Stressor effectiveness varies by time-of-day (e.g., social stress less potent at night)"
+      ],
+      "rival_prediction": "If fatigue drives uncertainty, AUC will decline linearly with hours awake regardless of chronotype; if circadian gain modulation drives it, AUC will track circadian phase (e.g., nadir near CBTmin) with chronotype-dependent phase shift.",
+      "distinguishing_condition": "Forced desynchrony protocol (28h day) with stress tests at 6+ circadian phases: regress session AUC on circadian phase (hours from DLMO) and time awake; significant circadian phase × chronotype interaction with non-significant time-awake effect supports mechanism.",
+      "confounder_rival_notes": "Forced desynchrony is gold standard but expensive; constant routine with 4+ phases is minimum viable. Must measure DLMO via hourly saliva melatonin in dim light."
+    },
+    {
+      "hypothesis_id": "H4",
+      "possible_confounders": [
+        "Cognitive load during EMA prompts",
+        "Language/literacy barriers affecting scale comprehension",
+        "Cultural differences in extreme vs. moderate response style",
+        "Momentary distraction or multitasking during response",
+        "Social desirability bias varying by context",
+        "EMA prompt timing relative to stressor offset",
+        "Device usability issues (screen size, notification fatigue)"
+      ],
+      "control_variables": [
+        "Standardized EMA training session with practice trials",
+        "Simple 0-100 VAS with anchors; avoid Likert scales",
+        "Compliance monitoring with real-time feedback",
+        "Prompt randomization within windows; exclude responses >5 min after prompt",
+        "Include infrequency/validity scales in EMA battery",
+        "Fixed prompt-stressor latency (e.g., prompt at stressor offset + 2 min)",
+        "Usability testing; provide dedicated study phone"
+      ],
+      "boring_rival_explanations": [
+        "Label noise is context-dependent (e.g., higher variance at work) not trait-dependent",
+        "Physiological measures are the noisy channel; EMA labels are accurate",
+        "Traits correlate with physiology but labeling is unbiased; confounding is illusory"
+      ],
+      "rival_prediction": "If label noise is context-dependent, within-subject EMA variance will correlate with context (work vs. leisure) but not with TAS-20 or interoceptive accuracy; if trait-dependent, variance will correlate with traits across contexts.",
+      "distinguishing_condition": "Multilevel model: EMA stress rating ~ physiology + context + TAS-20 + (1|subject). Significant TAS-20 × physiology interaction predicting rating residual supports trait mechanism; significant context × physiology interaction without trait effect supports context rival.",
+      "confounder_rival_notes": "Ground-truth calibration requires laboratory stressor with known onset. Use that to quantify each subject's labeling bias (EMA - physiology) and test if bias correlates with traits."
+    },
+    {
+      "hypothesis_id": "H5",
+      "possible_confounders": [
+        "Sensor placement tightness and location variability",
+        "Device model/firmware differences",
+        "Software filter version and parameters",
+        "Activity classification errors (mislabeling)",
+        "Concurrent physiological changes (vasoconstriction) altering PPG-optical coupling",
+        "Environmental vibration (vehicle, machinery)",
+        "Clothing-sensor friction"
+      ],
+      "control_variables": [
+        "Standardized placement with 3D-printed guide; tightness via calibrated strap",
+        "Single device model, locked firmware",
+        "Fixed filter pipeline (e.g., wavelet denoising with universal thresholds)",
+        "Video-verified activity labels for ≥20% of wear time",
+        "Simultaneous impedance plethysmography to track vasoconstriction",
+        "Exclude vehicle/machinery exposure via GPS + accelerometer",
+        "Wear on bare skin; standardized clothing protocol"
+      ],
+      "boring_rival_explanations": [
+        "Residual artifact after filtering is universally high in HRV band, not subject-specific",
+        "Stress itself increases fidgeting/movement, creating stress-correlated artifact",
+        "Artifact spectral overlap is random across subjects; no consistent profile"
+      ],
+      "rival_prediction": "If stress-induced movement drives artifact, motion power in HRV band will increase during stress epochs regardless of activity type; if subject-specific movement profile drives it, artifact spectrum will be stable within activity type across stress/non-stress.",
+      "distinguishing_condition": "Compare accelerometer-PPG coherence in 0.1-0.4 Hz band during stress vs. non-stress epochs matched for activity label (e.g., sitting). Significant stress × activity interaction on coherence supports stress-movement rival; stable coherence per activity supports subject-specific profile.",
+      "confounder_rival_notes": "Requires precise activity labeling. Use video annotation for subset to validate self-report. Compute subject-specific artifact templates per activity; test if template-matched filtering reduces HRV error more than generic filtering."
+    },
+    {
+      "hypothesis_id": "H6",
+      "possible_confounders": [
+        "Stressor similarity (e.g., two cognitive tasks) inflating stereotypy",
+        "Session order/habituation effects reducing variability",
+        "Measurement noise (H2, H5) masquerading as low stereotypy",
+        "Sensor drift across sessions (H7) altering feature distributions",
+        "Insufficient stressor diversity (only one domain)",
+        "Learning effects improving classifier performance over sessions",
+        "Baseline feature variance differences, not response consistency"
+      ],
+      "control_variables": [
+        "Stressors from distinct domains: social-evaluative (TSST), physical (cold pressor), cognitive (mental arithmetic)",
+        "Counterbalanced stressor order across subjects",
+        "Sensor calibration check before each session; exclude drifted sessions",
+        "Minimum 5 sessions per stressor type",
+        "Controlled lab environment, same time-of-day",
+        "Include non-stress baseline sessions to estimate measurement noise floor",
+        "Compute stereotypy on residualized features (remove session mean)"
+      ],
+      "boring_rival_explanations": [
+        "Stereotypy reflects stressor similarity, not a subject trait",
+        "Low stereotypy is due to high measurement noise, not true physiological variability",
+        "Sample complexity differences stem from baseline feature variance, not response consistency"
+      ],
+      "rival_prediction": "If stereotypy is stressor-specific, within-subject response correlation will be high for similar stressors (e.g., TSST vs. speech) but low across domains; if a trait, correlation will be high across all domain pairs.",
+      "distinguishing_condition": "Compute within-subject stress response vectors (Δfeatures) for each stressor; calculate pairwise correlations across all stressor pairs. High mean correlation across domain-dissimilar pairs (e.g., TSST vs cold pressor) supports trait mechanism; high only within domain supports stressor similarity.",
+      "confounder_rival_notes": "Use participation ratio of PCA eigenvalues on concatenated stress-response vectors. Must ensure stressors elicit comparable subjective stress (EMA-matched) to avoid intensity confounds."
+    },
+    {
+      "hypothesis_id": "H7",
+      "possible_confounders": [
+        "Device age and manufacturing batch",
+        "Storage conditions (temperature, humidity) between wears",
+        "Firmware updates altering sensor calibration",
+        "Battery voltage sag affecting LED current",
+        "Non-wear periods misclassified as signal loss",
+        "Subject removing device during high-stress contexts",
+        "Skin chemistry changes (pH, microbiome) unrelated to sweat"
+      ],
+      "control_variables": [
+        "New devices from single production batch",
+        "Standardized storage (22°C, 40% RH, light-tight)",
+        "Firmware locked; no OTA updates during study",
+        "Battery monitoring; replace at 3.0V threshold",
+        "Wear detection via skin temperature + capacitance; distinguish non-wear from poor signal",
+        "Daily self-check: 30-sec reference recording at wake/sleep",
+        "Sweat patch pH at wrist weekly; skin microbiome swabs monthly"
+      ],
+      "boring_rival_explanations": [
+        "Drift is random (Brownian) and not exposure-dependent",
+        "Missingness during stress is due to subject non-wear (removal), not signal corruption",
+        "Drift correlates with calendar time, not cumulative exposure"
+      ],
+      "rival_prediction": "If missingness is non-wear, wear-detection sensors (skin temp, capacitance) will show off-body signature during gaps; if drift-induced signal loss, wear sensors show on-body but PPG/EDA quality metrics (SQI, impedance) plummet.",
+      "distinguishing_condition": "Little's MCAR test on missingness pattern stratified by wear-detection state. Reject MCAR for on-body poor-quality segments during high-stress-context exposure (heat >30°C, exertion >3 METs) but not for off-body segments supports drift mechanism.",
+      "confounder_rival_notes": "Must validate wear-detection algorithm against ground-truth (video). Track cumulative exposure metrics: sweat pH (patch), UV (dosimeter), mechanical RMS (accelerometer). Drift rate = slope of weekly reference impedance/amplitude."
+    },
+    {
+      "hypothesis_id": "H8",
+      "possible_confounders": [
+        "Age (correlates with arterial stiffness)",
+        "Blood pressure and antihypertensive medication",
+        "Hydration status affecting vascular tone",
+        "Ambient and skin temperature",
+        "Body position (supine vs seated)",
+        "Sensor placement pressure altering local hemodynamics",
+        "Sympathetic outflow differences (not anatomy) driving peripheral signals"
+      ],
+      "control_variables": [
+        "Age-stratified recruitment (18-30, 31-45, 46-60)",
+        "Normotensive, medication-free (washout 2 weeks if ethical)",
+        "Standardized hydration (500mL water 2h pre-session)",
+        "Thermoneutral room (23±1°C), skin temp clamped via water-perfused cuff",
+        "Supine position, arm supported at heart level",
+        "3D-printed sensor mount with fixed pressure (20 mmHg)",
+        "Direct MSNA recording (microneurography) for central outflow ground truth"
+      ],
+      "boring_rival_explanations": [
+        "Peripheral signal differences reflect sympathetic outflow heterogeneity, not vascular anatomy",
+        "Anatomy correlates with age; age drives both anatomy and transfer function",
+        "Sensor placement variability creates apparent transfer function differences"
+      ],
+      "rival_prediction": "If sympathetic outflow differences drive peripheral signals, MSNA burst pattern will predict peripheral waveform dynamics better than anatomical measures; if anatomy drives it, anatomical measures will predict transfer function gain/latency after controlling for MSNA.",
+      "distinguishing_condition": "Simultaneous MSNA + wearable recording during TSST. Fit subject-specific transfer function (MSNA → PPG amplitude, PTT, temp, EDA). Multiple regression: transfer function gain ~ cfPWV + capillary density + venous compliance + MSNA burst frequency. Significant anatomy coefficients after MSNA control supports mechanism.",
+      "confounder_rival_notes": "MSNA is invasive; limit to n≈20. Alternative: pharmacological stressor (yohimbine) with known central effect. Must measure cfPWV (tonometry), capillary density (nailfold videomicroscopy), venous compliance (occlusion plethysmography)."
+    },
+    {
+      "hypothesis_id": "H9",
+      "possible_confounders": [
+        "Stressor intensity variation across subjects",
+        "Prior stressor exposure/habituation",
+        "Social support presence during stressor",
+        "Personality traits (neuroticism, extraversion) correlating with appraisal",
+        "Coping resource availability",
+        "Cardiovascular fitness altering CO/TPR response",
+        "Beta-blocker or other cardiovascular medication"
+      ],
+      "control_variables": [
+        "Standardized TSST with challenge/threat manipulation (resource evaluation instructions)",
+        "Naive to TSST; no prior lab stress exposure",
+        "No social support during stressor; experimenter blind to condition",
+        "Measure and covary neuroticism (BFI-2), extraversion",
+        "Coping inventory (COPE) as covariate",
+        "VO2max measurement; exclude beta-blockers/CV meds",
+        "Impedance cardiography for CO/TPR ground truth"
+      ],
+      "boring_rival_explanations": [
+        "Physiological differences reflect fitness/health status, not appraisal style",
+        "Appraisal is epiphenomenal; physiology drives appraisal (reverse causality)",
+        "Classifier misalignment stems from inadequate feature set, not appraisal mediation"
+      ],
+      "rival_prediction": "If physiology drives appraisal, manipulating physiology (e.g., acute beta-blockade) will alter challenge/threat ratings; if appraisal drives physiology, manipulating appraisal instructions will alter CO/TPR pattern without changing fitness.",
+      "distinguishing_condition": "Randomized crossover: same TSST with challenge vs threat instructions (counterbalanced). Measure CO/TPR and wearable features. Significant instruction × appraisal style interaction on CO/TPR (challenge instructions → higher CO/TPR ratio in challenge-appraisers) supports appraisal mechanism.",
+      "confounder_rival_notes": "Appraisal style measured via pre-stressor resource/demand evaluation (Tomaka scale). Challenge = resources > demands; threat = demands > resources. Must verify manipulation check (post-stressor appraisal rating)."
+    },
+    {
+      "hypothesis_id": "H10",
+      "possible_confounders": [
+        "Insufficient within-subject data (low N per subject) causing estimation error",
+        "Model misspecification (non-Gaussian random effects, non-linear dynamics)",
+        "Non-stationarity within subject (changing dynamics over study)",
+        "Outlier subjects with poor data quality (artifact, non-wear)",
+        "Prior sensitivity in hierarchical model",
+        "Incorrect stressor alignment (mis-specified time-zero)",
+        "EMA label noise (H4) inflating within-subject variance"
+      ],
+      "control_variables": [
+        "Intensive longitudinal design: ≥60 days, ≥10 stress events, ≥5 EMA/day",
+        "Model checking: posterior predictive checks, LOO-CV, prior sensitivity analysis",
+        "Stationarity tests (KPSS, rolling AR coefficients) per subject",
+        "Data quality flags: exclude sessions with >20% artifact, non-wear >2h",
+        "Weakly informative priors; compare to flat priors",
+        "Stressor alignment via physiological onset (HRV drop) not EMA timestamp",
+        "Use laboratory-calibrated stress labels for subset to quantify EMA noise"
+      ],
+      "boring_rival_explanations": [
+        "Apparent non-ergodicity is due to low within-subject sample size (estimation error)",
+        "Hierarchical model miscalibration stems from prior misspecification, not true non-ergodicity",
+        "Outlier subjects have systematically poorer signal quality, not different dynamics"
+      ],
+      "rival_prediction": "If non-ergodicity is due to low within-subject N, increasing N (via longer monitoring or more stressors) will reduce shrinkage bias for outlier subjects; if true non-ergodicity, bias persists even with large N.",
+      "distinguishing_condition": "Subsample within-subject data at increasing N (5, 10, 20, 40 stress events); plot hierarchical model calibration error (ECE) vs N for subjects in tails of slope distribution (|z|>2). Persistent ECE gap at N=40 supports non-ergodicity; convergence supports estimation-error rival.",
+      "confounder_rival_notes": "Requires very long monitoring. Alternative: simulate data from known non-ergodic (mixture of dynamical systems) vs ergodic (hierarchical Gaussian) generative models; test if hierarchical model recovers true parameters. Real-data test needs ≥50 subjects with dense sampling."
+    }
+  ]
+}

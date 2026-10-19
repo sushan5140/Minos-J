@@ -1,0 +1,31 @@
+{
+  "experiment_name": "Meno-J Experiment 15: Confidence–Trust Subject-Shift Diagnostic",
+  "status": "PASS",
+  "checks": {
+    "required_outputs_exist": true,
+    "all_outputs_decode_as_utf8": true,
+    "literature_ledger_has_19_unique_primary_sources": true,
+    "literature_full_text_and_partial_statuses_explicit": true,
+    "literature_finding_citations_resolve_to_ledger": true,
+    "experiment_14_prerequisite_hashes_match": true,
+    "all_33_feature_checkpoint_hashes_match": true,
+    "independent_exact_replay_matches": true,
+    "fold_grid_198_complete": true,
+    "observation_grid_3168_complete": true,
+    "subject_disjoint_training_calibration_test": true,
+    "onboarding_test_disjoint_and_complete": true,
+    "onboarding_labels_unused": true,
+    "risk_flags_and_quadrants_recomputed": true,
+    "fold_aggregates_recomputed_from_observations": true,
+    "experiment_14_outcome_continuity_exact": true,
+    "frozen_decision_rule_recomputed": true,
+    "negative_primary_decision_preserved": true,
+    "no_runtime_warnings_on_replay": true,
+    "credential_scan_passes": true
+  },
+  "primary_decision": "CONFIDENCE_TRUST_SUBJECT_SHIFT_SIGNAL_NOT_SUPPORTED",
+  "scientific_report_sha256": "51840d5432907199502b74d0ff139e57cf3e61f6d8a5dc29049f68063c5e2dca",
+  "literature_review_sha256": "c674de2667571a6b8c91f9124ec89751e9e9b0f2d33b9160626aaed97cedb4bd",
+  "reproducibility_summary_sha256": "da01557951b56b1c154ffd334b60f8a00248161d1a0476c4a1d29645a0913d67",
+  "working_theory_sha256": "8e6cfa9be2f2ea126f695bfd63a9fc3960a91b359c0d07403c65ea861ad108f2"
+}

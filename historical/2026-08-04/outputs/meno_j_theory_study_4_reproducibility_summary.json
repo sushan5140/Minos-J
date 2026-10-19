@@ -1,0 +1,33 @@
+{
+  "study_name": "Meno-J Theory Study 4: Historical J-Jump Casebook 3",
+  "status": "PASS_INDEPENDENT_EXACT_REPLAY",
+  "execution_date": "2026-08-17",
+  "input_hashes": {
+    "protocol": "ef3385c0cf3db504c578256614a0bd03b38924ab6ef693b5a0e079ddca69a32e",
+    "study_3_report": "446bbec375bc41b8e4ab12d21dff2a3325605cf3c087d6574e5df955c6987af6",
+    "study_3_extension": "33fd45410733df7f891201e1e20665e133ba94b25945185a6459b17f3c7adf5c",
+    "study_3_validation": "fda1a25720e8052e0d09a519fc7d3c89ccb47962397b648d648bbc49a8db93e2"
+  },
+  "output_hashes": {
+    "report_json": "b75d785d1fc90b54c29e7db20fcb27b195308afb5bbc34189082d3f20d531177",
+    "report_markdown": "e5eec6ebc704febdb7b93cfc689e55e7ad644529a998149169d486dd6a81e425",
+    "extension_json": "ba915e758b3eae3a1aa04469286f0313fc3291f25d02b7f4740372569223f5f3",
+    "extension_markdown": "df88d6d64216483c7f236c8fa9e073a711167eb89334cdfcfd44bd3c1b297ea0"
+  },
+  "runner": "C:\\Users\\DELL\\Documents\\Codex\\2026-08-04\\we-are-starting-a-fresh-implementation\\run_theory_study_4_caloric_kinetic_casebook.py",
+  "runner_sha256": "2836fcd26f69141569c2f63d116745117c451b1d16c8bbe5ff7574f17d38d535",
+  "external_calls": {
+    "openrouter": false,
+    "llm": false,
+    "dataset": false,
+    "simulation": false
+  },
+  "encoding": "UTF-8",
+  "source_access_limits_recorded": true,
+  "validation": {
+    "validator": "C:\\Users\\DELL\\Documents\\Codex\\2026-08-04\\we-are-starting-a-fresh-implementation\\work\\validate_theory_study_4_caloric_kinetic_casebook.py",
+    "validator_sha256": "46cd25ce328410a5dd1e179d6576c8d55f62fd99e070748a52b184f60bcd963b",
+    "report_json_sha256": "b75d785d1fc90b54c29e7db20fcb27b195308afb5bbc34189082d3f20d531177",
+    "extension_json_sha256": "ba915e758b3eae3a1aa04469286f0313fc3291f25d02b7f4740372569223f5f3"
+  }
+}

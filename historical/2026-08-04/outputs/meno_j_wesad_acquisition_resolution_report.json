@@ -1,0 +1,50 @@
+{
+  "report_name": "Meno-J WESAD Acquisition Resolution Report",
+  "status": "RESOLVED",
+  "previous_blocker_report": "outputs/meno_j_wesad_acquisition_blocker_report.json",
+  "archive": {
+    "path": "C:\\Users\\DELL\\Downloads\\WESAD.zip",
+    "size_bytes": 2249444501,
+    "sha256": "5e15d2606adf16d819ba535c1786d92e94bae5ff5392f7ae01fb63f9938fd71c",
+    "zip_entry_count": 92,
+    "zip_file_count": 76,
+    "uncompressed_bytes": 17578304666,
+    "crc_test_passed": true,
+    "unsafe_path_count": 0
+  },
+  "extraction": {
+    "resolved_root": "C:\\Users\\DELL\\Downloads\\WESAD\\WESAD",
+    "subject_count": 15,
+    "subjects": [
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S6",
+      "S7",
+      "S8",
+      "S9",
+      "S10",
+      "S11",
+      "S13",
+      "S14",
+      "S15",
+      "S16",
+      "S17"
+    ],
+    "all_extracted_sizes_match_archive": true,
+    "all_extracted_crc32_values_match_archive": true,
+    "all_extracted_sha256_values_computed": true
+  },
+  "resolution": "The user-supplied official archive and extraction were complete. The earlier approximately 6 MB partial-download blocker is superseded.",
+  "experiment_9": {
+    "status": "PASS",
+    "subject_count": 15,
+    "window_count": 535,
+    "fold_result_count": 405,
+    "primary_transfer_decision": "SYNTHETIC_SAFEST_PAIR_DOES_NOT_TRANSFER",
+    "independent_exact_replay": "PASS"
+  },
+  "credentials_or_model_calls_used": false,
+  "raw_dataset_modified": false
+}

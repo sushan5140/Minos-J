@@ -1,0 +1,21 @@
+{
+  "experiment_name": "Meno-J Experiment 10: Calibration Onboarding and Compatibility Bridge",
+  "status": "PASS",
+  "checks": {
+    "required_outputs_exist": true,
+    "saved_schema_and_invariants_pass": true,
+    "markdown_matches_json": true,
+    "independent_exact_replay_matches": true,
+    "fold_grid_315_complete": true,
+    "compatibility_grid_180_complete": true,
+    "personal_test_calibration_disjoint": true,
+    "finite_sample_boundary_matches_protocol": true,
+    "experiment_9_source_hashes_match": true,
+    "all_15_feature_checkpoint_hashes_match": true,
+    "working_theory_update_matches_results": true,
+    "credential_scan_passes": true
+  },
+  "primary_decision": "PERSONAL_CALIBRATION_REPAIR_SUPPORTED",
+  "scientific_report_sha256": "4d229943cf82f20cc1579515908561f845da8c25871cee85bbf6fb16e4c91da4",
+  "reproducibility_summary_sha256": "c5b29f496b963dfb13f7f8bf03462af7b6c706819a18686f5c50c843827d0f3d"
+}

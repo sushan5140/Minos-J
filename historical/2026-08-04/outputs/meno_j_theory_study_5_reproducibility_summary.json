@@ -1,0 +1,33 @@
+{
+  "study_name": "Meno-J Theory Study 5: Historical J-Jump Casebook 4",
+  "status": "PASS_INDEPENDENT_EXACT_REPLAY",
+  "execution_date": "2026-08-17",
+  "input_hashes": {
+    "protocol": "28a4e2cbe6fc86d71cf59ea9a14ea57291cf2a84b384542c5b481dc3e1514edb",
+    "study_4_report": "b75d785d1fc90b54c29e7db20fcb27b195308afb5bbc34189082d3f20d531177",
+    "study_4_extension": "ba915e758b3eae3a1aa04469286f0313fc3291f25d02b7f4740372569223f5f3",
+    "study_4_validation": "29e2efdbfc8df13ba4be65e922102282f59a7918ee61557ad86f48e73b31d855"
+  },
+  "output_hashes": {
+    "report_json": "5eb1af24c5a78c46f8a60d0d960c9c68af69f9df566f816c455c17749789b6a3",
+    "report_markdown": "b29bb5765cc55a05f71f8639e950204f17e767a1c9848b6c43569428ed1c6915",
+    "extension_json": "f933ccde8ad5f5c6a051ff888dc3debab698829a2b77f9ff92706cadfb066754",
+    "extension_markdown": "c0b9bc4cb4143f358d7fd6b0febc37c784648b32e8d4fe049d3e4895386fa89f"
+  },
+  "runner": "C:\\Users\\DELL\\Documents\\Codex\\2026-08-04\\we-are-starting-a-fresh-implementation\\run_theory_study_5_continental_drift_plate_tectonics.py",
+  "runner_sha256": "e356c58687359bd808b3e6af665b54989be8b872be9ff5a6dc9363e182b8f500",
+  "external_calls": {
+    "openrouter": false,
+    "llm": false,
+    "dataset": false,
+    "simulation": false
+  },
+  "encoding": "UTF-8",
+  "source_access_limits_recorded": true,
+  "validation": {
+    "validator": "C:\\Users\\DELL\\Documents\\Codex\\2026-08-04\\we-are-starting-a-fresh-implementation\\work\\validate_theory_study_5_continental_drift_plate_tectonics.py",
+    "validator_sha256": "4f0254254eb046eb835b19b17011f70d198904261cacf8bc89f48ab61daac928",
+    "report_json_sha256": "5eb1af24c5a78c46f8a60d0d960c9c68af69f9df566f816c455c17749789b6a3",
+    "extension_json_sha256": "f933ccde8ad5f5c6a051ff888dc3debab698829a2b77f9ff92706cadfb066754"
+  }
+}

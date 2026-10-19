@@ -1,0 +1,34 @@
+{
+  "study_name": "Meno-J Theory Study 6: Minimal Executable Epistemic Scoring Protocol",
+  "status": "PASS_INDEPENDENT_EXACT_REPLAY",
+  "execution_date": "2026-08-17",
+  "input_hashes": {
+    "meno_j_theory_study_2_contract_amendment.json": "9c87c2464125e72cc8de83e0790534610d345d747d91da692fd841e99540bd15",
+    "meno_j_theory_study_3_contract_extension.json": "33fd45410733df7f891201e1e20665e133ba94b25945185a6459b17f3c7adf5c",
+    "meno_j_theory_study_4_contract_extension.json": "ba915e758b3eae3a1aa04469286f0313fc3291f25d02b7f4740372569223f5f3",
+    "meno_j_theory_study_5_contract_extension.json": "f933ccde8ad5f5c6a051ff888dc3debab698829a2b77f9ff92706cadfb066754",
+    "meno_j_theory_study_5_validation.json": "a51ef07102a0d601aed40db93f84ca9fd742b3c596ad6fd574ccd31b386bae2b",
+    "meno_j_theory_study_6_executable_scoring_protocol.json": "8bf96e28439eecd38adbc36809e660ec723a315dbb281164a132f0422bd489be"
+  },
+  "output_hashes": {
+    "meno_j_theory_study_6_executable_scoring_results.json": "21397bd3586c3d725aae5441484fec860da56d1a1c6e0933a72b7805bd700746",
+    "meno_j_theory_study_6_executable_scoring_results.md": "63279534320c966265c03dd1bd10d3ed75701860d9d9f4655e3731b50bc12a93"
+  },
+  "runner": "C:\\Users\\DELL\\Documents\\Codex\\2026-08-04\\we-are-starting-a-fresh-implementation\\run_theory_study_6_executable_scoring_protocol.py",
+  "runner_sha256": "87dac4d62e80d2879bbbf1f86438ca6e211a4c483e75754766e05f261f2d03fe",
+  "scorer": "C:\\Users\\DELL\\Documents\\Codex\\2026-08-04\\we-are-starting-a-fresh-implementation\\meno_j_epistemic_scorer.py",
+  "scorer_sha256": "ff765e7e008cb684e5432339dc4f16277e50a3e393d2b0326246e4cd43bf4b3d",
+  "external_calls": {
+    "openrouter": false,
+    "llm": false,
+    "dataset": false,
+    "simulation": false
+  },
+  "encoding": "UTF-8",
+  "validation": {
+    "validator": "C:\\Users\\DELL\\Documents\\Codex\\2026-08-04\\we-are-starting-a-fresh-implementation\\work\\validate_theory_study_6_executable_scoring_protocol.py",
+    "validator_sha256": "1b012c9d0b4d8a56ca2aff28da803206904366688e05aa645e29f83ad286e873",
+    "report_json_sha256": "21397bd3586c3d725aae5441484fec860da56d1a1c6e0933a72b7805bd700746",
+    "scorer_sha256": "ff765e7e008cb684e5432339dc4f16277e50a3e393d2b0326246e4cd43bf4b3d"
+  }
+}

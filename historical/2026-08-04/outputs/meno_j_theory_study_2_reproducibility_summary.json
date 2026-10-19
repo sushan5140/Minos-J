@@ -1,0 +1,31 @@
+{
+  "study_name": "Meno-J Theory Study 2: Historical J-Jump Calibration Casebook",
+  "status": "PASS_INDEPENDENT_EXACT_REPLAY",
+  "execution_date": "2026-08-17",
+  "input_hashes": {
+    "protocol": "081b8bb5b4eed343e24f677863ea10d443c16eef12d448ffff86506b73939226",
+    "theory_study_1": "c8e1a018e2d57ba194f73d8cf22c90fe09b14432354d2a1099e510f6eeb7f326",
+    "theory_study_1_validation": "06639e2b5913d881db88bf8930a8a3d51579a58490029f25cc641d208e230136"
+  },
+  "output_hashes": {
+    "report_json": "d3e74635c5cb3189f18a2049ea701296cbd6378688ff504ff2d858cf88794b91",
+    "report_markdown": "e452a5926f919dcd9dc208797379cfa65f296f715567d4ee535b07f25e11bdca",
+    "amendment_json": "9c87c2464125e72cc8de83e0790534610d345d747d91da692fd841e99540bd15",
+    "amendment_markdown": "b3cabbc9fb5c6d843df89dbeb278732063861ce861505a617cdc9fa61026df90"
+  },
+  "runner": "C:\\Users\\DELL\\Documents\\Codex\\2026-08-04\\we-are-starting-a-fresh-implementation\\run_theory_study_2_j_jump_casebook.py",
+  "runner_sha256": "400f9949c74e039303e93437bee766ab151cdf400166f8f5ce00accf8439c69e",
+  "external_calls": {
+    "openrouter": false,
+    "llm": false,
+    "dataset": false
+  },
+  "encoding": "UTF-8",
+  "source_access_limits_recorded": true,
+  "validation": {
+    "validator": "C:\\Users\\DELL\\Documents\\Codex\\2026-08-04\\we-are-starting-a-fresh-implementation\\work\\validate_theory_study_2_j_jump_casebook.py",
+    "validator_sha256": "6728958d3a40da48d43fefcd2530a9a055cd817a605496ddeeeabfa6e0923ac5",
+    "report_json_sha256": "d3e74635c5cb3189f18a2049ea701296cbd6378688ff504ff2d858cf88794b91",
+    "amendment_json_sha256": "9c87c2464125e72cc8de83e0790534610d345d747d91da692fd841e99540bd15"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "report_name": "Meno-J WESAD Acquisition Constraint Audit",
+  "status": "BLOCKED_PENDING_COMPLETE_DATASET",
+  "official_sources": {
+    "uci_record": "https://archive.ics.uci.edu/dataset/465/wesad",
+    "university_dataset_page": "https://www.eti.uni-siegen.de/ubicomp/home/datasets/icmi18/index.html.en?lang=en",
+    "official_archive_endpoint": "https://uni-siegen.sciebo.de/public.php/dav/files/HGdUkoNlW1Ub0Gx/?accept=zip",
+    "advertised_archive_size_gb": 2.1,
+    "usage_condition": "Scientific, non-commercial use with attribution to the dataset owners."
+  },
+  "local_state": {
+    "downloads_directory": "C:\\Users\\DELL\\Downloads",
+    "partial_file": "C:\\Users\\DELL\\Downloads\\Unconfirmed 231915.crdownload",
+    "partial_bytes": 6291456,
+    "partial_mib": 6.0,
+    "complete_archive_exists": false,
+    "replacement_part_exists": false,
+    "extracted_dataset_exists": false,
+    "available_disk_bytes": 94237769728,
+    "available_disk_gb": 87.77,
+    "partial_preserved": true
+  },
+  "constraint_audit": {
+    "storage_capacity": "SUFFICIENT",
+    "shell_network": "BLOCKED: the sandboxed curl client cannot connect to the official host.",
+    "filesystem_permission": "BLOCKED: the sandbox can read Downloads but cannot create or rename files there.",
+    "elevation": "UNAVAILABLE: this session's approval policy rejects sandbox escalation requests.",
+    "browser_transfer": "UNRELIABLE: the available in-app browser download is bound to the automation session and exposes no resumable file handle.",
+    "browser_timeout": "The earlier long-running browser wait ended when the automation execution timed out, leaving a stagnant 6 MiB partial file.",
+    "resumability": "No permitted client in this session combines outbound access, persistent local writes, HTTP range continuation, and long-lived execution.",
+    "alternative_sources": "Public secondary copies found during search were repackaged, substantially larger, or incomplete and were rejected for the primary integrity-sensitive study."
+  },
+  "integrity_policy": {
+    "do_not_rename_partial_as_complete": true,
+    "do_not_extract_unverified_partial": true,
+    "do_not_claim_dataset_dependent_results": true,
+    "required_before_experiment_9": [
+      "Complete official ZIP archive",
+      "Successful ZIP central-directory and CRC test",
+      "Safe extraction with path-traversal checks",
+      "Expected subject pickle-file inventory",
+      "SHA-256 archive and extracted-file manifest"
+    ]
+  },
+  "completed_validation": {
+    "pipeline_contract": "PASS",
+    "enriched_pipeline_contract": "PASS",
+    "cross_question_analysis_contract": "PASS",
+    "pattern_falsification_contract": "PASS",
+    "experiment_5_p4_f2": "PASS",
+    "experiment_6_p4_f1": "PASS",
+    "experiment_8_replay_and_credential_scan": "PASS",
+    "experiment_9_dataset_dependent_results_created": false
+  },
+  "next_required_action": "Download the official WESAD archive outside the restricted automation session, or provide a session with outbound shell access and write permission to Downloads. Preserve the current partial until the replacement archive passes integrity validation."
+}

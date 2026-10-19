@@ -1,0 +1,94 @@
+{
+  "rival_prediction_matrix": [
+    {
+      "hypothesis_id": "H1",
+      "meno_j_hypothesis": "Inter‑subject variability in autonomic reactivity causes the nonconformity scores to be systematically miscalibrated for high‑reactivity individuals.",
+      "meno_j_prediction": "Subjects in the top quartile of sympathetic_reactivity_index will have coverage rates at least 10 percentage points below the nominal level (e.g., <80% for 90% nominal), and coverage rate will negatively correlate with sympathetic_reactivity_index (Spearman rho < -0.3).",
+      "rival_explanation": "High-reactivity subjects simply have noisier signals, increasing variance of nonconformity scores without systematic shift",
+      "rival_prediction": "If the rival (classifier miscalibration) holds, adding subject-level reactivity as a Mondrian stratum will not improve coverage; instead, recalibrating the base classifier (e.g., temperature scaling) on a per-subject basis will restore coverage.",
+      "distinguishing_test": "Compare coverage after (a) adding sympathetic_reactivity_index as a stratification variable vs. (b) applying per-subject temperature scaling to classifier logits before conformal prediction. If (a) fixes coverage but (b) does not, the proposed mechanism wins; if (b) fixes coverage but (a) does not, the rival wins.",
+      "what_result_supports_meno_j": "Adding sympathetic_reactivity_index as a stratification variable improves coverage for high-reactivity subjects, while per-subject temperature scaling does not.",
+      "what_result_supports_rival": "Per-subject temperature scaling restores coverage, but adding sympathetic_reactivity_index as a stratification variable does not."
+    },
+    {
+      "hypothesis_id": "H2",
+      "meno_j_hypothesis": "Sensor‑specific drift in the wrist‑worn EDA channel during prolonged recordings leads to biased nonconformity estimates for later trials.",
+      "meno_j_prediction": "Coverage rate will decline linearly with session_time_elapsed (slope < -0.5% per minute), and electrode_impedance_change (end-start) will correlate with coverage drop in the last trial block (Pearson r > 0.4).",
+      "rival_explanation": "Late-session undercoverage is due to subject fatigue reducing physiological discriminability, not sensor drift",
+      "rival_prediction": "If fatigue is the cause, EDA amplitude will not correlate with impedance change; instead, HRV reactivity will decline with session time while impedance remains stable.",
+      "distinguishing_test": "Regress coverage rate on both electrode_impedance_change and HRV_reactivity_decline (slope across session). If impedance_change remains significant after controlling for HRV_reactivity_decline, sensor drift mechanism wins; if HRV_reactivity_decline dominates, fatigue rival wins.",
+      "what_result_supports_meno_j": "Electrode impedance change remains a significant predictor of coverage decline after controlling for HRV reactivity decline.",
+      "what_result_supports_rival": "HRV reactivity decline dominates and impedance change is no longer significant when both are included."
+    },
+    {
+      "hypothesis_id": "H3",
+      "meno_j_hypothesis": "Non‑stationary heart‑rate variability (HRV) dynamics across the stress‑recovery cycle violate the exchangeability assumption within Mondrian strata.",
+      "meno_j_prediction": "Coverage in transitional windows (first 2 min after condition change) will be at least 15 percentage points lower than in stable windows, and lag-1 autocorrelation of nonconformity residuals will be >0.2 in transitional periods.",
+      "rival_explanation": "The classifier performs worse during transitions because feature distributions overlap more, not because of temporal dependence in residuals",
+      "rival_prediction": "If the rival (transition-specific distribution shift) holds, coverage will be low only in the first 2 minutes after a condition change, but residual autocorrelation will be negligible once condition is accounted for.",
+      "distinguishing_test": "Fit a time-aware conformal method (e.g., block bootstrap) and a condition-split Mondrian (separate strata for stress-onset, stress-steady, recovery-onset, recovery-steady). If condition-split restores coverage without needing temporal dependence correction, the rival wins; if block bootstrap is required, the proposed mechanism wins.",
+      "what_result_supports_meno_j": "Block bootstrap conformal prediction restores coverage, but condition-split Mondrian does not.",
+      "what_result_supports_rival": "Condition-split Mondrian restores coverage to nominal without needing temporal dependence correction."
+    },
+    {
+      "hypothesis_id": "H4",
+      "meno_j_hypothesis": "Mislabeling of self‑reported stress levels for a subset of participants introduces systematic label noise into the Mondrian categories.",
+      "meno_j_prediction": "Low-stress stratum will have coverage below nominal (e.g., <85% for 90% nominal) and the proportion of label_noise_indicator=1 (self-report != physiological index thresholded) in that stratum will correlate negatively with coverage (r < -0.5). Relabeling using physiological stress index will improve low-stress stratum coverage by at least 10 percentage points.",
+      "rival_explanation": "The physiological stress index used to detect mislabeling is itself biased for certain subjects (e.g., high baseline HRV)",
+      "rival_prediction": "If the rival (physiological index bias) holds, relabeling using the index will not improve coverage because the index misclassifies the same subjects systematically.",
+      "distinguishing_test": "Compute coverage after relabeling with (a) the physiological stress index and (b) a consensus label from two independent annotators reviewing video/physiology. If (a) improves coverage but (b) does not, the index is capturing true state (proposed mechanism). If neither improves coverage, the rival (index bias) or finite-sample issue wins.",
+      "what_result_supports_meno_j": "Relabeling with physiological stress index improves coverage, and consensus labels confirm systematic mislabeling in low-stress stratum.",
+      "what_result_supports_rival": "Neither relabeling with physiological index nor consensus labels improves coverage, indicating index bias or finite-sample issue."
+    },
+    {
+      "hypothesis_id": "H5",
+      "meno_j_hypothesis": "Insufficient representation of certain demographic sub‑groups (e.g., age > 50) in the calibration set leads to stratum‑specific undercoverage.",
+      "meno_j_prediction": "Subjects aged >50 will have coverage rate at least 15 percentage points below nominal, and baseline HRV/EDA will differ significantly from younger groups (p<0.01). Adding age bins to Mondrian taxonomy will restore coverage to within 5 percentage points of nominal for all age groups.",
+      "rival_explanation": "Older subjects have fewer calibration windows because of shorter recordings or more artifacts, causing finite-sample undercoverage (H8)",
+      "rival_prediction": "If the rival (classifier generalization) holds, adding age as a Mondrian stratum will not fix coverage; instead, retraining the classifier with age-balanced data will.",
+      "distinguishing_test": "Compare coverage after (a) adding age bins to Mondrian taxonomy vs. (b) retraining the base classifier with stratified sampling by age. If (a) restores coverage to nominal, the proposed mechanism (stratum heterogeneity) wins; if only (b) works, the rival wins.",
+      "what_result_supports_meno_j": "Adding age bins to Mondrian taxonomy restores coverage to nominal for all age groups.",
+      "what_result_supports_rival": "Retraining classifier with age-balanced data fixes coverage but age-stratified Mondrian does not."
+    },
+    {
+      "hypothesis_id": "H6",
+      "meno_j_hypothesis": "The choice of nonconformity score (e.g., softmax margin) is poorly aligned with the multimodal feature geometry for stress classification.",
+      "meno_j_prediction": "Coverage will decrease as out_of_distribution_score (Mahalanobis distance) increases (Spearman rho < -0.4). A Mahalanobis-based nonconformity score will achieve coverage within 3 percentage points of nominal, while softmax margin will undercover by >10 percentage points for high OOD samples.",
+      "rival_explanation": "The margin-based nonconformity is fine; undercoverage stems from finite-sample quantile estimation in small strata (H8)",
+      "rival_prediction": "If the rival (classifier miscalibration) holds, using a Mahalanobis nonconformity on the same classifier logits will not improve coverage; instead, calibrating the classifier (e.g., Dirichlet calibration) before conformal prediction will.",
+      "distinguishing_test": "Evaluate three nonconformity scores on held-out data: (1) softmax margin, (2) Mahalanobis distance in joint feature space, (3) softmax margin after Dirichlet calibration. If (2) outperforms (1) and (3) matches (2), the proposed mechanism (geometry mismatch) wins. If (3) outperforms (1) and matches (2), the rival (miscalibration) wins.",
+      "what_result_supports_meno_j": "Mahalanobis-based nonconformity outperforms softmax margin and matches Dirichlet-calibrated margin performance.",
+      "what_result_supports_rival": "Dirichlet-calibrated softmax margin matches Mahalanobis performance and both outperform uncalibrated margin."
+    },
+    {
+      "hypothesis_id": "H8",
+      "meno_j_hypothesis": "Finite‑sample estimation error of the conditional quantile in small strata leads to systematic undercoverage for rare stress levels.",
+      "meno_j_prediction": "Strata with sample size <30 will have coverage at least 10 percentage points below nominal, and quantile estimation bias (empirical - oracle) will be negative and correlate with 1/sqrt(n). Finite-sample correction (e.g., using (n+1)(1-alpha)th order statistic) will restore coverage to within 2 percentage points.",
+      "rival_explanation": "Undercoverage in rare stress levels is due to genuine distribution shift (H3, H9) not finite-sample bias",
+      "rival_prediction": "If the rival (distribution shift) holds, increasing calibration sample size for rare strata (by pooling across subjects) will not fix coverage because the shift is systematic.",
+      "distinguishing_test": "Apply finite-sample correction (e.g., using the (n+1)(1-alpha)th order statistic with n = stratum size) and compare to pooling calibration data across subjects for rare strata. If correction restores coverage, finite-sample bias wins; if pooling across subjects restores coverage but correction does not, distribution shift rival wins.",
+      "what_result_supports_meno_j": "Finite-sample correction restores coverage to nominal for small strata.",
+      "what_result_supports_rival": "Pooling calibration data across subjects restores coverage but finite-sample correction does not."
+    },
+    {
+      "hypothesis_id": "H9",
+      "meno_j_hypothesis": "Physiological habituation across repeated stress trials reduces signal discriminability, but the Mondrian taxonomy treats each trial as identically distributed.",
+      "meno_j_prediction": "Coverage will decline linearly with trial_number (slope < -5% per trial). EDA_peak_amplitude and HRV_reactivity will show significant negative linear trends across trials (p<0.01). Trial-stratified Mondrian will eliminate the trial-number coverage gap (coverage within 3 percentage points of nominal for all trials).",
+      "rival_explanation": "Later trials have more motion artifacts because subjects move more as they get comfortable, causing missing data (H10)",
+      "rival_prediction": "If the rival (classifier overfitting) holds, retraining the classifier on trials 2-3 and testing on trial 1 will show symmetric degradation, not just late-trial undercoverage.",
+      "distinguishing_test": "Train three classifiers: (a) on trial 1 only, test on trial 3; (b) on trial 3 only, test on trial 1; (c) on all trials with trial-number as feature. If (a) shows undercoverage on trial 3 but (b) does not on trial 1, habituation mechanism wins. If both (a) and (b) show undercoverage, overfitting rival wins. If (c) fixes coverage, trial-number stratification wins.",
+      "what_result_supports_meno_j": "Classifier trained on trial 1 undercovers on trial 3, but classifier trained on trial 3 does not undercover on trial 1; trial-stratified Mondrian fixes coverage.",
+      "what_result_supports_rival": "Both cross-trial classifiers show symmetric undercoverage, indicating overfitting rather than habituation."
+    },
+    {
+      "hypothesis_id": "H10",
+      "meno_j_hypothesis": "Correlated missingness in the respiration belt (e.g., motion artifacts) creates informative missingness that the conformal predictor ignores.",
+      "meno_j_prediction": "Windows with missing respiration during high movement (top quartile accelerometer magnitude) will have coverage at least 15 percentage points lower than windows with respiration present. Adding missingness indicator as feature will improve coverage for high-movement stress windows by >10 percentage points.",
+      "rival_explanation": "High-movement stress periods are inherently harder to classify (lower signal quality across all modalities), not specifically due to respiration missingness",
+      "rival_prediction": "If the rival (general signal quality) holds, coverage will be low for high-movement windows even when respiration is present, and adding a missingness indicator will not help.",
+      "distinguishing_test": "Stratify coverage by (movement_intensity quartile) x (respiration_missingness). If coverage drops only when both high movement AND missing respiration co-occur, the proposed mechanism (informative missingness) wins. If coverage drops with high movement regardless of respiration missingness, the rival wins.",
+      "what_result_supports_meno_j": "Coverage drops significantly only in high-movement windows with missing respiration; adding missingness indicator restores coverage for these windows.",
+      "what_result_supports_rival": "Coverage drops with high movement regardless of respiration missingness; missingness indicator does not help."
+    }
+  ]
+}

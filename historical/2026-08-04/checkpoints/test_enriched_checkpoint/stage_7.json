@@ -1,0 +1,84 @@
+{
+  "falsification_tests": [
+    {
+      "hypothesis_id": "H1",
+      "strongest_falsification_test": "Falsification test 1",
+      "failure_condition": "Failure condition 1",
+      "minimum_data_needed": "Minimum data 1",
+      "most_likely_false_positive_risk": "False-positive risk 1",
+      "most_likely_false_negative_risk": "False-negative risk 1"
+    },
+    {
+      "hypothesis_id": "H2",
+      "strongest_falsification_test": "Falsification test 2",
+      "failure_condition": "Failure condition 2",
+      "minimum_data_needed": "Minimum data 2",
+      "most_likely_false_positive_risk": "False-positive risk 2",
+      "most_likely_false_negative_risk": "False-negative risk 2"
+    },
+    {
+      "hypothesis_id": "H3",
+      "strongest_falsification_test": "Falsification test 3",
+      "failure_condition": "Failure condition 3",
+      "minimum_data_needed": "Minimum data 3",
+      "most_likely_false_positive_risk": "False-positive risk 3",
+      "most_likely_false_negative_risk": "False-negative risk 3"
+    },
+    {
+      "hypothesis_id": "H4",
+      "strongest_falsification_test": "Falsification test 4",
+      "failure_condition": "Failure condition 4",
+      "minimum_data_needed": "Minimum data 4",
+      "most_likely_false_positive_risk": "False-positive risk 4",
+      "most_likely_false_negative_risk": "False-negative risk 4"
+    },
+    {
+      "hypothesis_id": "H5",
+      "strongest_falsification_test": "Falsification test 5",
+      "failure_condition": "Failure condition 5",
+      "minimum_data_needed": "Minimum data 5",
+      "most_likely_false_positive_risk": "False-positive risk 5",
+      "most_likely_false_negative_risk": "False-negative risk 5"
+    },
+    {
+      "hypothesis_id": "H6",
+      "strongest_falsification_test": "Falsification test 6",
+      "failure_condition": "Failure condition 6",
+      "minimum_data_needed": "Minimum data 6",
+      "most_likely_false_positive_risk": "False-positive risk 6",
+      "most_likely_false_negative_risk": "False-negative risk 6"
+    },
+    {
+      "hypothesis_id": "H7",
+      "strongest_falsification_test": "Falsification test 7",
+      "failure_condition": "Failure condition 7",
+      "minimum_data_needed": "Minimum data 7",
+      "most_likely_false_positive_risk": "False-positive risk 7",
+      "most_likely_false_negative_risk": "False-negative risk 7"
+    },
+    {
+      "hypothesis_id": "H8",
+      "strongest_falsification_test": "Falsification test 8",
+      "failure_condition": "Failure condition 8",
+      "minimum_data_needed": "Minimum data 8",
+      "most_likely_false_positive_risk": "False-positive risk 8",
+      "most_likely_false_negative_risk": "False-negative risk 8"
+    },
+    {
+      "hypothesis_id": "H9",
+      "strongest_falsification_test": "Falsification test 9",
+      "failure_condition": "Failure condition 9",
+      "minimum_data_needed": "Minimum data 9",
+      "most_likely_false_positive_risk": "False-positive risk 9",
+      "most_likely_false_negative_risk": "False-negative risk 9"
+    },
+    {
+      "hypothesis_id": "H10",
+      "strongest_falsification_test": "Falsification test 10",
+      "failure_condition": "Failure condition 10",
+      "minimum_data_needed": "Minimum data 10",
+      "most_likely_false_positive_risk": "False-positive risk 10",
+      "most_likely_false_negative_risk": "False-negative risk 10"
+    }
+  ]
+}

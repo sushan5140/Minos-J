@@ -1,0 +1,34 @@
+{
+  "experiment_name": "Meno-J Experiment 4: Pattern Falsification Study",
+  "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "model_temperature": 0.4,
+  "source_file": "C:\\Users\\DELL\\Documents\\Codex\\2026-08-04\\we-are-starting-a-fresh-implementation\\outputs\\meno_j_experiment_3_cross_question_survivor_analysis.json",
+  "source_sha256": "42c37a0cdb7a00a1982df06ce34f1ac59b390b6e2c8ed82e120712a211e083dc",
+  "source_strongest_survivor_count": 9,
+  "source_recurring_pattern_count": 5,
+  "validated_literature_source_count": 8,
+  "pattern_study_count": 5,
+  "distinguishing_experiment_count": 10,
+  "roadmap_entry_count": 10,
+  "checkpoint_file": "C:\\Users\\DELL\\Documents\\Codex\\2026-08-04\\we-are-starting-a-fresh-implementation\\work\\experiment_4_checkpoints\\pattern_falsification_studies.json",
+  "checkpoint_sha256": "2939917cd9f0e065a0855b4b4b8945434f1c99e5e3ec13ecf1d4856cc21e2b27",
+  "checkpoint_reusable_without_api_key": true,
+  "successful_upstream_stages_rerun": false,
+  "citation_validation": {
+    "only_frozen_primary_source_ids_allowed": true,
+    "all_eight_sources_used": true,
+    "unknown_citation_count": 0
+  },
+  "ranking_formula": "0.35*scientific_impact + 0.25*feasibility + 0.25*publication_potential + 0.15*information_gain",
+  "validation": {
+    "working_theory_valid": true,
+    "no_new_hypotheses_generated": true,
+    "all_pattern_ids_valid": true,
+    "all_hypothesis_references_are_existing_pass": true,
+    "all_citations_resolved": true,
+    "all_effect_sizes_specified": true,
+    "all_failure_conditions_specified": true,
+    "roadmap_ranked_programmatically": true
+  },
+  "run_command": "$env:OPENROUTER_API_KEY=\"<redacted>\"; $env:OPENROUTER_MODEL=\"nvidia/nemotron-3-ultra-550b-a55b:free\"; python -u run_pattern_falsification.py"
+}

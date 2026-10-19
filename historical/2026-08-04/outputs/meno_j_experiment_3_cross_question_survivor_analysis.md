@@ -1,0 +1,269 @@
+# Meno-J Experiment 3: Cross-Question Survivor Synthesis
+
+## Model
+
+`nvidia/nemotron-3-ultra-550b-a55b:free`
+
+## Validated source coverage
+
+| Question | PASS survivors | Stage 6 rows | Stage 7 rows |
+|---|---:|---:|---:|
+| Q1 | 9 | 9 | 9 |
+| Q2 | 7 | 7 | 7 |
+| Q3 | 9 | 9 | 9 |
+
+## Strongest surviving hypotheses
+
+### 1. Q2/H1
+
+**Hypothesis:** Inter-subject variability in cardiovascular dynamics violates the exchangeability assumption required for conformal prediction coverage guarantees.
+
+**Enriched mechanism:** Individual differences in autonomic regulation, vascular compliance, and baroreflex sensitivity cause the conditional distribution of prediction errors to shift systematically across subjects. After controlling for age, sex, BMI, medication, and comorbidities via matched cohorts and standardized protocols, residual inter-subject heterogeneity in hemodynamic phenotypes (e.g., baroreflex gain, arterial stiffness) still violates exchangeability because these traits are stable within-subject but vary widely between subjects, making calibration on one subject invalid for another even under controlled conditions.
+
+**Why selected:** Large effect size, highly specific causal chain linking baroreflex gain and arterial stiffness to exchangeability violation, explicit confounder control (age, sex, BMI, medication, comorbidities), and a decisive falsification test using conditional conformal prediction with direct physiological trait measurements.
+
+**Comparative advantage:** Directly measures the putative physiological traits (baroreflex gain, pulse wave velocity) that cause error distribution shifts, enabling a conditional conformal predictor that can falsify the hypothesis in a single experiment.
+
+**Residual weakness:** Requires invasive or specialized hemodynamic measurements (baroreflex gain, PWV) that may limit sample size and generalizability to wearable-only settings.
+
+**Distinguishing prediction:** When calibrating on one subject and testing on another, coverage will drop significantly below nominal level, and this drop will persist even after controlling for measured confounders (age, sex, BMI, etc.) because unmeasured physiological traits cause systematic error distribution shifts.
+
+**Strongest falsification test:** Collect multi-subject data (>=50 subjects) with direct measures of baroreflex gain (sequence method) and arterial stiffness (carotid-femoral pulse wave velocity) alongside repeated hemodynamic recordings. Fit a conditional conformal predictor that explicitly conditions on these two physiological traits (plus age, sex, BMI, medication status). If this conditional predictor achieves nominal 95% coverage on held-out subjects without per-subject recalibration, the claim that residual inter-subject heterogeneity in these traits violates exchangeability is falsified.
+
+### 2. Q3/H6
+
+**Hypothesis:** Unobserved subpopulations (e.g., anxiety disorders, medication use) create heterogeneous stress response patterns.
+
+**Enriched mechanism:** Unobserved clinical subpopulations (e.g., generalized anxiety disorder, beta-blocker users) have distinct autonomic response signatures (blunted or exaggerated HRV/EDA reactivity). After screening for and controlling known conditions and medications, residual heterogeneity can be modeled via finite mixture models or hierarchical clustering on physiological response features. The detection model should include clinical covariates as fixed effects and allow subject-specific random effects on stress reactivity parameters.
+
+**Why selected:** Large effect size, identifies concrete clinical subpopulations (anxiety disorders, beta-blocker users) with distinct autonomic signatures, provides a clear hierarchical modeling framework, and offers a falsification test via finite mixture modeling aligned with clinical screening.
+
+**Comparative advantage:** Integrates clinical screening data with physiological response features to define latent subpopulations, allowing both detection and correction of hidden stratification in a unified model.
+
+**Residual weakness:** Relies on self-report screening questionnaires (GAD-7, PHQ-9) rather than gold-standard clinical diagnoses for the full cohort, potentially misclassifying subpopulation membership.
+
+**Distinguishing prediction:** Finite mixture modeling or hierarchical clustering on physiological response features (HRV, EDA reactivity) will reveal distinct subpopulations that align with clinical screening scores (GAD-7, PHQ-9) and medication classes (beta-blockers, SSRIs). Including these covariates as fixed effects and allowing subject-specific random effects on reactivity parameters will reduce uncertainty estimates for affected subjects.
+
+**Strongest falsification test:** After screening for clinical conditions and medications, fit a finite mixture model (or hierarchical clustering) on subject-specific physiological response features (e.g., HRV/EDA reactivity slopes). Test whether cluster membership associates with clinical screening scores (GAD-7, PHQ-9) or medication classes (beta-blockers, SSRIs). The hypothesis is falsified if clusters show no association with clinical variables (chi-square p > 0.05) and a generic model with subject-specific random effects fits the data as well as a model with clinical covariates (by AIC/BIC).
+
+### 3. Q2/H4
+
+**Hypothesis:** Progressive pathophysiological remodeling in chronic disease alters the signal-generating process faster than the conformal calibration window can track.
+
+**Enriched mechanism:** In heart failure, ventricular remodeling and neurohormonal activation change ECG/PPG morphology and variability on timescales of weeks. After controlling for medication changes, acute events, and comorbidities via detailed logs and adjudication, the progressive disease trajectory still shifts the error distribution faster than sliding-window calibration can track because the effective sample size in the window is too small to estimate the new error quantiles before the process shifts again, violating the conformal assumption of approximate stationarity within the calibration window.
+
+**Why selected:** Large effect size, specifies a pathophysiological mechanism (ventricular remodeling, neurohormonal activation) that outpaces sliding-window calibration, controls for medication changes and acute events, and proposes an optimized sliding-window falsification test with nested cross-validation.
+
+**Comparative advantage:** Links coverage degradation directly to quantifiable clinical markers (LVEF, NT-proBNP) and provides a concrete optimization procedure for window length that can be empirically validated.
+
+**Residual weakness:** Requires long-term longitudinal data (>=6 months) with frequent clinical assessments, making the falsification test resource-intensive and slow to execute.
+
+**Distinguishing prediction:** In heart failure patients, conformal coverage will degrade over weeks as ventricular remodeling progresses, and this degradation will correlate with clinical markers (e.g., NT-proBNP, echocardiographic measures) even after accounting for medication changes and acute events.
+
+**Strongest falsification test:** In a heart failure cohort with weekly recordings over >=6 months, serial echocardiography/NT-proBNP, and detailed medication/event logs, implement a sliding-window conformal predictor where window length is optimized via nested cross-validation on a validation period to minimize coverage deviation. If this optimized sliding-window predictor maintains 95% coverage (±1%) at all time points despite documented ventricular remodeling (e.g., LVEF decline >5% or NT-proBNP rise >50%), the hypothesis that remodeling outpaces calibration adaptation is falsified.
+
+### 4. Q3/H9
+
+**Hypothesis:** Physical activity intensity interacts with stress detection, and habitual activity patterns differ per subject.
+
+**Enriched mechanism:** Physical activity generates motion artifacts and physiological changes (increased HR, decreased HRV, increased SCL) that overlap with stress signatures. The artifact magnitude and physiological response depend on activity intensity (METs), type (rhythmic vs. non-rhythmic), and subject fitness. After controlling for activity intensity and type via accelerometer features, fitness, and habitual activity, the residual interaction predicts subject-specific detection uncertainty. The model should include activity intensity as a time-varying covariate, use activity-specific artifact rejection, and potentially train separate classifiers for high-activity vs. low-activity contexts.
+
+**Why selected:** Large effect size, articulates a specific interaction between physical activity intensity, motion artifacts, and physiological stress signatures, controls for fitness and activity type, and provides a mixed-model falsification test with activity-specific classifiers.
+
+**Comparative advantage:** Uses objective accelerometer-derived METs and activity classification to model the activity-uncertainty interaction, enabling direct comparison of global vs. context-specific classifiers.
+
+**Residual weakness:** Requires high-resolution synchronized accelerometer and physiological data across diverse activities, and the mediation test for strap tightness needs additional hardware (force sensors) not always available.
+
+**Distinguishing prediction:** After controlling for activity intensity (METs) and type via accelerometer features, fitness level, and habitual activity, the residual interaction between activity intensity and stress detection uncertainty will be significant; subjects with higher habitual vigorous activity will show greater uncertainty during high-intensity stress windows, and activity-specific classifiers will outperform a single global classifier.
+
+**Strongest falsification test:** Fit a mixed model predicting stress detection uncertainty (e.g., prediction entropy) with accelerometer-derived activity intensity (METs), activity type, fitness, and habitual activity as fixed effects and subject as random effect. Compare subject-level random effect variance to a model without activity intensity. The hypothesis is falsified if activity intensity coefficient is non-significant (p > 0.05) and the subject-level variance remains unchanged.
+
+### 5. Q2/H8
+
+**Hypothesis:** Segment-dependent motion artifact prevalence creates heteroscedastic noise that conformal prediction cannot calibrate for without artifact labels.
+
+**Enriched mechanism:** Physical activity levels vary across segments (sleep vs. exercise), causing non-Gaussian, signal-dependent noise in wearable PPG. After controlling for activity type, sensor placement, and coupling via synchronized accelerometry, standardized placement, and artifact detection, residual motion artifact still creates heteroscedastic noise because artifact magnitude is not fully captured by accelerometer magnitude (e.g., rotational motion, sensor shear), and the conformal predictor lacks artifact labels to condition on, causing unpredictable prediction interval widening during high-contamination segments.
+
+**Why selected:** Large effect size, identifies a specific sensor-level mechanism (rotational motion, sensor shear) not fully captured by accelerometer magnitude, controls for placement and coupling, and proposes a motion artifact index (MAI) conditioned conformal predictor as a decisive falsification test.
+
+**Comparative advantage:** Defines a quantifiable MAI from accelerometer magnitude and orientation variability, allowing a direct test of whether conditioning on motion artifacts restores coverage without explicit artifact labels.
+
+**Residual weakness:** Assumes accelerometer-derived MAI captures the relevant artifact dimensions; residual artifacts from electromagnetic interference or thermoregulatory vasomotion may remain unmeasured.
+
+**Distinguishing prediction:** During high-activity segments, prediction intervals will widen unpredictably and coverage will drop, even after accelerometer-based artifact rejection, because residual motion artifact creates heteroscedastic noise not fully captured by accelerometer magnitude.
+
+**Strongest falsification test:** Collect synchronized PPG, 3D accelerometer, and reference ECG across diverse activities (sleep, rest, treadmill, free-living) in >=20 subjects. Compute a motion artifact index (MAI) from accelerometer magnitude and orientation variability. Train a conditional conformal predictor that conditions on MAI (binned into quantiles). If this MAI-conditioned predictor achieves 95% coverage (±1%) in every activity bin (including vigorous exercise) without explicit artifact labels, the hypothesis that heteroscedastic motion noise cannot be calibrated without artifact labels is falsified.
+
+### 6. Q1/H1
+
+**Hypothesis:** Inter‑subject variability in autonomic reactivity causes the nonconformity scores to be systematically miscalibrated for high‑reactivity individuals.
+
+**Enriched mechanism:** Subjects with exaggerated sympathetic responses produce extreme physiological feature values that lie outside the training distribution, inflating the nonconformity measure and shrinking prediction sets. This effect is confounded by baseline fitness, medication, and circadian phase; controlling for resting autonomic baselines and medication status in the Mondrian taxonomy (e.g., adding reactivity strata) should reduce miscalibration.
+
+**Why selected:** Medium effect size but highly specific causal chain (sympathetic reactivity -> extreme features -> nonconformity inflation), explicit confounder control (fitness, medication, circadian), and a clear falsification test using reactivity-stratified Mondrian taxonomy.
+
+**Comparative advantage:** Directly modifies the Mondrian taxonomy with reactivity strata, providing a targeted fix that can be evaluated with per-stratum coverage on held-out subjects.
+
+**Residual weakness:** Requires per-subject baseline autonomic measures and reactivity quantiles, which may not be available in all WESAD-like datasets; the reactivity strata definition (low/medium/high) is somewhat arbitrary.
+
+**Distinguishing prediction:** High‑reactivity subjects will show systematically higher nonconformity scores and smaller prediction sets than low‑reactivity subjects, even after controlling for baseline HRV and medication.
+
+**Strongest falsification test:** Fit a Mondrian conformal predictor with reactivity-stratified taxonomy (e.g., low/medium/high resting HRV reactivity quantiles) and compare per-stratum coverage to the original unstratified model using a held-out subject-wise test set. If coverage for high-reactivity subjects reaches the nominal level (e.g., 90%) without degrading other strata, the hypothesis that unmodeled reactivity causes miscalibration is falsified.
+
+### 7. Q1/H3
+
+**Hypothesis:** Non‑stationary heart‑rate variability (HRV) dynamics across the stress‑recovery cycle violate the exchangeability assumption within Mondrian strata.
+
+**Enriched mechanism:** Rapid autonomic transitions create temporal dependence in residuals; the conformal algorithm treats each window as independent, underestimating prediction interval width for transitional periods. Confounders include breathing pattern, posture, and substance use; controlling for these via time‑aware stratification (e.g., adding transition‑phase bins) or using block‑conformal methods can restore exchangeability.
+
+**Why selected:** Medium effect size, identifies a precise exchangeability violation from rapid autonomic transitions, controls for breathing and posture, and proposes a block-conformal falsification test with transition-phase bins.
+
+**Comparative advantage:** Uses temporal ordering and autocorrelation of residuals to pinpoint transitional windows, enabling a time-aware conformal method that directly addresses the non-stationarity.
+
+**Residual weakness:** Relies on accurate detection of transition phases (stress onset, peak, recovery) which may be ambiguous in real-world data; block-conformal methods reduce effective calibration sample size.
+
+**Distinguishing prediction:** Autocorrelation of nonconformity residuals will be significant within transitional windows, and coverage will be lowest for those windows.
+
+**Strongest falsification test:** Implement a block-conformal or time-aware Mondrian taxonomy that groups windows by transition phase (e.g., stress onset, peak, recovery) and evaluates coverage within each block. If transitional-block coverage reaches nominal levels while stationary blocks remain calibrated, the exchangeability violation hypothesis is falsified.
+
+### 8. Q1/H6
+
+**Hypothesis:** The choice of nonconformity score (e.g., softmax margin) is poorly aligned with the multimodal feature geometry for stress classification.
+
+**Enriched mechanism:** Margin‑based scores ignore correlation structure between ECG, EDA, and respiration features, producing overly confident scores for out‑of‑distribution multimodal patterns. Confounders include feature scaling, missing modalities, and classifier bias; controlling for these by standardizing modalities, imputing missing channels, and evaluating alternative nonconformity functions (e.g., Mahalanobis distance) can align the score with the true geometry.
+
+**Why selected:** Medium effect size, targets the core nonconformity score choice (softmax margin) and its misalignment with multimodal feature geometry, controls for scaling and missing modalities, and provides a direct comparison of alternative scores (Mahalanobis, quantile regression) as falsification.
+
+**Comparative advantage:** Evaluates multiple candidate nonconformity functions on the same data, allowing a clear empirical decision on whether score choice alone can restore coverage.
+
+**Residual weakness:** If all candidate scores fail, the hypothesis cannot distinguish between score misalignment and deeper distribution shift; also requires standardized multimodal features and missingness indicators.
+
+**Distinguishing prediction:** Alternative nonconformity scores that respect feature correlations (e.g., Mahalanobis distance) will yield higher coverage without increasing prediction set size excessively.
+
+**Strongest falsification test:** Compute nonconformity scores using multiple candidate functions (softmax margin, Mahalanobis distance, conformalized quantile regression) on standardized multimodal features with missing-modality indicators, then compare per-stratum coverage. If an alternative score yields nominal coverage across all strata while the original margin score does not, the score-misalignment hypothesis is falsified.
+
+### 9. Q3/H1
+
+**Hypothesis:** Subject-specific autonomic baseline variability leads to different signal-to-noise ratios in wearable stress signals.
+
+**Enriched mechanism:** Baseline autonomic tone (indexed by resting HRV and SCL) modulates the dynamic range of stress-induced physiological changes. After controlling for age, fitness, medication, caffeine, and time of day, the residual between-subject variance in baseline autonomic tone predicts the signal-to-noise ratio of wearable stress features. The stress detection model should include individual baseline HRV and SCL as normalization covariates, and prediction intervals should be scaled by subject-specific baseline variability.
+
+**Why selected:** Medium effect size, specifies a non-generic causal path where baseline autonomic tone modulates dynamic range of stress responses, controls for age, fitness, medication, caffeine, and time of day, and uses a mixed-effects model with baseline HRV/SCL as falsification test.
+
+**Comparative advantage:** Separates within- vs between-subject variance via repeated standardized stress tasks, providing a clean test of whether baseline physiology predicts SNR beyond stressor intensity.
+
+**Residual weakness:** Requires controlled laboratory stress tasks (TSST, cold pressor) with known intensity, which may not generalize to ecological stress detection; baseline measures must be collected under highly standardized conditions.
+
+**Distinguishing prediction:** After controlling for age, fitness, medication, caffeine, and time of day, residual between-subject variance in resting HRV and SCL will predict the signal-to-noise ratio of stress features; higher resting HRV and lower SCL will associate with higher classifier confidence.
+
+**Strongest falsification test:** Fit a mixed-effects model predicting per-subject stress detection signal-to-noise ratio (SNR) with subject-specific baseline HRV and SCL as fixed effects, controlling for age, fitness, medication, caffeine, and time of day. The hypothesis is falsified if the coefficients for baseline HRV and SCL are jointly not significantly different from zero (p > 0.05) and the model explains no more between-subject variance in SNR than a null model with only the control variables.
+
+## Recurring structural patterns
+
+### P1: Inter-subject physiological heterogeneity violating exchangeability
+
+Across all three questions, stable between-subject differences in autonomic or cardiovascular traits (reactivity, baroreflex gain, baseline HRV/SCL, clinical subpopulations) cause the conditional error distribution to shift systematically, breaking the exchangeability assumption required for marginal conformal coverage.
+
+- Supporting hypotheses: Q1/H1, Q2/H1, Q3/H1, Q3/H6
+- Causal structure: Subject-specific physiological trait -> systematic shift in feature distribution or error distribution -> marginal conformal calibration fails for that subject/subgroup -> undercoverage or inflated uncertainty.
+- Boundary conditions: Trait must be stable within-subject over the calibration horizon; Trait must vary sufficiently across subjects to create distinct error distributions; Calibration pool must mix multiple trait levels without conditioning
+- Shared confounder controls: Age, sex, BMI; Medication status (beta-blockers, anticholinergics); Fitness level (VO2 max or proxy); Circadian phase / time of day
+- Testable meta-prediction: A conditional conformal predictor that explicitly conditions on the identified physiological traits (e.g., reactivity quantiles, baroreflex gain, baseline HRV/SCL, clinical subgroup) will achieve nominal coverage across all subjects without per-subject recalibration, whereas a marginal predictor will not.
+
+### P2: Temporal non-stationarity and calibration window mismatch
+
+Physiological signals exhibit non-stationarity at multiple timescales (rapid autonomic transitions, circadian rhythms, disease progression, activity-state changes) that violate the approximate stationarity assumption within the conformal calibration window, causing coverage to degrade when the calibration window does not track the current state.
+
+- Supporting hypotheses: Q1/H3, Q2/H4, Q3/H9, Q2/H3, Q3/H4
+- Causal structure: Time-varying physiological state -> shift in feature/error distribution -> static or slowly adapting calibration window becomes mismatched -> coverage drops in periods where state differs from calibration distribution.
+- Boundary conditions: Rate of non-stationarity exceeds the adaptation speed of the calibration window; State-dependent distribution shifts are large relative to within-state variability; State labels or proxies (transition phase, circadian phase, disease stage, activity intensity) are available or inferable
+- Shared confounder controls: Respiration rate and posture (for autonomic transitions); Sleep-wake schedule and light exposure (for circadian effects); Medication changes and acute clinical events (for disease progression); Activity type and fitness level (for activity-state changes)
+- Testable meta-prediction: A state-aware conformal predictor that conditions on the relevant temporal state (transition-phase bins, circadian phase bins, disease-stage strata, activity-intensity bins) will maintain nominal coverage in each state, while a static or sliding-window predictor will show state-dependent coverage degradation.
+
+### P3: Sensor and measurement artifacts inducing distribution shift
+
+Wearable sensor imperfections (electrode impedance drift, motion artifacts from rotational shear, strap tightness variation, firmware changes, informative missingness) create systematic, subject- or time-dependent shifts in the observed feature distribution that are not captured by the conformal predictor's conditioning variables, leading to miscalibration.
+
+- Supporting hypotheses: Q1/H2, Q2/H8, Q3/H2, Q3/H8, Q1/H10
+- Causal structure: Sensor artifact mechanism (drift, motion coupling, firmware, missingness) -> systematic distortion of measured features -> feature distribution shifts relative to calibration set -> nonconformity scores become biased -> coverage drops for affected segments/subjects.
+- Boundary conditions: Artifact magnitude correlates with the target variable (stress, physiological state) or with subject characteristics; Artifact is not fully captured by existing conditioning variables (e.g., accelerometer magnitude alone misses rotational shear); Calibration set does not represent the artifact distribution at test time
+- Shared confounder controls: Ambient temperature and humidity; Skin hydration and electrode impedance proxies; Device hardware revision and firmware version; Strap tightness and placement consistency; Movement intensity and type (via accelerometry)
+- Testable meta-prediction: Incorporating artifact proxies (impedance/SNR trends, motion artifact index, strap tension, firmware version, missingness indicators) as explicit conditioning variables or feature corrections will restore nominal coverage for artifact-affected segments, while models without these corrections will remain miscalibrated.
+
+### P4: Methodological sensitivity to nonconformity score and conditioning strategy
+
+The choice of nonconformity function (softmax margin vs. Mahalanobis distance vs. quantile regression) and the conditioning strategy (Mondrian taxonomy strata, block-conformal bins, MAI conditioning, mixture-model clusters) critically determine whether conformal prediction achieves valid coverage under distribution shift, non-stationarity, or heterogeneity.
+
+- Supporting hypotheses: Q1/H6, Q2/H8, Q3/H6, Q2/H7, Q3/H8
+- Causal structure: Mismatch between nonconformity score geometry and true feature distribution -> overconfident or underconfident scores -> prediction sets too small or too large -> coverage deviation. Conditioning strategy determines whether exchangeability holds locally -> inadequate conditioning -> residual heterogeneity -> coverage failure.
+- Boundary conditions: Feature distribution exhibits multimodality, heavy tails, or cross-modality correlations that margin scores ignore; Effective sample size within conditioning strata is sufficient for quantile estimation; Conditioning variables capture the primary axes of heterogeneity/non-stationarity
+- Shared confounder controls: Feature standardization per modality; Missing modality indicators; Classifier architecture and training procedure; Calibration set size and composition
+- Testable meta-prediction: Systematically varying the nonconformity score (margin, Mahalanobis, conformalized quantile regression) and the conditioning strategy (Mondrian strata, block-conformal, MAI bins, mixture-model clusters) will reveal a combination that achieves nominal coverage across all strata/states, while the default choices fail; the winning combination identifies the structural mismatch.
+
+### P5: Hidden stratification and label noise from unobserved subpopulations
+
+Unobserved subpopulations (mislabeling due to self-report bias, demographic underrepresentation, clinical subgroups, recall bias, MNAR missingness) create latent strata with distinct error distributions or label noise patterns. Marginal conformal prediction mixes these strata, causing coverage failures for the underrepresented or mislabeled groups.
+
+- Supporting hypotheses: Q1/H4, Q1/H5, Q2/H6, Q3/H5, Q3/H10
+- Causal structure: Unobserved subgroup membership (mislabeling, demographic, clinical, recall bias, missingness mechanism) -> systematic label error or feature distribution shift within subgroup -> marginal nonconformity distribution becomes a mixture -> quantile estimation is biased for minority subgroups -> coverage fails for those subgroups.
+- Boundary conditions: Subgroup prevalence is low enough that marginal quantile is dominated by majority group; Subgroup error distribution or label noise differs qualitatively from majority; Subgroup membership is not captured by existing conditioning variables
+- Shared confounder controls: Personality traits (alexithymia, neuroticism) for self-report bias; Demographic and clinical metadata (age, comorbidities, medication); Objective physiological markers (cortisol, HRV reactivity) for label validation; Device wear-time logs and comfort/irritation surveys for missingness
+- Testable meta-prediction: A latent-variable conformal predictor that infers subgroup membership (via mixture modeling, measurement-error models, or selection models) and conditions on it will achieve nominal coverage in each subgroup, while a marginal predictor will show subgroup-specific coverage failures; the inferred subgroups will align with external clinical or behavioral markers.
+
+## Cross-question comparisons
+
+### Q1-Q2
+
+- Shared structures: Inter-subject physiological heterogeneity violating exchangeability (P1); Temporal non-stationarity within subjects (P2: autonomic transitions in Q1, circadian/disease in Q2); Sensor artifact confounding (P3: EDA drift in Q1, motion artifacts in Q2); Methodological sensitivity to conditioning strategy (P4: Mondrian taxonomy vs. sliding-window/MAI conditioning)
+- Distinctive structures: Q1 focuses on Mondrian taxonomy design (strata definitions, nonconformity score choice) for a fixed stress-classification task in WESAD.; Q2 addresses coverage stability across diverse physiological signal segments (beat-to-beat, daily, weekly) and emphasizes calibration window adaptation for non-stationarity.
+- Discriminating analysis: Compare a reactivity-stratified Mondrian predictor (Q1's falsification test) against a sliding-window conformal predictor with window length optimized per Q2's falsification test on the same multi-subject WESAD data. If reactivity strata restore coverage without window adaptation, Q1's taxonomy-mismatch mechanism dominates; if window adaptation is needed even with reactivity strata, Q2's temporal non-stationarity mechanism is primary.
+
+### Q1-Q3
+
+- Shared structures: Inter-subject heterogeneity in autonomic baseline and reactivity (P1: Q1 H1, Q3 H1, Q3 H6); Sensor and measurement artifacts (P3: Q1 H2/H10, Q3 H2/H8/H10); Hidden stratification from label noise and unobserved subpopulations (P5: Q1 H4/H5, Q3 H5/H10); Methodological choices in nonconformity scoring and conditioning (P4: Q1 H6, Q3 H6/H8)
+- Distinctive structures: Q1 centers on Mondrian conformal prediction undercoverage for a specific stress-classification pipeline, with explicit taxonomy strata (stress levels).; Q3 investigates subject-level variation in uncertainty quantification for wearable stress detection broadly, emphasizing baseline physiology, sensor fit, sweat gland density, circadian phase, and clinical subpopulations as sources of uncertainty heterogeneity.
+- Discriminating analysis: Fit a hierarchical conformal model with subject-specific random effects on baseline HRV/SCL (Q3 H1) and reactivity strata (Q1 H1) on a dataset with repeated standardized stress tasks and ecological monitoring. If subject-specific random effects absorb the undercoverage without explicit reactivity strata, Q3's baseline-variability mechanism subsumes Q1's; if reactivity strata remain necessary, Q1's taxonomy-mismatch is distinct.
+
+### Q2-Q3
+
+- Shared structures: Inter-subject physiological heterogeneity (P1: Q2 H1, Q3 H1/H6); Temporal non-stationarity and state-dependent dynamics (P2: Q2 H3/H4/H9, Q3 H4/H9); Motion artifact confounding (P3: Q2 H8, Q3 H9/H2); Hidden stratification from clinical subpopulations (P5: Q2 H6, Q3 H6)
+- Distinctive structures: Q2 focuses on coverage stability of conformal prediction across signal segments (beats, days, disease stages) and the adaptation of calibration windows.; Q3 focuses on explaining subject-level variation in uncertainty estimates, incorporating sensor hardware (firmware, placement), physiological traits (sweat glands), and label noise (recall bias, MNAR missingness).
+- Discriminating analysis: On a longitudinal wearable dataset with clinical annotations, compare a sliding-window conformal predictor (Q2's optimized window) against a hierarchical uncertainty model with subject-specific random effects and clinical covariates (Q3's mixture model). Evaluate per-subject coverage and uncertainty calibration (prediction interval width vs. empirical error). If the hierarchical model achieves better calibration without window adaptation, Q3's subject-level uncertainty mechanism is sufficient; if window adaptation remains necessary, Q2's temporal non-stationarity is irreducible.
+
+## Next experiment recommendations
+
+### E3.1: Conditional Conformal Prediction with Direct Physiological Trait Measurement
+
+- Target patterns: P1
+- Design: Recruit >=50 subjects for multi-session physiological recording (ECG, PPG, EDA, respiration) under standardized stress protocols. Measure baroreflex gain (sequence method), arterial stiffness (carotid-femoral PWV), resting HRV/SCL, and clinical screening (GAD-7, PHQ-9, medication). Split data into calibration and test sets preserving subject independence. Fit a conditional conformal predictor that explicitly conditions on the measured traits (baroreflex gain, PWV, baseline HRV/SCL, clinical subgroup) using a Mondrian taxonomy with trait-defined strata. Evaluate per-stratum and marginal coverage on held-out subjects.
+- Minimum data: >=50 subjects with repeated measures across >=2 sessions; Direct baroreflex gain and PWV measurements; Resting HRV (5-min supine) and SCL baselines; Clinical screening questionnaires and medication logs; High-resolution ECG, PPG, EDA, respiration during stress tasks; Subject-independent calibration/test splits
+- Primary outcome: Coverage of the conditional conformal predictor at nominal level (e.g., 95%) in every trait-defined stratum and marginally across all held-out subjects.
+- Failure condition: The conditional conformal predictor achieves 95% coverage (±1%) in all strata and marginally, falsifying the claim that residual inter-subject heterogeneity in these traits violates exchangeability.
+
+### E3.2: State-Aware Conformal Prediction Across Circadian Phase, Disease Progression, and Activity Intensity
+
+- Target patterns: P2
+- Design: Conduct a longitudinal study with two cohorts: (1) healthy subjects under constant routine protocol (>=48h, dim light, semi-recumbent, hourly snacks) with core body temperature monitoring; (2) heart failure patients with weekly recordings over >=6 months, serial echocardiography/NT-proBNP, and medication logs. For both cohorts, collect high-resolution RR intervals, accelerometry, and reference BP. Implement state-aware conformal predictors that condition on circadian phase (2-hour bins aligned to CBT minimum), disease stage (LVEF/NT-proBNP strata), and activity intensity (METs bins from accelerometry). Compare coverage of state-aware predictors vs. static and sliding-window predictors.
+- Minimum data: Cohort 1: >=30 healthy subjects, >=48h constant routine, CBT monitoring, high-res RR, accelerometry; Cohort 2: >=30 heart failure patients, weekly recordings >=6 months, serial echo/NT-proBNP, medication logs, accelerometry; Reference BP or invasive hemodynamics for validation; Timestamped annotations of sleep/wake, meals, activities; Calibration/test splits respecting temporal boundaries
+- Primary outcome: Coverage of state-aware conformal predictor at nominal level (95% ±1%) in every circadian phase bin, disease stage stratum, and activity intensity bin, with comparison to static and sliding-window baselines.
+- Failure condition: Static or optimally tuned sliding-window conformal predictors maintain 95% coverage (±1%) in all state bins, falsifying the hypothesis that temporal non-stationarity at these timescales inherently violates exchangeability.
+
+### E3.3: Systematic Comparison of Nonconformity Scores and Conditioning Strategies for Multimodal Stress Detection
+
+- Target patterns: P4
+- Design: Using a multimodal physiological dataset (ECG, EDA, respiration) with labeled stress episodes from >=50 subjects, compute nonconformity scores using multiple candidate functions: softmax margin, Mahalanobis distance (with regularized covariance), conformalized quantile regression, and a learned nonconformity score via a calibration network. For each score, evaluate coverage under three conditioning strategies: (a) Mondrian taxonomy by stress level, (b) block-conformal by transition phase (onset, peak, recovery), (c) MAI-conditioned bins (motion artifact index quantiles). Use nested cross-validation to select hyperparameters. Compare per-stratum coverage and prediction set size.
+- Minimum data: >=50 subjects with multimodal recordings (ECG, EDA, respiration) and stress labels; Synchronized triaxial accelerometry for MAI computation; Standardized feature extraction pipeline with missing-modality indicators; Sufficient calibration samples per stratum (>=200) for quantile estimation; Subject-independent splits for outer evaluation
+- Primary outcome: Identification of a (nonconformity score, conditioning strategy) pair that achieves nominal coverage (95% ±1%) in all strata (stress level, transition phase, MAI bin) simultaneously, with minimal prediction set size.
+- Failure condition: No combination of candidate nonconformity scores and conditioning strategies achieves nominal coverage across all strata, indicating that the coverage failures stem from deeper distribution shifts or unmeasured confounding not addressable by methodological choices alone.
+
+## Validation
+
+- `source_runs_valid`: True
+- `source_pass_survivor_count`: 25
+- `strongest_survivor_count`: 9
+- `strongest_per_question`: {'Q1': 3, 'Q2': 3, 'Q3': 3}
+- `recurring_pattern_count`: 5
+- `pairwise_comparison_count`: 3
+- `next_experiment_recommendation_count`: 3
+- `all_references_are_validated_pass`: True
+- `combined_analysis_valid`: True

@@ -1,0 +1,281 @@
+{
+  "experiment_name": "Meno-J Experiment 1: Auditor Calibration Test",
+  "research_question": "What mechanisms could explain subject-level variation in wearable stress-detection uncertainty?",
+  "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "stage_4_hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Individual differences in baseline autonomic tone cause systematic variation in wearable stress-detection uncertainty.",
+      "proposed_mechanism": "Subjects with higher resting parasympathetic activity exhibit lower heart-rate variability (HRV) signal-to-noise ratios, leading to noisier stress classifiers.",
+      "core_assumption": "Resting autonomic baseline is stable within a subject but varies substantially across subjects.",
+      "knowledge_gap_addressed": "Lack of quantitative linking between subject-level baseline autonomic metrics and model prediction uncertainty.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Variability in sensor placement on the wrist introduces subject-specific measurement bias that propagates to uncertainty estimates.",
+      "proposed_mechanism": "Differences in radial artery depth and subcutaneous tissue thickness alter photoplethysmography (PPG) amplitude, causing heterogeneous signal quality across users.",
+      "core_assumption": "Users do not consistently wear the device at the same anatomical location across sessions.",
+      "knowledge_gap_addressed": "Insufficient characterization of how placement heterogeneity translates into per-subject predictive uncertainty.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Physiological stress response heterogeneity (e.g., cortisol vs. sympathetic activation) leads to divergent wearable signal patterns across individuals.",
+      "proposed_mechanism": "Some subjects mount a primarily hypothalamic-pituitary-adrenal (HPA) response with minimal cardiac changes, while others show strong sympathetic surges, producing mismatched feature distributions for a single stress model.",
+      "core_assumption": "Stress phenotypes are categorical at the subject level and map onto distinct wearable signatures.",
+      "knowledge_gap_addressed": "Absence of subject-level stress phenotype mapping to wearable feature uncertainty.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Temporal drift in sensor calibration (e.g., LED intensity decay) creates increasing uncertainty for long-term users.",
+      "proposed_mechanism": "Gradual degradation of optical components reduces PPG signal fidelity, inflating model prediction variance over weeks to months.",
+      "core_assumption": "Calibration drift is monotonic and subject-independent but its impact on uncertainty accumulates with usage duration.",
+      "knowledge_gap_addressed": "Limited longitudinal quantification of sensor aging effects on per-subject stress detection confidence.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Self-report labeling noise varies by subject due to differences in emotional awareness and reporting latency.",
+      "proposed_mechanism": "Subjects with low interoceptive accuracy provide delayed or inaccurate stress timestamps, corrupting ground truth and inflating model uncertainty for those individuals.",
+      "core_assumption": "Labeling error is systematic per subject rather than random across the cohort.",
+      "knowledge_gap_addressed": "No existing model linking interoceptive ability metrics to wearable stress label reliability.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Circadian phase at the time of measurement stratifies uncertainty because autonomic baseline shifts across the day.",
+      "proposed_mechanism": "Morning cortisol peaks and evening parasympathetic dominance alter HRV baselines, causing the same stressor to produce different feature deviations depending on time-of-day.",
+      "core_assumption": "Circadian modulation of autonomic features is consistent within a subject but varies across subjects.",
+      "knowledge_gap_addressed": "Lack of subject-specific circadian adjustment in uncertainty quantification for stress classifiers.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Statistical model misspecification due to non-stationary noise processes yields subject-dependent uncertainty inflation.",
+      "proposed_mechanism": "Assuming i.i.d. Gaussian residuals ignores subject-specific autocorrelation in sensor noise (e.g., motion artifacts), leading to underestimation of predictive variance for high-mobility users.",
+      "core_assumption": "Noise autocorrelation structure differs across subjects and is not captured by the current model.",
+      "knowledge_gap_addressed": "Absence of subject-level noise modeling in wearable stress detection uncertainty estimates.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Skin optical properties (melanin, thickness, hydration) modulate PPG signal quality, creating systematic per-subject uncertainty differences.",
+      "proposed_mechanism": "Higher melanin concentration attenuates green-light PPG, reducing signal-to-noise ratio and increasing classifier variance for darker-skinned individuals.",
+      "core_assumption": "Skin optical characteristics are stable within a subject and significantly affect wearable optical sensor performance.",
+      "knowledge_gap_addressed": "Insufficient empirical linking of dermatological metrics to per-subject stress detection uncertainty.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Concurrent physical activity confounds stress detection differently across subjects based on habitual activity patterns.",
+      "proposed_mechanism": "Subjects who frequently engage in high-intensity exercise develop distinct motion artifact signatures that overlap with stress-induced autonomic changes, inflating uncertainty during active periods.",
+      "core_assumption": "Activity context distributions are subject-specific and not fully captured by generic activity classifiers.",
+      "knowledge_gap_addressed": "No subject-level activity-stress interaction model for uncertainty calibration.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Genetic polymorphisms in autonomic regulation genes (e.g., ADRB1, COMT) cause inter-individual differences in wearable stress signal dynamics.",
+      "proposed_mechanism": "Variants affecting beta-adrenergic receptor sensitivity or catecholamine metabolism alter heart-rate response magnitude to stressors, leading to heterogeneous feature distributions and variable model confidence.",
+      "core_assumption": "Relevant genetic variants have measurable effect sizes on cardiac stress reactivity detectable by wearables.",
+      "knowledge_gap_addressed": "Lack of integration of genetic data into subject-specific uncertainty quantification for wearable stress detection.",
+      "status": "SPECULATIVE"
+    }
+  ],
+  "stage_5_audits": [
+    {
+      "hypothesis_id": "H1",
+      "audit_decision": "REJECT",
+      "variables_measurable": true,
+      "causal_chain_valid": false,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": false,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "causal_chain_valid",
+        "confounders_identified",
+        "mechanism_is_non_generic"
+      ],
+      "decision_reason": "Causal chain is questionable (higher parasympathetic activity does not necessarily lower HRV SNR), confounders not identified, and mechanism is generic (baseline physiology affecting model uncertainty applies broadly).",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H2",
+      "audit_decision": "SALVAGEABLE",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "confounders_identified"
+      ],
+      "decision_reason": "One critical check failed (confounders not identified), but mechanism is specific and testable; salvageable by identifying confounders such as skin tone, motion, device fit.",
+      "salvage_note": "Add confounders: skin pigmentation, motion artifacts, device tightness, and ambient light; incorporate into model to isolate placement effect."
+    },
+    {
+      "hypothesis_id": "H3",
+      "audit_decision": "SALVAGEABLE",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "confounders_identified"
+      ],
+      "decision_reason": "Confounders not identified; otherwise mechanism is specific and testable.",
+      "salvage_note": "Identify confounders: stressor type, context, baseline fitness, time of day, and incorporate phenotype classification."
+    },
+    {
+      "hypothesis_id": "H4",
+      "audit_decision": "REJECT",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": false,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "confounders_identified",
+        "mechanism_is_non_generic"
+      ],
+      "decision_reason": "Mechanism is domain-generic (sensor drift affects all optical wearables similarly) and confounders not identified; not salvageable as a specific mechanism for stress detection uncertainty.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H5",
+      "audit_decision": "SALVAGEABLE",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "confounders_identified"
+      ],
+      "decision_reason": "Confounders not identified; mechanism is specific to self-report labeling noise in stress detection.",
+      "salvage_note": "Identify confounders: stressor intensity, context, recall bias, and mood; incorporate interoceptive accuracy as covariate."
+    },
+    {
+      "hypothesis_id": "H6",
+      "audit_decision": "SALVAGEABLE",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "confounders_identified"
+      ],
+      "decision_reason": "Confounders not identified; mechanism is specific to circadian modulation of stress detection.",
+      "salvage_note": "Identify confounders: chronotype, sleep quality, shift work, and individual circadian phase markers."
+    },
+    {
+      "hypothesis_id": "H7",
+      "audit_decision": "REJECT",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": false,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "confounders_identified",
+        "mechanism_is_non_generic"
+      ],
+      "decision_reason": "Mechanism is domain-generic (model misspecification due to non-stationary noise applies broadly) and confounders not identified.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H8",
+      "audit_decision": "SALVAGEABLE",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "confounders_identified"
+      ],
+      "decision_reason": "Confounders not identified; mechanism is specific to skin optical properties affecting PPG-based stress detection.",
+      "salvage_note": "Identify confounders: sensor contact pressure, ambient light, motion, skin hydration, and incorporate dermatological metrics."
+    },
+    {
+      "hypothesis_id": "H9",
+      "audit_decision": "SALVAGEABLE",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "confounders_identified"
+      ],
+      "decision_reason": "Confounders not identified; mechanism is specific to activity-stress confounding in wearable stress detection.",
+      "salvage_note": "Identify confounders: fitness level, exercise type, sensor location, and develop subject-specific activity models."
+    },
+    {
+      "hypothesis_id": "H10",
+      "audit_decision": "SALVAGEABLE",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": false,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "confounders_identified"
+      ],
+      "decision_reason": "Confounders not identified; mechanism is specific to genetic polymorphisms affecting autonomic stress reactivity.",
+      "salvage_note": "Identify confounders: population stratification, age, sex, fitness, medication, and incorporate principal components of genetic ancestry."
+    }
+  ],
+  "diagnostics": {
+    "generated_count": 10,
+    "passed_count": 0,
+    "rejected_count": 3,
+    "salvageable_count": 7,
+    "pass_survival_rate": 0.0,
+    "salvageable_rate": 0.7,
+    "rejection_reason_diversity": 3,
+    "top_failed_checklist_fields": {
+      "confounders_identified": 10,
+      "mechanism_is_non_generic": 3,
+      "causal_chain_valid": 1
+    },
+    "failure_points_consistency": true,
+    "rubber_stamp_red_flags": []
+  },
+  "stage_6_rival_prediction_matrix": [],
+  "stage_7_falsification_tests": []
+}

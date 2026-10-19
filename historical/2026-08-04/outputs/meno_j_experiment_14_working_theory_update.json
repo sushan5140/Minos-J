@@ -1,0 +1,49 @@
+{
+  "experiment_name": "Meno-J Experiment 14: Class-Conditional Calibration Repair",
+  "update_status": "VALIDATED",
+  "primary_decision": "CLASS_CONDITIONAL_REPAIR_NOT_SUPPORTED",
+  "working_theory_before": "The Experiment 13 normalization safety failure may be primarily caused by a pooled conformal threshold redistributing coverage asymmetrically between stress and non-stress classes.",
+  "working_theory_after": "Class conditioning explains and substantially removes the class imbalance, but it does not restore the required safety level. The residual failure is therefore not merely a pooled-threshold artifact. Subject-level distribution shift or reliability remains the leading unresolved mechanism.",
+  "evidence": {
+    "fold_rows": 396,
+    "normalized_marginal_coverage": 0.8680555555555556,
+    "normalized_class_mondrian_coverage": 0.8768939393939394,
+    "coverage_change": 0.008838383838383868,
+    "normalized_marginal_class_gap": 0.09722222222222221,
+    "normalized_class_mondrian_class_gap": 0.011363636363636354,
+    "normalized_class_mondrian_non_stress_coverage": 0.8825757575757576,
+    "normalized_class_mondrian_stress_coverage": 0.8712121212121212,
+    "worst_subject_coverage": 0.6875,
+    "full_set_frequency": 0.6186868686868687,
+    "subject_nonnegative_coverage_change_fraction": 0.7575757575757576,
+    "coverage_change_bootstrap_95_percent_interval": [
+      -0.0037878787878787845,
+      0.021464646464646478
+    ]
+  },
+  "claim_updates": [
+    {
+      "claim": "A pooled conformal threshold caused the normalized representation's class-coverage imbalance.",
+      "status": "PARTIALLY_SUPPORTED",
+      "reason": "Class conditioning reduced the absolute class gap from 0.0972 to 0.0114."
+    },
+    {
+      "claim": "Class-Mondrian calibration is sufficient to repair normalized external coverage.",
+      "status": "NOT_SUPPORTED",
+      "reason": "Mean coverage reached only 0.8769 and stress coverage only 0.8712, both below the frozen 0.88 requirements."
+    },
+    {
+      "claim": "The repair preserves subject-level safety.",
+      "status": "NOT_SUPPORTED",
+      "reason": "Worst-subject coverage fell from 0.7083 to 0.6875, and the paired-subject coverage interval included zero."
+    },
+    {
+      "claim": "Balancing class coverage necessarily improves overall informativeness.",
+      "status": "REFUTED",
+      "reason": "Full-set frequency increased by 0.0240 versus normalized marginal calibration even though the class gap narrowed."
+    }
+  ],
+  "meno_j_implication": "The engine converted an observed class asymmetry into a precise intervention, then rejected it as a complete J-jump. A mechanistic clue can be real without being sufficient for repair.",
+  "next_falsification_target": "Freeze a subject-level reliability-gate study using only unlabeled onboarding diagnostics—such as train-to-subject shift, within-subject dispersion, sensor stability, and protocol version—and test whether it can select raw versus normalized representation without test-label access while preserving coverage.",
+  "validation": "PASS_INDEPENDENT_EXACT_REPLAY"
+}

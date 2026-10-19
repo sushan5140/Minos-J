@@ -1,0 +1,165 @@
+{
+  "statistical_testability_builds": [
+    {
+      "hypothesis_id": "H1",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the variance of sympathetic reactivity across subjects and its correlation with nonconformity score inflation. Need per-subject sympathetic_reactivity_index (EDA peak amplitude per stressor) and coverage rates from a pilot Mondrian run to estimate the slope of coverage vs. reactivity.",
+      "minimum_data_needed": [
+        "Per-subject sympathetic_reactivity_index (EDA peak amplitude during first stress trial, µS)",
+        "Nonconformity scores and coverage indicators for all windows from standard Mondrian (condition-stratified only)",
+        "Baseline autonomic tone measures (resting HRV, tonic EDA) per subject",
+        "Medication status and recording start time per subject"
+      ],
+      "testable_prediction": "Subjects in the top quartile of sympathetic_reactivity_index will have coverage rates at least 10 percentage points below the nominal level (e.g., <80% for 90% nominal), and coverage rate will negatively correlate with sympathetic_reactivity_index (Spearman rho < -0.3).",
+      "failure_condition": "If adding sympathetic_reactivity_index as a stratification variable in Mondrian does not significantly improve coverage for high-reactivity subjects (paired McNemar test p>0.05), or if per-subject temperature scaling of classifier logits restores coverage without reactivity stratification, the hypothesis fails.",
+      "statistical_test_plan": "1. Compute sympathetic_reactivity_index per subject from first stress trial. 2. Run standard Mondrian conformal prediction (stratified by condition only) and record per-window coverage indicators. 3. Fit a mixed-effects logistic regression of coverage_indicator on sympathetic_reactivity_index (continuous) with random intercept per subject. 4. Test one-sided Wald test for negative slope (alpha=0.05). 5. Implement reactivity-stratified Mondrian (add reactivity quartile as stratum) and compare per-window coverage via McNemar's test. 6. Compare with per-subject temperature scaling baseline (recalibrate classifier logits per subject before conformal prediction).",
+      "statistical_testability_notes": "Reactivity index must be computed from independent data (e.g., first trial) to avoid circularity. Control for baseline autonomic tone, medication, and time-of-day in the mixed model. Use cluster-robust standard errors for within-subject correlation."
+    },
+    {
+      "hypothesis_id": "H2",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the rate of electrode impedance increase and its impact on EDA amplitude. Need impedance logs (or signal quality index proxy) at multiple time points, EDA amplitude per trial, and coverage per trial order to estimate the mediation effect of impedance on coverage decline.",
+      "minimum_data_needed": [
+        "Electrode impedance (ohms) at start and end of session, or per-trial signal quality index (SQI) for EDA",
+        "EDA phasic peak amplitude per trial (µS)",
+        "Session time elapsed per trial (minutes)",
+        "Nonconformity scores and coverage indicators per window",
+        "HRV reactivity (RMSSD change) per trial to control for fatigue"
+      ],
+      "testable_prediction": "Coverage rate will decline linearly with session_time_elapsed (slope < -0.5% per minute), and electrode_impedance_change (end-start) will correlate with coverage drop in the last trial block (Pearson r > 0.4).",
+      "failure_condition": "If controlling for HRV_reactivity_decline eliminates the session_time_elapsed effect on coverage (impedance_change no longer significant in multiple regression), or if EDA_amplitude does not decline with impedance_change (p>0.05), the sensor drift mechanism fails.",
+      "statistical_test_plan": "1. Obtain electrode_impedance at start and end (or SQI per trial). 2. Compute EDA_amplitude per trial. 3. Fit linear mixed model: coverage_indicator ~ session_time_elapsed + (1|subject). 4. Test fixed effect of session_time_elapsed (one-sided, alpha=0.05). 5. Add impedance_change as predictor; test mediation via causal mediation analysis (impedance_change as mediator). 6. Compare coverage using early-session calibration only (first 50% windows) vs. full calibration on late-session windows.",
+      "statistical_testability_notes": "If impedance logs unavailable, use EDA signal quality index as proxy. Ensure ambient temperature is stable (control variable) to isolate sensor drift. Control for movement intensity per window."
+    },
+    {
+      "hypothesis_id": "H3",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the magnitude of residual autocorrelation during autonomic transitions and the proportion of transitional windows. Need HRV features per window, transition phase labels, and nonconformity residuals to estimate the autocorrelation and coverage gap.",
+      "minimum_data_needed": [
+        "HRV features (RMSSD, LF/HF) per 30s window",
+        "Autonomic transition rate (absolute RMSSD change per minute) per window",
+        "Transition phase labels (transition vs. stable) defined as first 120s after condition change",
+        "Nonconformity scores and coverage indicators per window",
+        "Motion artifact index per window to control for confounding noise"
+      ],
+      "testable_prediction": "Coverage in transitional windows (first 2 min after condition change) will be at least 15 percentage points lower than in stable windows, and lag-1 autocorrelation of nonconformity residuals will be >0.2 in transitional periods.",
+      "failure_condition": "If splitting Mondrian strata by transition phase (onset/steady) restores coverage to nominal without needing temporal dependence correction, or if residual autocorrelation is negligible (<0.05) after conditioning on transition phase, the mechanism fails.",
+      "statistical_test_plan": "1. Define transition windows (first 120s after label change). 2. Compute coverage separately for transition vs. stable windows; test difference via paired bootstrap (alpha=0.05). 3. Compute lag-1 autocorrelation of nonconformity scores per subject per phase. 4. Fit block bootstrap conformal prediction (block length 60s) and compare coverage to standard Mondrian. 5. Implement transition-phase-stratified Mondrian (separate strata for stress-onset, stress-steady, recovery-onset, recovery-steady) and test if coverage reaches nominal.",
+      "statistical_testability_notes": "Control for motion artifacts which may co-occur with transitions. Use the same windowing (30s, 50% overlap) as the original analysis. Define transition windows objectively from protocol timestamps."
+    },
+    {
+      "hypothesis_id": "H4",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the prevalence of label noise in the low-stress stratum and the divergence between self-report and physiological stress index. Need an independent physiological stress classifier, self-report labels, and consensus labels (if available) to quantify mislabeling rate and its impact on coverage.",
+      "minimum_data_needed": [
+        "Self-reported stress labels (0=low, 1=high) per subject per condition",
+        "Physiological stress index (classifier probability of high stress from multimodal features) per window",
+        "Nonconformity scores and coverage indicators per window",
+        "Consensus labels from independent annotators reviewing video/physiology (for a subset)",
+        "Interoceptive awareness scores and social desirability scores per subject"
+      ],
+      "testable_prediction": "Low-stress stratum will have coverage below nominal (e.g., <85% for 90% nominal) and the proportion of label_noise_indicator=1 (self-report != physiological index thresholded) in that stratum will correlate negatively with coverage (r < -0.5). Relabeling using physiological stress index will improve low-stress stratum coverage by at least 10 percentage points.",
+      "failure_condition": "If relabeling with physiological index does not improve coverage (McNemar p>0.05), or if consensus labels show no systematic mislabeling in the low-stress stratum, the hypothesis fails.",
+      "statistical_test_plan": "1. Train independent physiological stress classifier (e.g., SVM on ECG+EDA features) on held-out data. 2. Compute label_noise_indicator where self-report != classifier prediction (thresholded at 0.5). 3. Compute stratum-specific coverage (low-stress vs. high-stress). 4. Re-run Mondrian with relabeled data (using classifier labels as ground truth). 5. Compare per-window coverage before/after relabeling via McNemar's test. 6. If consensus labels available, repeat with consensus as ground truth.",
+      "statistical_testability_notes": "Physiological classifier must be trained independently of the conformal calibration set. Control for interoceptive awareness when estimating label noise rate. Use the same Mondrian taxonomy (condition labels) for both runs."
+    },
+    {
+      "hypothesis_id": "H5",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the age distribution in the calibration set and the magnitude of baseline HRV/EDA differences across age groups. Need age, baseline physiology, and coverage per age bin to estimate the coverage gap and the improvement from age stratification.",
+      "minimum_data_needed": [
+        "Age (years) per subject",
+        "Baseline HRV (RMSSD during baseline, ms) and baseline EDA (tonic level, µS) per subject",
+        "Nonconformity scores and coverage indicators per window",
+        "Health status, medication list, and fitness level per subject",
+        "Calibration set size per age bin"
+      ],
+      "testable_prediction": "Subjects aged >50 will have coverage rate at least 15 percentage points below nominal, and baseline HRV/EDA will differ significantly from younger groups (p<0.01). Adding age bins to Mondrian taxonomy will restore coverage to within 5 percentage points of nominal for all age groups.",
+      "failure_condition": "If retraining the classifier with age-balanced data fixes coverage but age-stratified Mondrian does not (coverage remains below nominal for age>50), the mechanism fails (rival wins).",
+      "statistical_test_plan": "1. Bin age into decades (20-30, 30-40, 40-50, 50+). 2. Compute coverage per age bin; test difference from nominal via one-sample proportion test. 3. Test baseline HRV/EDA differences across bins (ANOVA, alpha=0.05). 4. Implement age-stratified Mondrian (add age bin as stratum). 5. Compare coverage before/after via paired bootstrap (1000 resamples). 6. Also test retraining base classifier with stratified sampling by age and compare coverage.",
+      "statistical_testability_notes": "Ensure age bins have sufficient sample size (minimum 20 calibration windows per bin). Control for medication and fitness in both analyses. Use the same calibration/test split for fair comparison."
+    },
+    {
+      "hypothesis_id": "H6",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the degree of multimodal correlation structure ignored by margin-based scores and the frequency of out-of-distribution patterns. Need softmax margins, Mahalanobis distances in joint feature space, and coverage across OOD quantiles to estimate the geometry mismatch effect.",
+      "minimum_data_needed": [
+        "Softmax margin (difference between top two class probabilities) per window",
+        "Multimodal features: ECG (HRV), EDA (phasic/tonic), respiration (rate, variability) per window",
+        "Mahalanobis distance in joint feature space (using robust shrinkage covariance) per window",
+        "Nonconformity scores and coverage indicators per window",
+        "Dirichlet calibration parameters for classifier logits"
+      ],
+      "testable_prediction": "Coverage will decrease as out_of_distribution_score (Mahalanobis distance) increases (Spearman rho < -0.4). A Mahalanobis-based nonconformity score will achieve coverage within 3 percentage points of nominal, while softmax margin will undercover by >10 percentage points for high OOD samples.",
+      "failure_condition": "If Dirichlet calibration of softmax margins matches Mahalanobis nonconformity performance (coverage difference <2 percentage points, p>0.05), the geometry mismatch mechanism fails (rival wins).",
+      "statistical_test_plan": "1. Compute softmax margin, Mahalanobis distance (using joint feature covariance with shrinkage), and OOD score per window. 2. Evaluate three nonconformity scores on held-out data: (a) softmax margin, (b) Mahalanobis distance, (c) softmax margin after Dirichlet calibration. 3. Compare coverage across OOD quantiles (e.g., top decile). 4. Use DeLong test for correlated coverage differences (alpha=0.05). 5. Test interaction between nonconformity type and OOD score on coverage via logistic regression.",
+      "statistical_testability_notes": "Use the same calibration set for all three nonconformity scores. Ensure Mahalanobis covariance is estimated robustly (Ledoit-Wolf shrinkage). Dirichlet calibration should be fit on a separate validation set."
+    },
+    {
+      "hypothesis_id": "H7",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the variability of ambient conditions across recording days and the sensitivity of EDA baseline to those conditions. Need daily ambient logs, EDA baseline per day, and per-day coverage to estimate the mediation effect of baseline shift.",
+      "minimum_data_needed": [
+        "Ambient temperature (°C) and humidity (% relative) per recording day",
+        "Skin conductance baseline (tonic EDA during neutral baseline, µS) per day",
+        "Day identifier per session",
+        "Nonconformity scores and coverage indicators per window",
+        "Calibration sample size per day",
+        "Subject compliance logs (caffeine, sleep) and experimenter ID per day"
+      ],
+      "testable_prediction": "Days with ambient temperature/humidity deviating >1 SD from grand mean will have coverage at least 10 percentage points lower. EDA baseline shift will mediate the temperature-coverage relationship (mediation effect p<0.05).",
+      "failure_condition": "If per-day calibration sample size fully explains coverage variation (temperature/humidity not significant after controlling for sample size in multiple regression), the mechanism fails.",
+      "statistical_test_plan": "1. Collect ambient logs per day. 2. Compute daily coverage, EDA baseline, temperature/humidity deviation from grand mean. 3. Fit linear regression: coverage ~ temp_dev + humidity_dev + cal_sample_size. 4. Test mediation via EDA baseline shift (causal mediation analysis). 5. Implement day-stratified Mondrian (add day as stratum) and compare coverage. 6. Also test EDA normalization per day using baseline and measure coverage recovery.",
+      "statistical_testability_notes": "Ensure baseline duration is fixed across days. Control for subject compliance and experimenter effects. Use cluster-robust SEs for within-day correlation."
+    },
+    {
+      "hypothesis_id": "H8",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the distribution of stratum sample sizes and the bias of empirical quantile estimation in small strata. Need stratum sample sizes, empirical quantiles, and oracle quantiles (from large holdout or cross-validation) to estimate the bias and the correction effect.",
+      "minimum_data_needed": [
+        "Stratum sample size (number of calibration windows per condition-subject stratum)",
+        "Conditional quantile estimate (empirical quantile of nonconformity scores in stratum)",
+        "Oracle quantile (true conditional quantile estimated via large holdout or cross-validation)",
+        "Nonconformity scores and coverage indicators per window",
+        "Stratum nonconformity score IQR and skewness"
+      ],
+      "testable_prediction": "Strata with sample size <30 will have coverage at least 10 percentage points below nominal, and quantile estimation bias (empirical - oracle) will be negative and correlate with 1/sqrt(n). Finite-sample correction (e.g., using (n+1)(1-alpha)th order statistic) will restore coverage to within 2 percentage points.",
+      "failure_condition": "If pooling calibration data across subjects for rare strata restores coverage but finite-sample correction does not (coverage remains below nominal), the distribution shift rival wins.",
+      "statistical_test_plan": "1. Compute stratum sample sizes and coverage rates. 2. Estimate oracle quantile via 10-fold cross-validation on calibration set (or large holdout if available). 3. Compute bias per stratum (empirical quantile - oracle quantile). 4. Apply finite-sample correction: use order statistic index ceil((n+1)*(1-alpha)) instead of ceil(n*(1-alpha)). 5. Compare corrected vs. standard Mondrian coverage via paired bootstrap. 6. Also test pooling calibration data across subjects for rare strata (size<30) and compare.",
+      "statistical_testability_notes": "Use bootstrap to estimate quantile bias per stratum. Control for stratum heterogeneity (IQR) when assessing bias. Nominal coverage 90% (alpha=0.1)."
+    },
+    {
+      "hypothesis_id": "H9",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the rate of habituation across trials and the resulting feature distribution shift. Need trial number, EDA peak amplitude, HRV reactivity, and coverage per trial to estimate the linear trend and the improvement from trial stratification.",
+      "minimum_data_needed": [
+        "Trial number (1,2,3) per stress task per subject",
+        "EDA peak amplitude (max phasic peak per trial, µS)",
+        "HRV reactivity (RMSSD_baseline - RMSSD_stress, ms) per trial",
+        "Nonconformity scores and coverage indicators per window",
+        "Stressor type per trial (TSST, mental arithmetic, cold pressor) and clock time"
+      ],
+      "testable_prediction": "Coverage will decline linearly with trial_number (slope < -5% per trial). EDA_peak_amplitude and HRV_reactivity will show significant negative linear trends across trials (p<0.01). Trial-stratified Mondrian will eliminate the trial-number coverage gap (coverage within 3 percentage points of nominal for all trials).",
+      "failure_condition": "If classifier trained on trial 3 and tested on trial 1 shows symmetric undercoverage (overfitting rival), or if trial-number stratification does not fix coverage (gap remains >5 percentage points), the habituation mechanism fails.",
+      "statistical_test_plan": "1. Compute coverage per trial number; test linear trend via mixed-effects logistic regression (coverage_indicator ~ trial_number + (1|subject)). 2. Fit linear trends for EDA_peak_amplitude and HRV_reactivity across trials (LME). 3. Implement trial-stratified Mondrian (add trial number as stratum). 4. Train three classifiers: (a) on trial 1 only, test on trial 3; (b) on trial 3 only, test on trial 1; (c) on all trials with trial-number as feature. 5. Compare coverage across methods via paired McNemar tests.",
+      "statistical_testability_notes": "Control for stressor type (counterbalanced across subjects in WESAD). Include clock time and anticipation ratings as covariates. Use the same calibration/test split for all classifiers."
+    },
+    {
+      "hypothesis_id": "H10",
+      "effect_size_expectation": "unknown",
+      "effect_size_rationale": "Effect size depends on the rate of respiration missingness during high movement and the coverage gap between missing and non-missing windows. Need missingness indicators, movement intensity, and coverage stratified by missingness and movement to estimate the interaction effect.",
+      "minimum_data_needed": [
+        "Respiration missingness indicator (1 if respiration belt data missing in window)",
+        "Movement intensity (accelerometer vector magnitude, g) per window",
+        "Stress level (condition label: baseline/stress/recovery) per window",
+        "Imputed respiration features (mean imputation or last value carried forward)",
+        "Nonconformity scores and coverage indicators per window",
+        "ECG/EDA signal quality indices per window"
+      ],
+      "testable_prediction": "Windows with missing respiration during high movement (top quartile accelerometer magnitude) will have coverage at least 15 percentage points lower than windows with respiration present. Adding missingness indicator as feature will improve coverage for high-movement stress windows by >10 percentage points.",
+      "failure_condition": "If coverage drops with high movement regardless of respiration missingness (no interaction, p>0.05), the general signal quality rival wins.",
+      "statistical_test_plan": "1. Compute respiration_missingness_indicator and movement_intensity per window. 2. Stratify coverage by missingness x movement quartile x stress condition. 3. Test interaction via logistic regression: coverage_indicator ~ missingness * movement_quartile * stress_condition + (1|subject). 4. Augment features with missingness indicator and re-run conformal prediction. 5. Compare coverage for high-movement stress windows before/after augmentation via McNemar's test. 6. Test multiple imputation strategies (mean, last-value, model-based) and missingness-indicator augmentation.",
+      "statistical_testability_notes": "Control for window-level SNR of ECG/EDA. Ensure missingness is not completely at random (test Missing At Random assumption). Use the same calibration set for all imputation strategies."
+    }
+  ]
+}

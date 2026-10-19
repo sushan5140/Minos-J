@@ -1,0 +1,35 @@
+{
+  "study_name": "Meno-J Theory Study 1: What Makes an Explanation Genuinely Good?",
+  "protocol_date": "2026-08-17",
+  "status": "FROZEN_AFTER_INITIAL_SCOPING_BEFORE_FINAL_ADJUDICATION",
+  "scope": "Theory-only study; no WESAD data, numerical experiment, LLM, or OpenRouter call.",
+  "research_question": "What properties distinguish a genuinely good explanation from a merely accurate, detailed, simple, persuasive, or predictive account?",
+  "candidate_families": [
+    "deductive-nomological",
+    "unification",
+    "causal-mechanistic",
+    "interventionist/counterfactual",
+    "pragmatic/contrastive",
+    "mathematical/constraint",
+    "understanding-as-compression",
+    "explanatory pluralism"
+  ],
+  "success_criteria": {
+    "major_theory_families_compared": 8,
+    "minimum_adversarial_cases": 10,
+    "must_separate_truth_relevance_generativity_and_preferences": true,
+    "must_handle_causal_and_noncausal_cases": true,
+    "must_not_reduce_quality_to_one_scalar": true,
+    "must_state_scope_and_unresolved_limits": true,
+    "must_produce_operational_meno_j_contract": true,
+    "must_define_auditable_j_jump": true
+  },
+  "failure_conditions": [
+    "The synthesis treats prediction, compression, mechanism, counterfactual dependence, or audience satisfaction as sufficient by itself.",
+    "The synthesis calls every rival complementary even when same-scope consequences conflict.",
+    "The contract cannot say what evidence warrants different explanation types.",
+    "The J-jump definition rewards novelty without retention, reach, or falsifiability.",
+    "The report claims empirical validation or established novelty from a theory-only comparison."
+  ],
+  "evidence_policy": "Primary papers and official publication pages; access depth is recorded per source and claims are limited accordingly."
+}

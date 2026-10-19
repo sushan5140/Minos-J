@@ -1,0 +1,87 @@
+{
+  "experiment_name": "Meno-J Experiment 1: Auditor Calibration Test",
+  "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "runs": {
+    "Q1": {
+      "research_question": "Why does Mondrian conformal prediction show undercoverage for some physiological stress subjects in WESAD?",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "generated_count": 10,
+      "passed_count": 0,
+      "salvageable_count": 2,
+      "rejected_count": 8,
+      "pass_survival_rate": 0.0,
+      "salvageable_rate": 0.2,
+      "top_failed_checklist_fields": {
+        "confounders_identified": 10,
+        "effect_size_plausible": 10,
+        "data_requirements_clear": 5,
+        "mechanism_is_non_generic": 3,
+        "variables_measurable": 3,
+        "base_rate_plausible": 2,
+        "prediction_is_testable": 2,
+        "causal_chain_valid": 1
+      },
+      "rejection_reason_diversity": 8,
+      "failure_points_consistency": true,
+      "rubber_stamp_red_flags": [],
+      "stage_6_ran": false,
+      "stage_7_ran": false
+    },
+    "Q2": {
+      "research_question": "Why might conformal prediction fail to maintain stable coverage across different physiological signal segments?",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "generated_count": 10,
+      "passed_count": 0,
+      "salvageable_count": 10,
+      "rejected_count": 0,
+      "pass_survival_rate": 0.0,
+      "salvageable_rate": 1.0,
+      "top_failed_checklist_fields": {
+        "confounders_identified": 10,
+        "mechanism_is_non_generic": 9
+      },
+      "rejection_reason_diversity": 2,
+      "failure_points_consistency": true,
+      "rubber_stamp_red_flags": [],
+      "stage_6_ran": false,
+      "stage_7_ran": false
+    },
+    "Q3": {
+      "research_question": "What mechanisms could explain subject-level variation in wearable stress-detection uncertainty?",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "generated_count": 10,
+      "passed_count": 0,
+      "salvageable_count": 7,
+      "rejected_count": 3,
+      "pass_survival_rate": 0.0,
+      "salvageable_rate": 0.7,
+      "top_failed_checklist_fields": {
+        "confounders_identified": 10,
+        "mechanism_is_non_generic": 3,
+        "causal_chain_valid": 1
+      },
+      "rejection_reason_diversity": 3,
+      "failure_points_consistency": true,
+      "rubber_stamp_red_flags": [],
+      "stage_6_ran": false,
+      "stage_7_ran": false
+    }
+  },
+  "repeated_failed_checklist_fields": {
+    "confounders_identified": {
+      "Q1": 10,
+      "Q2": 10,
+      "Q3": 10
+    },
+    "mechanism_is_non_generic": {
+      "Q1": 3,
+      "Q2": 9,
+      "Q3": 3
+    }
+  },
+  "interpretation": [
+    "All three runs have 0 PASS: the Auditor may be over-strict, or the Dreamer is not producing statistically complete mechanisms.",
+    "All three runs have confounders_identified failing 10/10: the Dreamer consistently fails to include rival explanations or confounder control.",
+    "Stages 6 and 7 remain empty, as expected when no hypotheses PASS."
+  ]
+}

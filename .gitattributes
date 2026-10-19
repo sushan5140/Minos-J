@@ -1,0 +1,2 @@
+# Historical artifacts are evidence. Never apply line-ending normalization.
+historical/2026-08-04/** -text

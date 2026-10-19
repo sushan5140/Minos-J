@@ -1,0 +1,113 @@
+{
+  "experiment_name": "Meno-J Experiment 13: Independent Wearable-Dataset Replication",
+  "protocol_status": "FROZEN_AFTER_INVENTORY_BEFORE_FEATURE_OR_OUTCOME_COMPUTATION",
+  "frozen_date": "2026-08-09",
+  "research_question": "Does per-subject robust normalization improve subject-disjoint wearable stress classification and conformal informativeness in an independently collected Empatica E4 cohort?",
+  "dataset": {
+    "name": "Wearable Device Dataset from Induced Stress and Structured Exercise Sessions",
+    "version": "1.0.1",
+    "doi": "10.13026/he0v-tf17",
+    "license": "Open Data Commons Attribution License v1.0",
+    "archive_sha256": "afbff3e8e7230bdc765d0ccfc5c3460964021cdfefa8e351f8ad8f78a1b27c48",
+    "integrity_report": "outputs/meno_j_experiment_13_dataset_integrity.json must have status PASS",
+    "inventory_report": "outputs/meno_j_experiment_13_dataset_inventory.json must have inventory_status PASS_PRE_OUTCOME and scientific_outcomes_computed false"
+  },
+  "primary_cohort": {
+    "subject_count": 33,
+    "excluded_folders": {
+      "S02": "author-documented duplicated stress signals",
+      "f07": "author-documented covered PPG and temperature sensors",
+      "f14_a": "split stress session",
+      "f14_b": "split stress session"
+    },
+    "sensitivity_analysis": "No excluded subject enters the primary outcome. A future separately frozen sensitivity analysis may examine recoverable segments."
+  },
+  "label_contract": {
+    "non_stress": ["baseline", "first_rest", "second_rest"],
+    "stress_v1": ["stroop", "tmct", "real_opinion", "opposite_opinion", "subtract"],
+    "stress_v2": ["tmct", "real_opinion", "opposite_opinion", "subtract"],
+    "label_source": "event-tag protocol stages",
+    "self_report_role": "Self-reported stress is metadata only and is not substituted for the primary protocol label."
+  },
+  "window_contract": {
+    "window_seconds": 15,
+    "overlap_seconds": 0,
+    "edge_trim_seconds": 5,
+    "selection_per_subject": {
+      "non_stress": 16,
+      "stress": 16
+    },
+    "selection_method": "Generate all non-overlapping windows within each trimmed labeled interval, order chronologically within each class, and choose 16 evenly spaced indices including the endpoints.",
+    "rationale": "The validated inventory guarantees at least 16 stress and 43 non-stress candidates for every primary subject; 30- and 60-second windows do not support a balanced 16-per-class test."
+  },
+  "feature_contract": {
+    "signals": ["EDA", "TEMP", "ACC_X", "ACC_Y", "ACC_Z", "ACC_MAG"],
+    "acceleration_units": "Convert Empatica ACC integer units to g by dividing by 64 before feature extraction.",
+    "statistics_per_signal": ["mean", "std", "min", "max", "median", "q25", "q75", "rms", "mean_absolute_difference"],
+    "feature_count": 54,
+    "checkpoint_policy": "One hash-bound NumPy NPZ checkpoint per subject; never modify raw CSV files."
+  },
+  "fold_contract": {
+    "heldout_subjects": 33,
+    "repetitions_per_subject": 3,
+    "training_subjects_per_fold": 24,
+    "external_calibration_subjects_per_fold": 8,
+    "heldout_onboarding_windows": {"non_stress": 8, "stress": 8},
+    "heldout_test_windows": {"non_stress": 8, "stress": 8},
+    "onboarding_use": "Unlabeled normalization statistics only; onboarding labels never train the classifier or calibrate the conformal threshold.",
+    "test_use": "Evaluation only; never used for normalization, training, calibration, or model selection.",
+    "calibration_rotation": "For held-out subject index i and repetition r, select eight consecutive subjects from the remaining sorted cohort beginning at offset (i + 7r) mod 32; train on the other 24.",
+    "heldout_split_seed": "400000 + 1009 * subject_index + 17 * repetition"
+  },
+  "arms": {
+    "lda_raw": "Fixed Experiment 9 regularized LDA trained on pooled raw 54-feature vectors.",
+    "lda_subject_robust_normalized": "Median-center and IQR-scale each training and calibration subject independently; normalize the held-out subject using only its 16 unlabeled onboarding windows; then fit the identical LDA."
+  },
+  "conformal_contract": {
+    "alpha": 0.1,
+    "target_coverage": 0.9,
+    "score": "inverse probability",
+    "calibration_source": "eight subject-disjoint external calibration subjects",
+    "reported_outcomes": [
+      "mean coverage",
+      "worst-subject mean coverage",
+      "coverage by class",
+      "classifier accuracy",
+      "log loss",
+      "mean prediction-set size",
+      "full two-label-set frequency",
+      "empty-set frequency",
+      "robustness loss"
+    ]
+  },
+  "primary_replication_rule": {
+    "normalization_accuracy_improvement_minimum": 0.08,
+    "normalization_full_set_frequency_reduction_minimum": 0.05,
+    "normalization_robustness_loss_reduction_minimum": 0.02,
+    "normalized_mean_coverage_minimum": 0.88,
+    "worst_subject_coverage_change_minimum": -0.10,
+    "protocol_version_accuracy_change": "must be positive in both V1 and V2",
+    "subject_nonnegative_accuracy_change_fraction_minimum": 0.60,
+    "decision": "EXTERNAL_NORMALIZATION_REPLICATION_SUPPORTED only if every condition passes."
+  },
+  "interpretation_logic": {
+    "supported": "The representation gate generalizes beyond WESAD to an independent device placement and stress protocol under the frozen effect-size rule.",
+    "accuracy_only": "If accuracy improves but informativeness or coverage conditions fail, baseline correction helps classification but does not validate the complete uncertainty-readiness gate.",
+    "not_supported": "The normalization mechanism remains WESAD-specific or too unstable for the claimed generality under this protocol."
+  },
+  "guardrails": [
+    "This is an independent cohort and device protocol, but not a multi-day repeated-session stress study.",
+    "Fifteen-second windows differ from the 60-second WESAD windows because the external protocol contains 26-to-37-second social-stress tasks.",
+    "Protocol version is a prespecified cohort-stratification variable.",
+    "No hyperparameter search, feature selection, subject exclusion, or decision-rule change is allowed after outcomes are computed.",
+    "No literature novelty claim is made."
+  ],
+  "safety": {
+    "model_call_used": false,
+    "api_key_required": false,
+    "raw_dataset_mutation": false,
+    "dependency_installation": false,
+    "independent_exact_replay_required": true,
+    "utf8_outputs": true
+  }
+}

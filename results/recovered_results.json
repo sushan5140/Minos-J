@@ -2,8 +2,9 @@
   "provenance": {
     "source": "Recovered from the original Minos-J/Codex research record dated 2026-08-04",
     "original_working_path": "C:\\Users\\DELL\\Documents\\Codex\\2026-08-04\\we-are-starting-a-fresh-implementation",
-    "original_source_bytes_present": false,
-    "note": "Metrics below are historical findings. Current public Python utilities are reference/reproducibility code, not claimed as byte-identical historical source."
+    "original_source_bytes_present": true,
+    "historical_recovery_path": "historical/2026-08-04",
+    "note": "Metrics below are verified against the recovered historical artifacts. Current Python utilities under src/ remain later reference code; the byte-preserved original workspace is under historical/2026-08-04."
   },
   "experiment_4": {
     "runner": "run_pattern_falsification.py",
@@ -30,8 +31,8 @@
       "geometries": 5,
       "scores": 3,
       "conditioning_strategies": [
-        "mondrian",
-        "marginal"
+        "marginal",
+        "mondrian_class"
       ],
       "calibration_sizes": [
         50,
@@ -142,6 +143,9 @@
   "architecture_refactor": {
     "historical_outputs_preserved_byte_identical": 34,
     "manifest_hash_match": true,
+    "manifest_hash_match_provenance": "historically reported in the recovered project record",
+    "historical_manifest_sha256_recorded": "839E74C7C9B7DE98150F3064BB60EDFF223E322B3828EE92E10134E7A4AAB02E",
+    "independent_recovery_status": "All 34 files are present and individually hashed in the new public-safe manifest. The original 34-line manifest and its construction algorithm were not recovered, so the recorded composite manifest hash cannot be independently reproduced.",
     "checkpoints_preserved": true,
     "compilation_checks_passed": true,
     "credential_scan_passed": true,

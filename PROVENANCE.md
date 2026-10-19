@@ -2,9 +2,9 @@
 
 Minos-J has two kinds of material in this public repository.
 
-## 1. Recovered historical evidence
+## 1. Recovered historical implementation and evidence
 
-The numerical findings and experiment metadata in `results/recovered_results.json` were recovered from the original Minos-J/Codex research record created on **2026-08-04**.
+The original implementation, outputs, checkpoints, and selected run logs are preserved byte-for-byte under `historical/2026-08-04/`. The numerical findings and experiment metadata in `results/recovered_results.json` are verified against those originals.
 
 The original working path was:
 
@@ -12,7 +12,7 @@ The original working path was:
 C:\Users\DELL\Documents\Codex\2026-08-04\we-are-starting-a-fresh-implementation
 ```
 
-The recovered record includes experiment counts, conditions, conclusions, headline metrics, replay status, and historical filenames.
+The directory date identifies the workspace lineage. The workspace continued evolving later in August, so files retain their own experiment identity and timestamps rather than being falsely represented as all created on August 4.
 
 These values are presented as **historical results from the original runs**.
 
@@ -20,7 +20,7 @@ These values are presented as **historical results from the original runs**.
 
 The Python package under `src/minos_j/` and the utilities under `scripts/` were added to the public repository after the historical runs.
 
-They are **not represented as byte-for-byte copies of the original August 4 implementation**.
+They remain a later, compact reference implementation. They are separate from the now-recovered original source under `historical/2026-08-04/source/`.
 
 Their purpose is to:
 
@@ -42,4 +42,4 @@ The original architecture refactor reported that:
 - credential scanning passed
 - no historical experiments were silently rerun during that refactor
 
-The exact original output files and source tree are not currently present in this public GitHub repository. If the original local working directory is later recovered, those files should be imported into a clearly labeled `historical/` area with their original hashes preserved.
+All 34 reported output paths are present and individually hashed in `historical/2026-08-04/MANIFEST.sha256`. The original composite manifest was not found, so its recorded SHA-256 is preserved as a historical statement rather than claimed as independently reproduced. See the [recovery report](historical/2026-08-04/RECOVERY_REPORT.md) for file counts, exclusions, missing evidence, and verification limits.

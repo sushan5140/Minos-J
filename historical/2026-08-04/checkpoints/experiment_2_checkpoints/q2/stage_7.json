@@ -1,0 +1,60 @@
+{
+  "falsification_tests": [
+    {
+      "hypothesis_id": "H1",
+      "strongest_falsification_test": "Collect multi-subject data (>=50 subjects) with direct measures of baroreflex gain (sequence method) and arterial stiffness (carotid-femoral pulse wave velocity) alongside repeated hemodynamic recordings. Fit a conditional conformal predictor that explicitly conditions on these two physiological traits (plus age, sex, BMI, medication status). If this conditional predictor achieves nominal 95% coverage on held-out subjects without per-subject recalibration, the claim that residual inter-subject heterogeneity in these traits violates exchangeability is falsified.",
+      "failure_condition": "The conditional conformal predictor (conditioning on baroreflex gain, pulse wave velocity, age, sex, BMI, medication) maintains 95% coverage (±1%) on held-out subjects across all test segments.",
+      "minimum_data_needed": "Multi-subject longitudinal recordings (>=50 subjects) with repeated measures per subject across days, demographic and clinical metadata, >=200 calibration beats per subject, simultaneous reference BP or invasive hemodynamic data for validation, plus direct baroreflex gain and carotid-femoral pulse wave velocity measurements for each subject.",
+      "most_likely_false_positive_risk": "Overfitting due to high-dimensional conditioning set relative to number of subjects; spurious coverage if baroreflex gain and PWV are noisy proxies that accidentally correlate with error distribution in this sample but not in population.",
+      "most_likely_false_negative_risk": "Baroreflex gain and PWV measurements have insufficient precision to capture the true latent traits; unmeasured physiological traits (e.g., central autonomic network gain) still drive exchangeability violation even after conditioning on measured surrogates."
+    },
+    {
+      "hypothesis_id": "H3",
+      "strongest_falsification_test": "Under a constant routine protocol (dim light, semi-recumbent, hourly snacks, controlled temperature, caffeine/alcohol abstinence) with core body temperature (CBT) monitored continuously, collect >=48h of high-resolution RR intervals. Use the first 24h as a static calibration set for a conformal predictor. Test coverage in 2-hour bins aligned to CBT minimum (circadian phase 0). If coverage remains within 95% ±1% across all circadian phases, the hypothesis that circadian modulation creates periodic non-stationarity that static calibration cannot capture is falsified.",
+      "failure_condition": "Static conformal predictor calibrated on first 24h of constant routine maintains 95% coverage (±1%) in every 2-hour circadian phase bin across the subsequent 24h.",
+      "minimum_data_needed": "Multi-day continuous recordings (>=48h) under constant routine, timestamped annotations of sleep/wake, core body temperature rhythm for circadian phase, high-resolution RR intervals (>=250 Hz), simultaneous respiratory signal.",
+      "most_likely_false_positive_risk": "Circadian amplitude of HRV is unusually low in the studied cohort (e.g., due to age, medication, or pathology), making non-stationarity too weak to detect; constant routine protocol imperfectly implemented (e.g., inadvertent posture changes).",
+      "most_likely_false_negative_risk": "CBT minimum is a noisy phase marker; residual masking effects (e.g., from uncontrolled micro-activity) create apparent non-stationarity unrelated to endogenous circadian drive; calibration window too short to capture full circadian variance."
+    },
+    {
+      "hypothesis_id": "H4",
+      "strongest_falsification_test": "In a heart failure cohort with weekly recordings over >=6 months, serial echocardiography/NT-proBNP, and detailed medication/event logs, implement a sliding-window conformal predictor where window length is optimized via nested cross-validation on a validation period to minimize coverage deviation. If this optimized sliding-window predictor maintains 95% coverage (±1%) at all time points despite documented ventricular remodeling (e.g., LVEF decline >5% or NT-proBNP rise >50%), the hypothesis that remodeling outpaces calibration adaptation is falsified.",
+      "failure_condition": "Optimized sliding-window conformal predictor achieves 95% coverage (±1%) at every weekly time point over the 6-month period, including intervals with confirmed progressive remodeling.",
+      "minimum_data_needed": "Longitudinal data over >=6 months with weekly/bimonthly recordings, clinical annotations (med changes, events), serial imaging/biomarkers (NT-proBNP, echocardiography), medication adherence measures (pharmacy fills), concurrent symptom diaries.",
+      "most_likely_false_positive_risk": "Remodeling trajectory is non-linear (plateaus) during study window; optimized window length overfits to validation period and fails prospectively; sensor drift mimics remodeling but is corrected by windowing.",
+      "most_likely_false_negative_risk": "Window length optimization is underpowered due to sparse time points; acute decompensation events cause abrupt shifts that no fixed window can track; conformal predictor fails due to sensor drift rather than remodeling speed."
+    },
+    {
+      "hypothesis_id": "H6",
+      "strongest_falsification_test": "In a cohort (>=500) with genotyping (ADRB1 Arg389Gly, CYP2D6 metabolizer status), plasma beta-blocker levels, and adherence monitoring, define responder/non-responder subgroups by genetic + pharmacokinetic criteria. Train a marginal conformal predictor on the full mixed cohort (no subgroup labels). Evaluate coverage separately in each subgroup on held-out data. If both subgroups achieve 95% coverage (±1%) without subgroup-aware calibration, the hidden stratification mechanism is falsified.",
+      "failure_condition": "Marginal conformal predictor calibrated on mixed cohort achieves 95% coverage (±1%) in both genetically/pharmacokinetically defined responder and non-responder subgroups on held-out test segments.",
+      "minimum_data_needed": "Genetic/pharmacogenomic data for cohort, medication adherence measures, large sample size (>=500) for subgroup detection, longitudinal response phenotypes, ancestry-informative markers, plasma drug level monitoring.",
+      "most_likely_false_positive_risk": "Subgroup definitions are post-hoc and overfit to this cohort; coverage appears valid due to chance imbalance in test set; continuous heterogeneity masquerades as discrete subgroups but marginal coverage holds by accident.",
+      "most_likely_false_negative_risk": "Genetic variants explain only a fraction of response heterogeneity; unmeasured subgroups (e.g., adherence patterns, concomitant medications) still cause coverage failure; adherence monitoring imperfect leading to misclassification."
+    },
+    {
+      "hypothesis_id": "H7",
+      "strongest_falsification_test": "Acquire >=24h artifact-free, high-resolution (>=250 Hz) RR recordings from >=30 subjects under controlled breathing (0.25 Hz) to minimize RSA. Compute DFA scaling exponent alpha. Generate phase-randomized surrogates preserving long-range dependence. Fit a conformal predictor using an ARFIMA(p,d,q) model (with d estimated from data) to condition on long-memory structure. If this long-memory-aware conformal predictor achieves nominal coverage on both real and surrogate data, and the coverage variance matches the theoretical effective sample size (Neff ~ N^(2-2H)), the claim that long-range dependence inherently violates exchangeability is falsified.",
+      "failure_condition": "ARFIMA-conditioned conformal predictor achieves 95% coverage (±1%) on real and surrogate long-range dependent data, and the empirical coverage variance across calibration windows equals the theoretical variance predicted by Neff = N^(2-2H).",
+      "minimum_data_needed": "Very long recordings (>=24h) at high sampling rate (>=250 Hz), multiple subjects (>=30) for population inference, simultaneous respiration for RSA control, artifact-free segments verified manually, surrogate data generation pipeline.",
+      "most_likely_false_positive_risk": "ARFIMA model mis-specified (wrong p,q); surrogate data fail to capture non-stationarities present in real data; controlled breathing does not fully eliminate RSA contamination of long-range correlations.",
+      "most_likely_false_negative_risk": "Long-range dependence is confounded by non-stationary trends not removed by detrending; effective sample size reduction is even more severe than theory predicts due to non-Gaussian innovations; finite-sample bias in d estimation leads to under-conditioning."
+    },
+    {
+      "hypothesis_id": "H8",
+      "strongest_falsification_test": "Collect synchronized PPG, 3D accelerometer, and reference ECG across diverse activities (sleep, rest, treadmill, free-living) in >=20 subjects. Compute a motion artifact index (MAI) from accelerometer magnitude and orientation variability. Train a conditional conformal predictor that conditions on MAI (binned into quantiles). If this MAI-conditioned predictor achieves 95% coverage (±1%) in every activity bin (including vigorous exercise) without explicit artifact labels, the hypothesis that heteroscedastic motion noise cannot be calibrated without artifact labels is falsified.",
+      "failure_condition": "MAI-conditioned conformal predictor maintains 95% coverage (±1%) in all activity bins (sleep, sedentary, light, moderate, vigorous) on held-out data.",
+      "minimum_data_needed": "Multi-modal recordings (PPG + 3D accelerometer) across diverse activities, activity annotations with timestamps, ground truth HR (ECG) for validation, skin-sensor coupling metrics (impedance, contact force), >=20 subjects with varied fitness levels.",
+      "most_likely_false_positive_risk": "MAI captures lab-based motion artifacts but misses free-living artifacts (sensor shear, rotational motion); activity bins in test set not representative of real-world distribution; accelerometer placement differs from deployment setting.",
+      "most_likely_false_negative_risk": "MAI is insufficiently sensitive to artifact types that most corrupt PPG (e.g., ambient light, venous pooling); residual heteroscedasticity within MAI bins causes coverage failure; ground truth ECG itself corrupted during vigorous activity."
+    },
+    {
+      "hypothesis_id": "H9",
+      "strongest_falsification_test": "Obtain PSG-validated sleep staging with continuous ECG/PPG across >=3 nights in >=30 subjects under standardized conditions. Train a static conformal predictor on a calibration set that mirrors the population sleep-stage distribution (e.g., 5% N1, 50% N2, 20% N3, 25% REM). Test coverage separately in each sleep stage on held-out nights. If coverage is 95% (±1%) in every stage (including REM), the hypothesis that sleep-stage-dependent coupling causes coverage failure due to REM underrepresentation is falsified.",
+      "failure_condition": "Static conformal predictor calibrated on a representative sleep-stage mix achieves 95% coverage (±1%) in each sleep stage (N1, N2, N3, REM) on held-out nights.",
+      "minimum_data_needed": "PSG-validated sleep staging with continuous ECG/PPG across >=3 nights, respiratory signals (flow, effort, SpO2), body position sensor, medication logs, autonomic markers (HRV, BRS) per stage.",
+      "most_likely_false_positive_risk": "Calibration set by chance has REM error distribution similar to NREM; PSG scoring errors misclassify REM as NREM; respiratory events (apneas) unevenly distributed across nights and not fully captured by stage labels.",
+      "most_likely_false_negative_risk": "Night-to-night variability in REM proportion causes calibration set mismatch in deployment; micro-arousals and transient autonomic surges within stages create finer-grained non-stationarity not captured by 30-second epochs; body position changes within stage alter error distribution."
+    }
+  ]
+}

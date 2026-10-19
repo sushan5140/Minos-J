@@ -1,0 +1,204 @@
+{
+  "enriched_hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "original_hypothesis": "Experiment 2 hypothesis 1",
+      "original_mechanism": "Original mechanism 1",
+      "possible_confounders": [
+        "Specific confounder"
+      ],
+      "control_variables": [
+        "Measured control"
+      ],
+      "rival_explanations": [
+        "Boring rival"
+      ],
+      "minimum_data_needed": [
+        "Required observation"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Controlled enriched mechanism 1",
+      "enrichment_notes": "Added explicit confounder and control logic."
+    },
+    {
+      "hypothesis_id": "H2",
+      "original_hypothesis": "Experiment 2 hypothesis 2",
+      "original_mechanism": "Original mechanism 2",
+      "possible_confounders": [
+        "Specific confounder"
+      ],
+      "control_variables": [
+        "Measured control"
+      ],
+      "rival_explanations": [
+        "Boring rival"
+      ],
+      "minimum_data_needed": [
+        "Required observation"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Controlled enriched mechanism 2",
+      "enrichment_notes": "Added explicit confounder and control logic."
+    },
+    {
+      "hypothesis_id": "H3",
+      "original_hypothesis": "Experiment 2 hypothesis 3",
+      "original_mechanism": "Original mechanism 3",
+      "possible_confounders": [
+        "Specific confounder"
+      ],
+      "control_variables": [
+        "Measured control"
+      ],
+      "rival_explanations": [
+        "Boring rival"
+      ],
+      "minimum_data_needed": [
+        "Required observation"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Controlled enriched mechanism 3",
+      "enrichment_notes": "Added explicit confounder and control logic."
+    },
+    {
+      "hypothesis_id": "H4",
+      "original_hypothesis": "Experiment 2 hypothesis 4",
+      "original_mechanism": "Original mechanism 4",
+      "possible_confounders": [
+        "Specific confounder"
+      ],
+      "control_variables": [
+        "Measured control"
+      ],
+      "rival_explanations": [
+        "Boring rival"
+      ],
+      "minimum_data_needed": [
+        "Required observation"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Controlled enriched mechanism 4",
+      "enrichment_notes": "Added explicit confounder and control logic."
+    },
+    {
+      "hypothesis_id": "H5",
+      "original_hypothesis": "Experiment 2 hypothesis 5",
+      "original_mechanism": "Original mechanism 5",
+      "possible_confounders": [
+        "Specific confounder"
+      ],
+      "control_variables": [
+        "Measured control"
+      ],
+      "rival_explanations": [
+        "Boring rival"
+      ],
+      "minimum_data_needed": [
+        "Required observation"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Controlled enriched mechanism 5",
+      "enrichment_notes": "Added explicit confounder and control logic."
+    },
+    {
+      "hypothesis_id": "H6",
+      "original_hypothesis": "Experiment 2 hypothesis 6",
+      "original_mechanism": "Original mechanism 6",
+      "possible_confounders": [
+        "Specific confounder"
+      ],
+      "control_variables": [
+        "Measured control"
+      ],
+      "rival_explanations": [
+        "Boring rival"
+      ],
+      "minimum_data_needed": [
+        "Required observation"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Controlled enriched mechanism 6",
+      "enrichment_notes": "Added explicit confounder and control logic."
+    },
+    {
+      "hypothesis_id": "H7",
+      "original_hypothesis": "Experiment 2 hypothesis 7",
+      "original_mechanism": "Original mechanism 7",
+      "possible_confounders": [
+        "Specific confounder"
+      ],
+      "control_variables": [
+        "Measured control"
+      ],
+      "rival_explanations": [
+        "Boring rival"
+      ],
+      "minimum_data_needed": [
+        "Required observation"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Controlled enriched mechanism 7",
+      "enrichment_notes": "Added explicit confounder and control logic."
+    },
+    {
+      "hypothesis_id": "H8",
+      "original_hypothesis": "Experiment 2 hypothesis 8",
+      "original_mechanism": "Original mechanism 8",
+      "possible_confounders": [
+        "Specific confounder"
+      ],
+      "control_variables": [
+        "Measured control"
+      ],
+      "rival_explanations": [
+        "Boring rival"
+      ],
+      "minimum_data_needed": [
+        "Required observation"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Controlled enriched mechanism 8",
+      "enrichment_notes": "Added explicit confounder and control logic."
+    },
+    {
+      "hypothesis_id": "H9",
+      "original_hypothesis": "Experiment 2 hypothesis 9",
+      "original_mechanism": "Original mechanism 9",
+      "possible_confounders": [
+        "Specific confounder"
+      ],
+      "control_variables": [
+        "Measured control"
+      ],
+      "rival_explanations": [
+        "Boring rival"
+      ],
+      "minimum_data_needed": [
+        "Required observation"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Controlled enriched mechanism 9",
+      "enrichment_notes": "Added explicit confounder and control logic."
+    },
+    {
+      "hypothesis_id": "H10",
+      "original_hypothesis": "Experiment 2 hypothesis 10",
+      "original_mechanism": "Original mechanism 10",
+      "possible_confounders": [
+        "Specific confounder"
+      ],
+      "control_variables": [
+        "Measured control"
+      ],
+      "rival_explanations": [
+        "Boring rival"
+      ],
+      "minimum_data_needed": [
+        "Required observation"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Controlled enriched mechanism 10",
+      "enrichment_notes": "Added explicit confounder and control logic."
+    }
+  ]
+}

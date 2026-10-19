@@ -1,0 +1,84 @@
+{
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Inter-subject variability in autonomic regulation causes non-exchangeability of physiological signal segments across individuals, breaking conformal prediction's exchangeability assumption.",
+      "proposed_mechanism": "Differences in baseline heart rate variability, baroreflex sensitivity, and sympathetic-parasympathetic balance create subject-specific segment distributions that violate the i.i.d. assumption required for valid coverage.",
+      "core_assumption": "Physiological signal segments are exchangeable across subjects when conditioned on observed covariates.",
+      "knowledge_gap_addressed": "Lack of quantitative characterization of how autonomic phenotype heterogeneity affects conformal coverage stability in multi-subject physiological monitoring.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Sensor-specific motion artifact profiles that vary systematically across signal segments induce covariate shift in the feature space used for conformal prediction.",
+      "proposed_mechanism": "Segment-dependent motion artifacts (e.g., walking vs. resting) alter signal morphology and noise characteristics in ways that correlate with segment labels, causing the calibration set to misrepresent test segment distributions.",
+      "core_assumption": "Sensor noise characteristics are stationary and independent of the physiological state segment being recorded.",
+      "knowledge_gap_addressed": "Insufficient understanding of how segment-correlated artifact structures degrade conformal coverage guarantees in wearable sensor deployments.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Unobserved physiological state transitions (e.g., sleep stage changes, stress responses) create hidden distribution shifts between calibration and test segments.",
+      "proposed_mechanism": "Autonomic state transitions alter signal dynamics (e.g., ECG morphology, respiration patterns) without corresponding label changes, violating the assumption that segment labels capture all relevant distributional factors.",
+      "core_assumption": "Segment labels fully capture the physiological state variables that determine signal distribution.",
+      "knowledge_gap_addressed": "Unknown extent to which latent physiological state variables, not captured by segment labels, undermine conformal coverage in continuous monitoring.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Circadian and ultradian rhythms induce time-varying non-stationarity in physiological signals that correlates with segment timing, violating temporal exchangeability.",
+      "proposed_mechanism": "Predictable diurnal variations in heart rate, blood pressure, and hormone levels create systematic distributional differences between morning and night segments that conformal prediction treats as exchangeable.",
+      "core_assumption": "Physiological signal distributions are temporally stationary within the monitoring window.",
+      "knowledge_gap_addressed": "Limited evidence on how endogenous biological rhythms affect conformal coverage stability across time-of-day stratified segments.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Segment-dependent annotation errors and label noise (e.g., mislabeled arrhythmia episodes) create asymmetric miscalibration that conformal prediction cannot correct.",
+      "proposed_mechanism": "Expert annotation fatigue or algorithmic pre-labeling errors vary by segment difficulty, causing systematic label noise that correlates with signal features and biases the nonconformity score distribution.",
+      "core_assumption": "Segment labels are accurate and noise is independent of signal characteristics.",
+      "knowledge_gap_addressed": "How segment-correlated label noise propagates through conformal prediction to produce coverage deficits in specific physiological event categories.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Imbalanced segment representation in calibration data (e.g., rare pathological segments underrepresented) leads to finite-sample coverage failures for minority segments.",
+      "proposed_mechanism": "Conformal prediction's marginal coverage guarantee masks conditional coverage disparities when segment strata have vastly different sample sizes, causing unstable coverage for rare but clinically critical segments.",
+      "core_assumption": "Calibration set segment proportions reflect the true operational segment distribution.",
+      "knowledge_gap_addressed": "Quantitative relationship between segment prevalence ratios and conditional coverage stability in conformal prediction for physiological signals.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Temporal autocorrelation within and across physiological signal segments violates the exchangeability assumption by creating dependence structures that conformal prediction ignores.",
+      "proposed_mechanism": "Strong autocorrelation in physiological time series (e.g., HRV, EEG) means adjacent segments are not exchangeable, causing the empirical nonconformity distribution to misestimate true uncertainty.",
+      "core_assumption": "Signal segments are exchangeable (i.i.d.) conditional on covariates.",
+      "knowledge_gap_addressed": "Lack of theory and empirical validation for conformal prediction under realistic physiological time series dependence structures.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Segment-specific signal-to-noise ratio (SNR) variations cause heteroscedastic prediction errors that conformal prediction's symmetric intervals cannot adapt to.",
+      "proposed_mechanism": "Physiological segments with low SNR (e.g., due to poor electrode contact) exhibit wider error distributions, but conformal prediction uses a single quantile threshold, leading to under-coverage in noisy segments and over-coverage in clean ones.",
+      "core_assumption": "Prediction error distribution is homoscedastic across segments.",
+      "knowledge_gap_addressed": "How segment-varying SNR interacts with conformal prediction's marginal coverage to produce segment-specific coverage instability.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Unmeasured population heterogeneity (e.g., comorbidities, medication effects) creates latent subgroups with distinct signal distributions, causing conformal coverage to vary unpredictably across segments.",
+      "proposed_mechanism": "Subgroups defined by unobserved clinical factors (e.g., beta-blocker use, heart failure) have different physiological signal generative processes, making segments from different subgroups non-exchangeable even when labeled identically.",
+      "core_assumption": "Observed covariates capture all relevant population heterogeneity affecting signal distribution.",
+      "knowledge_gap_addressed": "Extent to which unmeasured clinical confounders induce coverage disparities across physiologically similar but clinically distinct segment populations.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Finite-sample effects in short physiological segments cause high variance in nonconformity score estimation, leading to unstable coverage that fluctuates with segment length.",
+      "proposed_mechanism": "Short segments (e.g., 30-second ECG windows) provide insufficient data for reliable nonconformity score computation, causing the empirical quantile to deviate substantially from its population value in a segment-length-dependent manner.",
+      "core_assumption": "Segment length provides sufficient samples for stable nonconformity score distribution estimation.",
+      "knowledge_gap_addressed": "Minimum segment length requirements for stable conformal coverage in physiological signals with varying temporal correlation structures.",
+      "status": "SPECULATIVE"
+    }
+  ]
+}

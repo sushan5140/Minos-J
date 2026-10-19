@@ -2,6 +2,8 @@
 
 This document summarizes the currently recovered and verified experiment record for the Minos-J research project.
 
+The byte-preserved original artifacts are under [`historical/2026-08-04/outputs`](../historical/2026-08-04/outputs). The checks in `scripts/verify_historical_recovery.py` compare the public values below with those artifacts.
+
 The purpose of this file is to keep headline results separate from the project landing page and to make it clear which conclusions came from which experimental stage.
 
 ---
@@ -43,6 +45,8 @@ The observed subgroup failure was primarily a finite-sample effect and should su
 ### Result
 
 **Falsified.**
+
+The exact historical conditioning identifiers were `marginal` and `mondrian_class`.
 
 At `n = 300`, the sparse-subgroup + inverse-probability + marginal configuration still produced:
 
@@ -103,6 +107,7 @@ Different estimator / conditioning pairings changed failure severity substantial
 ### Q2
 
 - 10 PASS
+- four auditor-calibration red flags were recorded: 10/10 passed, no rejection reasons, all checklist values true, and no salvageable or rejected hypotheses
 
 ### Q3
 
@@ -132,6 +137,8 @@ During architecture refactoring:
 - compilation checks passed
 - credential scanning was performed
 - historical experiment outputs were not silently regenerated
+
+The old composite manifest hash survives in the project record, but its original manifest file and serialization algorithm were not recovered. The 34 files are all present and individually protected by the new SHA-256 manifest; see the [recovery report](../historical/2026-08-04/RECOVERY_REPORT.md) for the exact evidentiary boundary.
 
 This separation matters because a refactor should not be allowed to rewrite the evidence it is later evaluated against.
 

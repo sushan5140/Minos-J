@@ -1,0 +1,3947 @@
+{
+  "experiment_name": "Meno-J Experiment 13: Independent Wearable-Dataset Replication",
+  "inventory_status": "PASS_PRE_OUTCOME",
+  "integrity_report_path": "C:\\Users\\DELL\\Documents\\Codex\\2026-08-04\\we-are-starting-a-fresh-implementation\\outputs\\meno_j_experiment_13_dataset_integrity.json",
+  "integrity_report_sha256": "62029d63d738b68f7dad5caf778cae167954a6423ac5039bb78f401bc4ce7983",
+  "archive_sha256": "afbff3e8e7230bdc765d0ccfc5c3460964021cdfefa8e351f8ad8f78a1b27c48",
+  "stress_folder_count": 37,
+  "primary_subject_count": 33,
+  "primary_subjects": [
+    "S01",
+    "S03",
+    "S04",
+    "S05",
+    "S06",
+    "S07",
+    "S08",
+    "S09",
+    "S10",
+    "S11",
+    "S12",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17",
+    "S18",
+    "f01",
+    "f02",
+    "f03",
+    "f04",
+    "f05",
+    "f06",
+    "f08",
+    "f09",
+    "f10",
+    "f11",
+    "f12",
+    "f13",
+    "f15",
+    "f16",
+    "f17",
+    "f18"
+  ],
+  "excluded_folders": {
+    "S02": "duplicated stress signals documented by the dataset authors",
+    "f07": "covered PPG and temperature sensors documented by the dataset authors",
+    "f14_a": "split f14 stress recording; primary complete-file cohort excludes both parts",
+    "f14_b": "split f14 stress recording; primary complete-file cohort excludes both parts"
+  },
+  "shared_signals": [
+    "EDA.csv",
+    "TEMP.csv",
+    "ACC.csv"
+  ],
+  "edge_trim_seconds": 5.0,
+  "candidate_window_counts": {
+    "10": {
+      "non_stress": {
+        "total": 5476,
+        "minimum_per_subject": 66,
+        "maximum_per_subject": 396
+      },
+      "stress": {
+        "total": 1007,
+        "minimum_per_subject": 25,
+        "maximum_per_subject": 49
+      }
+    },
+    "15": {
+      "non_stress": {
+        "total": 3634,
+        "minimum_per_subject": 43,
+        "maximum_per_subject": 264
+      },
+      "stress": {
+        "total": 641,
+        "minimum_per_subject": 16,
+        "maximum_per_subject": 32
+      }
+    },
+    "30": {
+      "non_stress": {
+        "total": 1791,
+        "minimum_per_subject": 21,
+        "maximum_per_subject": 131
+      },
+      "stress": {
+        "total": 267,
+        "minimum_per_subject": 6,
+        "maximum_per_subject": 14
+      }
+    },
+    "60": {
+      "non_stress": {
+        "total": 871,
+        "minimum_per_subject": 10,
+        "maximum_per_subject": 65
+      },
+      "stress": {
+        "total": 113,
+        "minimum_per_subject": 2,
+        "maximum_per_subject": 7
+      }
+    }
+  },
+  "subject_inventory": [
+    {
+      "subject_folder": "S01",
+      "canonical_subject_id": "S01",
+      "protocol_version": "V1",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 13,
+      "tag_sha256": "67d5bc547c6c0795802bc62b849d2fa49e545dd9f417a895b0d81fd400b39f16",
+      "common_signal_start": "2013-02-20 17:55:19",
+      "common_signal_duration_seconds": 2224.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-02-20 17:55:19",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 8898,
+          "duration_seconds": 2224.5,
+          "sha256": "f67d169c82273289c809e58fb50ca74f7b9bb21a82ad46dd46eaee10eb859af8"
+        },
+        "TEMP": {
+          "start": "2013-02-20 17:55:19",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 8896,
+          "duration_seconds": 2224.0,
+          "sha256": "f649e28f74990e220a2cf29972e95d1233334cf81b7c0f668e5e59774f1799c2"
+        },
+        "ACC": {
+          "start": "2013-02-20 17:55:19",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 71178,
+          "duration_seconds": 2224.3125,
+          "sha256": "2acceb15ff741153b0ca287ec3f47e2d58a53150335aad525e3ff0e89d7a1ee8"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-02-20 18:01:30",
+          "end_iso": "2013-02-20 18:05:37",
+          "duration_seconds": 247.0
+        },
+        {
+          "stage": "stroop",
+          "label": "stress",
+          "start_iso": "2013-02-20 18:08:32",
+          "end_iso": "2013-02-20 18:10:17",
+          "duration_seconds": 105.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-20 18:10:17",
+          "end_iso": "2013-02-20 18:17:37",
+          "duration_seconds": 440.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-02-20 18:17:37",
+          "end_iso": "2013-02-20 18:19:42",
+          "duration_seconds": 125.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-20 18:19:42",
+          "end_iso": "2013-02-20 18:24:49",
+          "duration_seconds": 307.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-20 18:24:49",
+          "end_iso": "2013-02-20 18:25:17",
+          "duration_seconds": 28.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-20 18:25:55",
+          "end_iso": "2013-02-20 18:26:32",
+          "duration_seconds": 37.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-02-20 18:27:14",
+          "end_iso": "2013-02-20 18:27:46",
+          "duration_seconds": 32.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 25,
+          "non_stress": 95
+        },
+        "15": {
+          "stress": 16,
+          "non_stress": 62
+        },
+        "30": {
+          "stress": 6,
+          "non_stress": 30
+        },
+        "60": {
+          "stress": 2,
+          "non_stress": 14
+        }
+      }
+    },
+    {
+      "subject_folder": "S02",
+      "canonical_subject_id": "S02",
+      "protocol_version": "V1",
+      "primary_included": false,
+      "exclusion_reason": "duplicated stress signals documented by the dataset authors",
+      "tag_count": 13,
+      "tag_sha256": "bf788fe813362413226907368abe06ed2c233f5f5ef65aea8d6d1a4f1d29a191",
+      "common_signal_start": "2013-02-20 18:49:29",
+      "common_signal_duration_seconds": 3096.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-02-20 18:49:29",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 12384,
+          "duration_seconds": 3096.0,
+          "sha256": "3b2cc5d1a3dd1d26a4ddb7a682f676b4bc050f3a6f67cbbbce37c7029afb62cf"
+        },
+        "TEMP": {
+          "start": "2013-02-20 18:49:29",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 12384,
+          "duration_seconds": 3096.0,
+          "sha256": "eca9edaf1d5dd7cf886880cd76828340f18b4c49394b08622cc74d65fe3a73ad"
+        },
+        "ACC": {
+          "start": "2013-02-20 18:49:29",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 99084,
+          "duration_seconds": 3096.375,
+          "sha256": "3005433f7341391ac039ce66e920a0d518d3c2fda65696a2d281c3a031371b95"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-02-20 18:49:30",
+          "end_iso": "2013-02-20 18:52:42",
+          "duration_seconds": 192.0
+        },
+        {
+          "stage": "stroop",
+          "label": "stress",
+          "start_iso": "2013-02-20 18:54:08",
+          "end_iso": "2013-02-20 18:56:04",
+          "duration_seconds": 116.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-20 18:56:04",
+          "end_iso": "2013-02-20 19:00:13",
+          "duration_seconds": 249.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-02-20 19:00:13",
+          "end_iso": "2013-02-20 19:02:20",
+          "duration_seconds": 127.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-20 19:02:20",
+          "end_iso": "2013-02-20 19:08:15",
+          "duration_seconds": 355.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-20 19:08:15",
+          "end_iso": "2013-02-20 19:08:50",
+          "duration_seconds": 35.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-20 19:09:18",
+          "end_iso": "2013-02-20 19:09:52",
+          "duration_seconds": 34.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-02-20 19:10:16",
+          "end_iso": "2013-02-20 19:10:49",
+          "duration_seconds": 33.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 27,
+          "non_stress": 75
+        },
+        "15": {
+          "stress": 17,
+          "non_stress": 50
+        },
+        "30": {
+          "stress": 6,
+          "non_stress": 24
+        },
+        "60": {
+          "stress": 2,
+          "non_stress": 11
+        }
+      }
+    },
+    {
+      "subject_folder": "S03",
+      "canonical_subject_id": "S03",
+      "protocol_version": "V1",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 13,
+      "tag_sha256": "b53c27597f40a5314d4b9956528042b3c1f1f880e284d8b7fe9f0c852b290c9c",
+      "common_signal_start": "2013-03-06 17:04:13",
+      "common_signal_duration_seconds": 1585.5,
+      "signals": {
+        "EDA": {
+          "start": "2013-03-06 17:04:13",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 6342,
+          "duration_seconds": 1585.5,
+          "sha256": "94489dd221933fb9af01d1c84d8884deeb04b08075ab6c2f8d025e31112b0b58"
+        },
+        "TEMP": {
+          "start": "2013-03-06 17:04:13",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 6344,
+          "duration_seconds": 1586.0,
+          "sha256": "a3ad56714f911fcee9dbf7377c8893cce32f5b99b6257bc28a6ef742c4591a37"
+        },
+        "ACC": {
+          "start": "2013-03-06 17:04:13",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 50748,
+          "duration_seconds": 1585.875,
+          "sha256": "c9870317ed52c76004a3cf370ab887932953dedfceed2570b11bbf475eec3b11"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-03-06 17:08:51",
+          "end_iso": "2013-03-06 17:11:58",
+          "duration_seconds": 187.0
+        },
+        {
+          "stage": "stroop",
+          "label": "stress",
+          "start_iso": "2013-03-06 17:13:25",
+          "end_iso": "2013-03-06 17:15:09",
+          "duration_seconds": 104.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-03-06 17:15:09",
+          "end_iso": "2013-03-06 17:19:25",
+          "duration_seconds": 256.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-03-06 17:19:25",
+          "end_iso": "2013-03-06 17:21:33",
+          "duration_seconds": 128.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-03-06 17:21:33",
+          "end_iso": "2013-03-06 17:26:28",
+          "duration_seconds": 295.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-03-06 17:26:28",
+          "end_iso": "2013-03-06 17:27:02",
+          "duration_seconds": 34.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-03-06 17:27:21",
+          "end_iso": "2013-03-06 17:27:52",
+          "duration_seconds": 31.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-03-06 17:28:22",
+          "end_iso": "2013-03-06 17:28:55",
+          "duration_seconds": 33.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 26,
+          "non_stress": 69
+        },
+        "15": {
+          "stress": 16,
+          "non_stress": 46
+        },
+        "30": {
+          "stress": 6,
+          "non_stress": 22
+        },
+        "60": {
+          "stress": 2,
+          "non_stress": 10
+        }
+      }
+    },
+    {
+      "subject_folder": "S04",
+      "canonical_subject_id": "S04",
+      "protocol_version": "V1",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 13,
+      "tag_sha256": "0b3545ef30f8fc3f00c5bc310d42228d39b547c7046d2caa0e61b1c50b175092",
+      "common_signal_start": "2013-02-24 12:23:49",
+      "common_signal_duration_seconds": 1732.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-02-24 12:23:49",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 6930,
+          "duration_seconds": 1732.5,
+          "sha256": "aac669b86bfa704cf77e7e7f845fad5c2556bd5769e6cd93ab14496e64196ddd"
+        },
+        "TEMP": {
+          "start": "2013-02-24 12:23:49",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 6928,
+          "duration_seconds": 1732.0,
+          "sha256": "c11c8eb39dd1a4a89fede268766e9cda68b8c54238f64f8cde01d8e0b66af9e2"
+        },
+        "ACC": {
+          "start": "2013-02-24 12:23:49",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 55458,
+          "duration_seconds": 1733.0625,
+          "sha256": "ecd3f8514d135778f4d3db4f60e0460eb76e1fbeb7fbe62c833304d077c0ea3b"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-02-24 12:26:50",
+          "end_iso": "2013-02-24 12:29:50",
+          "duration_seconds": 180.0
+        },
+        {
+          "stage": "stroop",
+          "label": "stress",
+          "start_iso": "2013-02-24 12:32:28",
+          "end_iso": "2013-02-24 12:34:04",
+          "duration_seconds": 96.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-24 12:34:04",
+          "end_iso": "2013-02-24 12:40:18",
+          "duration_seconds": 374.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-02-24 12:40:18",
+          "end_iso": "2013-02-24 12:42:35",
+          "duration_seconds": 137.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-24 12:42:35",
+          "end_iso": "2013-02-24 12:48:19",
+          "duration_seconds": 344.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-24 12:48:19",
+          "end_iso": "2013-02-24 12:48:51",
+          "duration_seconds": 32.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-24 12:49:42",
+          "end_iso": "2013-02-24 12:50:14",
+          "duration_seconds": 32.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-02-24 12:51:02",
+          "end_iso": "2013-02-24 12:51:34",
+          "duration_seconds": 32.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 26,
+          "non_stress": 86
+        },
+        "15": {
+          "stress": 16,
+          "non_stress": 57
+        },
+        "30": {
+          "stress": 6,
+          "non_stress": 28
+        },
+        "60": {
+          "stress": 3,
+          "non_stress": 13
+        }
+      }
+    },
+    {
+      "subject_folder": "S05",
+      "canonical_subject_id": "S05",
+      "protocol_version": "V1",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 13,
+      "tag_sha256": "021ccb1cf8f75ffa9c93f246704f3a991231a9bfb9aafdb018f4eef9ad580847",
+      "common_signal_start": "2013-02-23 11:46:26",
+      "common_signal_duration_seconds": 1580.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-02-23 11:46:26",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 6324,
+          "duration_seconds": 1581.0,
+          "sha256": "55d8fc3bac3befb10ef0dab44ae416bae3102522ee998f7c5ea94d861e3c1241"
+        },
+        "TEMP": {
+          "start": "2013-02-23 11:46:26",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 6320,
+          "duration_seconds": 1580.0,
+          "sha256": "5725f85c6685ccc87599e0aa6ec5927e3c90513dfb7b585216fd3c17556bff02"
+        },
+        "ACC": {
+          "start": "2013-02-23 11:46:26",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 50592,
+          "duration_seconds": 1581.0,
+          "sha256": "af67c4ede93e62c9ab9b8681eea246600a3cfb14390411890ea45a5ab93c3211"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-02-23 11:49:42",
+          "end_iso": "2013-02-23 11:52:45",
+          "duration_seconds": 183.0
+        },
+        {
+          "stage": "stroop",
+          "label": "stress",
+          "start_iso": "2013-02-23 11:54:24",
+          "end_iso": "2013-02-23 11:56:16",
+          "duration_seconds": 112.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-23 11:56:16",
+          "end_iso": "2013-02-23 12:01:52",
+          "duration_seconds": 336.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-02-23 12:01:52",
+          "end_iso": "2013-02-23 12:04:41",
+          "duration_seconds": 169.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-23 12:04:41",
+          "end_iso": "2013-02-23 12:08:28",
+          "duration_seconds": 227.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-23 12:08:28",
+          "end_iso": "2013-02-23 12:09:02",
+          "duration_seconds": 34.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-23 12:10:03",
+          "end_iso": "2013-02-23 12:10:34",
+          "duration_seconds": 31.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-02-23 12:11:19",
+          "end_iso": "2013-02-23 12:11:51",
+          "duration_seconds": 32.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 31,
+          "non_stress": 70
+        },
+        "15": {
+          "stress": 19,
+          "non_stress": 46
+        },
+        "30": {
+          "stress": 8,
+          "non_stress": 22
+        },
+        "60": {
+          "stress": 3,
+          "non_stress": 10
+        }
+      }
+    },
+    {
+      "subject_folder": "S06",
+      "canonical_subject_id": "S06",
+      "protocol_version": "V1",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 13,
+      "tag_sha256": "869897ab6a17ed56330ae3a188bf836fd957f7febbca4b0c85dd73eb6cdb0908",
+      "common_signal_start": "2013-02-23 12:22:59",
+      "common_signal_duration_seconds": 1443.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-02-23 12:22:59",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 5772,
+          "duration_seconds": 1443.0,
+          "sha256": "70e7620f59cd468467f25e90716611189cef7eb4b31a4b47b5bd69f95e6a51c0"
+        },
+        "TEMP": {
+          "start": "2013-02-23 12:22:59",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 5776,
+          "duration_seconds": 1444.0,
+          "sha256": "5f3aaf1910fc7680c00f489cabca27ff9d0d79ad59dd49b1570b134535635b9c"
+        },
+        "ACC": {
+          "start": "2013-02-23 12:22:59",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 46200,
+          "duration_seconds": 1443.75,
+          "sha256": "bd2de1dc108786618bc31300a66a73e608eee3ada2e36047c5e7ba4fb500249b"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-02-23 12:23:54",
+          "end_iso": "2013-02-23 12:27:07",
+          "duration_seconds": 193.0
+        },
+        {
+          "stage": "stroop",
+          "label": "stress",
+          "start_iso": "2013-02-23 12:28:33",
+          "end_iso": "2013-02-23 12:30:41",
+          "duration_seconds": 128.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-23 12:30:41",
+          "end_iso": "2013-02-23 12:36:15",
+          "duration_seconds": 334.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-02-23 12:36:15",
+          "end_iso": "2013-02-23 12:38:35",
+          "duration_seconds": 140.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-23 12:38:35",
+          "end_iso": "2013-02-23 12:43:40",
+          "duration_seconds": 305.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-23 12:43:40",
+          "end_iso": "2013-02-23 12:44:12",
+          "duration_seconds": 32.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-23 12:44:45",
+          "end_iso": "2013-02-23 12:45:13",
+          "duration_seconds": 28.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-02-23 12:45:41",
+          "end_iso": "2013-02-23 12:46:15",
+          "duration_seconds": 34.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 29,
+          "non_stress": 79
+        },
+        "15": {
+          "stress": 18,
+          "non_stress": 52
+        },
+        "30": {
+          "stress": 7,
+          "non_stress": 25
+        },
+        "60": {
+          "stress": 3,
+          "non_stress": 12
+        }
+      }
+    },
+    {
+      "subject_folder": "S07",
+      "canonical_subject_id": "S07",
+      "protocol_version": "V1",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 13,
+      "tag_sha256": "b1a49e087ba11238ba9fa383f149db55e265ddcfe69cb615eff4eae2e26e3b7c",
+      "common_signal_start": "2013-02-24 11:47:55",
+      "common_signal_duration_seconds": 1428.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-02-24 11:47:55",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 5712,
+          "duration_seconds": 1428.0,
+          "sha256": "32ec039acf07fa612822168e67c1b40603e6c44d28efa0fa63238c8a2ebb2903"
+        },
+        "TEMP": {
+          "start": "2013-02-24 11:47:55",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 5712,
+          "duration_seconds": 1428.0,
+          "sha256": "528de10073c355ba6c443b4cf9229563325dd5bb9ab69ea48432165b9cf318d9"
+        },
+        "ACC": {
+          "start": "2013-02-24 11:47:55",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 45714,
+          "duration_seconds": 1428.5625,
+          "sha256": "ff61cc9cb162d1ee3280be478174a11b630e133af054fc0a6329e3208984d54b"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-02-24 11:49:50",
+          "end_iso": "2013-02-24 11:52:33",
+          "duration_seconds": 163.0
+        },
+        {
+          "stage": "stroop",
+          "label": "stress",
+          "start_iso": "2013-02-24 11:54:24",
+          "end_iso": "2013-02-24 11:56:07",
+          "duration_seconds": 103.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-24 11:56:07",
+          "end_iso": "2013-02-24 12:00:39",
+          "duration_seconds": 272.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-02-24 12:00:39",
+          "end_iso": "2013-02-24 12:02:48",
+          "duration_seconds": 129.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-24 12:02:48",
+          "end_iso": "2013-02-24 12:07:33",
+          "duration_seconds": 285.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-24 12:07:33",
+          "end_iso": "2013-02-24 12:08:05",
+          "duration_seconds": 32.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-24 12:08:43",
+          "end_iso": "2013-02-24 12:09:15",
+          "duration_seconds": 32.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-02-24 12:10:02",
+          "end_iso": "2013-02-24 12:10:33",
+          "duration_seconds": 31.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 26,
+          "non_stress": 68
+        },
+        "15": {
+          "stress": 16,
+          "non_stress": 45
+        },
+        "30": {
+          "stress": 6,
+          "non_stress": 22
+        },
+        "60": {
+          "stress": 2,
+          "non_stress": 10
+        }
+      }
+    },
+    {
+      "subject_folder": "S08",
+      "canonical_subject_id": "S08",
+      "protocol_version": "V1",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 13,
+      "tag_sha256": "bfca0f69442929519fd661638655558a95717f77a649d4ca2ed97c051928f3a2",
+      "common_signal_start": "2013-02-23 16:02:04",
+      "common_signal_duration_seconds": 1428.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-02-23 16:02:04",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 5712,
+          "duration_seconds": 1428.0,
+          "sha256": "9890ebafc3334de60ad1e35a9240ae48a1aae52196a23fd3db3d1af01cbd508f"
+        },
+        "TEMP": {
+          "start": "2013-02-23 16:02:04",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 5712,
+          "duration_seconds": 1428.0,
+          "sha256": "5334b4ce73f1eb61169d8fe35dfd4ee1c9fee030cd933867fa7570fcc71ba048"
+        },
+        "ACC": {
+          "start": "2013-02-23 16:02:04",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 45720,
+          "duration_seconds": 1428.75,
+          "sha256": "bd2c5ddf8385d4f22de1661c76ed6d98712e7ed26760ad8928c640beead5a42e"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-02-23 16:02:48",
+          "end_iso": "2013-02-23 16:05:44",
+          "duration_seconds": 176.0
+        },
+        {
+          "stage": "stroop",
+          "label": "stress",
+          "start_iso": "2013-02-23 16:08:09",
+          "end_iso": "2013-02-23 16:09:54",
+          "duration_seconds": 105.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-23 16:09:54",
+          "end_iso": "2013-02-23 16:14:43",
+          "duration_seconds": 289.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-02-23 16:14:43",
+          "end_iso": "2013-02-23 16:17:18",
+          "duration_seconds": 155.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-23 16:17:18",
+          "end_iso": "2013-02-23 16:21:46",
+          "duration_seconds": 268.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-23 16:21:46",
+          "end_iso": "2013-02-23 16:22:18",
+          "duration_seconds": 32.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-23 16:22:44",
+          "end_iso": "2013-02-23 16:23:17",
+          "duration_seconds": 33.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-02-23 16:23:50",
+          "end_iso": "2013-02-23 16:24:22",
+          "duration_seconds": 32.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 29,
+          "non_stress": 68
+        },
+        "15": {
+          "stress": 18,
+          "non_stress": 46
+        },
+        "30": {
+          "stress": 7,
+          "non_stress": 22
+        },
+        "60": {
+          "stress": 3,
+          "non_stress": 10
+        }
+      }
+    },
+    {
+      "subject_folder": "S09",
+      "canonical_subject_id": "S09",
+      "protocol_version": "V1",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 13,
+      "tag_sha256": "14eb6cbd8ac74d8f0b7c493cb0e5c48c65ad7aa985a89fc29bf0fe1e2d47e3db",
+      "common_signal_start": "2013-02-24 11:15:28",
+      "common_signal_duration_seconds": 1447.5,
+      "signals": {
+        "EDA": {
+          "start": "2013-02-24 11:15:28",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 5790,
+          "duration_seconds": 1447.5,
+          "sha256": "16901d22cdddbb55fdae23e96ecd4f9d4059a9b6a0c21d8ac07233d1da8920f3"
+        },
+        "TEMP": {
+          "start": "2013-02-24 11:15:28",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 5792,
+          "duration_seconds": 1448.0,
+          "sha256": "ed20d723cf93152baee18987e19794dcb0c84b990950d2c6f59be47fc9d0c299"
+        },
+        "ACC": {
+          "start": "2013-02-24 11:15:28",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 46356,
+          "duration_seconds": 1448.625,
+          "sha256": "f7e7b7168071bf987af76659172f4059036b460a472590d9232a0802768206e0"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-02-24 11:18:02",
+          "end_iso": "2013-02-24 11:21:14",
+          "duration_seconds": 192.0
+        },
+        {
+          "stage": "stroop",
+          "label": "stress",
+          "start_iso": "2013-02-24 11:22:53",
+          "end_iso": "2013-02-24 11:24:32",
+          "duration_seconds": 99.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-24 11:24:32",
+          "end_iso": "2013-02-24 11:28:34",
+          "duration_seconds": 242.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-02-24 11:28:34",
+          "end_iso": "2013-02-24 11:30:45",
+          "duration_seconds": 131.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-24 11:30:45",
+          "end_iso": "2013-02-24 11:35:23",
+          "duration_seconds": 278.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-24 11:35:23",
+          "end_iso": "2013-02-24 11:35:55",
+          "duration_seconds": 32.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-24 11:36:41",
+          "end_iso": "2013-02-24 11:37:13",
+          "duration_seconds": 32.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-02-24 11:37:49",
+          "end_iso": "2013-02-24 11:38:20",
+          "duration_seconds": 31.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 26,
+          "non_stress": 67
+        },
+        "15": {
+          "stress": 16,
+          "non_stress": 44
+        },
+        "30": {
+          "stress": 6,
+          "non_stress": 21
+        },
+        "60": {
+          "stress": 3,
+          "non_stress": 10
+        }
+      }
+    },
+    {
+      "subject_folder": "S10",
+      "canonical_subject_id": "S10",
+      "protocol_version": "V1",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 13,
+      "tag_sha256": "a2a400e26066ad58e3d6fd074ac9b42edf3845b60495ca9277d622d1b6ecc516",
+      "common_signal_start": "2013-02-23 18:03:27",
+      "common_signal_duration_seconds": 1657.5,
+      "signals": {
+        "EDA": {
+          "start": "2013-02-23 18:03:27",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 6630,
+          "duration_seconds": 1657.5,
+          "sha256": "0dc6c685cac29b4ab7bdb25142eb93dd0307e52fccd3e001d622b7477569f4b2"
+        },
+        "TEMP": {
+          "start": "2013-02-23 18:03:27",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 6632,
+          "duration_seconds": 1658.0,
+          "sha256": "e2dc7a10dd99812fd0fdc0129d07c699773ca0984e6430a66440c06c9a0ea7a0"
+        },
+        "ACC": {
+          "start": "2013-02-23 18:03:27",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 53064,
+          "duration_seconds": 1658.25,
+          "sha256": "75653c0d5baebecc549a40d6bae657be10817948cfcf6c9ca8883a7add86e85b"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-02-23 18:04:34",
+          "end_iso": "2013-02-23 18:07:38",
+          "duration_seconds": 184.0
+        },
+        {
+          "stage": "stroop",
+          "label": "stress",
+          "start_iso": "2013-02-23 18:09:27",
+          "end_iso": "2013-02-23 18:11:24",
+          "duration_seconds": 117.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-23 18:11:24",
+          "end_iso": "2013-02-23 18:17:26",
+          "duration_seconds": 362.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-02-23 18:17:26",
+          "end_iso": "2013-02-23 18:19:41",
+          "duration_seconds": 135.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-23 18:19:41",
+          "end_iso": "2013-02-23 18:25:50",
+          "duration_seconds": 369.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-23 18:25:50",
+          "end_iso": "2013-02-23 18:26:19",
+          "duration_seconds": 29.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-23 18:26:53",
+          "end_iso": "2013-02-23 18:27:22",
+          "duration_seconds": 29.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-02-23 18:27:49",
+          "end_iso": "2013-02-23 18:28:20",
+          "duration_seconds": 31.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 26,
+          "non_stress": 87
+        },
+        "15": {
+          "stress": 18,
+          "non_stress": 57
+        },
+        "30": {
+          "stress": 7,
+          "non_stress": 27
+        },
+        "60": {
+          "stress": 3,
+          "non_stress": 12
+        }
+      }
+    },
+    {
+      "subject_folder": "S11",
+      "canonical_subject_id": "S11",
+      "protocol_version": "V1",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 13,
+      "tag_sha256": "a3df900e72e2f5836e5f1b0fc4acddb7fae30dd6ca528e10d51d116c3e4dfb7d",
+      "common_signal_start": "2013-02-24 09:51:45",
+      "common_signal_duration_seconds": 1400.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-02-24 09:51:45",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 5604,
+          "duration_seconds": 1401.0,
+          "sha256": "cfae141c93057c72621507958a3a51345988fea4856643d4d8d6c4c74e9dbb06"
+        },
+        "TEMP": {
+          "start": "2013-02-24 09:51:45",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 5600,
+          "duration_seconds": 1400.0,
+          "sha256": "6859cf9c63ffcbcb18adb61f44ff4da7577051868be39282b620c4bcc65c3194"
+        },
+        "ACC": {
+          "start": "2013-02-24 09:51:45",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 44838,
+          "duration_seconds": 1401.1875,
+          "sha256": "a355bbcdb920a6f52bb2a34b5d7aff6e6aeafa12ea51d81e06cd10d1f7dd10bf"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-02-24 09:52:09",
+          "end_iso": "2013-02-24 09:54:59",
+          "duration_seconds": 170.0
+        },
+        {
+          "stage": "stroop",
+          "label": "stress",
+          "start_iso": "2013-02-24 09:56:48",
+          "end_iso": "2013-02-24 09:59:20",
+          "duration_seconds": 152.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-24 09:59:20",
+          "end_iso": "2013-02-24 10:03:59",
+          "duration_seconds": 279.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-02-24 10:03:59",
+          "end_iso": "2013-02-24 10:06:30",
+          "duration_seconds": 151.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-24 10:06:30",
+          "end_iso": "2013-02-24 10:10:40",
+          "duration_seconds": 250.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-24 10:10:40",
+          "end_iso": "2013-02-24 10:11:11",
+          "duration_seconds": 31.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-24 10:11:50",
+          "end_iso": "2013-02-24 10:12:21",
+          "duration_seconds": 31.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-02-24 10:12:53",
+          "end_iso": "2013-02-24 10:13:25",
+          "duration_seconds": 32.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 34,
+          "non_stress": 66
+        },
+        "15": {
+          "stress": 21,
+          "non_stress": 43
+        },
+        "30": {
+          "stress": 8,
+          "non_stress": 21
+        },
+        "60": {
+          "stress": 4,
+          "non_stress": 10
+        }
+      }
+    },
+    {
+      "subject_folder": "S12",
+      "canonical_subject_id": "S12",
+      "protocol_version": "V1",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 13,
+      "tag_sha256": "f81fb666d6c0bca7b9456f6b0cf27fa4edc349f56a01a617ed636873e337120b",
+      "common_signal_start": "2013-02-24 10:26:36",
+      "common_signal_duration_seconds": 1602.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-02-24 10:26:36",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 6414,
+          "duration_seconds": 1603.5,
+          "sha256": "3a8b395b6bd3a51d74a4252536a9512910f4cc7ecd837e05c037714702405874"
+        },
+        "TEMP": {
+          "start": "2013-02-24 10:26:36",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 6408,
+          "duration_seconds": 1602.0,
+          "sha256": "901587d37ebf6ae428e89d2343ecd20d951706b011d28897c7e2b7e9d780ccf0"
+        },
+        "ACC": {
+          "start": "2013-02-24 10:26:36",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 51306,
+          "duration_seconds": 1603.3125,
+          "sha256": "c97a8b7dbf00e538f500dda1323d012bde236952dfff8d8dfa4b9c83431ecb32"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-02-24 10:28:21",
+          "end_iso": "2013-02-24 10:31:40",
+          "duration_seconds": 199.0
+        },
+        {
+          "stage": "stroop",
+          "label": "stress",
+          "start_iso": "2013-02-24 10:33:23",
+          "end_iso": "2013-02-24 10:35:12",
+          "duration_seconds": 109.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-24 10:35:12",
+          "end_iso": "2013-02-24 10:41:07",
+          "duration_seconds": 355.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-02-24 10:41:07",
+          "end_iso": "2013-02-24 10:43:18",
+          "duration_seconds": 131.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-24 10:43:18",
+          "end_iso": "2013-02-24 10:48:57",
+          "duration_seconds": 339.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-24 10:48:57",
+          "end_iso": "2013-02-24 10:49:27",
+          "duration_seconds": 30.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-24 10:50:04",
+          "end_iso": "2013-02-24 10:50:31",
+          "duration_seconds": 27.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-02-24 10:51:20",
+          "end_iso": "2013-02-24 10:51:51",
+          "duration_seconds": 31.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 26,
+          "non_stress": 84
+        },
+        "15": {
+          "stress": 17,
+          "non_stress": 56
+        },
+        "30": {
+          "stress": 7,
+          "non_stress": 27
+        },
+        "60": {
+          "stress": 3,
+          "non_stress": 13
+        }
+      }
+    },
+    {
+      "subject_folder": "S13",
+      "canonical_subject_id": "S13",
+      "protocol_version": "V1",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 13,
+      "tag_sha256": "25a13b29c27c164eedb21d6107cc25f6086969e921cc9e9a43c84575537b0465",
+      "common_signal_start": "2013-02-24 17:05:44",
+      "common_signal_duration_seconds": 1622.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-02-24 17:05:44",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 6492,
+          "duration_seconds": 1623.0,
+          "sha256": "4f063bb16e3fe42bc4f4a2f6c7fba830ea18124fb05ceb309bb65f6a5dde2f09"
+        },
+        "TEMP": {
+          "start": "2013-02-24 17:05:44",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 6488,
+          "duration_seconds": 1622.0,
+          "sha256": "d55819e4262e2bb261442bc56b81f131aace45fac4d5f4d0cede3be39a59878a"
+        },
+        "ACC": {
+          "start": "2013-02-24 17:05:44",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 51948,
+          "duration_seconds": 1623.375,
+          "sha256": "c1bfd80ba3236dd51ed896b701b40af00160c9e639fe4144e2fff1838787858a"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-02-24 17:08:37",
+          "end_iso": "2013-02-24 17:12:06",
+          "duration_seconds": 209.0
+        },
+        {
+          "stage": "stroop",
+          "label": "stress",
+          "start_iso": "2013-02-24 17:14:05",
+          "end_iso": "2013-02-24 17:15:58",
+          "duration_seconds": 113.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-24 17:15:58",
+          "end_iso": "2013-02-24 17:21:59",
+          "duration_seconds": 361.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-02-24 17:21:59",
+          "end_iso": "2013-02-24 17:24:06",
+          "duration_seconds": 127.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-24 17:24:06",
+          "end_iso": "2013-02-24 17:29:03",
+          "duration_seconds": 297.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-24 17:29:03",
+          "end_iso": "2013-02-24 17:29:32",
+          "duration_seconds": 29.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-24 17:30:13",
+          "end_iso": "2013-02-24 17:30:43",
+          "duration_seconds": 30.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-02-24 17:31:14",
+          "end_iso": "2013-02-24 17:31:46",
+          "duration_seconds": 32.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 26,
+          "non_stress": 82
+        },
+        "15": {
+          "stress": 16,
+          "non_stress": 55
+        },
+        "30": {
+          "stress": 6,
+          "non_stress": 26
+        },
+        "60": {
+          "stress": 2,
+          "non_stress": 12
+        }
+      }
+    },
+    {
+      "subject_folder": "S14",
+      "canonical_subject_id": "S14",
+      "protocol_version": "V1",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 13,
+      "tag_sha256": "47ec3f8997f2915ac9ed7576acaf5702e39410b59e67d39106f42b46fcd9bed9",
+      "common_signal_start": "2013-02-24 17:37:41",
+      "common_signal_duration_seconds": 1684.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-02-24 17:37:41",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 6744,
+          "duration_seconds": 1686.0,
+          "sha256": "6356ceac69a6e0b3ed700752fad247717476977a6db267248b93f5170f508b52"
+        },
+        "TEMP": {
+          "start": "2013-02-24 17:37:41",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 6736,
+          "duration_seconds": 1684.0,
+          "sha256": "d68200f46df6d176b59e66937c1d1314226b3d494086a93b4f51222ead6b0a33"
+        },
+        "ACC": {
+          "start": "2013-02-24 17:37:41",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 53940,
+          "duration_seconds": 1685.625,
+          "sha256": "b598da6d312c9281abaf0678ee2339bf1cba665851bc87ce9da09f99496af942"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-02-24 17:41:03",
+          "end_iso": "2013-02-24 17:44:33",
+          "duration_seconds": 210.0
+        },
+        {
+          "stage": "stroop",
+          "label": "stress",
+          "start_iso": "2013-02-24 17:46:39",
+          "end_iso": "2013-02-24 17:48:28",
+          "duration_seconds": 109.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-24 17:48:28",
+          "end_iso": "2013-02-24 17:54:20",
+          "duration_seconds": 352.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-02-24 17:54:20",
+          "end_iso": "2013-02-24 17:56:37",
+          "duration_seconds": 137.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-24 17:56:37",
+          "end_iso": "2013-02-24 18:02:09",
+          "duration_seconds": 332.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-24 18:02:09",
+          "end_iso": "2013-02-24 18:02:39",
+          "duration_seconds": 30.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-24 18:03:09",
+          "end_iso": "2013-02-24 18:03:38",
+          "duration_seconds": 29.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-02-24 18:04:03",
+          "end_iso": "2013-02-24 18:04:37",
+          "duration_seconds": 34.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 26,
+          "non_stress": 86
+        },
+        "15": {
+          "stress": 17,
+          "non_stress": 56
+        },
+        "30": {
+          "stress": 7,
+          "non_stress": 27
+        },
+        "60": {
+          "stress": 3,
+          "non_stress": 13
+        }
+      }
+    },
+    {
+      "subject_folder": "S15",
+      "canonical_subject_id": "S15",
+      "protocol_version": "V1",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 13,
+      "tag_sha256": "4bfff94b6b5ab4d8384f4faec0aba27edb2a43d40b58f1303de756f6c1edb5e0",
+      "common_signal_start": "2013-02-25 11:35:59",
+      "common_signal_duration_seconds": 1632.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-02-25 11:35:59",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 6534,
+          "duration_seconds": 1633.5,
+          "sha256": "40c8c50ca573aedb9a3ed7dd6563f8154b51c56c52286e2229d735557b52e375"
+        },
+        "TEMP": {
+          "start": "2013-02-25 11:35:59",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 6528,
+          "duration_seconds": 1632.0,
+          "sha256": "51dd02c9f381aeadd02e917f8041ff745fdea97de999ebf4eaa6835eff75854f"
+        },
+        "ACC": {
+          "start": "2013-02-25 11:35:59",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 52266,
+          "duration_seconds": 1633.3125,
+          "sha256": "1796df3dd4682cfc2878a9167feeae18d146ec2a420400e396d7054342d8d164"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-02-25 11:39:17",
+          "end_iso": "2013-02-25 11:42:44",
+          "duration_seconds": 207.0
+        },
+        {
+          "stage": "stroop",
+          "label": "stress",
+          "start_iso": "2013-02-25 11:43:55",
+          "end_iso": "2013-02-25 11:45:45",
+          "duration_seconds": 110.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-25 11:45:45",
+          "end_iso": "2013-02-25 11:51:36",
+          "duration_seconds": 351.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-02-25 11:51:36",
+          "end_iso": "2013-02-25 11:54:18",
+          "duration_seconds": 162.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-25 11:54:18",
+          "end_iso": "2013-02-25 11:59:28",
+          "duration_seconds": 310.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-25 11:59:28",
+          "end_iso": "2013-02-25 12:00:00",
+          "duration_seconds": 32.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-25 12:00:31",
+          "end_iso": "2013-02-25 12:01:02",
+          "duration_seconds": 31.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-02-25 12:01:33",
+          "end_iso": "2013-02-25 12:02:07",
+          "duration_seconds": 34.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 31,
+          "non_stress": 83
+        },
+        "15": {
+          "stress": 19,
+          "non_stress": 55
+        },
+        "30": {
+          "stress": 8,
+          "non_stress": 27
+        },
+        "60": {
+          "stress": 3,
+          "non_stress": 13
+        }
+      }
+    },
+    {
+      "subject_folder": "S16",
+      "canonical_subject_id": "S16",
+      "protocol_version": "V1",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 13,
+      "tag_sha256": "99bd9c70c23daa36a8622d2adb94d7769944794cbaa655d2e09657f42fe3b9b9",
+      "common_signal_start": "2013-02-25 14:15:54",
+      "common_signal_duration_seconds": 1662.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-02-25 14:15:54",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 6654,
+          "duration_seconds": 1663.5,
+          "sha256": "9de10be6303618ebf49c51c655e59c5c986c9d083d22c03e055749980a50bede"
+        },
+        "TEMP": {
+          "start": "2013-02-25 14:15:54",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 6648,
+          "duration_seconds": 1662.0,
+          "sha256": "21ec8973ab2cb5ae387a06943b4ddecad57bf0b5953eec6e01e19fbc79c5f186"
+        },
+        "ACC": {
+          "start": "2013-02-25 14:15:54",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 53226,
+          "duration_seconds": 1663.3125,
+          "sha256": "114a20e71e62fbc8514912939245cd75a9d0e385176fcecdc9db40aac67d36a2"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-02-25 14:21:24",
+          "end_iso": "2013-02-25 14:24:37",
+          "duration_seconds": 193.0
+        },
+        {
+          "stage": "stroop",
+          "label": "stress",
+          "start_iso": "2013-02-25 14:26:20",
+          "end_iso": "2013-02-25 14:28:01",
+          "duration_seconds": 101.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-25 14:28:01",
+          "end_iso": "2013-02-25 14:31:53",
+          "duration_seconds": 232.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-02-25 14:31:53",
+          "end_iso": "2013-02-25 14:34:25",
+          "duration_seconds": 152.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-25 14:34:25",
+          "end_iso": "2013-02-25 14:40:11",
+          "duration_seconds": 346.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-25 14:40:11",
+          "end_iso": "2013-02-25 14:40:42",
+          "duration_seconds": 31.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-25 14:41:17",
+          "end_iso": "2013-02-25 14:41:47",
+          "duration_seconds": 30.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-02-25 14:42:10",
+          "end_iso": "2013-02-25 14:42:43",
+          "duration_seconds": 33.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 29,
+          "non_stress": 73
+        },
+        "15": {
+          "stress": 18,
+          "non_stress": 48
+        },
+        "30": {
+          "stress": 7,
+          "non_stress": 24
+        },
+        "60": {
+          "stress": 3,
+          "non_stress": 11
+        }
+      }
+    },
+    {
+      "subject_folder": "S17",
+      "canonical_subject_id": "S17",
+      "protocol_version": "V1",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 13,
+      "tag_sha256": "e5334d7d2ba54902b1bc0ec755b5d27e1ae73a3d2236784a597787d459b7cd2c",
+      "common_signal_start": "2013-02-25 18:40:08",
+      "common_signal_duration_seconds": 1610.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-02-25 18:40:08",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 6444,
+          "duration_seconds": 1611.0,
+          "sha256": "63f4cce12138acf9e4d6d4cdd234b9ebdd731baae704e32e9d347c0c488c2c47"
+        },
+        "TEMP": {
+          "start": "2013-02-25 18:40:08",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 6440,
+          "duration_seconds": 1610.0,
+          "sha256": "996abd19e39616ac0d4d58dfd61e7085964fcfee50afa95b619aba03bed93f17"
+        },
+        "ACC": {
+          "start": "2013-02-25 18:40:08",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 51546,
+          "duration_seconds": 1610.8125,
+          "sha256": "ec74455c735f7c01a22c812345ed4f2ee2d01f06cc1b88fe603039d3698a67f5"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-02-25 18:45:10",
+          "end_iso": "2013-02-25 18:48:04",
+          "duration_seconds": 174.0
+        },
+        {
+          "stage": "stroop",
+          "label": "stress",
+          "start_iso": "2013-02-25 18:49:46",
+          "end_iso": "2013-02-25 18:51:18",
+          "duration_seconds": 92.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-25 18:51:18",
+          "end_iso": "2013-02-25 18:55:56",
+          "duration_seconds": 278.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-02-25 18:55:56",
+          "end_iso": "2013-02-25 18:58:35",
+          "duration_seconds": 159.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-25 18:58:35",
+          "end_iso": "2013-02-25 19:03:44",
+          "duration_seconds": 309.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-25 19:03:44",
+          "end_iso": "2013-02-25 19:04:15",
+          "duration_seconds": 31.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-25 19:04:36",
+          "end_iso": "2013-02-25 19:05:07",
+          "duration_seconds": 31.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-02-25 19:05:34",
+          "end_iso": "2013-02-25 19:06:07",
+          "duration_seconds": 33.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 28,
+          "non_stress": 71
+        },
+        "15": {
+          "stress": 17,
+          "non_stress": 46
+        },
+        "30": {
+          "stress": 6,
+          "non_stress": 22
+        },
+        "60": {
+          "stress": 3,
+          "non_stress": 10
+        }
+      }
+    },
+    {
+      "subject_folder": "S18",
+      "canonical_subject_id": "S18",
+      "protocol_version": "V1",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 13,
+      "tag_sha256": "ded39e8eb988be84151fb2e5432a6ed4aaf28f40c7b90108b7cfe572dbae8b92",
+      "common_signal_start": "2013-02-25 19:17:36",
+      "common_signal_duration_seconds": 1630.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-02-25 19:17:36",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 6522,
+          "duration_seconds": 1630.5,
+          "sha256": "142a5206971dbb2b2246e790d8ce57c3f1e0375877d396dce445e382c4172b18"
+        },
+        "TEMP": {
+          "start": "2013-02-25 19:17:36",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 6520,
+          "duration_seconds": 1630.0,
+          "sha256": "4dccf0f953c3011ea8db724ddf1f92c60641cf75afbcb92c803d04c0962e5702"
+        },
+        "ACC": {
+          "start": "2013-02-25 19:17:36",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 52188,
+          "duration_seconds": 1630.875,
+          "sha256": "94f30cb57b080fe97519dee2f365eb7f60ed516e09835f40efa61a8212d66318"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-02-25 19:21:33",
+          "end_iso": "2013-02-25 19:24:37",
+          "duration_seconds": 184.0
+        },
+        {
+          "stage": "stroop",
+          "label": "stress",
+          "start_iso": "2013-02-25 19:26:13",
+          "end_iso": "2013-02-25 19:28:07",
+          "duration_seconds": 114.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-25 19:28:07",
+          "end_iso": "2013-02-25 19:33:24",
+          "duration_seconds": 317.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-02-25 19:33:24",
+          "end_iso": "2013-02-25 19:36:02",
+          "duration_seconds": 158.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-02-25 19:36:02",
+          "end_iso": "2013-02-25 19:41:16",
+          "duration_seconds": 314.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-25 19:41:16",
+          "end_iso": "2013-02-25 19:41:49",
+          "duration_seconds": 33.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-02-25 19:42:11",
+          "end_iso": "2013-02-25 19:42:41",
+          "duration_seconds": 30.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-02-25 19:43:10",
+          "end_iso": "2013-02-25 19:43:42",
+          "duration_seconds": 32.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 30,
+          "non_stress": 77
+        },
+        "15": {
+          "stress": 18,
+          "non_stress": 51
+        },
+        "30": {
+          "stress": 7,
+          "non_stress": 25
+        },
+        "60": {
+          "stress": 3,
+          "non_stress": 12
+        }
+      }
+    },
+    {
+      "subject_folder": "f01",
+      "canonical_subject_id": "f01",
+      "protocol_version": "V2",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 9,
+      "tag_sha256": "100fdc72e70ee594842be547514c165b233c507092fab77d17f10690bb524e3d",
+      "common_signal_start": "2013-06-12 16:18:58",
+      "common_signal_duration_seconds": 3248.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-06-12 16:18:58",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 13008,
+          "duration_seconds": 3252.0,
+          "sha256": "cb5dbfe1f0d9c873350bc97c84216e4bec61beb7599b6c850ba7c88f2b11f348"
+        },
+        "TEMP": {
+          "start": "2013-06-12 16:18:58",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 12992,
+          "duration_seconds": 3248.0,
+          "sha256": "c79797fffe77e523bf0ec2437fcaf795f6bcbe2e1fc4c552606cf7da3da936b2"
+        },
+        "ACC": {
+          "start": "2013-06-12 16:18:58",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 104070,
+          "duration_seconds": 3252.1875,
+          "sha256": "f359617e9d461131ad84957935ab9ae7b73786e28bea13f4c956f86642230341"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-06-12 16:18:58",
+          "end_iso": "2013-06-12 16:23:45",
+          "duration_seconds": 287.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-06-12 16:25:46",
+          "end_iso": "2013-06-12 16:33:18",
+          "duration_seconds": 452.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-06-12 16:33:18",
+          "end_iso": "2013-06-12 16:47:32",
+          "duration_seconds": 854.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-06-12 16:47:32",
+          "end_iso": "2013-06-12 16:48:09",
+          "duration_seconds": 37.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-06-12 16:48:30",
+          "end_iso": "2013-06-12 16:49:02",
+          "duration_seconds": 32.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-06-12 16:49:02",
+          "end_iso": "2013-06-12 17:08:31",
+          "duration_seconds": 1169.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-06-12 17:08:31",
+          "end_iso": "2013-06-12 17:08:57",
+          "duration_seconds": 26.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 49,
+          "non_stress": 226
+        },
+        "15": {
+          "stress": 32,
+          "non_stress": 151
+        },
+        "30": {
+          "stress": 14,
+          "non_stress": 75
+        },
+        "60": {
+          "stress": 7,
+          "non_stress": 37
+        }
+      }
+    },
+    {
+      "subject_folder": "f02",
+      "canonical_subject_id": "f02",
+      "protocol_version": "V2",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 9,
+      "tag_sha256": "a6564a4f5ccf8be7cb17610119f0d37148bf5ad919eb4e564773de825694c58a",
+      "common_signal_start": "2013-06-12 17:26:25",
+      "common_signal_duration_seconds": 2975.25,
+      "signals": {
+        "EDA": {
+          "start": "2013-06-12 17:26:25",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 11904,
+          "duration_seconds": 2976.0,
+          "sha256": "7a44807b2b384c77a554f799efd5fbdecb50b586ccaf5fbfc693d56c6733f98c"
+        },
+        "TEMP": {
+          "start": "2013-06-12 17:26:25",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 11912,
+          "duration_seconds": 2978.0,
+          "sha256": "b812760203fcc8378c87862ff695b3f5413144b986d78d0607abb9d2310a9588"
+        },
+        "ACC": {
+          "start": "2013-06-12 17:26:25",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 95208,
+          "duration_seconds": 2975.25,
+          "sha256": "806dc4699af9ac1f525f14ce71b58c88ff15469eaff003491d7309010d4fdbc6"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-06-12 17:26:25",
+          "end_iso": "2013-06-12 17:40:36",
+          "duration_seconds": 851.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-06-12 17:41:54",
+          "end_iso": "2013-06-12 17:48:13",
+          "duration_seconds": 379.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-06-12 17:48:13",
+          "end_iso": "2013-06-12 18:01:25",
+          "duration_seconds": 792.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-06-12 18:01:25",
+          "end_iso": "2013-06-12 18:02:07",
+          "duration_seconds": 42.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-06-12 18:03:09",
+          "end_iso": "2013-06-12 18:03:44",
+          "duration_seconds": 35.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-06-12 18:03:44",
+          "end_iso": "2013-06-12 18:11:03",
+          "duration_seconds": 439.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-06-12 18:11:03",
+          "end_iso": "2013-06-12 18:11:34",
+          "duration_seconds": 31.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 43,
+          "non_stress": 204
+        },
+        "15": {
+          "stress": 28,
+          "non_stress": 136
+        },
+        "30": {
+          "stress": 13,
+          "non_stress": 68
+        },
+        "60": {
+          "stress": 6,
+          "non_stress": 34
+        }
+      }
+    },
+    {
+      "subject_folder": "f03",
+      "canonical_subject_id": "f03",
+      "protocol_version": "V2",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 9,
+      "tag_sha256": "75900e5438cba8a9402ff53a3e10daceb24404b2c6255b916f07cc04767623a9",
+      "common_signal_start": "2013-06-12 18:28:42",
+      "common_signal_duration_seconds": 3594.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-06-12 18:28:42",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 14388,
+          "duration_seconds": 3597.0,
+          "sha256": "030958eadc47f9ba92d438f94f99d7beab349554916d4dd21792fcac4ee4117c"
+        },
+        "TEMP": {
+          "start": "2013-06-12 18:28:42",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 14376,
+          "duration_seconds": 3594.0,
+          "sha256": "8e81a6d290d814949f84dd8b9ff0d8715c7bef40c0858633aaca65e6bccd4116"
+        },
+        "ACC": {
+          "start": "2013-06-12 18:28:42",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 115062,
+          "duration_seconds": 3595.6875,
+          "sha256": "986bf629e6fe9920037daa8d74b9cb669096bdc10c207741538828fef7713d42"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-06-12 18:28:42",
+          "end_iso": "2013-06-12 18:41:47",
+          "duration_seconds": 785.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-06-12 18:44:31",
+          "end_iso": "2013-06-12 18:48:52",
+          "duration_seconds": 261.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-06-12 18:48:52",
+          "end_iso": "2013-06-12 19:06:58",
+          "duration_seconds": 1086.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-06-12 19:06:58",
+          "end_iso": "2013-06-12 19:07:27",
+          "duration_seconds": 29.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-06-12 19:07:46",
+          "end_iso": "2013-06-12 19:08:17",
+          "duration_seconds": 31.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-06-12 19:08:17",
+          "end_iso": "2013-06-12 19:23:39",
+          "duration_seconds": 922.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-06-12 19:23:39",
+          "end_iso": "2013-06-12 19:24:14",
+          "duration_seconds": 35.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 30,
+          "non_stress": 275
+        },
+        "15": {
+          "stress": 19,
+          "non_stress": 182
+        },
+        "30": {
+          "stress": 8,
+          "non_stress": 90
+        },
+        "60": {
+          "stress": 4,
+          "non_stress": 44
+        }
+      }
+    },
+    {
+      "subject_folder": "f04",
+      "canonical_subject_id": "f04",
+      "protocol_version": "V2",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 9,
+      "tag_sha256": "a1144be29fa73671271520c9575f172b3fffec6a2df2c5b13297d196cd351e29",
+      "common_signal_start": "2013-06-15 19:44:24",
+      "common_signal_duration_seconds": 3646.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-06-15 19:44:24",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 14592,
+          "duration_seconds": 3648.0,
+          "sha256": "0d0bb3ad51cab421c9773de01b638addb3704e8a7421a11bc716044b48c2dbfb"
+        },
+        "TEMP": {
+          "start": "2013-06-15 19:44:24",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 14584,
+          "duration_seconds": 3646.0,
+          "sha256": "39295c38e3608d656070224f0dda163b6b253090bf59e81a689a1572db8e06c8"
+        },
+        "ACC": {
+          "start": "2013-06-15 19:44:24",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 116700,
+          "duration_seconds": 3646.875,
+          "sha256": "2e992f64499a5f79dcbb2c5026e7a86175bf6662eb6181eb02c08fc70de08f1d"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-06-15 19:44:24",
+          "end_iso": "2013-06-15 20:01:13",
+          "duration_seconds": 1009.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-06-15 20:02:55",
+          "end_iso": "2013-06-15 20:07:20",
+          "duration_seconds": 265.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-06-15 20:07:20",
+          "end_iso": "2013-06-15 20:21:40",
+          "duration_seconds": 860.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-06-15 20:21:40",
+          "end_iso": "2013-06-15 20:22:20",
+          "duration_seconds": 40.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-06-15 20:23:01",
+          "end_iso": "2013-06-15 20:23:39",
+          "duration_seconds": 38.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-06-15 20:23:39",
+          "end_iso": "2013-06-15 20:37:23",
+          "duration_seconds": 824.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-06-15 20:37:23",
+          "end_iso": "2013-06-15 20:37:59",
+          "duration_seconds": 36.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 32,
+          "non_stress": 265
+        },
+        "15": {
+          "stress": 21,
+          "non_stress": 176
+        },
+        "30": {
+          "stress": 9,
+          "non_stress": 88
+        },
+        "60": {
+          "stress": 4,
+          "non_stress": 43
+        }
+      }
+    },
+    {
+      "subject_folder": "f05",
+      "canonical_subject_id": "f05",
+      "protocol_version": "V2",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 9,
+      "tag_sha256": "2e40d13eb4e2b86f8f16b89b8e89eea471154620979014a727f756d4a475edea",
+      "common_signal_start": "2013-07-02 10:07:30",
+      "common_signal_duration_seconds": 4592.4375,
+      "signals": {
+        "EDA": {
+          "start": "2013-07-02 10:07:30",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 18372,
+          "duration_seconds": 4593.0,
+          "sha256": "69af7836d9a97993745dec1ac145d144b30eea4a84b5204d91dab401bee06795"
+        },
+        "TEMP": {
+          "start": "2013-07-02 10:07:30",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 18392,
+          "duration_seconds": 4598.0,
+          "sha256": "1788026f02e553ad91a3fef0acf7ab11f48f180323673c428cc789e10e01e16b"
+        },
+        "ACC": {
+          "start": "2013-07-02 10:07:30",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 146958,
+          "duration_seconds": 4592.4375,
+          "sha256": "219035d64c897c155ab8b4b4f4a32d8cbaa70c2db1946a820371b655d03d3655"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-07-02 10:07:30",
+          "end_iso": "2013-07-02 10:43:42",
+          "duration_seconds": 2172.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-07-02 10:45:13",
+          "end_iso": "2013-07-02 10:49:23",
+          "duration_seconds": 250.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-07-02 10:49:23",
+          "end_iso": "2013-07-02 11:04:04",
+          "duration_seconds": 881.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-07-02 11:04:04",
+          "end_iso": "2013-07-02 11:04:46",
+          "duration_seconds": 42.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-07-02 11:05:05",
+          "end_iso": "2013-07-02 11:05:45",
+          "duration_seconds": 40.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-07-02 11:05:45",
+          "end_iso": "2013-07-02 11:19:00",
+          "duration_seconds": 795.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-07-02 11:19:00",
+          "end_iso": "2013-07-02 11:19:48",
+          "duration_seconds": 48.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 33,
+          "non_stress": 381
+        },
+        "15": {
+          "stress": 22,
+          "non_stress": 254
+        },
+        "30": {
+          "stress": 11,
+          "non_stress": 127
+        },
+        "60": {
+          "stress": 4,
+          "non_stress": 63
+        }
+      }
+    },
+    {
+      "subject_folder": "f06",
+      "canonical_subject_id": "f06",
+      "protocol_version": "V2",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 9,
+      "tag_sha256": "64b203a2150af73528bf789983834f59417489655ec3152fea44c5eb68c7041c",
+      "common_signal_start": "2013-07-11 16:04:59",
+      "common_signal_duration_seconds": 3172.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-07-11 16:04:59",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 12690,
+          "duration_seconds": 3172.5,
+          "sha256": "caccf0c3fdc7b4d0b2b7f106e23edfcc8e7997b188a61d1e1182a8e62fa95404"
+        },
+        "TEMP": {
+          "start": "2013-07-11 16:04:59",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 12688,
+          "duration_seconds": 3172.0,
+          "sha256": "3d408c7ab2afde2eb0bd899bf232b6a3917bc67c32ed01da9f0c954834e47cff"
+        },
+        "ACC": {
+          "start": "2013-07-11 16:04:59",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 101508,
+          "duration_seconds": 3172.125,
+          "sha256": "f3df025f0c9261b66d1223ce1645f144c05921753b87d2538ece7c621351ef42"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-07-11 16:04:59",
+          "end_iso": "2013-07-11 16:14:46",
+          "duration_seconds": 587.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-07-11 16:16:12",
+          "end_iso": "2013-07-11 16:20:13",
+          "duration_seconds": 241.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-07-11 16:20:13",
+          "end_iso": "2013-07-11 16:34:26",
+          "duration_seconds": 853.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-07-11 16:34:26",
+          "end_iso": "2013-07-11 16:35:07",
+          "duration_seconds": 41.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-07-11 16:35:35",
+          "end_iso": "2013-07-11 16:36:14",
+          "duration_seconds": 39.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-07-11 16:36:14",
+          "end_iso": "2013-07-11 16:50:52",
+          "duration_seconds": 878.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-07-11 16:50:52",
+          "end_iso": "2013-07-11 16:51:31",
+          "duration_seconds": 39.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 30,
+          "non_stress": 227
+        },
+        "15": {
+          "stress": 19,
+          "non_stress": 151
+        },
+        "30": {
+          "stress": 8,
+          "non_stress": 75
+        },
+        "60": {
+          "stress": 3,
+          "non_stress": 37
+        }
+      }
+    },
+    {
+      "subject_folder": "f07",
+      "canonical_subject_id": "f07",
+      "protocol_version": "V2",
+      "primary_included": false,
+      "exclusion_reason": "covered PPG and temperature sensors documented by the dataset authors",
+      "tag_count": 9,
+      "tag_sha256": "f867df9d0aa3680bccec03ba2949f1db9c67453f60f6afdc9847c217230e9cb4",
+      "common_signal_start": "2013-07-12 20:01:45",
+      "common_signal_duration_seconds": 3456.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-07-12 20:01:45",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 13824,
+          "duration_seconds": 3456.0,
+          "sha256": "24d4c78d37980beea4689cd0d0d5617539cf2d39ae68339c3aaafe1ad6e0fbb6"
+        },
+        "TEMP": {
+          "start": "2013-07-12 20:01:45",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 13824,
+          "duration_seconds": 3456.0,
+          "sha256": "3e9c1d04124339ac3f173b5f0d5764b9a3998fb26fbeb4c001050f41178f644d"
+        },
+        "ACC": {
+          "start": "2013-07-12 20:01:45",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 110652,
+          "duration_seconds": 3457.875,
+          "sha256": "b46d20f9a06ebc951e60aca7cdb1a1474340a0ed28602d9456e9858b8f9f9276"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-07-12 20:01:45",
+          "end_iso": "2013-07-12 20:14:48",
+          "duration_seconds": 783.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-07-12 20:16:05",
+          "end_iso": "2013-07-12 20:20:12",
+          "duration_seconds": 247.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-07-12 20:20:12",
+          "end_iso": "2013-07-12 20:34:08",
+          "duration_seconds": 836.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-07-12 20:34:08",
+          "end_iso": "2013-07-12 20:34:48",
+          "duration_seconds": 40.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-07-12 20:35:15",
+          "end_iso": "2013-07-12 20:35:57",
+          "duration_seconds": 42.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-07-12 20:35:57",
+          "end_iso": "2013-07-12 20:50:57",
+          "duration_seconds": 900.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-07-12 20:50:57",
+          "end_iso": "2013-07-12 20:51:40",
+          "duration_seconds": 43.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 32,
+          "non_stress": 248
+        },
+        "15": {
+          "stress": 21,
+          "non_stress": 165
+        },
+        "30": {
+          "stress": 10,
+          "non_stress": 81
+        },
+        "60": {
+          "stress": 3,
+          "non_stress": 39
+        }
+      }
+    },
+    {
+      "subject_folder": "f08",
+      "canonical_subject_id": "f08",
+      "protocol_version": "V2",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 9,
+      "tag_sha256": "254817ce53bacb24672aee9ab6670f22d5c1809fda19d00824cad046444921c1",
+      "common_signal_start": "2013-07-03 19:16:37",
+      "common_signal_duration_seconds": 3180.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-07-03 19:16:37",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 12726,
+          "duration_seconds": 3181.5,
+          "sha256": "9da1e438e466c381d9586b8171e1ad882db0a320656a752385688c3274fdee80"
+        },
+        "TEMP": {
+          "start": "2013-07-03 19:16:37",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 12720,
+          "duration_seconds": 3180.0,
+          "sha256": "d60b1f01e5bf991f67777a13a0a4ccd218a7c722c69f430e8fcfb58905e7f17d"
+        },
+        "ACC": {
+          "start": "2013-07-03 19:16:37",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 101784,
+          "duration_seconds": 3180.75,
+          "sha256": "9b5840fd2571a7857409dfd65b560c526c5dc3cf41a25b165d6fe760e330c288"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-07-03 19:16:37",
+          "end_iso": "2013-07-03 19:25:20",
+          "duration_seconds": 523.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-07-03 19:26:58",
+          "end_iso": "2013-07-03 19:31:47",
+          "duration_seconds": 289.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-07-03 19:31:47",
+          "end_iso": "2013-07-03 19:46:20",
+          "duration_seconds": 873.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-07-03 19:46:20",
+          "end_iso": "2013-07-03 19:46:56",
+          "duration_seconds": 36.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-07-03 19:47:31",
+          "end_iso": "2013-07-03 19:48:08",
+          "duration_seconds": 37.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-07-03 19:48:08",
+          "end_iso": "2013-07-03 19:59:10",
+          "duration_seconds": 662.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-07-03 19:59:10",
+          "end_iso": "2013-07-03 19:59:50",
+          "duration_seconds": 40.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 34,
+          "non_stress": 202
+        },
+        "15": {
+          "stress": 22,
+          "non_stress": 134
+        },
+        "30": {
+          "stress": 10,
+          "non_stress": 66
+        },
+        "60": {
+          "stress": 4,
+          "non_stress": 32
+        }
+      }
+    },
+    {
+      "subject_folder": "f09",
+      "canonical_subject_id": "f09",
+      "protocol_version": "V2",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 9,
+      "tag_sha256": "fff822385cb84651f8eade6afe11872d5343c8e06765a2f9a0edbac56496d177",
+      "common_signal_start": "2013-06-30 12:03:41",
+      "common_signal_duration_seconds": 3232.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-06-30 12:03:41",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 12930,
+          "duration_seconds": 3232.5,
+          "sha256": "5d37eaf335fce29b46c21fd6f8e9a5abaaa0ddfc6ca06643b81bb8c7de999472"
+        },
+        "TEMP": {
+          "start": "2013-06-30 12:03:41",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 12928,
+          "duration_seconds": 3232.0,
+          "sha256": "646231b39a26ca0976e7dfdc5070707a9b2020b7f5693a960dbb0d7f8eb6639c"
+        },
+        "ACC": {
+          "start": "2013-06-30 12:03:41",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 103470,
+          "duration_seconds": 3233.4375,
+          "sha256": "9bde394b7a31a0a3456fce36c7b63eb93e851fa00a8d3250b91650a29847e1f6"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-06-30 12:03:41",
+          "end_iso": "2013-06-30 12:16:06",
+          "duration_seconds": 745.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-06-30 12:17:44",
+          "end_iso": "2013-06-30 12:22:11",
+          "duration_seconds": 267.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-06-30 12:22:11",
+          "end_iso": "2013-06-30 12:35:50",
+          "duration_seconds": 819.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-06-30 12:35:50",
+          "end_iso": "2013-06-30 12:36:28",
+          "duration_seconds": 38.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-06-30 12:36:50",
+          "end_iso": "2013-06-30 12:37:30",
+          "duration_seconds": 40.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-06-30 12:37:30",
+          "end_iso": "2013-06-30 12:50:50",
+          "duration_seconds": 800.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-06-30 12:50:50",
+          "end_iso": "2013-06-30 12:51:28",
+          "duration_seconds": 38.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 32,
+          "non_stress": 232
+        },
+        "15": {
+          "stress": 21,
+          "non_stress": 154
+        },
+        "30": {
+          "stress": 9,
+          "non_stress": 76
+        },
+        "60": {
+          "stress": 4,
+          "non_stress": 38
+        }
+      }
+    },
+    {
+      "subject_folder": "f10",
+      "canonical_subject_id": "f10",
+      "protocol_version": "V2",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 9,
+      "tag_sha256": "791704e35e4bc0f900095823fc2b1b66ef9b9df64fd7cb2a03e090f8c607edef",
+      "common_signal_start": "2013-06-30 09:59:44",
+      "common_signal_duration_seconds": 2730.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-06-30 09:59:44",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 10938,
+          "duration_seconds": 2734.5,
+          "sha256": "82ded11db4fdc833a8ddf65e8bf45a7a5f0da1516c05e12fb24f85e11cdec5a6"
+        },
+        "TEMP": {
+          "start": "2013-06-30 09:59:44",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 10920,
+          "duration_seconds": 2730.0,
+          "sha256": "1322422c880301d53f88023eedffb5b1d5c25cc6f33ba46c893a5f106390b437"
+        },
+        "ACC": {
+          "start": "2013-06-30 09:59:44",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 87432,
+          "duration_seconds": 2732.25,
+          "sha256": "4a3af03a3ceafb7d3bbda1c68740d7cb745202192cd74381d2551677c02a6e23"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-06-30 09:59:44",
+          "end_iso": "2013-06-30 10:03:33",
+          "duration_seconds": 229.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-06-30 10:05:22",
+          "end_iso": "2013-06-30 10:09:37",
+          "duration_seconds": 255.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-06-30 10:09:37",
+          "end_iso": "2013-06-30 10:23:41",
+          "duration_seconds": 844.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-06-30 10:23:41",
+          "end_iso": "2013-06-30 10:24:22",
+          "duration_seconds": 41.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-06-30 10:24:52",
+          "end_iso": "2013-06-30 10:25:36",
+          "duration_seconds": 44.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-06-30 10:25:36",
+          "end_iso": "2013-06-30 10:38:38",
+          "duration_seconds": 782.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-06-30 10:38:38",
+          "end_iso": "2013-06-30 10:39:21",
+          "duration_seconds": 43.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 33,
+          "non_stress": 181
+        },
+        "15": {
+          "stress": 22,
+          "non_stress": 120
+        },
+        "30": {
+          "stress": 11,
+          "non_stress": 59
+        },
+        "60": {
+          "stress": 4,
+          "non_stress": 28
+        }
+      }
+    },
+    {
+      "subject_folder": "f11",
+      "canonical_subject_id": "f11",
+      "protocol_version": "V2",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 9,
+      "tag_sha256": "735ee80ef78b53b6a3135623e847cde4fed0d177fd2333a45d0d0c2c5df0d59a",
+      "common_signal_start": "2013-07-14 18:02:40",
+      "common_signal_duration_seconds": 3121.5,
+      "signals": {
+        "EDA": {
+          "start": "2013-07-14 18:02:40",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 12486,
+          "duration_seconds": 3121.5,
+          "sha256": "53e10ef86297dfe366e0e97e8ece3cc8f69b29fd68d45f9f648efdcdea7360e4"
+        },
+        "TEMP": {
+          "start": "2013-07-14 18:02:40",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 12488,
+          "duration_seconds": 3122.0,
+          "sha256": "e55e8ac48818dc8084a9d0ad33a5cda2422721dfee21bc1acdcb58ef0fb098fd"
+        },
+        "ACC": {
+          "start": "2013-07-14 18:02:40",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 99924,
+          "duration_seconds": 3122.625,
+          "sha256": "2768003d0962f89fbac77c29f18ccdce79826afb85cb8fc21e7d4eb8fa9acf9c"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-07-14 18:02:40",
+          "end_iso": "2013-07-14 18:14:40",
+          "duration_seconds": 720.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-07-14 18:16:25",
+          "end_iso": "2013-07-14 18:21:24",
+          "duration_seconds": 299.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-07-14 18:21:24",
+          "end_iso": "2013-07-14 18:35:14",
+          "duration_seconds": 830.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-07-14 18:35:14",
+          "end_iso": "2013-07-14 18:35:48",
+          "duration_seconds": 34.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-07-14 18:36:12",
+          "end_iso": "2013-07-14 18:36:50",
+          "duration_seconds": 38.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-07-14 18:36:50",
+          "end_iso": "2013-07-14 18:50:17",
+          "duration_seconds": 807.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-07-14 18:50:17",
+          "end_iso": "2013-07-14 18:50:54",
+          "duration_seconds": 37.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 34,
+          "non_stress": 232
+        },
+        "15": {
+          "stress": 22,
+          "non_stress": 154
+        },
+        "30": {
+          "stress": 9,
+          "non_stress": 76
+        },
+        "60": {
+          "stress": 4,
+          "non_stress": 37
+        }
+      }
+    },
+    {
+      "subject_folder": "f12",
+      "canonical_subject_id": "f12",
+      "protocol_version": "V2",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 9,
+      "tag_sha256": "339bad091c24372ada9de0f977aab86bfe7ab751325865d630eba31fb169fbf5",
+      "common_signal_start": "2013-07-01 15:21:17",
+      "common_signal_duration_seconds": 4807.875,
+      "signals": {
+        "EDA": {
+          "start": "2013-07-01 15:21:17",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 19236,
+          "duration_seconds": 4809.0,
+          "sha256": "f46771cbfe22def129afb9c9bf8bbfec7ea00b25ada63e170f0dece157dfbe42"
+        },
+        "TEMP": {
+          "start": "2013-07-01 15:21:17",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 19232,
+          "duration_seconds": 4808.0,
+          "sha256": "f8be7cde45c65abcb5d01f8b5e6abf69e19a0f100fbfb991231193944fd22433"
+        },
+        "ACC": {
+          "start": "2013-07-01 15:21:17",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 153852,
+          "duration_seconds": 4807.875,
+          "sha256": "b23c56f45ce77378753e2ba06d00f4a5bfe75dcbc6f5e581abf4f799bccddc9e"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-07-01 15:21:17",
+          "end_iso": "2013-07-01 16:00:14",
+          "duration_seconds": 2337.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-07-01 16:01:45",
+          "end_iso": "2013-07-01 16:05:56",
+          "duration_seconds": 251.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-07-01 16:05:56",
+          "end_iso": "2013-07-01 16:20:16",
+          "duration_seconds": 860.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-07-01 16:20:16",
+          "end_iso": "2013-07-01 16:20:54",
+          "duration_seconds": 38.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-07-01 16:21:21",
+          "end_iso": "2013-07-01 16:21:58",
+          "duration_seconds": 37.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-07-01 16:21:58",
+          "end_iso": "2013-07-01 16:35:27",
+          "duration_seconds": 809.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-07-01 16:35:27",
+          "end_iso": "2013-07-01 16:36:05",
+          "duration_seconds": 38.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 30,
+          "non_stress": 396
+        },
+        "15": {
+          "stress": 19,
+          "non_stress": 264
+        },
+        "30": {
+          "stress": 8,
+          "non_stress": 131
+        },
+        "60": {
+          "stress": 4,
+          "non_stress": 65
+        }
+      }
+    },
+    {
+      "subject_folder": "f13",
+      "canonical_subject_id": "f13",
+      "protocol_version": "V2",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 9,
+      "tag_sha256": "febdd1523d1f7ee0d7242354d7c2b9883c8f18d0e83e81d8565a1aac6b97ea5b",
+      "common_signal_start": "2013-07-03 10:51:24",
+      "common_signal_duration_seconds": 3860.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-07-03 10:51:24",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 15462,
+          "duration_seconds": 3865.5,
+          "sha256": "d4ee2cad2580ac82bb736e8b30f457ccb8a7dbcb436ffce6101e0e17907e5a3b"
+        },
+        "TEMP": {
+          "start": "2013-07-03 10:51:24",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 15440,
+          "duration_seconds": 3860.0,
+          "sha256": "a09ac5ede445d222c4ffe7c82856fe904c5a45bbeb5dcb4e8bab83a6d2457e57"
+        },
+        "ACC": {
+          "start": "2013-07-03 10:51:24",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 123558,
+          "duration_seconds": 3861.1875,
+          "sha256": "ff665e266b417d9f54865a33e7cf9242d62057acb0a38da0364c0e32121e8adf"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-07-03 10:51:24",
+          "end_iso": "2013-07-03 11:09:38",
+          "duration_seconds": 1094.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-07-03 11:11:24",
+          "end_iso": "2013-07-03 11:15:01",
+          "duration_seconds": 217.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-07-03 11:15:01",
+          "end_iso": "2013-07-03 11:32:25",
+          "duration_seconds": 1044.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-07-03 11:32:25",
+          "end_iso": "2013-07-03 11:33:02",
+          "duration_seconds": 37.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-07-03 11:33:31",
+          "end_iso": "2013-07-03 11:34:09",
+          "duration_seconds": 38.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-07-03 11:34:09",
+          "end_iso": "2013-07-03 11:48:11",
+          "duration_seconds": 842.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-07-03 11:48:11",
+          "end_iso": "2013-07-03 11:48:52",
+          "duration_seconds": 41.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 27,
+          "non_stress": 294
+        },
+        "15": {
+          "stress": 17,
+          "non_stress": 195
+        },
+        "30": {
+          "stress": 7,
+          "non_stress": 97
+        },
+        "60": {
+          "stress": 3,
+          "non_stress": 48
+        }
+      }
+    },
+    {
+      "subject_folder": "f14_a",
+      "canonical_subject_id": "f14",
+      "protocol_version": "V2",
+      "primary_included": false,
+      "exclusion_reason": "split f14 stress recording; primary complete-file cohort excludes both parts",
+      "tag_count": 0,
+      "tag_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "common_signal_start": "2013-07-12 22:46:39",
+      "common_signal_duration_seconds": 703.5,
+      "signals": {
+        "EDA": {
+          "start": "2013-07-12 22:46:39",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 2814,
+          "duration_seconds": 703.5,
+          "sha256": "5cd3d970f764adb27329ada4ddf1dd32f46a6195f73eba0538fe700bad3be7d5"
+        },
+        "TEMP": {
+          "start": "2013-07-12 22:46:39",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 2816,
+          "duration_seconds": 704.0,
+          "sha256": "a5ec29767f6ee419e056f0f6b6e19de1cd80bc7227991d3d0d9a860aec313b84"
+        },
+        "ACC": {
+          "start": "2013-07-12 22:46:39",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 22518,
+          "duration_seconds": 703.6875,
+          "sha256": "127d765161877a445cfea76439395851cef0b8baa16a5f08422cacb8a3c2cf31"
+        }
+      },
+      "labeled_intervals": [],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 0,
+          "non_stress": 0
+        },
+        "15": {
+          "stress": 0,
+          "non_stress": 0
+        },
+        "30": {
+          "stress": 0,
+          "non_stress": 0
+        },
+        "60": {
+          "stress": 0,
+          "non_stress": 0
+        }
+      }
+    },
+    {
+      "subject_folder": "f14_b",
+      "canonical_subject_id": "f14",
+      "protocol_version": "V2",
+      "primary_included": false,
+      "exclusion_reason": "split f14 stress recording; primary complete-file cohort excludes both parts",
+      "tag_count": 9,
+      "tag_sha256": "ebf6c18f7e3d37e6d71a952529791795407c895654ccf85d5a052c823e87c37a",
+      "common_signal_start": "2013-07-12 22:59:54",
+      "common_signal_duration_seconds": 2168.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-07-12 22:59:54",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 8682,
+          "duration_seconds": 2170.5,
+          "sha256": "2354b101bf1ef517491fc118146177b02124992858b4ef5427bf55398b7b62ae"
+        },
+        "TEMP": {
+          "start": "2013-07-12 22:59:54",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 8672,
+          "duration_seconds": 2168.0,
+          "sha256": "668b59d26367b58a18bf81a731d717d8aa3ede16e33edcfc31ab24c48de5a726"
+        },
+        "ACC": {
+          "start": "2013-07-12 22:59:54",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 69402,
+          "duration_seconds": 2168.8125,
+          "sha256": "df8138ea0c565c769716cd085eaf3bfa79e5d07474839fce8b38e96b6e231b12"
+        }
+      },
+      "labeled_intervals": [],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 0,
+          "non_stress": 0
+        },
+        "15": {
+          "stress": 0,
+          "non_stress": 0
+        },
+        "30": {
+          "stress": 0,
+          "non_stress": 0
+        },
+        "60": {
+          "stress": 0,
+          "non_stress": 0
+        }
+      }
+    },
+    {
+      "subject_folder": "f15",
+      "canonical_subject_id": "f15",
+      "protocol_version": "V2",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 9,
+      "tag_sha256": "488ff232112f5fed699988e8861090761233fc3ba456f2e3e9134d3212430a62",
+      "common_signal_start": "2013-07-13 17:19:47",
+      "common_signal_duration_seconds": 4219.5,
+      "signals": {
+        "EDA": {
+          "start": "2013-07-13 17:19:47",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 16878,
+          "duration_seconds": 4219.5,
+          "sha256": "e02b569a9e5a4247f7d011ded855cea62a3911f7160ddd5f5ed208dfb3dcdc15"
+        },
+        "TEMP": {
+          "start": "2013-07-13 17:19:47",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 16880,
+          "duration_seconds": 4220.0,
+          "sha256": "ec0f0141ff8d4e132224b221182f79ade123119500e33aba1f611bcb8470fdc8"
+        },
+        "ACC": {
+          "start": "2013-07-13 17:19:47",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 135042,
+          "duration_seconds": 4220.0625,
+          "sha256": "3ba0c202de0eee80bbd9cb2cfd08f93b17c8e0934ca0c236736c1e0a3739588b"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-07-13 17:19:47",
+          "end_iso": "2013-07-13 17:53:17",
+          "duration_seconds": 2010.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-07-13 17:54:44",
+          "end_iso": "2013-07-13 17:59:08",
+          "duration_seconds": 264.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-07-13 17:59:08",
+          "end_iso": "2013-07-13 18:12:42",
+          "duration_seconds": 814.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-07-13 18:12:42",
+          "end_iso": "2013-07-13 18:13:20",
+          "duration_seconds": 38.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-07-13 18:13:42",
+          "end_iso": "2013-07-13 18:14:21",
+          "duration_seconds": 39.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-07-13 18:14:21",
+          "end_iso": "2013-07-13 18:24:56",
+          "duration_seconds": 635.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-07-13 18:24:56",
+          "end_iso": "2013-07-13 18:26:01",
+          "duration_seconds": 65.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 34,
+          "non_stress": 342
+        },
+        "15": {
+          "stress": 21,
+          "non_stress": 227
+        },
+        "30": {
+          "stress": 9,
+          "non_stress": 112
+        },
+        "60": {
+          "stress": 4,
+          "non_stress": 56
+        }
+      }
+    },
+    {
+      "subject_folder": "f16",
+      "canonical_subject_id": "f16",
+      "protocol_version": "V2",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 9,
+      "tag_sha256": "2701c116133816cd72ce751e5d25e379fb8c598c78df8ff327d67ac53526ac5b",
+      "common_signal_start": "2013-07-19 10:52:55",
+      "common_signal_duration_seconds": 3236.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-07-19 10:52:55",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 12954,
+          "duration_seconds": 3238.5,
+          "sha256": "f51a954ae96e40326fe5a67ad93055ad31c1c8356554bb9c28602d9beed8c969"
+        },
+        "TEMP": {
+          "start": "2013-07-19 10:52:55",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 12944,
+          "duration_seconds": 3236.0,
+          "sha256": "16e7139fe75bd2d5023d2896b8f1d145310d4d37d4e947b43fea1697df61556b"
+        },
+        "ACC": {
+          "start": "2013-07-19 10:52:55",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 103686,
+          "duration_seconds": 3240.1875,
+          "sha256": "c3ab86c9601e19e9d2615034437ae2bf029a6345d0618058824d47696770bc78"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-07-19 10:52:55",
+          "end_iso": "2013-07-19 11:07:16",
+          "duration_seconds": 861.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-07-19 11:08:37",
+          "end_iso": "2013-07-19 11:12:41",
+          "duration_seconds": 244.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-07-19 11:12:41",
+          "end_iso": "2013-07-19 11:28:16",
+          "duration_seconds": 935.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-07-19 11:28:16",
+          "end_iso": "2013-07-19 11:29:00",
+          "duration_seconds": 44.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-07-19 11:29:24",
+          "end_iso": "2013-07-19 11:29:54",
+          "duration_seconds": 30.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-07-19 11:29:54",
+          "end_iso": "2013-07-19 11:40:49",
+          "duration_seconds": 655.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-07-19 11:40:49",
+          "end_iso": "2013-07-19 11:41:25",
+          "duration_seconds": 36.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 30,
+          "non_stress": 241
+        },
+        "15": {
+          "stress": 19,
+          "non_stress": 160
+        },
+        "30": {
+          "stress": 8,
+          "non_stress": 79
+        },
+        "60": {
+          "stress": 3,
+          "non_stress": 39
+        }
+      }
+    },
+    {
+      "subject_folder": "f17",
+      "canonical_subject_id": "f17",
+      "protocol_version": "V2",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 9,
+      "tag_sha256": "1c61a37a5539f191ce48575c2fe58cf1daf5d3b8d7cd311ab67dd3b175a0c465",
+      "common_signal_start": "2013-07-20 16:00:52",
+      "common_signal_duration_seconds": 3439.5,
+      "signals": {
+        "EDA": {
+          "start": "2013-07-20 16:00:52",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 13758,
+          "duration_seconds": 3439.5,
+          "sha256": "a7b5ec3f94e830eef33f874ddca543977337a29cb65eda1ed99e29cbfd715d82"
+        },
+        "TEMP": {
+          "start": "2013-07-20 16:00:52",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 13768,
+          "duration_seconds": 3442.0,
+          "sha256": "6f4141ad8c59598f4eb04749114e62ebb3164ce2306e09925557a070a43be274"
+        },
+        "ACC": {
+          "start": "2013-07-20 16:00:52",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 110142,
+          "duration_seconds": 3441.9375,
+          "sha256": "b1d1d1eaa5653b3e1225018adae4b4db5117714d5b51b5e23cabc80cd766a48f"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-07-20 16:00:52",
+          "end_iso": "2013-07-20 16:13:00",
+          "duration_seconds": 728.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-07-20 16:15:16",
+          "end_iso": "2013-07-20 16:19:42",
+          "duration_seconds": 266.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-07-20 16:19:42",
+          "end_iso": "2013-07-20 16:33:22",
+          "duration_seconds": 820.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-07-20 16:33:22",
+          "end_iso": "2013-07-20 16:34:07",
+          "duration_seconds": 45.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-07-20 16:34:31",
+          "end_iso": "2013-07-20 16:35:19",
+          "duration_seconds": 48.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-07-20 16:35:19",
+          "end_iso": "2013-07-20 16:48:58",
+          "duration_seconds": 819.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-07-20 16:48:58",
+          "end_iso": "2013-07-20 16:49:44",
+          "duration_seconds": 46.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 34,
+          "non_stress": 232
+        },
+        "15": {
+          "stress": 23,
+          "non_stress": 154
+        },
+        "30": {
+          "stress": 11,
+          "non_stress": 76
+        },
+        "60": {
+          "stress": 4,
+          "non_stress": 37
+        }
+      }
+    },
+    {
+      "subject_folder": "f18",
+      "canonical_subject_id": "f18",
+      "protocol_version": "V2",
+      "primary_included": true,
+      "exclusion_reason": "",
+      "tag_count": 9,
+      "tag_sha256": "c979c76d16285b7e79352d1f043aa692962e0ca961aa0a90e656af4d2ffd15a3",
+      "common_signal_start": "2013-07-21 19:25:10",
+      "common_signal_duration_seconds": 3138.0,
+      "signals": {
+        "EDA": {
+          "start": "2013-07-21 19:25:10",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 12552,
+          "duration_seconds": 3138.0,
+          "sha256": "5fcc158e09dc4cf3f6bd146952866fdf5a68df64328a0303214b94e49cd0f38b"
+        },
+        "TEMP": {
+          "start": "2013-07-21 19:25:10",
+          "sampling_rate_hz": 4.0,
+          "sample_count": 12560,
+          "duration_seconds": 3140.0,
+          "sha256": "eb593dad3eeb28c4c660376cc97fdfdf2c8d3a81f71121f9d4d4d3e7147f87f6"
+        },
+        "ACC": {
+          "start": "2013-07-21 19:25:10",
+          "sampling_rate_hz": 32.0,
+          "sample_count": 100524,
+          "duration_seconds": 3141.375,
+          "sha256": "ae39b2ec25381a3d7a59258ec6061e0654a1f38e0c4bcf4efb92f00b2ade6152"
+        }
+      },
+      "labeled_intervals": [
+        {
+          "stage": "baseline",
+          "label": "non_stress",
+          "start_iso": "2013-07-21 19:25:10",
+          "end_iso": "2013-07-21 19:41:25",
+          "duration_seconds": 975.0
+        },
+        {
+          "stage": "tmct",
+          "label": "stress",
+          "start_iso": "2013-07-21 19:42:51",
+          "end_iso": "2013-07-21 19:46:47",
+          "duration_seconds": 236.0
+        },
+        {
+          "stage": "first_rest",
+          "label": "non_stress",
+          "start_iso": "2013-07-21 19:46:47",
+          "end_iso": "2013-07-21 19:59:45",
+          "duration_seconds": 778.0
+        },
+        {
+          "stage": "real_opinion",
+          "label": "stress",
+          "start_iso": "2013-07-21 19:59:45",
+          "end_iso": "2013-07-21 20:00:22",
+          "duration_seconds": 37.0
+        },
+        {
+          "stage": "opposite_opinion",
+          "label": "stress",
+          "start_iso": "2013-07-21 20:00:40",
+          "end_iso": "2013-07-21 20:01:17",
+          "duration_seconds": 37.0
+        },
+        {
+          "stage": "second_rest",
+          "label": "non_stress",
+          "start_iso": "2013-07-21 20:01:17",
+          "end_iso": "2013-07-21 20:12:00",
+          "duration_seconds": 643.0
+        },
+        {
+          "stage": "subtract",
+          "label": "stress",
+          "start_iso": "2013-07-21 20:12:00",
+          "end_iso": "2013-07-21 20:12:36",
+          "duration_seconds": 36.0
+        }
+      ],
+      "candidate_window_counts_after_5s_edge_trim": {
+        "10": {
+          "stress": 28,
+          "non_stress": 235
+        },
+        "15": {
+          "stress": 18,
+          "non_stress": 157
+        },
+        "30": {
+          "stress": 7,
+          "non_stress": 78
+        },
+        "60": {
+          "stress": 3,
+          "non_stress": 38
+        }
+      }
+    }
+  ],
+  "scientific_outcomes_computed": false,
+  "model_fitted": false
+}

@@ -1,0 +1,74 @@
+{
+  "rival_prediction_matrix": [
+    {
+      "hypothesis_id": "H1",
+      "meno_j_hypothesis": "Inter-subject variability in cardiovascular dynamics violates the exchangeability assumption required for conformal prediction coverage guarantees.",
+      "meno_j_prediction": "When calibrating on one subject and testing on another, coverage will drop significantly below nominal level, and this drop will persist even after controlling for measured confounders (age, sex, BMI, etc.) because unmeasured physiological traits cause systematic error distribution shifts.",
+      "rival_explanation": "The coverage failure across subjects is due to insufficient per-subject calibration sample size, leading to high variance in quantile estimates rather than systematic distribution shifts.",
+      "rival_prediction": "If per-subject calibration sample size is increased (e.g., >500 beats), coverage will stabilize at nominal levels across subjects, because the exchangeability assumption holds but finite-sample estimation error was the problem.",
+      "distinguishing_test": "Compare coverage across subjects using varying calibration sample sizes (e.g., 50, 200, 500, 1000 beats per subject). If coverage improves with larger sample sizes and eventually reaches nominal, it supports the rival; if coverage remains low regardless of sample size, it supports the PASS hypothesis.",
+      "what_result_supports_meno_j": "Coverage remains significantly below nominal even with large per-subject calibration samples (>=500 beats) after controlling for confounders.",
+      "what_result_supports_rival": "Coverage approaches nominal as per-subject calibration sample size increases, with no systematic difference across subjects after sufficient data."
+    },
+    {
+      "hypothesis_id": "H3",
+      "meno_j_hypothesis": "Circadian modulation of autonomic tone creates periodic non-stationarity in heart rate variability that conformal prediction fails to capture with static calibration sets.",
+      "meno_j_prediction": "Under constant routine protocol, prediction error variance will show a 24-hour rhythm (wider during circadian day, narrower during circadian night) even when sleep/wake and activity are controlled, because the endogenous circadian drive modulates autonomic tone.",
+      "rival_explanation": "The apparent circadian variation in prediction error variance is actually driven by sleep stage transitions (REM vs NREM) that co-occur with circadian phase but are the direct cause of autonomic changes.",
+      "rival_prediction": "If sleep stage is controlled (e.g., by analyzing only wake periods or only NREM sleep), the 24-hour rhythm in prediction error variance will disappear, because the effect is mediated by sleep stage not circadian phase per se.",
+      "distinguishing_test": "Analyze prediction error variance across circadian phases while restricting to a single sleep/wake state (e.g., only wake epochs) or using forced desynchrony protocol to separate circadian and sleep effects. If rhythm persists in wake-only data, supports PASS; if rhythm vanishes, supports rival.",
+      "what_result_supports_meno_j": "A significant 24-hour rhythm in prediction error variance persists during wake epochs under constant routine.",
+      "what_result_supports_rival": "The 24-hour rhythm in prediction error variance disappears when analyzing only wake epochs or when circadian phase is dissociated from sleep stage via forced desynchrony."
+    },
+    {
+      "hypothesis_id": "H4",
+      "meno_j_hypothesis": "Progressive pathophysiological remodeling in chronic disease alters the signal-generating process faster than the conformal calibration window can track.",
+      "meno_j_prediction": "In heart failure patients, conformal coverage will degrade over weeks as ventricular remodeling progresses, and this degradation will correlate with clinical markers (e.g., NT-proBNP, echocardiographic measures) even after accounting for medication changes and acute events.",
+      "rival_explanation": "The apparent degradation in coverage over time is due to gradual sensor drift (e.g., PPG sensor degradation, electrode impedance changes) rather than true physiological remodeling.",
+      "rival_prediction": "If sensors are replaced or recalibrated regularly, coverage will remain stable over weeks despite disease progression, because the signal-generating process is stationary relative to the sensor.",
+      "distinguishing_test": "Compare coverage trajectories in patients using the same sensor vs. those with periodic sensor replacement/recalibration. Also, test sensor output on a stable reference signal (e.g., calibration phantom) over time. If coverage degradation correlates with sensor drift measures, supports rival; if degradation correlates with clinical remodeling markers independent of sensor drift, supports PASS.",
+      "what_result_supports_meno_j": "Coverage degradation correlates with clinical remodeling markers (NT-proBNP, echo) but not with sensor drift metrics.",
+      "what_result_supports_rival": "Coverage degradation correlates with sensor drift metrics and is eliminated by sensor replacement/recalibration."
+    },
+    {
+      "hypothesis_id": "H6",
+      "meno_j_hypothesis": "Unobserved subpopulations defined by medication response or genetic polymorphisms create hidden stratification that breaks marginal coverage guarantees.",
+      "meno_j_prediction": "When calibration data mixes beta-blocker responders and non-responders, marginal coverage will fail for the underrepresented subgroup (e.g., non-responders), and this failure will be resolved by stratifying calibration by genetically-defined response groups.",
+      "rival_explanation": "The coverage failure is due to continuous heterogeneity in drug response (e.g., dose-response gradient) rather than discrete subgroups; marginal coverage fails because the calibration set does not adequately represent the tails of the continuous response distribution.",
+      "rival_prediction": "If calibration set size is increased to better represent the full continuum of response, marginal coverage will improve without needing discrete subgroup labels, because the error distribution shifts smoothly with response level.",
+      "distinguishing_test": "Simulate or empirically test coverage as a function of calibration set size and composition. If coverage improves smoothly with more data covering the response continuum, supports rival; if coverage only improves when discrete subgroups are explicitly separated, supports PASS.",
+      "what_result_supports_meno_j": "Coverage fails for non-responders even with large calibration sets that include them, unless calibration is stratified by discrete genetic subgroups.",
+      "what_result_supports_rival": "Coverage approaches nominal for all response levels as calibration set size increases and covers the continuous response distribution, without discrete stratification."
+    },
+    {
+      "hypothesis_id": "H7",
+      "meno_j_hypothesis": "Long-range temporal dependence in physiological signals violates the exchangeability assumption even after conditioning on recent history.",
+      "meno_j_prediction": "Even after conditioning on recent history, prediction errors will show long-range dependence (e.g., DFA alpha > 0.5, 1/f spectrum), and conformal coverage will be unstable because the effective sample size in the calibration window is much smaller than its length.",
+      "rival_explanation": "The apparent long-range dependence is actually due to non-stationary variance (heteroscedasticity) in the signal, which creates spurious long-memory signatures; the true error process is short-range dependent but with time-varying variance.",
+      "rival_prediction": "If the signal is variance-stabilized (e.g., by modeling and removing heteroscedasticity), the long-range dependence in errors will disappear and conformal coverage will stabilize, because the exchangeability violation was due to changing variance not long memory.",
+      "distinguishing_test": "Apply a variance-stabilizing transformation (e.g., GARCH modeling, wavelet-based variance normalization) to the signal before conformal prediction. If coverage stabilizes and long-range dependence metrics (DFA, Hurst) drop to short-range levels, supports rival; if long-range dependence persists and coverage remains unstable, supports PASS.",
+      "what_result_supports_meno_j": "Long-range dependence in errors persists after variance stabilization, and coverage remains unstable.",
+      "what_result_supports_rival": "Variance stabilization eliminates long-range dependence signatures and restores stable conformal coverage."
+    },
+    {
+      "hypothesis_id": "H8",
+      "meno_j_hypothesis": "Segment-dependent motion artifact prevalence creates heteroscedastic noise that conformal prediction cannot calibrate for without artifact labels.",
+      "meno_j_prediction": "During high-activity segments, prediction intervals will widen unpredictably and coverage will drop, even after accelerometer-based artifact rejection, because residual motion artifact creates heteroscedastic noise not fully captured by accelerometer magnitude.",
+      "rival_explanation": "The coverage drop during activity is due to genuine physiological non-stationarity (exercise-induced HRV changes) rather than motion artifact; the conformal predictor fails because the error distribution changes with physiological state, not because of artifact.",
+      "rival_prediction": "If the conformal predictor conditions on physiological state (e.g., heart rate, HRV features) instead of artifact labels, coverage will stabilize during activity, because the heteroscedasticity is driven by physiology not artifact.",
+      "distinguishing_test": "Compare coverage during activity segments when using (a) accelerometer-based artifact rejection only, (b) conditioning on physiological state (HR, HRV), (c) both. If conditioning on physiological state restores coverage without artifact labels, supports rival; if coverage only improves with artifact labels (or perfect artifact removal), supports PASS.",
+      "what_result_supports_meno_j": "Coverage during activity remains low even when conditioning on physiological state, but improves when artifact labels are available.",
+      "what_result_supports_rival": "Conditioning on physiological state (HR, HRV) restores nominal coverage during activity without artifact labels."
+    },
+    {
+      "hypothesis_id": "H9",
+      "meno_j_hypothesis": "Sleep-stage-dependent cardiorespiratory coupling alters the predictability of cardiovascular signals in ways not captured by standard conformal conditioning.",
+      "meno_j_prediction": "Conformal coverage will be significantly lower in REM sleep compared to NREM sleep, and this difference will persist after controlling for circadian phase, medications, and body position, because REM-specific autonomic instability and irregular breathing increase prediction error variance.",
+      "rival_explanation": "The coverage difference between sleep stages is driven by respiratory artifacts (apneas, hypopneas) that are more frequent in REM, not by sleep-stage-specific cardiorespiratory coupling per se.",
+      "rival_prediction": "If segments with respiratory events are excluded, the coverage difference between REM and NREM will disappear, because the artifacts cause the prediction errors, not the sleep stage itself.",
+      "distinguishing_test": "Compare coverage in REM vs NREM after excluding epochs with apneas/hypopneas (using PSG respiratory channels). If coverage equalizes, supports rival; if REM coverage remains lower, supports PASS.",
+      "what_result_supports_meno_j": "Coverage in REM remains significantly lower than NREM even after excluding respiratory event epochs.",
+      "what_result_supports_rival": "Coverage difference between REM and NREM disappears when respiratory event epochs are excluded."
+    }
+  ]
+}

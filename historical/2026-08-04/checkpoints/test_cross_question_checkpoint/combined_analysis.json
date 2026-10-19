@@ -1,0 +1,297 @@
+{
+  "combined_analysis": {
+    "strongest_surviving_hypotheses": [
+      {
+        "rank": 1,
+        "source_question": "Q1",
+        "hypothesis_id": "H1",
+        "selection_reason": "Specific causal mechanism with a validated discriminating test.",
+        "comparative_advantage": "More directly measurable than alternative survivors.",
+        "residual_weakness": "External validity remains bounded by the source dataset."
+      },
+      {
+        "rank": 2,
+        "source_question": "Q2",
+        "hypothesis_id": "H1",
+        "selection_reason": "Specific causal mechanism with a validated discriminating test.",
+        "comparative_advantage": "More directly measurable than alternative survivors.",
+        "residual_weakness": "External validity remains bounded by the source dataset."
+      },
+      {
+        "rank": 3,
+        "source_question": "Q3",
+        "hypothesis_id": "H1",
+        "selection_reason": "Specific causal mechanism with a validated discriminating test.",
+        "comparative_advantage": "More directly measurable than alternative survivors.",
+        "residual_weakness": "External validity remains bounded by the source dataset."
+      },
+      {
+        "rank": 4,
+        "source_question": "Q1",
+        "hypothesis_id": "H2",
+        "selection_reason": "Specific causal mechanism with a validated discriminating test.",
+        "comparative_advantage": "More directly measurable than alternative survivors.",
+        "residual_weakness": "External validity remains bounded by the source dataset."
+      },
+      {
+        "rank": 5,
+        "source_question": "Q2",
+        "hypothesis_id": "H2",
+        "selection_reason": "Specific causal mechanism with a validated discriminating test.",
+        "comparative_advantage": "More directly measurable than alternative survivors.",
+        "residual_weakness": "External validity remains bounded by the source dataset."
+      },
+      {
+        "rank": 6,
+        "source_question": "Q3",
+        "hypothesis_id": "H2",
+        "selection_reason": "Specific causal mechanism with a validated discriminating test.",
+        "comparative_advantage": "More directly measurable than alternative survivors.",
+        "residual_weakness": "External validity remains bounded by the source dataset."
+      },
+      {
+        "rank": 7,
+        "source_question": "Q1",
+        "hypothesis_id": "H3",
+        "selection_reason": "Specific causal mechanism with a validated discriminating test.",
+        "comparative_advantage": "More directly measurable than alternative survivors.",
+        "residual_weakness": "External validity remains bounded by the source dataset."
+      },
+      {
+        "rank": 8,
+        "source_question": "Q2",
+        "hypothesis_id": "H3",
+        "selection_reason": "Specific causal mechanism with a validated discriminating test.",
+        "comparative_advantage": "More directly measurable than alternative survivors.",
+        "residual_weakness": "External validity remains bounded by the source dataset."
+      },
+      {
+        "rank": 9,
+        "source_question": "Q3",
+        "hypothesis_id": "H3",
+        "selection_reason": "Specific causal mechanism with a validated discriminating test.",
+        "comparative_advantage": "More directly measurable than alternative survivors.",
+        "residual_weakness": "External validity remains bounded by the source dataset."
+      }
+    ],
+    "recurring_structural_patterns": [
+      {
+        "pattern_id": "P1",
+        "pattern_name": "Recurring structure 1",
+        "description": "A concrete structure recurring across physiological uncertainty questions.",
+        "supporting_hypotheses": [
+          {
+            "source_question": "Q1",
+            "hypothesis_id": "H1"
+          },
+          {
+            "source_question": "Q2",
+            "hypothesis_id": "H1"
+          },
+          {
+            "source_question": "Q3",
+            "hypothesis_id": "H1"
+          }
+        ],
+        "causal_structure": "A measured modifier shifts residual distributions under a boundary condition.",
+        "boundary_conditions": [
+          "Specified sensor and subject regime"
+        ],
+        "shared_confounder_controls": [
+          "Subject baseline and motion control"
+        ],
+        "testable_meta_prediction": "Coverage changes only when the measured modifier crosses its boundary."
+      },
+      {
+        "pattern_id": "P2",
+        "pattern_name": "Recurring structure 2",
+        "description": "A concrete structure recurring across physiological uncertainty questions.",
+        "supporting_hypotheses": [
+          {
+            "source_question": "Q1",
+            "hypothesis_id": "H2"
+          },
+          {
+            "source_question": "Q2",
+            "hypothesis_id": "H2"
+          },
+          {
+            "source_question": "Q3",
+            "hypothesis_id": "H2"
+          }
+        ],
+        "causal_structure": "A measured modifier shifts residual distributions under a boundary condition.",
+        "boundary_conditions": [
+          "Specified sensor and subject regime"
+        ],
+        "shared_confounder_controls": [
+          "Subject baseline and motion control"
+        ],
+        "testable_meta_prediction": "Coverage changes only when the measured modifier crosses its boundary."
+      },
+      {
+        "pattern_id": "P3",
+        "pattern_name": "Recurring structure 3",
+        "description": "A concrete structure recurring across physiological uncertainty questions.",
+        "supporting_hypotheses": [
+          {
+            "source_question": "Q1",
+            "hypothesis_id": "H3"
+          },
+          {
+            "source_question": "Q2",
+            "hypothesis_id": "H3"
+          },
+          {
+            "source_question": "Q3",
+            "hypothesis_id": "H3"
+          }
+        ],
+        "causal_structure": "A measured modifier shifts residual distributions under a boundary condition.",
+        "boundary_conditions": [
+          "Specified sensor and subject regime"
+        ],
+        "shared_confounder_controls": [
+          "Subject baseline and motion control"
+        ],
+        "testable_meta_prediction": "Coverage changes only when the measured modifier crosses its boundary."
+      },
+      {
+        "pattern_id": "P4",
+        "pattern_name": "Recurring structure 4",
+        "description": "A concrete structure recurring across physiological uncertainty questions.",
+        "supporting_hypotheses": [
+          {
+            "source_question": "Q1",
+            "hypothesis_id": "H1"
+          },
+          {
+            "source_question": "Q2",
+            "hypothesis_id": "H2"
+          },
+          {
+            "source_question": "Q3",
+            "hypothesis_id": "H3"
+          }
+        ],
+        "causal_structure": "A measured modifier shifts residual distributions under a boundary condition.",
+        "boundary_conditions": [
+          "Specified sensor and subject regime"
+        ],
+        "shared_confounder_controls": [
+          "Subject baseline and motion control"
+        ],
+        "testable_meta_prediction": "Coverage changes only when the measured modifier crosses its boundary."
+      },
+      {
+        "pattern_id": "P5",
+        "pattern_name": "Recurring structure 5",
+        "description": "A concrete structure recurring across physiological uncertainty questions.",
+        "supporting_hypotheses": [
+          {
+            "source_question": "Q1",
+            "hypothesis_id": "H3"
+          },
+          {
+            "source_question": "Q2",
+            "hypothesis_id": "H1"
+          },
+          {
+            "source_question": "Q3",
+            "hypothesis_id": "H2"
+          }
+        ],
+        "causal_structure": "A measured modifier shifts residual distributions under a boundary condition.",
+        "boundary_conditions": [
+          "Specified sensor and subject regime"
+        ],
+        "shared_confounder_controls": [
+          "Subject baseline and motion control"
+        ],
+        "testable_meta_prediction": "Coverage changes only when the measured modifier crosses its boundary."
+      }
+    ],
+    "cross_question_comparisons": [
+      {
+        "question_pair": "Q1-Q2",
+        "shared_structures": [
+          "Conditional residual shift"
+        ],
+        "distinctive_structures": [
+          "Question-specific measurement boundary"
+        ],
+        "discriminating_analysis": "Fit the same hierarchical interaction and compare its conditional effect."
+      },
+      {
+        "question_pair": "Q1-Q3",
+        "shared_structures": [
+          "Conditional residual shift"
+        ],
+        "distinctive_structures": [
+          "Question-specific measurement boundary"
+        ],
+        "discriminating_analysis": "Fit the same hierarchical interaction and compare its conditional effect."
+      },
+      {
+        "question_pair": "Q2-Q3",
+        "shared_structures": [
+          "Conditional residual shift"
+        ],
+        "distinctive_structures": [
+          "Question-specific measurement boundary"
+        ],
+        "discriminating_analysis": "Fit the same hierarchical interaction and compare its conditional effect."
+      }
+    ],
+    "next_experiment_recommendations": [
+      {
+        "experiment_id": "E3.1",
+        "title": "Validated follow-up 1",
+        "target_pattern_ids": [
+          "P1",
+          "P5"
+        ],
+        "design": "A preregistered hierarchical ablation with subject-held-out evaluation.",
+        "minimum_data_needed": [
+          "Signals",
+          "subject IDs",
+          "segment timestamps"
+        ],
+        "primary_outcome": "Conditional coverage error with uncertainty interval.",
+        "failure_condition": "No conditional coverage change under the preregistered modifier."
+      },
+      {
+        "experiment_id": "E3.2",
+        "title": "Validated follow-up 2",
+        "target_pattern_ids": [
+          "P2",
+          "P5"
+        ],
+        "design": "A preregistered hierarchical ablation with subject-held-out evaluation.",
+        "minimum_data_needed": [
+          "Signals",
+          "subject IDs",
+          "segment timestamps"
+        ],
+        "primary_outcome": "Conditional coverage error with uncertainty interval.",
+        "failure_condition": "No conditional coverage change under the preregistered modifier."
+      },
+      {
+        "experiment_id": "E3.3",
+        "title": "Validated follow-up 3",
+        "target_pattern_ids": [
+          "P3",
+          "P5"
+        ],
+        "design": "A preregistered hierarchical ablation with subject-held-out evaluation.",
+        "minimum_data_needed": [
+          "Signals",
+          "subject IDs",
+          "segment timestamps"
+        ],
+        "primary_outcome": "Conditional coverage error with uncertainty interval.",
+        "failure_condition": "No conditional coverage change under the preregistered modifier."
+      }
+    ]
+  }
+}

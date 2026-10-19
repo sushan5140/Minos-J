@@ -1,0 +1,154 @@
+{
+  "statistical_testability_builds": [
+    {
+      "hypothesis_id": "H1",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Based on known inter-subject variability in autonomic measures (RMSSD CV ~30-50% across phenotypes) and prior work showing conditional coverage deviations of 5-15% in heterogeneous populations. Effect size estimable from pilot data with 30+ subjects spanning autonomic phenotypes.",
+      "minimum_data_needed": [
+        "Multi-subject physiological dataset with ≥30 subjects covering diverse autonomic phenotypes (athletes, heart failure, healthy)",
+        "Gold-standard autonomic assessments per subject: 24h HRV (RMSSD), baroreflex sensitivity (sequence method), LF/HF ratio",
+        "Standardized segment labels (supine rest, paced breathing, orthostatic challenge) with ≥50 segments per subject",
+        "Conformal prediction pipeline with subject-agnostic calibration set and segment-level nonconformity scores"
+      ],
+      "testable_prediction": "Conditional coverage deviation from nominal level will be significantly larger for subjects in extreme autonomic phenotype tertiles (low/high RMSSD) compared to middle tertile, with a positive Spearman correlation (ρ > 0.4) between inter-subject CV of RMSSD and absolute coverage deviation.",
+      "failure_condition": "No significant correlation between autonomic variability metrics and coverage deviation after controlling for age, medication, and fitness (partial Spearman ρ < 0.2, p > 0.05), or conditional coverage deviations < 2% across all phenotype tertiles.",
+      "statistical_test_plan": "1. Compute conditional coverage per subject. 2. Group subjects by autonomic phenotype tertiles (RMSSD, BRS, LF/HF). 3. Fit linear mixed model: |coverage_deviation| ~ phenotype_tertile + (1|subject) + age + medication_class + fitness. 4. Test fixed effect of tertile (ANOVA, α=0.05). 5. Compute partial Spearman correlation between inter-subject CV of RMSSD and coverage deviation controlling for confounders. 6. Bootstrap 95% CI for correlation. 7. Sensitivity: repeat with stratified conformal (per phenotype) to verify coverage stabilization.",
+      "statistical_testability_notes": "Requires sufficient subjects per tertile (≥10). If autonomic measures unavailable, use HRV proxies but note reduced construct validity. Rival prediction from Stage 4.2 tested by including confounders as covariates."
+    },
+    {
+      "hypothesis_id": "H2",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Motion artifacts can reduce SNR by 10-20 dB and cause feature distribution shifts with KL divergence >1.0. Prior wearable studies show coverage drops of 15-30% in high-motion vs. resting segments. Effect size estimable from existing wearable datasets with activity labels.",
+      "minimum_data_needed": [
+        "Wearable dataset with synchronized triaxial accelerometer and ECG/PPG (≥100 hours)",
+        "Ground-truth activity labels (video-annotated or protocol-defined) for segments: sitting, walking, running",
+        "Segment-level artifact metrics: accelerometer variance (g²), ECG baseline wander amplitude (mV), SNR (dB)",
+        "Conformal prediction features sensitive to motion (HRV time-domain, morphological features)"
+      ],
+      "testable_prediction": "Conditional coverage for walking/running segments will be ≥15 percentage points lower than for sitting segments. Coverage error will correlate positively with accelerometer variance (Spearman ρ > 0.5) and negatively with SNR (ρ < -0.5).",
+      "failure_condition": "Conditional coverage difference between high-motion and resting segments < 5 percentage points after controlling for segment duration, sensor placement, and skin impedance, or correlation between accelerometer variance and coverage error not significant (p > 0.05).",
+      "statistical_test_plan": "1. Stratify segments by activity label. 2. Compute conditional coverage per stratum. 3. Fit beta regression: coverage ~ activity_label + segment_duration + placement_score + impedance. 4. Test activity_label effect (Wald test, α=0.05). 5. Compute Spearman correlations between artifact metrics and coverage error per segment. 6. KS test for nonconformity score distribution shift between sitting and walking. 7. Mediation analysis: does SNR mediate activity→coverage path?",
+      "statistical_testability_notes": "Control for segment duration by fixing window length. Use controlled lab data if free-living confounders too strong. Rival prediction tested by including confounders in regression."
+    },
+    {
+      "hypothesis_id": "H3",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Sleep stage transitions alter HRV morphology (RMSSD changes 20-40%) and respiration variability. Pilot PSG studies show coverage gaps of 8-12% during transitions vs. stable stages. Effect size estimable from PSG datasets with autonomic markers.",
+      "minimum_data_needed": [
+        "Polysomnography dataset with ≥50 subjects, full sleep staging (N1,N2,N3,REM,Wake)",
+        "Continuous ECG, respiration, EDA with segment labels (coarse: sleep/wake)",
+        "Gold-standard latent state annotations: sleep stage transitions, cortisol surges (if available)",
+        "Conformal prediction using only coarse labels as covariates"
+      ],
+      "testable_prediction": "Segments containing verified autonomic state transitions (NREM→REM, stress onset) will show conditional coverage ≥8 percentage points lower than stable-state segments with identical coarse labels. Coverage gap will correlate with mutual information between latent state and nonconformity scores (MI > 0.1 bits).",
+      "failure_condition": "No significant coverage difference between transition and stable segments within same coarse label after controlling for circadian phase, temperature, and apnea (paired t-test p > 0.05, mean difference < 3%), or mutual information not significantly >0.",
+      "statistical_test_plan": "1. Identify transition segments (stage change within window) and stable segments. 2. Compute conditional coverage per latent state within coarse label. 3. Paired t-test (or Wilcoxon) comparing coverage in transition vs. stable segments matched on coarse label. 4. Estimate mutual information between latent state and nonconformity scores (kNN estimator). 5. Permutation test for MI significance (α=0.05). 6. Control for confounders via stratified analysis within circadian phase bins.",
+      "statistical_testability_notes": "Requires PSG ground truth. If cortisol unavailable, use HRV/EDA markers of sympathetic activation. Rival prediction tested by adding confounders as covariates in mixed model."
+    },
+    {
+      "hypothesis_id": "H4",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Circadian HRV amplitude ~30-50% (RMSSD). Prior time-stratified conformal studies show coverage variation of 5-10% across 4-hour bins. Effect size estimable from >48h continuous monitoring with hormonal markers.",
+      "minimum_data_needed": [
+        "Long-term monitoring dataset >48h with precise timestamps (≥30 subjects)",
+        "Circadian phase markers: core body temperature, melatonin, cortisol (or validated proxies)",
+        "Segments stratified into 4-hour circadian phase bins",
+        "Conformal prediction without time-of-day covariates, with sleep/wake control"
+      ],
+      "testable_prediction": "Conditional coverage will follow a cosinor rhythm with amplitude ≥5% (peak-to-trough). Coverage deviation amplitude will correlate with HRV_RMSSD diurnal amplitude (Pearson r > 0.4). Coverage lowest at circadian phases underrepresented in calibration set.",
+      "failure_condition": "Cosinor model fit not significant (p > 0.05 for amplitude), or coverage amplitude < 2%, or no correlation between HRV diurnal amplitude and coverage deviation amplitude after controlling for activity, meals, light.",
+      "statistical_test_plan": "1. Bin segments by circadian phase (4h bins). 2. Compute conditional coverage per bin. 3. Fit cosinor model: coverage ~ mesor + amplitude*cos(2π*time/24 + phase). 4. Test amplitude ≠ 0 (F-test, α=0.05). 5. Correlate coverage deviation amplitude with HRV_RMSSD diurnal amplitude across subjects. 6. Constant routine subset analysis: if available, test coverage stability under controlled conditions. 7. Control for behavioral confounders via multiple regression.",
+      "statistical_testability_notes": "Constant routine protocol is gold standard but rare; use statistical control if unavailable. Rival prediction tested by including activity, meal, light covariates."
+    },
+    {
+      "hypothesis_id": "H5",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Annotation error rates for difficult segments can reach 10-20%. Simulation studies show label noise correlated with features causes asymmetric coverage errors of 5-15%. Effect size estimable from datasets with multiple expert annotations or ground-truth subsets.",
+      "minimum_data_needed": [
+        "Dataset with quantified annotation quality: multiple expert annotations per segment, or algorithmic pre-labels with confidence, or gold-truth subset (≥500 segments)",
+        "Segment difficulty scores (e.g., clinician-rated, algorithmic uncertainty)",
+        "Annotation metadata: expert fatigue (session duration), pre-label confidence",
+        "Conformal prediction using noisy labels as ground truth"
+      ],
+      "testable_prediction": "Conditional coverage deviation will correlate with annotation error rate per segment type (Spearman ρ > 0.4). False negative errors cause under-coverage (coverage < nominal - 5%), false positive errors cause over-coverage (coverage > nominal + 5%). Asymmetry index (under - over) will correlate with error type prevalence.",
+      "failure_condition": "No significant correlation between annotation error rate and coverage deviation after matching on SQI and controlling for fatigue (partial ρ < 0.2, p > 0.05), or asymmetry index not significantly different from zero.",
+      "statistical_test_plan": "1. Estimate annotation error rate per segment type via inter-rater agreement or vs. gold truth. 2. Compute conditional coverage per segment type. 3. Fit linear model: coverage_deviation ~ error_rate + SQI + fatigue_index + prelabel_confidence. 4. Test error_rate coefficient (t-test, α=0.05). 5. Compute asymmetry index per segment type. 6. KS test for nonconformity score distribution shift between clean and noisy labels. 7. Simulate label noise with known correlation structure to validate mechanism.",
+      "statistical_testability_notes": "Requires independent SQI measure. If gold truth unavailable, use latent class models to estimate error rates. Rival prediction tested by including SQI and fatigue as covariates."
+    },
+    {
+      "hypothesis_id": "H6",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Theoretical finite-sample bounds: conditional coverage error ~ O(1/√n_segment). For rare segments (prevalence 0.1%, calibration n=10), expected deviation >20%. Empirical studies show 10-30% conditional coverage gaps for rare classes. Effect size directly estimable by sub-sampling calibration set.",
+      "minimum_data_needed": [
+        "Calibration set with known segment proportions reflecting operational prevalence (e.g., arrhythmia types: AFib 1%, VT 0.1%, normal 98.9%)",
+        "Sufficient test samples per segment (≥200) to estimate conditional coverage reliably",
+        "Conformal prediction with marginal coverage guarantee only",
+        "Ability to sub-sample calibration set to vary segment_prevalence_ratio"
+      ],
+      "testable_prediction": "Conditional coverage deviation magnitude will follow power-law relationship with calibration sample size: |deviation| ∝ n_segment^{-0.5} (log-log slope ≈ -0.5). Rare segments (n_segment < 30) will show deviations >10%; common segments (n_segment > 500) deviations <2%.",
+      "failure_condition": "Log-log slope of deviation vs. n_segment not significantly different from 0 (p > 0.05), or rare segments with matched variability/subject representation show deviations <5% when sub-sampled to same n_segment.",
+      "statistical_test_plan": "1. Sub-sample calibration set to create varying prevalence ratios (10 levels). 2. For each, compute conditional coverage per segment. 3. Fit linear model on log-log scale: log(|deviation|) ~ log(n_segment). 4. Test slope = -0.5 (t-test, α=0.05). 5. Compare rare vs. common segments matched on variability and subject representation (paired test). 6. Estimate minimum n_segment for deviation <2% with 95% probability via bootstrap.",
+      "statistical_testability_notes": "Directly testable by sub-sampling; no new data collection needed if calibration set large enough. Rival prediction tested by matching on variability and subject representation."
+    },
+    {
+      "hypothesis_id": "H7",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Physiological autocorrelation time constants: HRV ~10-100s, EEG ~1-10s. Theory predicts coverage degradation when segment spacing < 5*τ. Prior work shows 5-15% coverage drop for adjacent vs. spaced segments. Effect size estimable from time series with characterized autocorrelation.",
+      "minimum_data_needed": [
+        "Physiological time series with characterized autocorrelation: ECG (HRV), EEG, BPV (≥20 subjects, ≥1h each)",
+        "Segments of fixed length (30s, 60s, 300s) with varying spacing (0s to 300s)",
+        "Standard conformal prediction ignoring temporal dependence",
+        "Block conformal or dependent conformal method as benchmark"
+      ],
+      "testable_prediction": "Coverage will decrease as lag-1 autocorrelation increases (Spearman ρ < -0.4). Coverage will approach nominal when segment_spacing_s > 5*autocorrelation_time_constant_s. Effective sample size (n_eff = segment_length / τ) will predict coverage deviation (R² > 0.3).",
+      "failure_condition": "No significant correlation between autocorrelation strength and coverage deviation after controlling for non-stationarity and overlap (partial ρ > -0.2, p > 0.05), or coverage nominal even at zero spacing when segments are stationary and non-overlapping.",
+      "statistical_test_plan": "1. Estimate autocorrelation time constant τ per signal per subject. 2. Create segments with varying spacing (0, τ, 5τ, 10τ). 3. Compute coverage per spacing condition. 4. Fit mixed model: coverage ~ spacing/τ + lag1_autocorr + stationarity_pvalue + (1|subject). 5. Test spacing/τ coefficient. 6. Compare standard vs. block conformal (paired t-test). 7. Verify stationarity (KPSS test) and non-overlap.",
+      "statistical_testability_notes": "Must ensure segments are stationary and non-overlapping. Use paced breathing to control respiration. Rival prediction tested by including stationarity and overlap as covariates."
+    },
+    {
+      "hypothesis_id": "H8",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "SNR variations of 20 dB cause prediction error variance changes of 10-100x. Symmetric conformal intervals yield under-coverage >20% in low SNR and over-coverage >20% in high SNR. Effect size directly measurable by controlled noise addition.",
+      "minimum_data_needed": [
+        "Segments with controlled SNR variation: induced by electrode gel degradation, motion, or simulated noise addition (≥10 SNR levels)",
+        "Ground truth SNR per segment (from clean reference or impedance measurements)",
+        "Conformal prediction with symmetric intervals (standard split conformal)",
+        "Prediction task with continuous target (HR, BP) or classification with score"
+      ],
+      "testable_prediction": "Conditional coverage will increase linearly with segment_SNR_dB (slope > 1%/dB). Low SNR bin (<10 dB) coverage < nominal - 15%; high SNR bin (>30 dB) coverage > nominal + 15%. Breusch-Pagan test for heteroscedasticity of prediction errors will be significant (p < 0.001).",
+      "failure_condition": "Coverage-SNR correlation not significant after controlling for physiological state, skin temperature, feature corruption (partial ρ < 0.2, p > 0.05), or artificial noise addition at constant state shows no coverage trend across SNR bins.",
+      "statistical_test_plan": "1. Bin segments by SNR (5 dB bins). 2. Compute conditional coverage per bin. 3. Fit linear regression: coverage ~ SNR_dB + physiological_state + skin_temp + feature_corruption. 4. Test SNR coefficient. 5. Breusch-Pagan test on prediction errors. 6. Controlled experiment: add Gaussian noise to clean signals at fixed physiological state, measure coverage vs. SNR. 7. Compare symmetric vs. heteroscedastic conformal (e.g., quantile regression conformal).",
+      "statistical_testability_notes": "Artificial noise addition isolates SNR effect. Rival prediction tested by including state, temperature, corruption covariates."
+    },
+    {
+      "hypothesis_id": "H9",
+      "effect_size_expectation": "medium",
+      "effect_size_rationale": "Beta-blockers reduce HRV by 20-30%; heart failure alters ECG morphology. Prior subgroup analyses show coverage disparities of 5-15% across medication/comorbidity groups. Effect size estimable from clinical datasets with medication records.",
+      "minimum_data_needed": [
+        "Population dataset with clinical metadata: medication classes (beta-blockers, ACEi), comorbidities (HF, diabetes) (≥500 subjects)",
+        "Segments labeled identically across subgroups (e.g., 'resting ECG')",
+        "Conformal prediction using only standard covariates (age, sex, BMI)",
+        "Post-hoc subgroup identification via clustering on signal features or clinical metadata"
+      ],
+      "testable_prediction": "Conditional coverage will vary significantly across latent subgroups (ANOVA p < 0.01). Subgroups on beta-blockers will show systematically different coverage (Δ > 5%) vs. non-users. Coverage variance explained by subgroup membership > 20% (η² > 0.2).",
+      "failure_condition": "After matching on age, severity, signal quality, segment type distribution, coverage does not differ across subgroups (ANOVA p > 0.05, η² < 0.05), or beta-blocker users vs. non-users show Δ < 2% in matched strata.",
+      "statistical_test_plan": "1. Identify latent subgroups via clustering on signal features (GMM) or clinical metadata. 2. Compute conditional coverage per subgroup. 3. One-way ANOVA: coverage ~ subgroup. 4. Post-hoc pairwise tests (Tukey) for beta-blocker users vs. non-users. 5. Match subgroups on age, severity, SQI, segment type (propensity score matching). 6. Paired t-test on matched pairs. 7. Variance decomposition: η² for subgroup.",
+      "statistical_testability_notes": "Requires rich clinical metadata. If medications unrecorded, use proxy (HRV reduction). Rival prediction tested by matching on confounders."
+    },
+    {
+      "hypothesis_id": "H10",
+      "effect_size_expectation": "large",
+      "effect_size_rationale": "Theoretical: nonconformity score variance ∝ 1/√(effective_dof). For ECG (τ~50s), 30s segment has effective_dof <1, causing huge quantile estimation error. Empirical: coverage variance drops from >20% at 10s to <2% at 300s. Effect size directly estimable by sub-sampling longer recordings.",
+      "minimum_data_needed": [
+        "Physiological signals with varying temporal correlation: ECG (high autocorr), EEG (lower), accelerometer (very low) (≥20 subjects, ≥10min each)",
+        "Segments of varying lengths: 10s, 30s, 60s, 120s, 300s",
+        "Fixed calibration set size, varying only segment length",
+        "Repeated random splits (≥100) to estimate coverage variance"
+      ],
+      "testable_prediction": "Coverage variance across splits will decrease as segment_length_s increases (power-law: variance ∝ segment_length^{-1}). Mean coverage will approach nominal as segment_length_s increases. Minimum segment length for stable coverage (within ±1% with 95% probability) will be >5*autocorrelation_time_constant_s.",
+      "failure_condition": "Coverage variance does not decrease with segment length after matching effective degrees of freedom (partial correlation ρ > -0.2, p > 0.05), or minimum stable segment length < 2*τ for high-autocorrelation signals.",
+      "statistical_test_plan": "1. Sub-sample recordings into segments of varying lengths. 2. For each length, repeat random calibration/test splits (100x). 3. Compute mean coverage and variance across splits. 4. Fit power-law: log(variance) ~ log(segment_length). 5. Test slope = -1 (t-test). 6. Estimate effective_dof = segment_length / τ. 7. Plot coverage variance vs. effective_dof across signal types. 8. Determine minimum segment length for stability via bootstrap.",
+      "statistical_testability_notes": "Must compute τ per signal per subject. Use surrogate data to match effective_dof across lengths. Rival prediction tested by including effective_dof and feature reliability as covariates."
+    }
+  ]
+}

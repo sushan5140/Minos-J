@@ -1,0 +1,32 @@
+{
+  "study_name": "Meno-J Theory Study 3: Historical J-Jump Casebook 2",
+  "status": "PASS_INDEPENDENT_EXACT_REPLAY",
+  "execution_date": "2026-08-17",
+  "input_hashes": {
+    "protocol": "8c862d2d0f84a52adbf4ab9e66a43ddc6e84406217054d659ec4e8a4bfc2996e",
+    "study_2_report": "d3e74635c5cb3189f18a2049ea701296cbd6378688ff504ff2d858cf88794b91",
+    "study_2_amendment": "9c87c2464125e72cc8de83e0790534610d345d747d91da692fd841e99540bd15",
+    "study_2_validation": "90f93cce4f139476036766bf42469ebda674c42ed4e43e7d41462cec8468dab7"
+  },
+  "output_hashes": {
+    "report_json": "446bbec375bc41b8e4ab12d21dff2a3325605cf3c087d6574e5df955c6987af6",
+    "report_markdown": "4e2ab5ca74208e60f2b2365993d0c07b7dbe353f41bee146f4e88918e8571c1b",
+    "extension_json": "33fd45410733df7f891201e1e20665e133ba94b25945185a6459b17f3c7adf5c",
+    "extension_markdown": "e538a1471e549ab3dd01b553298dc004b5699c9a5a497a748bb8891eab08c23f"
+  },
+  "runner": "C:\\Users\\DELL\\Documents\\Codex\\2026-08-04\\we-are-starting-a-fresh-implementation\\run_theory_study_3_miasma_germ_casebook.py",
+  "runner_sha256": "79cf9d9f50795943963ddd35fbc0d8b0059b6ed25824bfa044313f25bc7932be",
+  "external_calls": {
+    "openrouter": false,
+    "llm": false,
+    "dataset": false
+  },
+  "encoding": "UTF-8",
+  "source_access_limits_recorded": true,
+  "validation": {
+    "validator": "C:\\Users\\DELL\\Documents\\Codex\\2026-08-04\\we-are-starting-a-fresh-implementation\\work\\validate_theory_study_3_miasma_germ_casebook.py",
+    "validator_sha256": "09666dc2c7d1b45fa0271d8ed913b1ea5bde988a24fd54432f3afe8fd9e81970",
+    "report_json_sha256": "446bbec375bc41b8e4ab12d21dff2a3325605cf3c087d6574e5df955c6987af6",
+    "extension_json_sha256": "33fd45410733df7f891201e1e20665e133ba94b25945185a6459b17f3c7adf5c"
+  }
+}

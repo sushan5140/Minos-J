@@ -1,0 +1,255 @@
+{
+  "mechanism_builds": [
+    {
+      "hypothesis_id": "H1",
+      "mechanism_variables": [
+        "baseline_RMSSD_ms",
+        "baroreflex_sensitivity_ms_per_mmHg",
+        "LF_HF_ratio",
+        "subject_id",
+        "segment_label"
+      ],
+      "causal_path": "Inter-subject differences in baseline_RMSSD_ms, baroreflex_sensitivity_ms_per_mmHg, and LF_HF_ratio -> subject-specific conditional distribution of physiological features given segment_label -> violation of exchangeability across subjects -> conformal prediction's marginal coverage guarantee fails to hold conditionally per subject/phenotype -> coverage instability across segments from different autonomic phenotypes",
+      "expected_direction": "Higher inter-subject variability in autonomic measures (RMSSD, BRS, LF/HF) correlates with larger conditional coverage deviations from nominal level for segments belonging to underrepresented autonomic phenotypes",
+      "domain_specific_boundary_conditions": [
+        "Multi-subject dataset with at least 30 subjects spanning diverse autonomic phenotypes (e.g., athletes, heart failure patients, healthy controls)",
+        "Segments defined by standardized activity/physiological states (e.g., supine rest, paced breathing, orthostatic challenge)",
+        "Conformal prediction applied with subject-agnostic calibration set",
+        "Autonomic measures obtained from gold-standard assessments (e.g., pharmacological baroreflex testing, 24h HRV)"
+      ],
+      "measurable_outcomes": [
+        "Conditional coverage per subject grouped by autonomic phenotype tertiles",
+        "Coverage deviation = |conditional_coverage - nominal_coverage| per phenotype group",
+        "Spearman correlation between inter-subject CV of RMSSD and coverage deviation",
+        "Calibration curve slope per phenotype group"
+      ],
+      "mechanism_builder_notes": "Requires quantification of autonomic phenotype heterogeneity beyond simple covariates; mechanism testable via stratified conformal evaluation with known autonomic phenotypes."
+    },
+    {
+      "hypothesis_id": "H2",
+      "mechanism_variables": [
+        "accelerometer_variance_g2",
+        "ECG_baseline_wander_amplitude_mV",
+        "signal_to_noise_ratio_dB",
+        "activity_label",
+        "segment_features"
+      ],
+      "causal_path": "Segment-dependent motion (activity_label: walking vs resting) -> increased accelerometer_variance_g2 and ECG_baseline_wander_amplitude_mV -> decreased signal_to_noise_ratio_dB and altered segment_features distribution -> covariate shift between calibration (mostly clean) and test (motion-corrupted) segments -> conformal nonconformity scores computed on shifted features misestimate uncertainty -> coverage failure in high-motion segments",
+      "expected_direction": "Segments with higher accelerometer_variance_g2 and lower signal_to_noise_ratio_dB exhibit larger coverage deficits (under-coverage) relative to low-motion segments",
+      "domain_specific_boundary_conditions": [
+        "Wearable sensor data with synchronized triaxial accelerometer and ECG/PPG",
+        "Activity labels from ground-truth video or annotated protocol (e.g., sitting, walking, running)",
+        "Segments of fixed duration (e.g., 30s) aligned to activity bouts",
+        "Conformal prediction using features sensitive to motion artifacts (e.g., HRV time-domain, morphological features)"
+      ],
+      "measurable_outcomes": [
+        "Conditional coverage per activity_label stratum",
+        "KL divergence between calibration and test feature distributions per activity_label",
+        "Correlation between accelerometer_variance_g2 and coverage error",
+        "Nonconformity score distribution shift (KS statistic) per activity_label"
+      ],
+      "mechanism_builder_notes": "Mechanism isolates segment-correlated artifact structure; testable by comparing coverage across activity strata with quantified artifact metrics."
+    },
+    {
+      "hypothesis_id": "H3",
+      "mechanism_variables": [
+        "latent_sleep_stage",
+        "cortisol_level_nmol_L",
+        "ECG_morphology_variability_index",
+        "respiration_rate_variability_bpm",
+        "coarse_segment_label"
+      ],
+      "causal_path": "Unobserved autonomic state transitions (latent_sleep_stage changes, cortisol_level_nmol_L surges) -> altered ECG_morphology_variability_index and respiration_rate_variability_bpm without change in coarse_segment_label -> violation of label sufficiency assumption -> hidden distribution shift between calibration and test segments sharing same coarse label -> conformal prediction's nonconformity scores fail to capture true uncertainty -> coverage instability",
+      "expected_direction": "Segments containing unobserved state transitions (e.g., NREM to REM, stress onset) show lower conditional coverage than segments with stable latent states, despite identical coarse_segment_label",
+      "domain_specific_boundary_conditions": [
+        "Continuous monitoring with gold-standard latent state ground truth (polysomnography for sleep, serial cortisol for stress)",
+        "Coarse segment labels that do not resolve latent states (e.g., 'sleep' vs 'wake', 'rest' vs 'activity')",
+        "Conformal prediction using only coarse labels as covariates",
+        "Physiological signals: ECG, respiration, EDA"
+      ],
+      "measurable_outcomes": [
+        "Conditional coverage per latent_sleep_stage within same coarse_segment_label",
+        "Coverage gap = coverage_stable_state - coverage_transition_state",
+        "Mutual information between latent state and nonconformity scores",
+        "Calibration curve deviation per latent state"
+      ],
+      "mechanism_builder_notes": "Requires ground truth latent states not used in conformal prediction; mechanism testable by comparing coverage in segments with vs without hidden transitions."
+    },
+    {
+      "hypothesis_id": "H4",
+      "mechanism_variables": [
+        "time_of_day_hour",
+        "core_body_temperature_C",
+        "melatonin_pg_mL",
+        "cortisol_nmol_L",
+        "HRV_RMSSD_ms",
+        "segment_circadian_phase"
+      ],
+      "causal_path": "Endogenous circadian/ultradian rhythms -> predictable diurnal variations in core_body_temperature_C, melatonin_pg_mL, cortisol_nmol_L -> systematic shifts in HRV_RMSSD_ms and other signal distributions across segment_circadian_phase -> temporal non-exchangeability (morning vs night segments not exchangeable) -> conformal prediction ignoring time_of_day_hour treats them as exchangeable -> coverage varies by circadian phase",
+      "expected_direction": "Coverage deviates most from nominal for circadian phases underrepresented in calibration set; coverage error correlates with magnitude of diurnal variation in signal distribution (e.g., HRV_RMSSD_ms amplitude)",
+      "domain_specific_boundary_conditions": [
+        "Long-term monitoring >48h with precise time-stamping",
+        "Segments stratified into circadian phases (e.g., 4-hour bins: 0-4, 4-8, ...)",
+        "Conformal prediction without time-of-day covariates",
+        "Control for sleep/wake state (e.g., analyze only wake segments or only sleep segments)"
+      ],
+      "measurable_outcomes": [
+        "Conditional coverage per segment_circadian_phase bin",
+        "Cosinor model fit: coverage ~ mesor + amplitude*cos(2π*time/24 + phase)",
+        "Correlation between HRV_RMSSD_ms diurnal amplitude and coverage deviation amplitude",
+        "Coverage stability across days (within-phase variance)"
+      ],
+      "mechanism_builder_notes": "Mechanism distinguishes endogenous rhythms from behavioral effects; testable by time-stratified conformal evaluation with hormonal/physiological rhythm markers."
+    },
+    {
+      "hypothesis_id": "H5",
+      "mechanism_variables": [
+        "annotation_error_rate_per_segment_type",
+        "expert_fatigue_index_minutes",
+        "algorithmic_prelabel_confidence",
+        "label_noise_correlation_with_features",
+        "segment_difficulty_score"
+      ],
+      "causal_path": "Segment-dependent annotation errors (higher annotation_error_rate_per_segment_type for difficult segments) -> systematic label noise correlated with signal features (label_noise_correlation_with_features) -> biased nonconformity score distribution (errors concentrated in specific feature regions) -> asymmetric miscalibration: under-coverage for false negative segments, over-coverage for false positive segments -> conformal prediction cannot correct because noise correlates with features",
+      "expected_direction": "Segments with higher annotation_error_rate_per_segment_type and stronger label_noise_correlation_with_features show larger conditional coverage deviations; direction of deviation depends on error type (false negative -> under-coverage, false positive -> over-coverage)",
+      "domain_specific_boundary_conditions": [
+        "Dataset with quantified annotation quality: multiple expert annotations, algorithmic pre-labels with confidence, or ground-truth subset",
+        "Segments varying in difficulty (e.g., clear sinus rhythm vs subtle arrhythmia)",
+        "Conformal prediction using noisy labels as ground truth",
+        "Annotation process metadata: expert_fatigue_index_minutes, algorithmic_prelabel_confidence"
+      ],
+      "measurable_outcomes": [
+        "Conditional coverage per segment_type vs annotation_error_rate_per_segment_type",
+        "Calibration curve per segment_type (reliability diagram)",
+        "Nonconformity score distribution shift between clean and noisy labels (KS test)",
+        "Asymmetry index: (under_coverage_rate - over_coverage_rate) per segment_type"
+      ],
+      "mechanism_builder_notes": "Mechanism requires known annotation error structure; testable by simulating or measuring label noise correlation with features and evaluating conformal calibration per error stratum."
+    },
+    {
+      "hypothesis_id": "H6",
+      "mechanism_variables": [
+        "segment_prevalence_ratio",
+        "calibration_sample_size_per_segment",
+        "conditional_coverage_per_segment",
+        "marginal_coverage",
+        "segment_rarity_class"
+      ],
+      "causal_path": "Imbalanced segment representation (low segment_prevalence_ratio for rare pathological segments) -> small calibration_sample_size_per_segment for minority segments -> finite-sample variability in empirical nonconformity quantile -> conditional_coverage_per_segment deviates from nominal for rare segments while marginal_coverage remains valid -> coverage instability for clinically critical rare segments",
+      "expected_direction": "Conditional coverage deviation magnitude inversely proportional to calibration_sample_size_per_segment; rare segments (segment_rarity_class = 'rare') show larger absolute coverage errors than common segments",
+      "domain_specific_boundary_conditions": [
+        "Calibration set with known segment proportions reflecting operational prevalence (e.g., arrhythmia types: AFib 1%, VT 0.1%, normal 98.9%)",
+        "Conformal prediction with marginal coverage guarantee only",
+        "Segments defined by clinically relevant categories with varying prevalence",
+        "Sufficient test samples per segment to estimate conditional coverage reliably"
+      ],
+      "measurable_outcomes": [
+        "Conditional coverage per segment_rarity_class",
+        "Coverage deviation vs calibration_sample_size_per_segment (log-log slope)",
+        "Minimum calibration sample size for conditional coverage within ±2% of nominal",
+        "Marginal vs conditional coverage gap per segment"
+      ],
+      "mechanism_builder_notes": "Mechanism quantifies finite-sample conditional coverage failure; testable by sub-sampling calibration set to vary segment_prevalence_ratio and measuring conditional coverage stability."
+    },
+    {
+      "hypothesis_id": "H7",
+      "mechanism_variables": [
+        "lag1_autocorrelation",
+        "autocorrelation_time_constant_s",
+        "effective_sample_size",
+        "segment_length_s",
+        "segment_spacing_s"
+      ],
+      "causal_path": "Strong temporal autocorrelation (high lag1_autocorrelation, long autocorrelation_time_constant_s) -> adjacent segments dependent (low effective_sample_size) -> violation of exchangeability assumption -> empirical nonconformity distribution underestimates true variability -> conformal prediction intervals too narrow -> coverage below nominal; coverage instability increases with autocorrelation strength and decreases with segment_spacing_s",
+      "expected_direction": "Coverage decreases as lag1_autocorrelation increases; coverage approaches nominal when segment_spacing_s > 5*autocorrelation_time_constant_s; effective_sample_size predicts coverage deviation magnitude",
+      "domain_specific_boundary_conditions": [
+        "Physiological time series with characterized autocorrelation: HRV (autocorrelation_time_constant_s ~ 10-100s), EEG (shorter), BPV (longer)",
+        "Segments of fixed segment_length_s (e.g., 30s, 60s, 300s)",
+        "Standard conformal prediction ignoring temporal dependence",
+        "Comparison with block conformal or dependent conformal methods as benchmark"
+      ],
+      "measurable_outcomes": [
+        "Coverage vs lag1_autocorrelation across signal types",
+        "Coverage vs segment_spacing_s / autocorrelation_time_constant_s ratio",
+        "Effective_sample_size vs coverage deviation correlation",
+        "Interval width inflation factor needed to restore nominal coverage"
+      ],
+      "mechanism_builder_notes": "Mechanism isolates exchangeability violation due to temporal dependence; testable by varying segment spacing/length and comparing standard vs dependence-aware conformal methods."
+    },
+    {
+      "hypothesis_id": "H8",
+      "mechanism_variables": [
+        "segment_SNR_dB",
+        "electrode_contact_impedance_kOhm",
+        "prediction_error_variance",
+        "conformal_interval_width",
+        "SNR_bin"
+      ],
+      "causal_path": "Segment-specific SNR variations (low segment_SNR_dB due to high electrode_contact_impedance_kOhm) -> heteroscedastic prediction_error_variance (larger in low SNR segments) -> conformal prediction uses single quantile threshold (fixed conformal_interval_width) -> under-coverage in low SNR segments (interval too narrow), over-coverage in high SNR segments (interval too wide) -> segment-specific coverage instability",
+      "expected_direction": "Conditional coverage positively correlated with segment_SNR_dB; coverage < nominal for low SNR_bin, coverage > nominal for high SNR_bin; prediction_error_variance inversely correlated with segment_SNR_dB",
+      "domain_specific_boundary_conditions": [
+        "Segments with controlled SNR variation (e.g., induced by electrode gel degradation, motion, or simulated noise addition)",
+        "Ground truth SNR per segment (e.g., from clean reference signal or impedance measurements)",
+        "Conformal prediction with symmetric intervals (standard split conformal)",
+        "Prediction task: e.g., HR estimation, BP estimation, arrhythmia detection"
+      ],
+      "measurable_outcomes": [
+        "Conditional coverage per SNR_bin (e.g., 5dB bins)",
+        "Correlation between segment_SNR_dB and coverage error",
+        "Breusch-Pagan test for heteroscedasticity of prediction errors",
+        "Interval width vs optimal heteroscedastic interval width (oracle)"
+      ],
+      "mechanism_builder_notes": "Mechanism directly links SNR heteroscedasticity to symmetric interval failure; testable by measuring SNR per segment and evaluating conditional coverage."
+    },
+    {
+      "hypothesis_id": "H9",
+      "mechanism_variables": [
+        "comorbidity_indicator",
+        "medication_class",
+        "latent_subgroup_membership",
+        "signal_distribution_parameters",
+        "coverage_per_subgroup"
+      ],
+      "causal_path": "Unmeasured population heterogeneity (comorbidity_indicator: heart failure, diabetes; medication_class: beta-blockers, ACE inhibitors) -> distinct latent_subgroup_membership with different signal_distribution_parameters -> segments from different subgroups non-exchangeable despite identical labels -> conformal prediction without subgroup covariates yields coverage_per_subgroup that varies unpredictably -> coverage disparities across clinically distinct but physiologically similar segments",
+      "expected_direction": "Coverage varies significantly across latent_subgroup_membership; subgroups with medication/comorbidity altering autonomic tone (e.g., beta-blocker users) show systematically different coverage than non-users; coverage variance across subgroups > variance within subgroups",
+      "domain_specific_boundary_conditions": [
+        "Population with known but unmeasured clinical heterogeneity (medication records, comorbidity codes not used as covariates)",
+        "Segments labeled identically (e.g., 'resting ECG') across subgroups",
+        "Conformal prediction using only standard covariates (age, sex, BMI)",
+        "Post-hoc subgroup identification via clustering on signal features or clinical metadata"
+      ],
+      "measurable_outcomes": [
+        "Conditional coverage per latent_subgroup_membership (discovered post-hoc)",
+        "ANOVA: coverage variance explained by subgroup vs residual",
+        "Subgroup detection via coverage residuals (e.g., segments with consistent under-coverage cluster clinically)",
+        "Coverage disparity magnitude between beta-blocker users vs non-users"
+      ],
+      "mechanism_builder_notes": "Mechanism requires post-hoc subgroup discovery; testable by evaluating conformal coverage across known clinical subgroups not included in prediction covariates."
+    },
+    {
+      "hypothesis_id": "H10",
+      "mechanism_variables": [
+        "segment_length_s",
+        "num_samples_per_segment",
+        "effective_degrees_of_freedom",
+        "nonconformity_score_variance",
+        "coverage_variance_across_repetitions"
+      ],
+      "causal_path": "Short segment_length_s -> low num_samples_per_segment and low effective_degrees_of_freedom (due to autocorrelation) -> high nonconformity_score_variance -> empirical quantile deviates substantially from population quantile -> coverage fluctuates with segment_length_s; coverage variance inversely related to effective_degrees_of_freedom",
+      "expected_direction": "Coverage variance across random calibration/test splits decreases as segment_length_s increases; mean coverage approaches nominal as segment_length_s increases; minimum segment_length_s for stable coverage (coverage within ±1% of nominal with 95% probability) depends on signal autocorrelation structure",
+      "domain_specific_boundary_conditions": [
+        "Physiological signals with varying temporal correlation: ECG (high autocorrelation), EEG (lower), accelerometer (very low)",
+        "Segments of varying lengths: 10s, 30s, 60s, 120s, 300s",
+        "Fixed calibration set size, varying only segment length",
+        "Repeated random splits to estimate coverage variance"
+      ],
+      "measurable_outcomes": [
+        "Coverage mean and variance vs segment_length_s",
+        "Effective_degrees_of_freedom = segment_length_s / autocorrelation_time_constant_s vs coverage variance",
+        "Minimum segment_length_s for coverage stability (within epsilon of nominal with probability 1-delta)",
+        "Nonconformity score distribution convergence rate (KS distance to asymptotic) vs segment_length_s"
+      ],
+      "mechanism_builder_notes": "Mechanism quantifies finite-sample effect of segment length; testable by sub-sampling longer recordings into varying segment lengths and measuring coverage stability."
+    }
+  ]
+}

@@ -1,0 +1,164 @@
+{
+  "audits": [
+    {
+      "hypothesis_id": "H1",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism specifies domain-specific cardiovascular traits (baroreflex gain, arterial stiffness) that cause systematic shifts in error distributions across subjects, with measurable variables, valid causal chain, identified confounders, clear data requirements, and a testable prediction.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H2",
+      "audit_decision": "REJECT",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": false,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "mechanism_is_non_generic"
+      ],
+      "decision_reason": "The mechanism describes generic sensor drift (temperature-dependent gain, electrode polarization, gel drying) that applies broadly to many sensing domains, not a domain-specific causal path unique to physiological signals. Therefore it fails the non-generic mechanism criterion.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H3",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism is domain-specific to circadian modulation of autonomic tone and HRV, with a clear causal path from circadian phase to error distribution shifts, measurable variables, identified confounders, clear data requirements, and a testable prediction.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H4",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism is specific to heart failure pathophysiology (ventricular remodeling, neurohormonal activation) and its effect on ECG/PPG morphology, with measurable variables, valid causal chain, identified confounders, clear data requirements, and a testable prediction.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H5",
+      "audit_decision": "REJECT",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": false,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "mechanism_is_non_generic"
+      ],
+      "decision_reason": "The mechanism describes generic label noise from expert annotation variability, which is a common issue in many supervised learning domains and does not specify a domain-specific causal path unique to physiological signals.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H6",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": false,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "effect_size_plausible"
+      ],
+      "decision_reason": "All critical checks pass. The mechanism is domain-specific to pharmacogenomics of beta-blocker response (ADRB1 polymorphism) and heart rate dynamics. Effect size plausibility is unknown (non-critical), but the mechanism names a specific genetic variant and physiological outcome.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H7",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": false,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "effect_size_plausible"
+      ],
+      "decision_reason": "All critical checks pass. The mechanism is specific to fractal-like long-range correlations in HRV (1/f scaling) and their impact on effective sample size for conformal quantile estimation. Effect size plausibility is unknown (non-critical) but the causal chain is well-defined.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H8",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism is domain-specific to wearable PPG motion artifacts (rotational motion, sensor shear, signal-dependent noise) with measurable variables, valid causal chain, identified confounders, clear data requirements, and a testable prediction.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H9",
+      "audit_decision": "PASS",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": true,
+      "prediction_is_testable": true,
+      "failure_points": [],
+      "decision_reason": "All critical checks pass. The mechanism is specific to sleep-stage-dependent cardiorespiratory coupling and its effect on HRV predictability, with measurable variables, valid causal chain, identified confounders, clear data requirements, and a testable prediction.",
+      "salvage_note": ""
+    },
+    {
+      "hypothesis_id": "H10",
+      "audit_decision": "REJECT",
+      "variables_measurable": true,
+      "causal_chain_valid": true,
+      "base_rate_plausible": true,
+      "confounders_identified": true,
+      "effect_size_plausible": true,
+      "data_requirements_clear": true,
+      "mechanism_is_non_generic": false,
+      "prediction_is_testable": true,
+      "failure_points": [
+        "mechanism_is_non_generic"
+      ],
+      "decision_reason": "The mechanism describes generic electrode-skin impedance drift due to sweat and desquamation, which is a common issue in biopotential recordings (ECG, EEG, EMG) and does not specify a domain-specific causal path unique to the physiological signal of interest.",
+      "salvage_note": ""
+    }
+  ]
+}

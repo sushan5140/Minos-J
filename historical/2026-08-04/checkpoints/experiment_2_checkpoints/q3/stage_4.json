@@ -1,0 +1,84 @@
+{
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "hypothesis": "Subject-specific autonomic baseline variability leads to different signal-to-noise ratios in wearable stress signals.",
+      "proposed_mechanism": "Individual differences in resting heart rate variability and skin conductance level alter the dynamic range of stress-induced changes, making the same absolute change represent different signal-to-noise ratios across subjects.",
+      "core_assumption": "Baseline autonomic tone is stable within a subject over the study period but varies substantially between subjects.",
+      "knowledge_gap_addressed": "How inter-individual baseline physiology modulates wearable stress-detection uncertainty.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H2",
+      "hypothesis": "Variability in sensor placement tightness and skin contact introduces subject-specific motion artifact profiles.",
+      "proposed_mechanism": "Looser wristbands allow greater relative motion between sensor and skin, amplifying motion artifacts that mimic or mask stress-related physiological changes.",
+      "core_assumption": "Participants do not standardize wear tightness, and the degree of looseness correlates with daily activity patterns.",
+      "knowledge_gap_addressed": "The causal link between wear mechanics and subject-level detection uncertainty.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H3",
+      "hypothesis": "Individual differences in sweat gland density and distribution affect skin conductance signal quality and stress detectability.",
+      "proposed_mechanism": "Higher eccrine gland density yields larger, faster conductance responses to sympathetic activation, improving classifier confidence; lower density yields noisier, attenuated signals.",
+      "core_assumption": "Sweat gland density is a stable trait that varies across individuals but not within an individual over the study.",
+      "knowledge_gap_addressed": "Physiological trait-based explanation for heterogeneous wearable stress-detection performance.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H4",
+      "hypothesis": "Circadian phase shifts cause time-of-day dependent model performance that differs across subjects.",
+      "proposed_mechanism": "Autonomic regulation follows circadian rhythms; subjects with shifted chronotypes experience stress at different circadian phases, altering baseline physiology and classifier calibration.",
+      "core_assumption": "Chronotype variation is not accounted for in the stress-detection model.",
+      "knowledge_gap_addressed": "Temporal misalignment between model training distribution and subject-specific circadian states.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H5",
+      "hypothesis": "Self-reported stress labels contain subject-specific recall bias, creating heterogeneous label noise.",
+      "proposed_mechanism": "Individuals differ in meta-cognitive awareness and reporting style; some under-report, others over-report stress, leading to systematic label errors that degrade model certainty differently per subject.",
+      "core_assumption": "Label noise is not random but correlated with stable personality or cognitive traits.",
+      "knowledge_gap_addressed": "Impact of subject-dependent labeling reliability on uncertainty estimates.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H6",
+      "hypothesis": "Unobserved subpopulations (e.g., anxiety disorders, medication use) create heterogeneous stress response patterns.",
+      "proposed_mechanism": "Clinical conditions or pharmacologic agents alter autonomic reactivity, producing distinct physiological signatures that the generic model cannot capture, inflating uncertainty for affected subjects.",
+      "core_assumption": "Subpopulation membership is not recorded but influences wearable signals.",
+      "knowledge_gap_addressed": "Hidden stratification as a source of subject-level uncertainty variation.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H7",
+      "hypothesis": "Statistical model misspecification: assuming homoscedastic errors when residual variance is subject-dependent.",
+      "proposed_mechanism": "A single global variance parameter underestimates uncertainty for high-variance subjects and overestimates for low-variance subjects, leading to miscalibrated prediction intervals.",
+      "core_assumption": "Residual variance differs systematically across subjects due to unmodeled factors.",
+      "knowledge_gap_addressed": "Statistical assumption violations causing subject-specific uncertainty miscalibration.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H8",
+      "hypothesis": "Sensor firmware version differences introduce systematic bias across devices used by different subjects.",
+      "proposed_mechanism": "Firmware updates change filtering, sampling rate, or calibration constants; subjects receiving devices with different firmware experience shifted feature distributions, degrading model performance for those cohorts.",
+      "core_assumption": "Firmware version is not tracked or controlled in the study pipeline.",
+      "knowledge_gap_addressed": "Hardware/software heterogeneity as a source of subject-level detection uncertainty.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H9",
+      "hypothesis": "Physical activity intensity interacts with stress detection, and habitual activity patterns differ per subject.",
+      "proposed_mechanism": "High-intensity movement generates artifacts that overlap with stress signatures; subjects with more vigorous daily routines produce noisier stress windows, increasing uncertainty.",
+      "core_assumption": "Activity intensity is not fully captured or adjusted for in the stress model.",
+      "knowledge_gap_addressed": "Interaction between individualized activity profiles and stress-detection reliability.",
+      "status": "SPECULATIVE"
+    },
+    {
+      "hypothesis_id": "H10",
+      "hypothesis": "Data missingness not at random (e.g., device removal during high stress) varies by subject, biasing uncertainty estimates.",
+      "proposed_mechanism": "Subjects who find the device uncomfortable during stressful episodes remove it, causing systematic loss of high-stress windows; the model then sees a truncated stress distribution, inflating uncertainty for those subjects.",
+      "core_assumption": "Missingness mechanism correlates with both stress level and subject-specific tolerance.",
+      "knowledge_gap_addressed": "Subject-dependent informative missingness as a driver of uncertainty heterogeneity.",
+      "status": "SPECULATIVE"
+    }
+  ]
+}

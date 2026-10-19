@@ -1,0 +1,25 @@
+{
+  "study_name": "Meno-J Theory Study 4: Historical J-Jump Casebook 3",
+  "status": "PASS",
+  "checks": {
+    "study_3_validated_prerequisite": true,
+    "required_outputs_exist": true,
+    "all_outputs_decode_as_utf8": true,
+    "protocol_exact_replay": true,
+    "report_exact_replay": true,
+    "markdown_exact_render": true,
+    "seventeen_unique_source_records": true,
+    "primary_source_floor_met": true,
+    "citation_ids_resolve": true,
+    "seven_lineage_nodes": true,
+    "six_six_criterion_transition_edges": true,
+    "ten_false_jump_controls": true,
+    "ten_prior_contract_rules_tested": true,
+    "five_contract_extensions_complete": true,
+    "binary_case_label_explicitly_rejected": true,
+    "no_llm_dataset_or_simulation": true,
+    "credential_scan": true
+  },
+  "red_flags": [],
+  "blockers": []
+}

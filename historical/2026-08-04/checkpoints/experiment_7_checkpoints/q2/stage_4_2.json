@@ -1,0 +1,224 @@
+{
+  "confounder_rival_builds": [
+    {
+      "hypothesis_id": "H1",
+      "possible_confounders": [
+        "Age-related autonomic decline correlated with subject grouping",
+        "Unmeasured medication use (e.g., beta-blockers) affecting HRV metrics",
+        "Differences in physical fitness levels across subjects"
+      ],
+      "control_variables": [
+        "Age",
+        "Sex",
+        "BMI",
+        "Medication class",
+        "Fitness level (VO2 max)"
+      ],
+      "boring_rival_explanations": [
+        "Coverage instability is driven by age-related autonomic changes rather than inter-subject variability per se",
+        "Medication effects create apparent phenotype heterogeneity that is actually a treatment effect",
+        "Fitness level differences cause systematic segment distribution shifts that mimic autonomic phenotype effects"
+      ],
+      "rival_prediction": "After controlling for age, medication, and fitness, conditional coverage deviations across autonomic phenotype tertiles will disappear, indicating the observed instability is confounded by these factors rather than inherent autonomic non-exchangeability.",
+      "distinguishing_condition": "Stratified conformal evaluation within narrow age/fitness/medication strata shows stable coverage across autonomic phenotypes, whereas the proposed mechanism predicts persistent coverage deviations even after such stratification.",
+      "confounder_rival_notes": "Requires detailed covariate data; if coverage deviations persist after rigorous matching on confounders, the autonomic non-exchangeability mechanism gains support."
+    },
+    {
+      "hypothesis_id": "H2",
+      "possible_confounders": [
+        "Segment duration differences between activity types",
+        "Sensor placement variability across recording sessions",
+        "Skin impedance changes correlated with activity but not motion artifacts per se"
+      ],
+      "control_variables": [
+        "Segment duration",
+        "Sensor placement protocol adherence score",
+        "Skin impedance measurements",
+        "Ambient temperature"
+      ],
+      "boring_rival_explanations": [
+        "Coverage differences arise because walking segments are shorter, reducing effective sample size for nonconformity estimation",
+        "Sensor displacement during activity changes electrode contact, altering signal morphology independent of motion artifacts",
+        "Sweat-induced impedance changes during activity degrade signal quality in a way that correlates with activity label but is not motion artifact"
+      ],
+      "rival_prediction": "When segment duration, sensor placement, and skin impedance are held constant, conditional coverage across activity labels will equalize, showing that motion artifact profiles are not the primary driver.",
+      "distinguishing_condition": "In a controlled lab setting with fixed segment length, fixed sensor placement, and measured impedance, coverage deficits persist only for segments with high accelerometer variance after regressing out impedance and placement effects.",
+      "confounder_rival_notes": "Need synchronized accelerometer, impedance, and video-verified activity labels; rival predicts coverage instability is mediated by confounders, not motion artifacts directly."
+    },
+    {
+      "hypothesis_id": "H3",
+      "possible_confounders": [
+        "Time-of-day effects correlated with sleep stage transitions",
+        "Ambient temperature changes across sleep stages",
+        "Respiratory pattern changes due to sleep-disordered breathing unrelated to autonomic state transitions"
+      ],
+      "control_variables": [
+        "Time of day",
+        "Ambient temperature",
+        "Apnea-hypopnea index",
+        "Body position"
+      ],
+      "boring_rival_explanations": [
+        "Coverage drops during REM because REM segments occur at specific circadian phases where signal distributions differ systematically",
+        "Temperature fluctuations across sleep stages alter sensor contact and signal morphology",
+        "Undiagnosed sleep apnea causes respiratory artifacts that correlate with stage transitions and degrade coverage"
+      ],
+      "rival_prediction": "After controlling for circadian phase, temperature, and apnea severity, coverage during latent state transitions will match coverage during stable states, indicating transitions themselves are not the cause.",
+      "distinguishing_condition": "Within a single circadian phase and constant temperature, segments with verified autonomic transitions (e.g., NREM to REM) show no coverage deficit compared to stable segments when apnea events are excluded.",
+      "confounder_rival_notes": "Requires polysomnography with continuous autonomic markers; rival attributes coverage instability to confounding environmental/physiological factors rather than hidden state transitions."
+    },
+    {
+      "hypothesis_id": "H4",
+      "possible_confounders": [
+        "Behavioral activity patterns correlated with time of day (e.g., morning exercise)",
+        "Meal timing and metabolic state changes",
+        "Light exposure differences affecting autonomic tone"
+      ],
+      "control_variables": [
+        "Activity level (accelerometry)",
+        "Meal timing logs",
+        "Light exposure (lux)",
+        "Posture"
+      ],
+      "boring_rival_explanations": [
+        "Coverage varies by time of day because morning segments contain more physical activity artifacts, not endogenous rhythms",
+        "Post-prandial metabolic shifts alter HRV independently of circadian phase",
+        "Light-induced alerting responses cause transient autonomic changes that mimic circadian effects"
+      ],
+      "rival_prediction": "When activity, meals, light, and posture are controlled, the circadian-phase coverage pattern will flatten, showing that behavioral/environmental confounders drive the apparent rhythm effect.",
+      "distinguishing_condition": "In a constant routine protocol (controlled posture, dim light, hourly isocaloric snacks), coverage across circadian phases remains stable, whereas the proposed mechanism predicts persistent coverage variation driven by endogenous rhythms.",
+      "confounder_rival_notes": "Constant routine protocol is gold standard for isolating endogenous circadian effects; rival predicts behavioral confounders explain coverage instability."
+    },
+    {
+      "hypothesis_id": "H5",
+      "possible_confounders": [
+        "Segment difficulty correlated with signal quality (low SNR segments are harder to annotate)",
+        "Expert fatigue correlated with time of day rather than segment difficulty",
+        "Algorithmic pre-label confidence correlated with true signal complexity"
+      ],
+      "control_variables": [
+        "Signal quality index (SQI)",
+        "Time of annotation session",
+        "Annotator identity",
+        "Pre-label confidence score"
+      ],
+      "boring_rival_explanations": [
+        "Coverage deficits in difficult segments are due to low SNR causing both annotation errors and prediction errors, not label noise per se",
+        "Expert fatigue increases over the day, causing more errors in later segments regardless of difficulty",
+        "Algorithmic pre-labels bias experts toward systematic errors in specific feature regions"
+      ],
+      "rival_prediction": "After matching on SQI and controlling for annotation session time, the correlation between annotation error rate and coverage deviation will vanish, indicating SNR and fatigue are the true drivers.",
+      "distinguishing_condition": "Segments with high annotation error but high SQI (e.g., subtle arrhythmia in clean signal) show no coverage deficit, while low SQI segments with low annotation error show under-coverage.",
+      "confounder_rival_notes": "Requires independent SQI and annotation metadata; rival separates label noise effects from signal quality and rater fatigue confounds."
+    },
+    {
+      "hypothesis_id": "H6",
+      "possible_confounders": [
+        "Rare segments have inherently higher signal variability (e.g., arrhythmia morphology diversity)",
+        "Calibration set selection bias: rare segments come from different subjects/sessions",
+        "Feature extraction failures more common in rare segments"
+      ],
+      "control_variables": [
+        "Signal variability index per segment",
+        "Subject/session representation in calibration set",
+        "Feature extraction success rate"
+      ],
+      "boring_rival_explanations": [
+        "Conditional coverage fails for rare segments because they are physiologically more heterogeneous, not because of sample size",
+        "Rare segments are overrepresented from a few subjects with atypical physiology, causing distribution shift",
+        "Feature extraction algorithms fail more often on rare segments, adding noise that mimics finite-sample effects"
+      ],
+      "rival_prediction": "When rare segments are matched to common segments on signal variability and subject representation, and feature extraction quality is equalized, conditional coverage will be similar regardless of prevalence.",
+      "distinguishing_condition": "Subsampling common segments to match rare segment sample size does not degrade their coverage if variability and subject representation are matched, whereas the proposed mechanism predicts coverage degradation purely from reduced calibration sample size.",
+      "confounder_rival_notes": "Need to quantify segment-level variability and ensure calibration set representativeness; rival attributes coverage instability to heterogeneity and bias, not sample size alone."
+    },
+    {
+      "hypothesis_id": "H7",
+      "possible_confounders": [
+        "Non-stationary mean/variance trends within segments (e.g., HRV drift)",
+        "Segment boundary effects: adjacent segments share boundary samples",
+        "Unmodeled exogenous inputs (e.g., respiration rate changes) causing apparent autocorrelation"
+      ],
+      "control_variables": [
+        "Segment stationarity test statistic",
+        "Overlap between adjacent segments",
+        "Respiration rate variability",
+        "Exogenous input recordings"
+      ],
+      "boring_rival_explanations": [
+        "Coverage drops because segments are non-stationary (trending mean/variance), not because of autocorrelation per se",
+        "Adjacent segments overlap in time, creating artificial dependence that inflates coverage error",
+        "Respiratory sinus arrhythmia induces autocorrelation that is actually a deterministic exogenous effect"
+      ],
+      "rival_prediction": "When segments are stationary, non-overlapping, and respiration is controlled, coverage will be nominal even with high lag-1 autocorrelation, showing that non-stationarity and overlap are the true culprits.",
+      "distinguishing_condition": "Using non-overlapping, stationarity-verified segments with paced breathing (fixed respiration), coverage remains stable across autocorrelation levels, whereas the proposed mechanism predicts coverage degradation proportional to autocorrelation strength.",
+      "confounder_rival_notes": "Requires careful segment construction and exogenous control; rival isolates exchangeability violation to non-stationarity and overlap rather than autocorrelation itself."
+    },
+    {
+      "hypothesis_id": "H8",
+      "possible_confounders": [
+        "Low SNR segments have different physiological states (e.g., motion during stress)",
+        "Electrode impedance correlates with skin temperature, which correlates with autonomic state",
+        "Prediction model performs worse on low SNR segments due to feature corruption, not heteroscedastic errors"
+      ],
+      "control_variables": [
+        "Physiological state labels (activity, stress)",
+        "Skin temperature",
+        "Feature corruption index (e.g., missing feature rate)",
+        "Model prediction error on clean reference"
+      ],
+      "boring_rival_explanations": [
+        "Coverage deficits in low SNR segments occur because they correspond to high-stress states with inherently higher prediction uncertainty",
+        "Skin temperature affects both impedance and autonomic tone, creating a spurious SNR-coverage correlation",
+        "Model errors increase in low SNR because features are corrupted, not because error variance is heteroscedastic"
+      ],
+      "rival_prediction": "After controlling for physiological state, skin temperature, and feature corruption, the SNR-coverage correlation will disappear, indicating SNR is a proxy for these confounders.",
+      "distinguishing_condition": "In a controlled setting where SNR is varied artificially (added noise) while physiological state, temperature, and features are held constant, coverage remains stable across SNR bins, whereas the proposed mechanism predicts coverage degradation with decreasing SNR.",
+      "confounder_rival_notes": "Artificial noise addition isolates SNR effect; rival predicts SNR-heteroscedasticity link is confounded by state and measurement artifacts."
+    },
+    {
+      "hypothesis_id": "H9",
+      "possible_confounders": [
+        "Comorbidities and medications correlate with age and disease severity",
+        "Latent subgroups differ in signal quality due to clinical factors (e.g., edema affecting electrode contact)",
+        "Subgroup differences in segment representation (e.g., heart failure patients have more resting segments)"
+      ],
+      "control_variables": [
+        "Age",
+        "Disease severity scores",
+        "Signal quality metrics",
+        "Segment type distribution per subgroup"
+      ],
+      "boring_rival_explanations": [
+        "Coverage disparities across latent subgroups are driven by age and severity, not unmeasured heterogeneity per se",
+        "Subgroups with comorbidities have poorer signal quality, causing coverage drops that mimic distributional differences",
+        "Subgroups have different segment type distributions, and coverage varies by segment type, not subgroup"
+      ],
+      "rival_prediction": "After matching on age, severity, signal quality, and segment type distribution, coverage will not vary across latent subgroups, showing that observed disparities are confounded.",
+      "distinguishing_condition": "Within a narrow stratum of age, severity, signal quality, and segment type, beta-blocker users and non-users show identical conditional coverage, whereas the proposed mechanism predicts persistent differences due to unmeasured autonomic effects.",
+      "confounder_rival_notes": "Requires rich clinical metadata and signal quality measures; rival attributes subgroup coverage differences to observable confounders."
+    },
+    {
+      "hypothesis_id": "H10",
+      "possible_confounders": [
+        "Short segments have higher autocorrelation because they capture less of the signal's dynamic range",
+        "Feature extraction is less reliable on short segments (e.g., HRV metrics require minimum duration)",
+        "Calibration set size is fixed, so shorter segments mean more segments but each with fewer effective samples"
+      ],
+      "control_variables": [
+        "Autocorrelation time constant estimated per segment",
+        "Feature extraction reliability score",
+        "Number of segments in calibration set",
+        "Effective degrees of freedom per segment"
+      ],
+      "boring_rival_explanations": [
+        "Coverage variance increases for short segments because autocorrelation time constant becomes comparable to segment length, not because of finite-sample quantile estimation",
+        "Short segments yield unreliable features (e.g., RMSSD on 10s ECG), increasing prediction error variance and causing coverage instability",
+        "With fixed calibration set size, shorter segments increase the number of segments but reduce effective samples per segment, altering the bias-variance tradeoff"
+      ],
+      "rival_prediction": "When autocorrelation time constant, feature reliability, and effective degrees of freedom are matched across segment lengths, coverage variance will not depend on segment length.",
+      "distinguishing_condition": "Using segments of varying length but with matched effective degrees of freedom (by adjusting spacing or using surrogate data), coverage stability is identical across lengths, whereas the proposed mechanism predicts a direct segment-length effect on nonconformity score variance.",
+      "confounder_rival_notes": "Need to compute effective degrees of freedom accounting for autocorrelation; rival predicts segment length effect is mediated by effective sample size and feature reliability."
+    }
+  ]
+}

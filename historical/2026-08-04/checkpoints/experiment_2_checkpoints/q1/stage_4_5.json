@@ -1,0 +1,274 @@
+{
+  "enriched_hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "original_hypothesis": "Inter‑subject variability in autonomic reactivity causes the nonconformity scores to be systematically miscalibrated for high‑reactivity individuals.",
+      "original_mechanism": "Subjects with exaggerated sympathetic responses produce extreme physiological feature values that lie outside the training distribution, inflating the nonconformity measure and shrinking prediction sets.",
+      "possible_confounders": [
+        "Baseline cardiovascular fitness (VO2 max) influencing HRV reactivity",
+        "Medication use (beta‑blockers, anticholinergics) altering autonomic gain",
+        "Time‑of‑day circadian effects on sympathetic tone"
+      ],
+      "control_variables": [
+        "Resting HRV and EDA baseline per subject",
+        "Medication log and fitness questionnaire",
+        "Recording start time"
+      ],
+      "rival_explanations": [
+        "High‑reactivity subjects simply have noisier signals, not a calibration issue",
+        "The taxonomy's coarse stress labels happen to correlate with reactivity"
+      ],
+      "minimum_data_needed": [
+        "Per‑subject baseline autonomic measures (resting HRV, EDA)",
+        "Nonconformity scores stratified by reactivity quantiles",
+        "Calibration and test set splits preserving subject independence"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Subjects with exaggerated sympathetic responses produce extreme physiological feature values that lie outside the training distribution, inflating the nonconformity measure and shrinking prediction sets. This effect is confounded by baseline fitness, medication, and circadian phase; controlling for resting autonomic baselines and medication status in the Mondrian taxonomy (e.g., adding reactivity strata) should reduce miscalibration.",
+      "enrichment_notes": "Added baseline autonomic measures as covariates and suggested reactivity‑aware stratification."
+    },
+    {
+      "hypothesis_id": "H2",
+      "original_hypothesis": "Sensor‑specific drift in the wrist‑worn EDA channel during prolonged recordings leads to biased nonconformity estimates for later trials.",
+      "original_mechanism": "Gradual electrode impedance increase reduces EDA amplitude, shifting the feature distribution relative to the calibration set and causing undercoverage for sessions recorded late in the protocol.",
+      "possible_confounders": [
+        "Ambient temperature and humidity changes across the session",
+        "Skin hydration and sweat rate variability",
+        "Movement artifacts increasing with fatigue"
+      ],
+      "control_variables": [
+        "Electrode impedance logs (if available) or proxy: signal‑to‑noise ratio over time",
+        "Room temperature/humidity logs",
+        "Trial index and elapsed time"
+      ],
+      "rival_explanations": [
+        "Late‑session undercoverage is due to habituation (H9) not sensor drift",
+        "Calibration set under‑represents late‑session conditions"
+      ],
+      "minimum_data_needed": [
+        "Time‑resolved EDA signal quality metrics per trial",
+        "Nonconformity scores per trial with trial order preserved",
+        "Environmental sensor logs"
+      ],
+      "effect_size_expectation": "small",
+      "enriched_mechanism": "Gradual electrode impedance increase reduces EDA amplitude, shifting the feature distribution relative to the calibration set and causing undercoverage for sessions recorded late in the protocol. Confounders include ambient temperature, skin hydration, and movement artifacts; controlling for trial‑wise signal quality metrics and environmental conditions in the nonconformity calculation (e.g., weighting or detrending) can isolate drift effects.",
+      "enrichment_notes": "Added signal quality and environmental controls; suggested detrending or quality‑weighted nonconformity."
+    },
+    {
+      "hypothesis_id": "H3",
+      "original_hypothesis": "Non‑stationary heart‑rate variability (HRV) dynamics across the stress‑recovery cycle violate the exchangeability assumption within Mondrian strata.",
+      "original_mechanism": "Rapid autonomic transitions create temporal dependence in residuals; the conformal algorithm treats each window as independent, underestimating prediction interval width for transitional periods.",
+      "possible_confounders": [
+        "Breathing rate changes not captured by respiration belt",
+        "Postural shifts (sitting/standing) during protocol",
+        "Caffeine or nicotine use before recording"
+      ],
+      "control_variables": [
+        "Respiration rate and depth per window",
+        "Posture labels from accelerometer",
+        "Pre‑study substance use questionnaire"
+      ],
+      "rival_explanations": [
+        "Transitional periods have fewer calibration samples (small‑stratum effect, H8)",
+        "Nonconformity score choice (H6) is inadequate for dynamic HRV"
+      ],
+      "minimum_data_needed": [
+        "Window‑level HRV features with temporal ordering",
+        "Autocorrelation of nonconformity residuals within subjects",
+        "Stratum‑specific calibration sample counts"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Rapid autonomic transitions create temporal dependence in residuals; the conformal algorithm treats each window as independent, underestimating prediction interval width for transitional periods. Confounders include breathing pattern, posture, and substance use; controlling for these via time‑aware stratification (e.g., adding transition‑phase bins) or using block‑conformal methods can restore exchangeability.",
+      "enrichment_notes": "Added physiological and behavioral confounders; proposed time‑aware stratification."
+    },
+    {
+      "hypothesis_id": "H4",
+      "original_hypothesis": "Mislabeling of self‑reported stress levels for a subset of participants introduces systematic label noise into the Mondrian categories.",
+      "original_mechanism": "Subjects who under‑report stress are placed in a low‑stress stratum while their physiological signals resemble high stress, causing the nonconformity distribution to be too narrow for that stratum.",
+      "possible_confounders": [
+        "Social desirability bias varying by personality traits",
+        "Language or scale interpretation differences",
+        "Fatigue affecting self‑report accuracy in later trials"
+      ],
+      "control_variables": [
+        "Personality questionnaire scores (e.g., NEO‑FFI)",
+        "Trial‑wise self‑report consistency checks",
+        "Objective stress markers (cortisol, if available)"
+      ],
+      "rival_explanations": [
+        "Physiological signals are genuinely ambiguous for some subjects",
+        "Stratum definitions are too coarse (H1, H5)"
+      ],
+      "minimum_data_needed": [
+        "Per‑subject self‑report reliability metrics",
+        "Nonconformity distributions split by self‑report consistency",
+        "External validation labels for a subset"
+      ],
+      "effect_size_expectation": "small",
+      "enriched_mechanism": "Subjects who under‑report stress are placed in a low‑stress stratum while their physiological signals resemble high stress, causing the nonconformity distribution to be too narrow for that stratum. Confounders include personality‑driven response bias, scale interpretation, and fatigue; controlling for self‑report reliability scores and using objective stress markers to identify mislabeled trials can correct stratum assignments.",
+      "enrichment_notes": "Added personality and fatigue confounders; suggested reliability‑weighted stratification."
+    },
+    {
+      "hypothesis_id": "H5",
+      "original_hypothesis": "Insufficient representation of certain demographic sub‑groups (e.g., age > 50) in the calibration set leads to stratum‑specific undercoverage.",
+      "original_mechanism": "Mondrian taxonomy does not include age as a stratification variable; older subjects exhibit different baseline HRV and EDA ranges, making the shared nonconformity quantile too optimistic for them.",
+      "possible_confounders": [
+        "Comorbidities (hypertension, diabetes) affecting autonomic function",
+        "Medication load increasing with age",
+        "Fitness level differences within age groups"
+      ],
+      "control_variables": [
+        "Age, comorbidity count, medication list",
+        "Baseline HRV/EDA per subject",
+        "Fitness proxy (e.g., self‑reported activity level)"
+      ],
+      "rival_explanations": [
+        "Age effect is mediated by fitness, not age per se",
+        "Small‑stratum bias (H8) because older subjects are few"
+      ],
+      "minimum_data_needed": [
+        "Demographic and clinical metadata for all subjects",
+        "Stratum‑wise coverage broken down by age deciles",
+        "Calibration set size per age‑stratum combination"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Mondrian taxonomy does not include age as a stratification variable; older subjects exhibit different baseline HRV and EDA ranges, making the shared nonconformity quantile too optimistic for them. Confounders include comorbidities, polypharmacy, and fitness; controlling for these via age‑aware strata or covariate‑adjusted nonconformity scores can mitigate undercoverage.",
+      "enrichment_notes": "Added clinical and fitness confounders; proposed age‑aware stratification."
+    },
+    {
+      "hypothesis_id": "H6",
+      "original_hypothesis": "The choice of nonconformity score (e.g., softmax margin) is poorly aligned with the multimodal feature geometry for stress classification.",
+      "original_mechanism": "Margin‑based scores ignore correlation structure between ECG, EDA, and respiration features, producing overly confident scores for out‑of‑distribution multimodal patterns.",
+      "possible_confounders": [
+        "Feature scaling differences across modalities",
+        "Missing modality patterns (e.g., respiration dropout)",
+        "Classifier architecture bias (e.g., CNN vs. RF)"
+      ],
+      "control_variables": [
+        "Standardized feature scaling per modality",
+        "Modality‑presence indicators",
+        "Alternative nonconformity scores (e.g., Mahalanobis distance, conformalized quantile regression)"
+      ],
+      "rival_explanations": [
+        "Undercoverage stems from distribution shift (H2, H7) not score choice",
+        "Small calibration set (H8) amplifies any score's variance"
+      ],
+      "minimum_data_needed": [
+        "Nonconformity scores computed with multiple candidate functions",
+        "Coverage comparison across scores per stratum",
+        "Feature correlation matrices per condition"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Margin‑based scores ignore correlation structure between ECG, EDA, and respiration features, producing overly confident scores for out‑of‑distribution multimodal patterns. Confounders include feature scaling, missing modalities, and classifier bias; controlling for these by standardizing modalities, imputing missing channels, and evaluating alternative nonconformity functions (e.g., Mahalanobis distance) can align the score with the true geometry.",
+      "enrichment_notes": "Added scaling, missingness, and classifier confounders; suggested alternative scores."
+    },
+    {
+      "hypothesis_id": "H7",
+      "original_hypothesis": "Batch effects from different recording days cause distribution shift that is not captured by the Mondrian condition labels.",
+      "original_mechanism": "Day‑specific ambient temperature and humidity alter skin conductance baseline, shifting the EDA feature distribution; the conformal predictor treats all days as exchangeable within a condition.",
+      "possible_confounders": [
+        "Experimenter variability (different staff per day)",
+        "Equipment recalibration or firmware updates",
+        "Participant sleep quality the night before"
+      ],
+      "control_variables": [
+        "Day identifier and ambient sensor logs",
+        "Experimenter ID",
+        "Pre‑session sleep diary or actigraphy"
+      ],
+      "rival_explanations": [
+        "Day effects are actually habituation across days (H9)",
+        "Sensor drift within day (H2) masquerades as batch effect"
+      ],
+      "minimum_data_needed": [
+        "Day‑level metadata (temperature, humidity, experimenter)",
+        "Nonconformity scores grouped by day",
+        "Calibration/test splits that respect day boundaries"
+      ],
+      "effect_size_expectation": "small",
+      "enriched_mechanism": "Day‑specific ambient temperature and humidity alter skin conductance baseline, shifting the EDA feature distribution; the conformal predictor treats all days as exchangeable within a condition. Confounders include experimenter variability, equipment changes, and participant sleep; controlling for day‑level covariates in the taxonomy (e.g., day‑specific strata) or using batch‑effect correction on features can restore coverage.",
+      "enrichment_notes": "Added experimenter, equipment, and sleep confounders; proposed day‑aware stratification."
+    },
+    {
+      "hypothesis_id": "H8",
+      "original_hypothesis": "Finite‑sample estimation error of the conditional quantile in small strata leads to systematic undercoverage for rare stress levels.",
+      "original_mechanism": "Mondrian splits the calibration data into many condition‑subject strata; strata with few samples yield noisy quantile estimates that are biased low.",
+      "possible_confounders": [
+        "Unequal stratum sizes due to unbalanced protocol design",
+        "High‑dimensional nonconformity scores increasing variance",
+        "Correlation between stratum size and subject reactivity (H1)"
+      ],
+      "control_variables": [
+        "Stratum sample counts",
+        "Nonconformity score dimensionality",
+        "Subject reactivity quantiles per stratum"
+      ],
+      "rival_explanations": [
+        "Rare stress levels are genuinely harder to predict (distributional shift)",
+        "Label noise (H4) inflates apparent undercoverage in small strata"
+      ],
+      "minimum_data_needed": [
+        "Stratum‑wise calibration sample sizes and coverage",
+        "Bootstrap confidence intervals for quantile estimates",
+        "Simulation of quantile bias vs. sample size"
+      ],
+      "effect_size_expectation": "large",
+      "enriched_mechanism": "Mondrian splits the calibration data into many condition‑subject strata; strata with few samples yield noisy quantile estimates that are biased low. Confounders include unbalanced design, high‑dimensional scores, and correlation with reactivity; controlling for stratum size via minimum‑sample thresholds, pooling similar strata, or using regularized quantile estimation can reduce bias.",
+      "enrichment_notes": "Added design imbalance and reactivity correlation; suggested pooling and regularization."
+    },
+    {
+      "hypothesis_id": "H9",
+      "original_hypothesis": "Physiological habituation across repeated stress trials reduces signal discriminability, but the Mondrian taxonomy treats each trial as identically distributed.",
+      "original_mechanism": "Repeated exposure attenuates EDA peaks and HRV reactivity, moving later‑trial feature vectors toward the non‑stress distribution while the nonconformity calibration remains based on early‑trial statistics.",
+      "possible_confounders": [
+        "Fatigue accumulating across trials",
+        "Learning or anticipation effects",
+        "Time‑of‑day drift (later trials later in day)"
+      ],
+      "control_variables": [
+        "Trial index and inter‑trial interval",
+        "Subjective fatigue ratings per trial",
+        "Time‑of‑day for each trial"
+      ],
+      "rival_explanations": [
+        "Sensor drift (H2) mimics habituation",
+        "Day‑level batch effects (H7) if trials span days"
+      ],
+      "minimum_data_needed": [
+        "Trial‑wise physiological feature trajectories",
+        "Nonconformity scores per trial order",
+        "Habituation curves (e.g., EDA peak amplitude vs. trial)"
+      ],
+      "effect_size_expectation": "medium",
+      "enriched_mechanism": "Repeated exposure attenuates EDA peaks and HRV reactivity, moving later‑trial feature vectors toward the non‑stress distribution while the nonconformity calibration remains based on early‑trial statistics. Confounders include fatigue, anticipation, and time‑of‑day; controlling for trial index in the taxonomy (e.g., trial‑aware strata) or modeling habituation trajectories in the nonconformity function can account for non‑stationarity.",
+      "enrichment_notes": "Added fatigue, anticipation, and time‑of‑day confounders; proposed trial‑aware stratification."
+    },
+    {
+      "hypothesis_id": "H10",
+      "original_hypothesis": "Correlated missingness in the respiration belt (e.g., motion artifacts) creates informative missingness that the conformal predictor ignores.",
+      "original_mechanism": "When respiration data are missing during high‑movement stress periods, the imputed or omitted features shift the joint distribution; the nonconformity score computed on available modalities underestimates uncertainty.",
+      "possible_confounders": [
+        "Movement intensity correlated with stress level",
+        "Imputation method bias (mean vs. model‑based)",
+        "Other modalities also missing simultaneously (e.g., ECG artifacts)"
+      ],
+      "control_variables": [
+        "Accelerometer‑derived movement intensity per window",
+        "Missingness pattern indicators per modality",
+        "Imputation method used"
+      ],
+      "rival_explanations": [
+        "Missingness is random and coverage loss is due to reduced feature set (H6)",
+        "Stress periods are inherently noisier, not missingness‑driven"
+      ],
+      "minimum_data_needed": [
+        "Missingness logs per modality per window",
+        "Movement intensity time series",
+        "Coverage comparison: complete‑case vs. imputed vs. missingness‑aware nonconformity"
+      ],
+      "effect_size_expectation": "small",
+      "enriched_mechanism": "When respiration data are missing during high‑movement stress periods, the imputed or omitted features shift the joint distribution; the nonconformity score computed on available modalities underestimates uncertainty. Confounders include movement‑stress correlation, imputation bias, and multi‑modality dropout; controlling for missingness indicators in the nonconformity score (e.g., adding missingness as a feature) or using missingness‑aware conformal methods can correct coverage.",
+      "enrichment_notes": "Added movement correlation, imputation bias, and multi‑modality dropout; suggested missingness‑aware nonconformity."
+    }
+  ]
+}

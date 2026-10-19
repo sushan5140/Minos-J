@@ -1,0 +1,113 @@
+{
+  "extension_name": "Historical Calibration Extension 3",
+  "trigger": "A theory can have false ontology yet portable mathematics, while the successor can consist of autonomous macroscopic constraints plus a later microscopic bridge.",
+  "prior_rule_status": [
+    {
+      "rule_id": "A1_RETENTION_ACCOUNTING",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Heat quantities and engine constraints survived even though caloric substance did not."
+    },
+    {
+      "rule_id": "A2_COMPONENT_SCOPING",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Ontology, propagation law, conversion constant, directionality, and microfoundation require separate verdicts."
+    },
+    {
+      "rule_id": "A3_COMPRESSION_DIMENSIONS",
+      "status": "PASS",
+      "finding": "Energy unified more phenomena while statistical mechanics increased mathematical and assumption complexity."
+    },
+    {
+      "rule_id": "A4_APPROXIMATION_BOUNDARY",
+      "status": "PASS",
+      "finding": "Ideal gases, reversible cycles, continua, and molecular chaos have different declared domains."
+    },
+    {
+      "rule_id": "A5_UNDERDETERMINATION",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Fourier and macroscopic thermodynamics underdetermine microscopic ontology."
+    },
+    {
+      "rule_id": "A6_DISTRIBUTED_LINEAGE_GRAPH",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Carnot, Mayer, Joule, Clausius, Thomson, Maxwell, and Boltzmann contribute different linked components."
+    },
+    {
+      "rule_id": "A7_INTERVENTION_MECHANISM_DECOUPLING",
+      "status": "PASS_GENERALIZED_AS_OPERATION_MECHANISM_DECOUPLING",
+      "finding": "Engine performance and work-heat conversions can be established before their microscopic mechanism."
+    },
+    {
+      "rule_id": "A8_EVIDENCE_TRIANGULATION_LADDER",
+      "status": "PASS",
+      "finding": "Anomaly, equivalence measurements, cycle constraints, gas laws, and distribution predictions supply different evidential modes."
+    },
+    {
+      "rule_id": "A9_RELATIONAL_CAUSAL_SCOPE",
+      "status": "PASS_GENERALIZED_AS_EXPLANATORY_LEVEL_SCOPE",
+      "finding": "A heat-flow law, conservation law, directional law, and micro-mechanism are not interchangeable causal claims."
+    },
+    {
+      "rule_id": "A10_DISCOVERY_UPTAKE_OUTCOME_SEPARATION",
+      "status": "PASS_AND_ESSENTIAL",
+      "finding": "Rumford's anomaly and Joule's early results did not produce immediate community replacement."
+    }
+  ],
+  "extensions": [
+    {
+      "extension_id": "A11_FORMAL_ONTOLOGY_DECOUPLING",
+      "new_rule": "Audit equations, operational quantities, invariants, and ontology separately; test whether the formal success transports to a rival representation after reinterpretation.",
+      "guardrail": "Formal retention is not evidence that the discarded entities approximately existed.",
+      "sources": [
+        "C03",
+        "C04",
+        "C15"
+      ]
+    },
+    {
+      "extension_id": "A12_CONSTRAINT_MECHANISM_LAYERING",
+      "new_rule": "Allow a well-supported macroscopic constraint and a microscopic mechanism to coexist as different explanatory layers; score each for its own predictions and assumptions.",
+      "guardrail": "Do not reject a reliable constraint for lacking micro-ontology, or promote a micro-story merely because it can narrate the constraint.",
+      "sources": [
+        "C08",
+        "C09",
+        "C10",
+        "C17"
+      ]
+    },
+    {
+      "extension_id": "A13_BRIDGE_LAW_REQUIREMENT",
+      "new_rule": "A cross-level J-jump must state mappings between macro variables and micro or ensemble quantities, together with limits, coarse-graining, and independence assumptions.",
+      "guardrail": "Similarity of vocabulary such as heat, motion, or disorder is not a derivation.",
+      "sources": [
+        "C10",
+        "C11",
+        "C12",
+        "C17"
+      ]
+    },
+    {
+      "extension_id": "A14_TRANSITION_ROLE_TAXONOMY",
+      "new_rule": "Label a contribution as anomaly, measurement standard, conversion law, constraint, synthesis, or microfoundation before testing whether it is a J-jump.",
+      "guardrail": "An anomaly or instrument result cannot receive the credit of a complete replacement architecture.",
+      "sources": [
+        "C02",
+        "C07",
+        "C08",
+        "C13",
+        "C14"
+      ]
+    },
+    {
+      "extension_id": "A15_LAYERED_SUCCESSOR_TEST",
+      "new_rule": "Do not force one successor theory when mature science uses compatible layers. Require the proposed architecture to say what each layer explains, predicts, leaves open, and can falsify.",
+      "guardrail": "Explanatory pluralism is not permission for contradiction: bridge relations and shared observables must remain mutually consistent.",
+      "sources": [
+        "C08",
+        "C10",
+        "C17"
+      ]
+    }
+  ],
+  "revised_j_jump_object": "A component-scoped lineage subgraph that preserves transportable empirical and formal structure, replaces failed ontology explicitly, distinguishes anomalies from successor architecture, and connects autonomous explanatory levels through testable bridge laws."
+}

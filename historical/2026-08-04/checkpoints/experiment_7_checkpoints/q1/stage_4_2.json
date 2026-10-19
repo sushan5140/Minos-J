@@ -1,0 +1,204 @@
+{
+  "confounder_rival_builds": [
+    {
+      "hypothesis_id": "H1",
+      "possible_confounders": [
+        "Baseline autonomic tone (resting HRV, tonic EDA) correlated with both reactivity and nonconformity distribution",
+        "Subject-specific medication use (e.g., beta-blockers) affecting physiological responses",
+        "Time-of-day effects on cortisol and autonomic state"
+      ],
+      "control_variables": [
+        "Resting HRV and tonic EDA measured during baseline",
+        "Medication status (binary or categorical)",
+        "Recording start time (hour of day)"
+      ],
+      "boring_rival_explanations": [
+        "High-reactivity subjects simply have noisier signals, increasing variance of nonconformity scores without systematic shift",
+        "The classifier itself is poorly calibrated for high-arousal patterns, independent of conformal calibration"
+      ],
+      "rival_prediction": "If the rival (classifier miscalibration) holds, adding subject-level reactivity as a Mondrian stratum will not improve coverage; instead, recalibrating the base classifier (e.g., temperature scaling) on a per-subject basis will restore coverage.",
+      "distinguishing_condition": "Compare coverage after (a) adding sympathetic_reactivity_index as a stratification variable vs. (b) applying per-subject temperature scaling to classifier logits before conformal prediction. If (a) fixes coverage but (b) does not, the proposed mechanism wins; if (b) fixes coverage but (a) does not, the rival wins.",
+      "confounder_rival_notes": "Must ensure reactivity index is computed from independent data (e.g., first stress trial) to avoid circularity. Control for baseline autonomic tone in both analyses."
+    },
+    {
+      "hypothesis_id": "H2",
+      "possible_confounders": [
+        "Ambient temperature drift across session affecting both electrode impedance and skin conductance",
+        "Subject movement increasing over time causing both impedance changes and motion artifacts",
+        "Skin hydration changes over prolonged wear"
+      ],
+      "control_variables": [
+        "Ambient temperature logged per minute",
+        "Accelerometer-derived movement intensity per window",
+        "Room humidity"
+      ],
+      "boring_rival_explanations": [
+        "Late-session undercoverage is due to subject fatigue reducing physiological discriminability, not sensor drift",
+        "Calibration set underrepresents late-session feature distributions because of temporal ordering in data split"
+      ],
+      "rival_prediction": "If fatigue is the cause, EDA amplitude will not correlate with impedance change; instead, HRV reactivity will decline with session time while impedance remains stable.",
+      "distinguishing_condition": "Regress coverage rate on both electrode_impedance_change and HRV_reactivity_decline (slope across session). If impedance_change remains significant after controlling for HRV_reactivity_decline, sensor drift mechanism wins; if HRV_reactivity_decline dominates, fatigue rival wins.",
+      "confounder_rival_notes": "Need impedance logs at multiple time points. If unavailable, use signal quality index (SQI) as proxy. Ensure movement is controlled to isolate sensor-specific drift."
+    },
+    {
+      "hypothesis_id": "H3",
+      "possible_confounders": [
+        "Non-stationary noise (e.g., motion artifacts increasing during transitions)",
+        "Breathing pattern changes during stress-recovery transitions affecting HRV independently of autonomic state",
+        "Delayed physiological recovery causing carryover effects"
+      ],
+      "control_variables": [
+        "Motion artifact index per window",
+        "Respiration rate and variability per window",
+        "Time since last condition change (minutes)"
+      ],
+      "boring_rival_explanations": [
+        "The classifier performs worse during transitions because feature distributions overlap more, not because of temporal dependence in residuals",
+        "Mondrian strata are too coarse: stress-onset and stress-offset are physiologically distinct but share a label"
+      ],
+      "rival_prediction": "If the rival (transition-specific distribution shift) holds, coverage will be low only in the first 2 minutes after a condition change, but residual autocorrelation will be negligible once condition is accounted for.",
+      "distinguishing_condition": "Fit a time-aware conformal method (e.g., block bootstrap) and a condition-split Mondrian (separate strata for stress-onset, stress-steady, recovery-onset, recovery-steady). If condition-split restores coverage without needing temporal dependence correction, the rival wins; if block bootstrap is required, the proposed mechanism wins.",
+      "confounder_rival_notes": "Define transition windows objectively (e.g., first 120s after label change). Control for motion artifacts which may co-occur with transitions."
+    },
+    {
+      "hypothesis_id": "H4",
+      "possible_confounders": [
+        "Individual differences in interoceptive awareness affecting self-report accuracy",
+        "Social desirability bias varying by subject",
+        "Questionnaire timing (immediate vs. delayed) affecting recall"
+      ],
+      "control_variables": [
+        "Interoceptive awareness score (e.g., heartbeat counting task)",
+        "Social desirability scale score",
+        "Time between stressor and questionnaire administration"
+      ],
+      "boring_rival_explanations": [
+        "The physiological stress index used to detect mislabeling is itself biased for certain subjects (e.g., high baseline HRV)",
+        "Mondrian strata are imbalanced: low-stress stratum has fewer calibration points, causing finite-sample undercoverage unrelated to label noise"
+      ],
+      "rival_prediction": "If the rival (physiological index bias) holds, relabeling using the index will not improve coverage because the index misclassifies the same subjects systematically.",
+      "distinguishing_condition": "Compute coverage after relabeling with (a) the physiological stress index and (b) a consensus label from two independent annotators reviewing video/physiology. If (a) improves coverage but (b) does not, the index is capturing true state (proposed mechanism). If neither improves coverage, the rival (index bias) or finite-sample issue wins.",
+      "confounder_rival_notes": "Must have ground-truth consensus labels for a subset. Control for interoceptive awareness when estimating label noise rate."
+    },
+    {
+      "hypothesis_id": "H5",
+      "possible_confounders": [
+        "Comorbid health conditions (e.g., hypertension) more prevalent in older age affecting HRV/EDA",
+        "Fitness level (VO2 max) correlated with age and autonomic function",
+        "Medication use increasing with age"
+      ],
+      "control_variables": [
+        "Health status questionnaire (binary conditions)",
+        "Estimated fitness level (self-reported activity or submaximal test)",
+        "Medication list (especially cardiovascular)"
+      ],
+      "boring_rival_explanations": [
+        "Older subjects have fewer calibration windows because of shorter recordings or more artifacts, causing finite-sample undercoverage (H8)",
+        "The classifier was trained on younger subjects and generalizes poorly to older physiology"
+      ],
+      "rival_prediction": "If the rival (classifier generalization) holds, adding age as a Mondrian stratum will not fix coverage; instead, retraining the classifier with age-balanced data will.",
+      "distinguishing_condition": "Compare coverage after (a) adding age bins to Mondrian taxonomy vs. (b) retraining the base classifier with stratified sampling by age. If (a) restores coverage to nominal, the proposed mechanism (stratum heterogeneity) wins; if only (b) works, the rival wins.",
+      "confounder_rival_notes": "Ensure age bins have sufficient sample size. Control for medication and fitness in both analyses."
+    },
+    {
+      "hypothesis_id": "H6",
+      "possible_confounders": [
+        "Feature scaling differences across modalities (ECG vs EDA vs respiration) distorting margin geometry",
+        "Class imbalance in calibration set affecting softmax calibration",
+        "Correlated noise across modalities (e.g., motion affecting both EDA and respiration)"
+      ],
+      "control_variables": [
+        "Per-modality feature standardization (z-score within subject)",
+        "Class prior proportions in calibration set",
+        "Motion artifact index per window"
+      ],
+      "boring_rival_explanations": [
+        "The margin-based nonconformity is fine; undercoverage stems from finite-sample quantile estimation in small strata (H8)",
+        "Multimodal correlation structure is stationary; the issue is that the classifier's softmax is miscalibrated for out-of-distribution patterns"
+      ],
+      "rival_prediction": "If the rival (classifier miscalibration) holds, using a Mahalanobis nonconformity on the same classifier logits will not improve coverage; instead, calibrating the classifier (e.g., Dirichlet calibration) before conformal prediction will.",
+      "distinguishing_condition": "Evaluate three nonconformity scores on held-out data: (1) softmax margin, (2) Mahalanobis distance in joint feature space, (3) softmax margin after Dirichlet calibration. If (2) outperforms (1) and (3) matches (2), the proposed mechanism (geometry mismatch) wins. If (3) outperforms (1) and matches (2), the rival (miscalibration) wins.",
+      "confounder_rival_notes": "Use the same calibration set for all three. Ensure Mahalanobis covariance is estimated robustly (shrinkage)."
+    },
+    {
+      "hypothesis_id": "H7",
+      "possible_confounders": [
+        "Day-specific subject compliance (e.g., caffeine, sleep) affecting physiology",
+        "Experimenter effects (different operators on different days)",
+        "Device firmware updates or battery level changes across days"
+      ],
+      "control_variables": [
+        "Subject compliance log (caffeine, sleep, alcohol)",
+        "Experimenter ID per session",
+        "Device battery voltage and firmware version"
+      ],
+      "boring_rival_explanations": [
+        "Day-level coverage differences are due to varying stratum sample sizes per day (some days have fewer calibration windows)",
+        "The EDA baseline shift is an artifact of different baseline durations across days"
+      ],
+      "rival_prediction": "If the rival (sample size) holds, coverage will correlate with day-specific calibration set size, not with ambient temperature/humidity.",
+      "distinguishing_condition": "Regress per-day coverage on (a) ambient temperature deviation from grand mean, (b) calibration sample size that day, (c) EDA baseline shift. If (a) and (c) remain significant after controlling for (b), the proposed mechanism wins; if only (b) matters, the rival wins.",
+      "confounder_rival_notes": "Collect ambient logs per day. Ensure baseline duration is fixed across days."
+    },
+    {
+      "hypothesis_id": "H8",
+      "possible_confounders": [
+        "Stratum heterogeneity: small strata may also be the most physiologically variable, conflating sample size with distribution width",
+        "Nonconformity score distribution skew in small strata affecting quantile bias direction",
+        "Calibration set selection bias (e.g., temporal split puts early trials in calibration, late in test)"
+      ],
+      "control_variables": [
+        "Stratum nonconformity score IQR (measure of heterogeneity)",
+        "Stratum skewness of nonconformity scores",
+        "Temporal split indicator (early vs late trials in calibration)"
+      ],
+      "boring_rival_explanations": [
+        "Undercoverage in rare stress levels is due to genuine distribution shift (H3, H9) not finite-sample bias",
+        "The nominal coverage level (90%) is too high for the available data; the method is working as designed but the guarantee is asymptotic"
+      ],
+      "rival_prediction": "If the rival (distribution shift) holds, increasing calibration sample size for rare strata (by pooling across subjects) will not fix coverage because the shift is systematic.",
+      "distinguishing_condition": "Apply finite-sample correction (e.g., using the (n+1)(1-alpha)th order statistic with n = stratum size) and compare to pooling calibration data across subjects for rare strata. If correction restores coverage, finite-sample bias wins; if pooling across subjects restores coverage but correction does not, distribution shift rival wins.",
+      "confounder_rival_notes": "Use bootstrap to estimate quantile bias per stratum. Control for stratum heterogeneity (IQR) when assessing bias."
+    },
+    {
+      "hypothesis_id": "H9",
+      "possible_confounders": [
+        "Order effects: stressor type (TSST, math, cold pressor) is confounded with trial number",
+        "Time-of-day effects: later trials occur at different circadian phases",
+        "Subject expectation/anticipation changing across trials"
+      ],
+      "control_variables": [
+        "Stressor type per trial (categorical)",
+        "Clock time of trial start",
+        "Self-reported anticipation rating before each trial"
+      ],
+      "boring_rival_explanations": [
+        "Later trials have more motion artifacts because subjects move more as they get comfortable, causing missing data (H10)",
+        "The classifier overfits to early-trial patterns and generalizes poorly to later trials"
+      ],
+      "rival_prediction": "If the rival (classifier overfitting) holds, retraining the classifier on trials 2-3 and testing on trial 1 will show symmetric degradation, not just late-trial undercoverage.",
+      "distinguishing_condition": "Train three classifiers: (a) on trial 1 only, test on trial 3; (b) on trial 3 only, test on trial 1; (c) on all trials with trial-number as feature. If (a) shows undercoverage on trial 3 but (b) does not on trial 1, habituation mechanism wins. If both (a) and (b) show undercoverage, overfitting rival wins. If (c) fixes coverage, trial-number stratification wins.",
+      "confounder_rival_notes": "Counterbalance stressor order across subjects in WESAD? Check protocol. Control for stressor type."
+    },
+    {
+      "hypothesis_id": "H10",
+      "possible_confounders": [
+        "Movement intensity directly corrupts ECG and EDA as well, not just respiration",
+        "Missing respiration windows are shorter (less data) leading to noisier feature estimates",
+        "Imputation method (mean vs last-value) introduces systematic bias"
+      ],
+      "control_variables": [
+        "Movement intensity per window (accelerometer magnitude)",
+        "Window duration / number of valid samples per modality",
+        "Imputation method indicator"
+      ],
+      "boring_rival_explanations": [
+        "High-movement stress periods are inherently harder to classify (lower signal quality across all modalities), not specifically due to respiration missingness",
+        "The conformal predictor's nonconformity score is computed only on available modalities, but the calibration set includes full-modality windows, causing a mismatch"
+      ],
+      "rival_prediction": "If the rival (general signal quality) holds, coverage will be low for high-movement windows even when respiration is present, and adding a missingness indicator will not help.",
+      "distinguishing_condition": "Stratify coverage by (movement_intensity quartile) x (respiration_missingness). If coverage drops only when both high movement AND missing respiration co-occur, the proposed mechanism (informative missingness) wins. If coverage drops with high movement regardless of respiration missingness, the rival wins.",
+      "confounder_rival_notes": "Test multiple imputation strategies (mean, last-value, model-based) and missingness-indicator augmentation. Control for window-level SNR of ECG/EDA."
+    }
+  ]
+}

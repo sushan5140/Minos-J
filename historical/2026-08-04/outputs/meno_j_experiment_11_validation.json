@@ -1,0 +1,23 @@
+{
+  "experiment_name": "Meno-J Experiment 11: Representation-versus-Calibration Falsification",
+  "status": "PASS",
+  "checks": {
+    "required_outputs_exist": true,
+    "all_outputs_decode_as_utf8": true,
+    "saved_schema_and_invariants_pass": true,
+    "markdown_matches_json": true,
+    "independent_exact_replay_matches": true,
+    "frontier_grid_270_complete": true,
+    "representation_grid_450_complete": true,
+    "experiment_10_k9_k12_exact_continuity_90_rows": true,
+    "order_statistic_boundary_matches_protocol": true,
+    "heldout_subject_and_test_window_leakage_absent": true,
+    "all_15_feature_checkpoint_hashes_match": true,
+    "working_theory_update_matches_results": true,
+    "credential_scan_passes": true
+  },
+  "primary_decision": "SUPPORTED_RIVALS_R2_AND_R3",
+  "scientific_report_sha256": "6e7aa9bbcc03e7d9b7fd64e329c0b064b396c3f89dd5406caa6e536b2fd1708e",
+  "reproducibility_summary_sha256": "b1820eef842d2897a0b7a593e07616be728ed3bc0e12cdab62b078acc216d332",
+  "working_theory_sha256": "ea7de00638099947b02e8fda938e44a566240204f7388e09bde255ac724ecaf3"
+}
